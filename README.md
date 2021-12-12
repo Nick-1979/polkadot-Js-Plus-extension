@@ -56,7 +56,7 @@ In transaction confirmation page, confirm the transaction to broadcast it on the
 
 After a little while, depend on the network response time, transaction will be done, you see the following page and your balance(s) are updated.
 
-![transaction done page screenshot](docs/pjp/transactionDone0100.PNG)
+<!-- ![transaction done page screenshot](docs/pjp/transactionDone0100.PNG) -->
 ![transaction done page screenshot](docs/pjp/transactionDone0200.PNG)
 
 Transactions' histroy can be seen from the account page, which shows transactions detail, status, failure reason  if transaction failed, and a link to subscan for more info.
@@ -79,7 +79,7 @@ Nominate validators automatically or select them yourself.
 
 ![select validators page screenshot](docs/pjp/selectValidators00.PNG)
 
-Finaly confirm staking/unstaking/redeem.
+Finaly confirm staking/unstaking/redeem similarly.
 
 ![confirm staking page screenshot](docs/pjp/confirmStaking00.PNG)
 
