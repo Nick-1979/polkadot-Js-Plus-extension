@@ -182,7 +182,7 @@ function MenuSettings ({ className, reference }: Props): React.ReactElement<Prop
           text={t<string>('Governance')}
         />
       </MenuItem>
-      <MenuDivider />
+      {/* <MenuDivider /> */}
       <MenuItem className='setting'>
         <ActionText
           className='manageWebsiteAccess'
@@ -210,6 +210,23 @@ export default React.memo(styled(MenuSettings)(({ theme }: Props) => `
   right: 24px;
   user-select: none;
 
+  .crowdloans, .governance{ //added for plus
+    span {
+      color: red; // ${theme.textColor};
+      font-size: ${theme.fontSize};
+      line-height: ${theme.lineHeight};
+      text-decoration: none;
+      vertical-align: middle;
+    }
+
+    ${Svg} {
+      background: ${theme.textColor};
+      height: 20px;
+      top: 4px;
+      width: 20px;
+    }
+  }
+  
   .openWindow, .manageWebsiteAccess{
     span {
       color: ${theme.textColor};

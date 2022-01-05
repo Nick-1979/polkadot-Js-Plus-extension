@@ -241,7 +241,7 @@ function Plus({ address, chain, formattedAddress, givenType, name,
     <Container disableGutters sx={{ position: 'relative', top: '-10px' }}>
       <Grid container justifyContent='flex-end'>
         <Grid container id='QRcodePage' item justifyContent='flex-end' xs={2}>
-          <Grid item xs={2} >
+          <Grid item xs={2} sx={{paddingLeft:'2px'}}>
             <Link color='inherit' href='#' underline='none'>
               <FontAwesomeIcon
                 icon={faQrcode}

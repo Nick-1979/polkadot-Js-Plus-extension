@@ -63,6 +63,9 @@ Transactions' histroy can be seen from the account page, which shows transaction
 
 ![transaction history page screenshot](packages/extension-plus/docs/screenshots/transactionHistory00.PNG)
 
+![transaction detail page screenshot](packages/extension-plus/docs/screenshots/transactionHistory01.PNG)
+
+
 Entering the crypto address is error prone, so it is useful to use the QR code for scanning by a mobile wallet.
 
 ![Address QR code page screenshot](packages/extension-plus/docs/screenshots/addressQrCode00.PNG)
