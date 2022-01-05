@@ -3,7 +3,7 @@
 
 import type { Theme, ThemeProps } from '../types';
 
-import { faExpand, faTasks } from '@fortawesome/free-solid-svg-icons';
+import { faCompass, faExpand, faLandmark, faTasks } from '@fortawesome/free-solid-svg-icons';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import styled, { ThemeContext } from 'styled-components';
 
@@ -88,6 +88,19 @@ function MenuSettings ({ className, reference }: Props): React.ReactElement<Prop
     }, [onAction]
   );
 
+   // added for plus
+   const _goToCrowdloans = useCallback(
+    () => {
+      onAction('auction-crowdloans');
+    }, [onAction]
+  );
+
+  const _goToGovernance = useCallback(
+    () => {
+      onAction('governance');
+    }, [onAction]
+  );
+
   return (
     <Menu
       className={className}
@@ -149,6 +162,24 @@ function MenuSettings ({ className, reference }: Props): React.ReactElement<Prop
           className='checkbox camera'
           label={t<string>('Allow QR Camera Access')}
           onChange={setCamera}
+        />
+      </MenuItem>
+      <MenuDivider />
+      {/* added for plus */}
+      <MenuItem className='setting'>
+        <ActionText
+          className='crowdloans'
+          icon={faCompass}
+          onClick={_goToCrowdloans}
+          text={t<string>('Contribute in Crowdloans')}
+        />
+      </MenuItem>
+      <MenuItem className='setting'>
+        <ActionText
+          className='governance'
+          icon={faLandmark}
+          onClick={_goToGovernance}
+          text={t<string>('Governance')}
         />
       </MenuItem>
       <MenuDivider />

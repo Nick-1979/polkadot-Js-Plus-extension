@@ -18,6 +18,7 @@ import styled from 'styled-components';
 
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
+import Plus from '../../../extension-plus/src/components/Plus'; // added for Plus
 import details from '../assets/details.svg';
 import useMetadata from '../hooks/useMetadata';
 import useOutsideClick from '../hooks/useOutsideClick';
@@ -45,6 +46,8 @@ export interface Props {
   suri?: string;
   toggleActions?: number;
   type?: KeypairType;
+  showBalance?: boolean;//added for plus
+
 }
 
 interface Recoded {
@@ -56,7 +59,7 @@ interface Recoded {
 }
 
 // find an account in our list
-function findSubstrateAccount (accounts: AccountJson[], publicKey: Uint8Array): AccountJson | null {
+function findSubstrateAccount(accounts: AccountJson[], publicKey: Uint8Array): AccountJson | null {
   const pkStr = publicKey.toString();
 
   return accounts.find(({ address }): boolean =>
@@ -65,14 +68,14 @@ function findSubstrateAccount (accounts: AccountJson[], publicKey: Uint8Array): 
 }
 
 // find an account in our list
-function findAccountByAddress (accounts: AccountJson[], _address: string): AccountJson | null {
+function findAccountByAddress(accounts: AccountJson[], _address: string): AccountJson | null {
   return accounts.find(({ address }): boolean =>
     address === _address
   ) || null;
 }
 
 // recodes an supplied address using the prefix/genesisHash, include the actual saved account & chain
-function recodeAddress (address: string, accounts: AccountWithChildren[], chain: Chain | null, settings: SettingsStruct): Recoded {
+function recodeAddress(address: string, accounts: AccountWithChildren[], chain: Chain | null, settings: SettingsStruct): Recoded {
   // decode and create a shortcut for the encoded address
   const publicKey = decodeAddress(address);
 
@@ -95,7 +98,7 @@ function recodeAddress (address: string, accounts: AccountWithChildren[], chain:
 const ACCOUNTS_SCREEN_HEIGHT = 550;
 const defaultRecoded = { account: null, formatted: null, prefix: 42, type: DEFAULT_TYPE };
 
-function Address ({ actions, address, children, className, genesisHash, isExternal, isHardware, isHidden, name, parentName, suri, toggleActions, type: givenType }: Props): React.ReactElement<Props> {
+function Address({ actions, address, children, className, genesisHash, isExternal, isHardware, isHidden, name, parentName,showBalance, suri, toggleActions, type: givenType }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { accounts } = useContext(AccountContext);
   const settings = useContext(SettingsContext);
@@ -217,7 +220,7 @@ function Address ({ actions, address, children, className, genesisHash, isExtern
                   <div
                     className='parentName'
                     data-field='parent'
-                    title = {parentNameSuri}
+                    title={parentNameSuri}
                   >
                     {parentNameSuri}
                   </div>
@@ -298,6 +301,16 @@ function Address ({ actions, address, children, className, genesisHash, isExtern
           </>
         )}
       </div>
+      {
+        (formatted || address) && showBalance &&
+        <Plus
+          address={address}
+          chain={chain}
+          formattedAddress={formatted || address}
+          givenType={givenType}
+          name={name || account?.name || t('<unknown>')}
+        />
+      }
       {children}
     </div>
   );

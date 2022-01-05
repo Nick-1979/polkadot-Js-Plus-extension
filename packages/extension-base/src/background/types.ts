@@ -13,6 +13,8 @@ import type { KeypairType } from '@polkadot/util-crypto/types';
 
 import { TypeRegistry } from '@polkadot/types';
 
+// import { BalanceType } from '../../../extension-plus/src/util/pjpeTypes'; // added for plus
+// import type { Chain } from '@polkadot/extension-chains/types'; // added for plus
 import { ALLOWED_PATH } from '../defaults';
 import { AuthUrls } from './handlers/State';
 
@@ -41,6 +43,15 @@ export interface AccountJson extends KeyringPair$Meta {
   suri?: string;
   type?: KeypairType;
   whenCreated?: number;
+
+  // added for plus 
+  lastBalance?: string;
+  txHistory?: string;
+  stakingConsts?: string;
+  nominatedValidators?: string;
+  validatorsName?: string;
+  validatorsInfo?: string;
+
 }
 
 export type AccountWithChildren = AccountJson & {
@@ -51,7 +62,16 @@ export type AccountsContext = {
   accounts: AccountJson[];
   hierarchy: AccountWithChildren[];
   master?: AccountJson;
+  // balance?: AccountsBalanceType[]; // added for plus
+
 }
+
+// added for plus
+// interface AccountsBalanceType {
+//   address: string | null;
+//   chain: Chain | null;
+//   balance: BalanceType | null;
+// }
 
 export interface AuthorizeRequest {
   id: string;
@@ -79,6 +99,10 @@ export interface RequestSignatures {
   'pri(accounts.create.hardware)': [RequestAccountCreateHardware, boolean];
   'pri(accounts.create.suri)': [RequestAccountCreateSuri, boolean];
   'pri(accounts.edit)': [RequestAccountEdit, boolean];
+
+  'pri(accounts.updateMeta)': [RequestUpdateMeta, boolean]; // added by Kami
+
+
   'pri(accounts.export)': [RequestAccountExport, ResponseAccountExport];
   'pri(accounts.batchExport)': [RequestAccountBatchExport, ResponseAccountsExport]
   'pri(accounts.forget)': [RequestAccountForget, boolean];
@@ -306,6 +330,12 @@ export interface RequestSeedValidate {
   type?: KeypairType;
 }
 
+// added for plus
+export interface RequestUpdateMeta {
+  address: string;
+  meta: string;
+}
+
 // Responses
 
 export type ResponseTypes = {
@@ -329,10 +359,10 @@ interface TransportResponseMessageNoSub<TMessageType extends MessageTypesWithNoS
 
 export type TransportResponseMessage<TMessageType extends MessageTypes> =
   TMessageType extends MessageTypesWithNoSubscriptions
-    ? TransportResponseMessageNoSub<TMessageType>
-    : TMessageType extends MessageTypesWithSubscriptions
-      ? TransportResponseMessageSub<TMessageType>
-      : never;
+  ? TransportResponseMessageNoSub<TMessageType>
+  : TMessageType extends MessageTypesWithSubscriptions
+  ? TransportResponseMessageSub<TMessageType>
+  : never;
 
 export interface ResponseSigning {
   id: string;
@@ -376,7 +406,7 @@ export type MessageTypesWithNoSubscriptions = Exclude<MessageTypes, keyof Subscr
 export interface RequestSign {
   readonly payload: SignerPayloadJSON | SignerPayloadRaw;
 
-  sign (registry: TypeRegistry, pair: KeyringPair): { signature: HexString };
+  sign(registry: TypeRegistry, pair: KeyringPair): { signature: HexString };
 }
 
 export interface RequestJsonRestore {

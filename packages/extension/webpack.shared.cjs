@@ -26,6 +26,12 @@ module.exports = (entry, alias = {}) => ({
   module: {
     rules: [
       {
+        test: /\.m?js/, //added for plus
+        resolve: {
+          fullySpecified: false
+        }
+      },
+      {
         exclude: /(node_modules)/,
         test: /\.(js|mjs|ts|tsx)$/,
         use: [

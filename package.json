@@ -32,6 +32,16 @@
     "test:one": "polkadot-dev-run-test --detectOpenHandles",
     "watch": "cd packages/extension && yarn polkadot-exec-webpack --config webpack.watch.cjs --mode development --watch"
   },
+  "dependencies": {
+    "@emotion/react": "^11.7.1",
+    "@emotion/styled": "^11.6.0",
+    "@mui/icons-material": "^5.2.5",
+    "@mui/lab": "^5.0.0-alpha.63",
+    "@mui/material": "^5.2.7",
+    "@polkadot/apps-config": "^0.100.1",
+    "qrcode.react": "^1.0.1",
+    "umi-request": "^1.4.0"
+  },
   "devDependencies": {
     "@babel/core": "^7.16.7",
     "@polkadot/dev": "^0.65.11",

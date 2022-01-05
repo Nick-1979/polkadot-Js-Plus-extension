@@ -33,10 +33,13 @@ import RestoreJson from './RestoreJson';
 import Signing from './Signing';
 import Welcome from './Welcome';
 
+import CrowdLoans from '../../../extension-plus/src/Popup/CrowdLoans';// added by kami
+import Governance from '../../../extension-plus/src/Popup/Governance';// added by kami
+
 const startSettings = uiSettings.get();
 
 // Request permission for video, based on access we can hide/show import
-async function requestMediaAccess (cameraOn: boolean): Promise<boolean> {
+async function requestMediaAccess(cameraOn: boolean): Promise<boolean> {
   if (!cameraOn) {
     return false;
   }
@@ -52,7 +55,7 @@ async function requestMediaAccess (cameraOn: boolean): Promise<boolean> {
   return false;
 }
 
-function initAccountContext (accounts: AccountJson[]): AccountsContext {
+function initAccountContext(accounts: AccountJson[]): AccountsContext {
   const hierarchy = buildHierarchy(accounts);
   const master = hierarchy.find(({ isExternal, type }) => !isExternal && canDerive(type));
 
@@ -63,7 +66,7 @@ function initAccountContext (accounts: AccountJson[]): AccountsContext {
   };
 }
 
-export default function Popup (): React.ReactElement {
+export default function Popup(): React.ReactElement {
   const [accounts, setAccounts] = useState<null | AccountJson[]>(null);
   const [accountCtx, setAccountCtx] = useState<AccountsContext>({ accounts: [], hierarchy: [] });
   const [authRequests, setAuthRequests] = useState<null | AuthorizeRequest[]>(null);
@@ -99,7 +102,7 @@ export default function Popup (): React.ReactElement {
     });
 
     _onAction();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect((): void => {
@@ -112,7 +115,7 @@ export default function Popup (): React.ReactElement {
       .catch(console.error);
   }, [cameraOn]);
 
-  function wrapWithErrorBoundary (component: React.ReactElement, trigger?: string): React.ReactElement {
+  function wrapWithErrorBoundary(component: React.ReactElement, trigger?: string): React.ReactElement {
     return <ErrorBoundary trigger={trigger}>{component}</ErrorBoundary>;
   }
 
@@ -138,6 +141,12 @@ export default function Popup (): React.ReactElement {
                     <ToastProvider>
                       <Switch>
                         <Route path='/auth-list'>{wrapWithErrorBoundary(<AuthList />, 'auth-list')}</Route>
+
+                        {/* added by Kami */}
+                        <Route path='/auction-crowdloans'>{wrapWithErrorBoundary(<CrowdLoans />, 'auction-crowdloans')}</Route>
+                        <Route path='/governance'>{wrapWithErrorBoundary(<Governance />, 'governance')}</Route>
+
+                        <Route path='/account/create'>{wrapWithErrorBoundary(<CreateAccount />, 'account-creation')}</Route>
                         <Route path='/account/create'>{wrapWithErrorBoundary(<CreateAccount />, 'account-creation')}</Route>
                         <Route path='/account/forget/:address'>{wrapWithErrorBoundary(<Forget />, 'forget-address')}</Route>
                         <Route path='/account/export/:address'>{wrapWithErrorBoundary(<Export />, 'export-address')}</Route>

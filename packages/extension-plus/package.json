@@ -1,0 +1,18 @@
+{
+  "author": "Kami Ekbatanifard <ekbatanifard@gmail.com>",
+  "bugs": "https://github.com/polkadot-js/extension/issues",
+  "contributors": [],
+  "description": "A sample signer extension for the @polkadot/api",
+  "homepage": "https://github.com/polkadot-js/extension/tree/master/packages/extension-plus#readme",
+  "license": "Apache-2",
+  "maintainers": [],
+  "name": "@polkadot/plus",
+  "repository": {
+    "directory": "packages/extension-plus",
+    "type": "git",
+    "url": "https://github.com/polkadot-js/extension.git"
+  },
+  "sideEffects": true,
+  "type": "module",
+  "version": "0.42.5-14"
+}

@@ -7,7 +7,10 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import styled from 'styled-components';
 
 import { AccountWithChildren } from '@polkadot/extension-base/background/types';
+import { AccountsStore } from '@polkadot/extension-base/stores'; // added by kami
 import getNetworkMap from '@polkadot/extension-ui/util/getNetworkMap';
+import keyring from '@polkadot/ui-keyring'; // added by kami
+import { cryptoWaitReady } from '@polkadot/util-crypto'; // added by kami
 
 import { AccountContext } from '../../components';
 import useTranslation from '../../hooks/useTranslation';
@@ -25,6 +28,14 @@ function Accounts ({ className }: Props): React.ReactElement {
   const [filteredAccount, setFilteredAccount] = useState<AccountWithChildren[]>([]);
   const { hierarchy } = useContext(AccountContext);
   const networkMap = useMemo(() => getNetworkMap(), []);
+
+   // added by kami
+   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    cryptoWaitReady().then(() => {
+      keyring.loadAll({ store: new AccountsStore() });
+    });
+  }, []);
 
   useEffect(() => {
     setFilteredAccount(
