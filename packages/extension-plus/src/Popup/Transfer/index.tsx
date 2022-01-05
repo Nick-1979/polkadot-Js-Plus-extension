@@ -140,8 +140,9 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
     handleClearRecepientAddress();
   }, [handleClearRecepientAddress, setTransferModalOpen]);
 
-  function handleAddressIsValid(_isValid: boolean, _address: string, _name?: string | null) {
-    setRecepient({ address: _address, chain: null, name: String(_name) });
+  function handleAddressIsValid(_isValid: boolean, _address: string, _name?: string) {
+    setRecepient({ address: _address, chain: null, name: _name });
+    console.log('{ address: _address, chain: null, name: String(_name) },',_name )
     setRecepientAddressIsValid(_isValid);
   }
 
@@ -149,7 +150,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
     const isValid = isValidAddress(e.target.value);
 
     // TODO: double chekc the name should not be null!
-    handleAddressIsValid(isValid, e.target.value, null);
+    handleAddressIsValid(isValid, e.target.value);
   }
 
   useEffect(() => {

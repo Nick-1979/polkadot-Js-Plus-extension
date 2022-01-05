@@ -281,7 +281,7 @@ export default function ConfirmTx({
         />
       </Grid>
       <Grid item xs={6} sx={{ fontSize: 14, textAlign: 'left' }}>
-        {name || makeAddressShort(String(address))}
+        {name ? name : makeAddressShort(String(address))}
       </Grid>
     </>);
 
