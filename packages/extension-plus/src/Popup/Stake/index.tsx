@@ -1,3 +1,4 @@
+/* eslint-disable header/header */
 // Copyright 2019-2021 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
@@ -1067,13 +1068,13 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
               </TabPanel>
             </Grid>
           </Grid>
+
           {stakingConsts && validatorsInfo &&
             <SelectValidators
               chain={chain}
               coin={coin}
               ledger={ledger}
               handleEasyStakingModalClose={handleEasyStakingModalClose}
-              // lastFee={lastFee}
               setSelectValidatorsModalOpen={setSelectValidatorsModalOpen}
               setState={setState}
               showSelectValidatorsModal={showSelectValidatorsModal}
@@ -1082,8 +1083,9 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
               stakingConsts={stakingConsts}
               state={state}
               validatorsInfo={validatorsInfo}
-              validatorsInfoFromSubscan={validatorsInfoFromSubscan}
+              // validatorsInfoFromSubscan={validatorsInfoFromSubscan}
               validatorsName={validatorsName}
+              nominatedValidators={selectedValidators}
             />
           }
           {ledger && staker && (selectedValidators || nominatedValidators) && state !== '' &&
