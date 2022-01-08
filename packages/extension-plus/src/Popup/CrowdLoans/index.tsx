@@ -106,7 +106,7 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
 
   useEffect(() => {
     setActiveCrowdloans(auction?.crowdloans.filter((c) => c.fund.end > auction.currentBlockNumber));
-    setAuctionWinners(auction?.crowdloans.filter((c) => c.fund.end < auction.currentBlockNumber || c.fund.lastContribution?.ending));
+    setAuctionWinners(auction?.crowdloans.filter((c) => c.fund.end < auction.currentBlockNumber ));
   }, [auction]);
 
   // const _onChangeFilter = useCallback((filter: string) => {
