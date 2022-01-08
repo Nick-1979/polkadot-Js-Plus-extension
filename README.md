@@ -36,6 +36,25 @@ Steps to build the extension and view your changes in a browser:
 
 Once added, you can create an account (via a generated seed) or import via an existing seed.
 
+## To test on westend:
+
+1- add genesis of wetend to '@polkadot/networks/default.js':
+
+    westend:['0xe143f23803ac50e8f6f8e62695d1ce9e4e1d68aa36c1cd2cfd15340213f3423e'] 
+
+
+2- add network info of westend to '@polkadot/networks/substrate.js':
+
+ {
+    decimals: [12],
+    displayName: 'Westend', 
+    network: 'westend',
+    prefix: 42,
+    standardAccount: '*25519',
+    symbols: ['WND'],
+    website: 'https://polkadot.network'
+  }
+
 ## How To's
 
 Accounts page, shows the list of all accounts and their balances which you have created/imported on polkadot/kusama blockchain and parachains.
