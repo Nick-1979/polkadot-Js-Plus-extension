@@ -14,7 +14,7 @@ import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } fro
 import { DeriveStakingQuery } from '@polkadot/api-derive/types';
 import { AccountJson } from '@polkadot/extension-base/background/types';
 import { Chain } from '@polkadot/extension-chains/types';
-import getChainLogo from '../../util/getChainLogo';
+import getLogo from '../../util/getLogo';
 import { AccountsBalanceType, AllValidatorsFromSubscan, savedMetaData, StakingConsts, Validators, ValidatorsName } from '../../util/pjpeTypes';
 import { getAllValidatorsFromSubscan, getStakingReward } from '../../util/staking';
 import { formatBalance } from '@polkadot/util';
@@ -703,7 +703,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
               <Grid item>
                 <Avatar
                   alt={'logo'}
-                  src={getChainLogo(chain)}
+                  src={getLogo(chain)}
                 // sx={{ height: 45, width: 45 }}
                 />
               </Grid>

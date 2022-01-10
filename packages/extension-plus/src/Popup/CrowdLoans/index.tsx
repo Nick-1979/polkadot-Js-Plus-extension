@@ -21,7 +21,7 @@ import { cryptoWaitReady } from '@polkadot/util-crypto';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { Header } from '../../../../extension-ui/src/partials';
 import { RELAY_CHAINS } from '../../util/constants';
-import getChainLogo from '../../util/getChainLogo';
+import getLogo from '../../util/getLogo';
 import getNetworkInfo from '../../util/getNetwork';
 import { Auction, Crowdloan } from '../../util/pjpeTypes';
 import { NothingToShow } from '../common/NothingToShow';
@@ -212,7 +212,7 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
                       <Grid item>
                         <Avatar
                           alt={'logo'}
-                          src={getChainLogo(null, chain.name.toLowerCase())}
+                          src={getLogo( chain.name.toLowerCase())}
                           sx={{ height: 24, width: 24 }}
                         />
                       </Grid>

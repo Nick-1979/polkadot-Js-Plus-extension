@@ -12,7 +12,7 @@ import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import getNetworkInfo from '../../util/getNetwork';
 import { Crowdloan } from '../../util/pjpeTypes';
 import { amountToHuman } from '../../util/pjpeUtils';
-import { getLogo } from './getLogo';
+import  getLogo from '../../util/getLogo';
 
 interface Props {
   chainName: string;

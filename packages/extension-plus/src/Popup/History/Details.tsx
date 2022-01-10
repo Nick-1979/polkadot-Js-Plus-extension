@@ -9,7 +9,7 @@ import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } fro
 import CopyToClipboard from 'react-copy-to-clipboard';
 
 import { Chain } from '@polkadot/extension-chains/types';
-import getChainLogo from '../../util/getChainLogo';
+import getLogo from '../../util/getLogo';
 
 import ActionText from '../../../../extension-ui/src/components/ActionText';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
@@ -118,7 +118,7 @@ export default function Details({
             <Grid item>
               <Avatar
                 alt={'logo'}
-                src={getChainLogo(chain)}
+                src={getLogo(chain)}
               />
             </Grid>
             <Grid item sx={{ fontSize: 15, fontWeight: 600 }}>

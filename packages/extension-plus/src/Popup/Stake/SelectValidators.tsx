@@ -27,7 +27,7 @@ import { Chain } from '@polkadot/extension-chains/types';
 import { ActionText, NextStepButton } from '../../../../extension-ui/src/components';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { DEFAULT_VALIDATOR_COMMISION_FILTER } from '../../util/constants';
-import getChainLogo from '../../util/getChainLogo';
+import getLogo from '../../util/getLogo';
 import getNetworkInfo from '../../util/getNetwork';
 import { AccountsBalanceType, AllValidatorsFromSubscan, StakingConsts, Validators, ValidatorsName } from '../../util/pjpeTypes';
 import ConfirmStaking from './ConfirmStaking';
@@ -604,7 +604,7 @@ export default function SelectValidators({
                 <Grid item>
                   <Avatar
                     alt={'logo'}
-                    src={getChainLogo(chain)}
+                    src={getLogo(chain)}
                   />
                 </Grid>
                 <Grid item sx={{ fontSize: 15 }}>

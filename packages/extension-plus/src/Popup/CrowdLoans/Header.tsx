@@ -1,6 +1,6 @@
 import { Avatar, Divider, Grid } from "@mui/material";
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
-import getChainLogo from "../../util/getChainLogo";
+import getLogo from "../../util/getLogo";
 import { ActionText } from "../../../../extension-ui/src/components";
 
 interface Props {
@@ -18,7 +18,7 @@ export default function Header({ chainName, title, handleModalClose, icon }: Pro
                 <Grid item>
                     <Avatar
                         alt={'logo'}
-                        src={getChainLogo(null, chainName)}
+                        src={getLogo(chainName)}
                     />
                 </Grid>
                 <Grid item sx={{ fontSize: 15, fontWeight: 600 }}>

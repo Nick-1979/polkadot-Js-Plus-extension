@@ -14,11 +14,11 @@ import { Alert, Avatar, Box, Button, Container, Divider, Grid, IconButton, Input
 import keyring from '@polkadot/ui-keyring';
 import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from 'react';
 import ConfirmTx from './ConfirmTransfer';
-import { Chain } from '@polkadot/extension-chains/types';
+import { Chain } from '../../../../extension-chains/src/types';
 import type { KeypairType } from '@polkadot/util-crypto/types';
 
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
-import getChainLogo from '../../util/getChainLogo';
+// import getLogo from '../../util/getLogo';
 import getFee from '../../util/getFee';
 import getNetworkInfo from '../../util/getNetwork';
 import isValidAddress from '../../util/validateAddress';
@@ -30,6 +30,7 @@ import grey from '@mui/material/colors/grey';
 import { ActionText, NextStepButton } from '../../../../extension-ui/src/components';
 import { DEFAULT_COIN } from '../../util/constants';
 import Identicon from '@polkadot/react-identicon';
+import  getLogo from '../../util/getLogo';
 
 interface Props {
   actions?: React.ReactNode;
@@ -301,7 +302,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
                       <Avatar
                         alt={`${coin} logo`}
                         // src={getLogoSource(coin)}
-                        src={getChainLogo(chain)}
+                        src={getLogo(chain)}
                       // sx={{ height: 45, width: 45 }}
                       />
                     </ListItemIcon>
@@ -404,7 +405,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
             <Grid item>
               <Avatar
                 alt={'logo'}
-                src={getChainLogo(chain)}
+                src={getLogo(chain)}
               />
             </Grid>
             <Grid item sx={{ fontSize: 15, fontWeight: 600 }}>
@@ -521,7 +522,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
                     <Grid container justifyContent='flex-start' spacing={1}>
                       <Grid item xs={2}>
                         <Avatar alt={`${coin} logo`} // src={getLogoSource(coin)} 
-                          src={getChainLogo(chain)}
+                          src={getLogo(chain)}
                           sx={{ height: 45, width: 45 }}
                         />
                       </Grid>

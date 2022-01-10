@@ -12,7 +12,7 @@ import React, { Dispatch, SetStateAction, useCallback } from 'react';
 import { Chain } from '@polkadot/extension-chains/types';
 
 import useTranslation from '../../../extension-ui/src/hooks/useTranslation';
-import getChainLogo from '../util/getChainLogo';
+import getLogo from '../util/getLogo';
 
 interface Props {
   address: string;
@@ -78,7 +78,7 @@ export default function AddressQRcode ({ address, chain, name, setQRcodeModalOpe
             <Grid item xs={3} sx={{ padding: '30px 1px 30px' }}>
               <Avatar
                 alt={'logo'}
-                src={getChainLogo(chain)}
+                src={getLogo(chain)}
               // sx={{ height: 45, width: 45 }}
               />
             </Grid>

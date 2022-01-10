@@ -13,7 +13,7 @@ import { Chain } from '@polkadot/extension-chains/types';
 import ActionText from '../../../../extension-ui/src/components/ActionText';
 import { AccountContext } from '../../../../extension-ui/src/components/contexts';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
-import getChainLogo from '../../util/getChainLogo';
+import getLogo from '../../util/getLogo';
 import getNetworkInfo from '../../util/getNetwork';
 import { getTxTransfers } from '../../util/getTransfers';
 import { TransactionDetail, Transfers } from '../../util/pjpeTypes';
@@ -262,7 +262,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
             <Grid item>
               <Avatar
                 alt={'logo'}
-                src={getChainLogo(chain)}
+                src={getLogo(chain)}
               />
             </Grid>
             <Grid item sx={{ fontSize: 15, fontWeight: 600 }}>

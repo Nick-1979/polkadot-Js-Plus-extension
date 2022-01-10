@@ -10,7 +10,7 @@ import { Avatar, Button as MuiButton, Container, Divider, Grid, IconButton, Inpu
 import React, { useContext, useEffect, useState } from 'react';
 
 import { Chain } from '@polkadot/extension-chains/types';
-import getChainLogo from '../../util/getChainLogo';
+import getLogo from '../../util/getLogo';
 import { DeriveStakingQuery } from '@polkadot/api-derive/types';
 import keyring from '@polkadot/ui-keyring';
 
@@ -400,7 +400,7 @@ export default function ConfirmStaking({
               <Grid item >
                 <Avatar
                   alt={'logo'}
-                  src={getChainLogo(chain)}
+                  src={getLogo(chain)}
                 />
               </Grid>
               <Grid item sx={{ fontSize: 15 }}>

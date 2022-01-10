@@ -20,7 +20,7 @@ import { ActionText, BackButton, Button } from '../../../../extension-ui/src/com
 import { AccountContext } from '../../../../extension-ui/src/components/contexts';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import contribute from '../../util/contribute';
-import getChainLogo from '../../util/getChainLogo';
+import getLogo from '../../util/getLogo';
 import getNetworkInfo from '../../util/getNetwork';
 import { Auction, Crowdloan, TransactionDetail } from '../../util/pjpeTypes';
 import { amountToHuman, amountToMachine, fixFloatingPoint, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/pjpeUtils';
@@ -184,7 +184,7 @@ export default function ConfirmCrowdloan({ auction,
               <Grid item>
                 <Avatar
                   alt={'logo'}
-                  src={getChainLogo(null, selectedBlockchain)}
+                  src={getLogo(selectedBlockchain)}
                 />
               </Grid>
               <Grid item sx={{ fontSize: 15 }}>

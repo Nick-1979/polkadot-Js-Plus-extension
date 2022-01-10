@@ -18,7 +18,7 @@ import keyring from '@polkadot/ui-keyring';
 import { ActionText, BackButton, Button } from '../../../../extension-ui/src/components';
 import { AccountContext } from '../../../../extension-ui/src/components/contexts';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
-import getChainLogo from '../../util/getChainLogo';
+import getLogo from '../../util/getLogo';
 import getFee from '../../util/getFee';
 import getNetworkInfo from '../../util/getNetwork';
 import { AccountsBalanceType, TransactionDetail, TransactionStatus } from '../../util/pjpeTypes';
@@ -310,7 +310,7 @@ export default function ConfirmTx({
                 <Grid item sx={{ textAlign: 'right' }}>
                   <Avatar
                     alt={'logo'}
-                    src={getChainLogo(chain)}
+                    src={getLogo(chain)}
                   />
                 </Grid>
                 <Grid item justifyContent='center' sx={{ fontSize: 15 }}>
