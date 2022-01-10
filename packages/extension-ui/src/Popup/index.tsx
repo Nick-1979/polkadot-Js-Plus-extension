@@ -33,8 +33,8 @@ import RestoreJson from './RestoreJson';
 import Signing from './Signing';
 import Welcome from './Welcome';
 
-import CrowdLoans from '../../../extension-plus/src/Popup/CrowdLoans';// added by kami
-import Governance from '../../../extension-plus/src/Popup/Governance';// added by kami
+import CrowdLoans from '../../../extension-plus/src/Popup/CrowdLoans';// added for plus
+import Governance from '../../../extension-plus/src/Popup/Governance';// added for plus
 
 const startSettings = uiSettings.get();
 

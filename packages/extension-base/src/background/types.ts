@@ -100,7 +100,7 @@ export interface RequestSignatures {
   'pri(accounts.create.suri)': [RequestAccountCreateSuri, boolean];
   'pri(accounts.edit)': [RequestAccountEdit, boolean];
 
-  'pri(accounts.updateMeta)': [RequestUpdateMeta, boolean]; // added by Kami
+  'pri(accounts.updateMeta)': [RequestUpdateMeta, boolean]; // added for plus
 
 
   'pri(accounts.export)': [RequestAccountExport, ResponseAccountExport];

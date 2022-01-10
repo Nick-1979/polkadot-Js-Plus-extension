@@ -104,7 +104,7 @@ export default class Extension {
     return true;
   }
 
-  // added by kami to update meta generally
+  // added for plus to update meta generally
   private accountsUpdateMeta({ address, meta }: RequestUpdateMeta): boolean {
     const pair = keyring.getPair(address);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -551,7 +551,7 @@ export default class Extension {
       case 'pri(accounts.edit)':
         return this.accountsEdit(request as RequestAccountEdit);
 
-      case 'pri(accounts.updateMeta)': // added by Kami 
+      case 'pri(accounts.updateMeta)': // added for plus 
         return this.accountsUpdateMeta(request as RequestUpdateMeta);
 
 

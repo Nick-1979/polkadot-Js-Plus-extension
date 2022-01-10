@@ -26,7 +26,7 @@ module.exports = (entry, alias = {}) => ({
   module: {
     rules: [
       {
-        test: /\.m?js/, //added for plus
+        test: /\.m?js/, // added for plus
         resolve: {
           fullySpecified: false
         }

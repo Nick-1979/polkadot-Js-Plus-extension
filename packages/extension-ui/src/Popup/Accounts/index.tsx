@@ -7,10 +7,10 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import styled from 'styled-components';
 
 import { AccountWithChildren } from '@polkadot/extension-base/background/types';
-import { AccountsStore } from '@polkadot/extension-base/stores'; // added by kami
+import { AccountsStore } from '@polkadot/extension-base/stores'; // added for plus
 import getNetworkMap from '@polkadot/extension-ui/util/getNetworkMap';
-import keyring from '@polkadot/ui-keyring'; // added by kami
-import { cryptoWaitReady } from '@polkadot/util-crypto'; // added by kami
+import keyring from '@polkadot/ui-keyring'; // added for plus
+import { cryptoWaitReady } from '@polkadot/util-crypto'; // added for plus
 
 import { AccountContext } from '../../components';
 import useTranslation from '../../hooks/useTranslation';
@@ -29,7 +29,7 @@ function Accounts ({ className }: Props): React.ReactElement {
   const { hierarchy } = useContext(AccountContext);
   const networkMap = useMemo(() => getNetworkMap(), []);
 
-   // added by kami
+   // added for plus
    useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     cryptoWaitReady().then(() => {

@@ -46,7 +46,7 @@ export interface Props {
   suri?: string;
   toggleActions?: number;
   type?: KeypairType;
-  showBalance?: boolean;//added for plus
+  showBalance?: boolean;// added for plus
 
 }
 

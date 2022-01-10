@@ -116,7 +116,7 @@ function Account ({ address, className, genesisHash, isExternal, isHardware, isH
         isHidden={isHidden}
         name={editedName}
         parentName={parentName}
-        showBalance = {true}//added for plus
+        showBalance = {true}// added for plus
         suri={suri}
         toggleActions={toggleActions}
 
