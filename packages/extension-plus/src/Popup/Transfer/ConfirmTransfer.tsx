@@ -18,8 +18,8 @@ import keyring from '@polkadot/ui-keyring';
 import { ActionText, BackButton, Button } from '../../../../extension-ui/src/components';
 import { AccountContext } from '../../../../extension-ui/src/components/contexts';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
-import getLogo from '../../util/getLogo';
 import getFee from '../../util/getFee';
+import getLogo from '../../util/getLogo';
 import getNetworkInfo from '../../util/getNetwork';
 import { AccountsBalanceType, TransactionDetail, TransactionStatus } from '../../util/pjpeTypes';
 import { amountToHuman, fixFloatingPoint, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/pjpeUtils';
@@ -80,9 +80,7 @@ export default function ConfirmTx({
   const [transfering, setTransfering] = useState<boolean>(false);
   const [txStatus, setTxStatus] = useState<TransactionStatus>({ blockNumber: null, success: null, text: null });
   const [transferAmountInHuman, setTransferAmountInHuman] = useState('');
-
   const { hierarchy } = useContext(AccountContext);
-  // const settings = useContext(SettingsContext);
 
   useEffect(() => {
     const { decimals } = getNetworkInfo(chain);
@@ -101,25 +99,7 @@ export default function ConfirmTx({
   }
 
   useEffect(() => {
-    if (!transactionHash || !chain) {
-      return;
-    }
-
-    // const { decimals } = getNetworkInfo(chain);
-
-    // const currentTransactionDetail: TransactionDetail = {
-    //   action: 'send',
-    //   amount: amountToHuman(String(transferAmount), decimals),
-    //   date: Date.now(),
-    //   fee: String(fee),
-    //   from: String(sender.address),
-    //   hash: transactionHash,
-    //   status: String(txStatus.text),
-    //   to: String(recepient.address)
-    // };
-
-    // // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    // saveHistory(chain, hierarchy, sender.address, currentTransactionDetail);
+    if (!transactionHash || !chain) { return; }
   }, [transactionHash, txStatus, chain]);
 
   async function handleConfirmTransfer() {
@@ -274,14 +254,14 @@ export default function ConfirmTx({
     <>
       <Grid item xs={4}>
         <Identicon
-          prefix={42}
+          prefix={chain?.ss58Format ?? 42}
           size={40}
-          theme={'polkadot'}
+          theme={chain?.icon || 'polkadot'}
           value={address}
         />
       </Grid>
       <Grid item xs={6} sx={{ fontSize: 14, textAlign: 'left' }}>
-        {name ? name : makeAddressShort(String(address))}
+        {name || makeAddressShort(String(address))}
       </Grid>
     </>);
 

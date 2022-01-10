@@ -30,7 +30,7 @@ import grey from '@mui/material/colors/grey';
 import { ActionText, NextStepButton } from '../../../../extension-ui/src/components';
 import { DEFAULT_COIN } from '../../util/constants';
 import Identicon from '@polkadot/react-identicon';
-import  getLogo from '../../util/getLogo';
+import getLogo from '../../util/getLogo';
 
 interface Props {
   actions?: React.ReactNode;
@@ -87,6 +87,8 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
 
     setCoin(coin || DEFAULT_COIN);
     setED(ED || 0);
+
+    console.log('chain', chain)
   }, [chain]);
 
   useEffect((): void => {
@@ -143,7 +145,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
 
   function handleAddressIsValid(_isValid: boolean, _address: string, _name?: string) {
     setRecepient({ address: _address, chain: null, name: _name });
-    console.log('{ address: _address, chain: null, name: String(_name) },',_name )
+    console.log('{ address: _address, chain: null, name: String(_name) },', _name)
     setRecepientAddressIsValid(_isValid);
   }
 
@@ -432,18 +434,18 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
 
             <Grid item xs={12} id='senderAddress' container spacing={1} alignItems='center'
               sx={{ opacity: senderAddressOpacity, padding: '20px 10px 50px' }} justifyContent='flex-start'>
-              <Grid item sx={{ color: grey[800], fontSize: 13 , textAlign: 'left' }}>
+              <Grid item sx={{ color: grey[800], fontSize: 13, textAlign: 'left' }}>
                 {t('Sender')}:
               </Grid>
               <Grid item >
                 <Identicon
-                  size={20}
-                  theme={'polkadot'}
-                  prefix={42}
+                  prefix={chain?.ss58Format ?? 42}
+                  size={18}
+                  theme={chain?.icon || 'polkadot'}
                   value={sender.address}
                 />
               </Grid>
-              <Grid item sx={{ fontSize: 13, textAlign: 'left' }}>
+              <Grid item sx={{ fontSize: 12, textAlign: 'left' }}>
                 {sender.name ? `${sender.name} (${sender.address})` : makeAddressShort(String(sender.address))}
               </Grid>
             </Grid>
