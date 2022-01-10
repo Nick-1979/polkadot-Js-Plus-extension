@@ -131,6 +131,7 @@ interface Fund {
   lastPeriod: number;
   trieIndex: number;
   paraId: string;
+  hasLeased: boolean;
 }
 
 interface Identity {

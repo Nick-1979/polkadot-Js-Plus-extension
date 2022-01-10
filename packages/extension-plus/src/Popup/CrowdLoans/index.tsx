@@ -105,8 +105,8 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
   }, [selectedBlockchain]);
 
   useEffect(() => {
-    setActiveCrowdloans(auction?.crowdloans.filter((c) => c.fund.end > auction.currentBlockNumber));
-    setAuctionWinners(auction?.crowdloans.filter((c) => c.fund.end < auction.currentBlockNumber ));
+    setActiveCrowdloans(auction?.crowdloans.filter((c) => c.fund.end > auction.currentBlockNumber && !c.fund.hasLeased));
+    setAuctionWinners(auction?.crowdloans.filter((c) => c.fund.end < auction.currentBlockNumber || c.fund.hasLeased));
   }, [auction]);
 
   // const _onChangeFilter = useCallback((filter: string) => {
@@ -212,7 +212,7 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
                       <Grid item>
                         <Avatar
                           alt={'logo'}
-                          src={getLogo( chain.name.toLowerCase())}
+                          src={getLogo(chain.name.toLowerCase())}
                           sx={{ height: 24, width: 24 }}
                         />
                       </Grid>
@@ -267,11 +267,10 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
                   #{auction.auctionCounter}
                 </Avatar>
               </Grid>
-              <Grid item xs={3} container justifyContent='flex-start'>
-                <Grid sx={{ fontSize: 15, fontWeight: 'fontWeightBold' }}>Auction</Grid>
-              </Grid>
-              <Grid item xs={4} sx={{ fontSize: 12, textAlign: 'center' }}>Lease: {' '} {auction.auctionInfo[0]}</Grid>
-              <Grid item xs={4} sx={{ fontSize: 12, textAlign: 'right' }}>Stage: {' '} {auction.auctionInfo[1]}</Grid>
+              <Grid item xs={3} sx={{ fontSize: 15, fontWeight: 'fontWeightBold' }}>{t('Auction')}</Grid>
+              <Grid item xs={4} sx={{ fontSize: 12, textAlign: 'center' }}>{t('Lease')}: {' '} {auction.auctionInfo[0]}</Grid>
+              <Grid item xs={4} sx={{ fontSize: 12, textAlign: 'right' }}>{t('Stage')}: {' #'} {auction.auctionInfo[1]}</Grid>
+              <Grid item xs={12} sx={{ fontSize: 12, textAlign: 'right' }}>{t('current block')}:{' #'}{auction.currentBlockNumber}</Grid>
             </Grid>
           </Paper>
         }
@@ -326,7 +325,7 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
                   {t('Ended')}(0)
                 </Typography>
                 <Typography variant='caption'
-sx={{ color: 'text.secondary' }}>{t('view ended crowdloans')}</Typography>
+                  sx={{ color: 'text.secondary' }}>{t('view ended crowdloans')}</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 {showCrowdloans('ended')}

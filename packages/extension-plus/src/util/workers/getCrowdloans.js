@@ -7,7 +7,6 @@ import { hexToBn, hexToString } from '@polkadot/util';
 
 import getNetworkInfo from '../getNetwork.ts';
 
-
 const DEFAULT_IDENTITY = {
   // 'judgements': [],
   //  'deposit':202580000000,
@@ -24,7 +23,7 @@ const DEFAULT_IDENTITY = {
   }
 };
 
-async function getIdentities(_chainName, _address) {
+async function getIdentities (_chainName, _address) {
   console.log(`getting identities of .... on ${_chainName}`);
 
   const { url } = getNetworkInfo(null, _chainName);
@@ -64,7 +63,7 @@ async function getIdentities(_chainName, _address) {
   return ids;
 }
 
-async function getCrowdloans(_chainName) {
+async function getCrowdloans (_chainName) {
   console.log('getting crowdloans ...');
 
   const { url } = getNetworkInfo(null, _chainName);
@@ -72,17 +71,22 @@ async function getCrowdloans(_chainName) {
   const api = await ApiPromise.create({ provider: wsProvider });
   const allParaIds = (await api.query.paras.paraLifecycles.entries()).map(([key, _]) => key.args[0]);
 
-  const [auctionInfo, auctionCounter, funds, header, info] = await Promise.all([
+  const [auctionInfo, auctionCounter, funds, leases, header] = await Promise.all([
     api.query.auctions.auctionInfo(),
     api.query.auctions.auctionCounter(),
     api.query.crowdloan.funds.multi(allParaIds),
+    api.query.slots.leases.multi(allParaIds),
     api.rpc.chain.getHeader()
-
   ]);
 
-  // console.log(`Total retrieved funds: ${funds.length}`);
-  // console.log(`auctionInfo: ${auctionInfo}`);
-  console.log(`lastBlock #: ${header.number}`);
+  const hasLease = [];
+
+  leases.forEach((lease, index) => {
+    if (lease.length) {
+      hasLease.push(allParaIds[index].toString());
+    }
+  }
+  );
 
   const fundsWithParaId = funds.map((fund, index) => {
     if (fund.toString()) {
@@ -92,22 +96,23 @@ async function getCrowdloans(_chainName) {
       jpFund.cap = hexToBn(jpFund.cap).toString();
       jpFund.deposit = (jpFund.deposit).toString();
       jpFund.paraId = String(allParaIds[index]);
+      jpFund.hasLeased = hasLease.includes(jpFund.paraId);
 
       return jpFund;
     }
 
     return null;
-  }); //console.log('funds with paradId:%o', fundsWithParaId)
+  }); // console.log('funds with paradId:%o', fundsWithParaId)
 
   const nonEmtyFunds = fundsWithParaId.filter((fund) => fund);
 
-  console.log('nonEmtyFunds  :%o', nonEmtyFunds)
+  // console.log('nonEmtyFunds  :%o', nonEmtyFunds);
 
   const depositors = nonEmtyFunds.map((d) => d.depositor);// console.log('depositors:', depositors)
 
   const identities = await getIdentities(_chainName, depositors);
 
-  console.log('identities:', identities)
+  // console.log('identities:', identities);
 
   const crowdloansWithIdentity = nonEmtyFunds.map((fund, index) => {
     return {
