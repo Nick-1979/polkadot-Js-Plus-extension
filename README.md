@@ -18,7 +18,7 @@ Currently, the following features are added:
 
 ## Installation (beta on Firefox)
 
-The beta version of Plus extension for firefox can be downloaded from [here](https://raw.githubusercontent.com/Nick-1979/polkadot-Js-Plus-extension/tree/master/packages/extension-plus/addon/plus-0.1.xpi)
+The beta version of Plus extension for firefox can be downloaded from [here](https://github.com/Nick-1979/polkadot-Js-Plus-extension/raw/master/packages/extension-plus/addon/plus-0.1.xpi)
  - open downloaded file with firefox
 
 ## Installation (Development version)
