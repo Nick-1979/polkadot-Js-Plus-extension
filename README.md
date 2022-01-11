@@ -16,12 +16,15 @@ Currently, the following features are added:
   - Staking / unstaking / redeem funds and edit nominated validator list
   - Contribute in crowdloans
 
-## Installation (beta on Firefox)
+## Installation 
+
+### beta on Firefox
 
 The beta version of Plus extension for firefox can be downloaded from [here](https://github.com/Nick-1979/polkadot-Js-Plus-extension/raw/master/packages/extension-plus/addon/plus-0.1.xpi)
  - open downloaded file with firefox
 
-## Installation (Development version)
+
+### Development version
 
 Steps to build the extension and view your changes in a browser:
 
@@ -41,7 +44,7 @@ Steps to build the extension and view your changes in a browser:
 
 Once added, you can create an account (via a generated seed) or import via an existing seed.
 
-## To test on westend:
+#### To test on westend:
 
 1- add genesis of wetend to '@polkadot/networks/default.js':
 
@@ -59,6 +62,8 @@ Once added, you can create an account (via a generated seed) or import via an ex
     symbols: ['WND'],
     website: 'https://polkadot.network'
   }
+
+
 
 ## How To's
 
