@@ -723,18 +723,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
               </Grid>
             </Grid>
             <Grid item xs={12}>
-              <Box fontSize={12} fontWeight='fontWeightBold'>
-                <Divider>
-                  {/* <Chip
-                    icon={<FontAwesomeIcon
-                      icon={faCoins}
-                      size='sm'
-                    />}
-                    label={t('Easy Staking')}
-                    variant='outlined'
-                  /> */}
-                </Divider>
-              </Box>
+              <Divider />
             </Grid>
           </Grid>
           <Grid alignItems='center' container>
