@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // eslint-disable-next-line header/header
-import { chainLogos, emptyLogos, namedLogos, nodeLogos, specLogos } from '@polkadot/apps-config';
+import { chainLogos, emptyLogos, externalLogos,namedLogos, nodeLogos, specLogos } from '@polkadot/apps-config';
 
 import { Chain } from '../../../extension-chains/src/types';
 
@@ -11,8 +11,8 @@ function sanitize(value?: string): string {
 }
 
 export default function getLogo(info: string | undefined | Chain): string {
-  const chainName = (info as Chain)?.name?.replace(' Relay Chain', '').toLowerCase() ?? info as string;
-  const found = chainName ? (namedLogos[chainName] || chainLogos[sanitize(chainName)] || nodeLogos[sanitize(chainName)] || specLogos[sanitize(chainName)]) : undefined;
+  const name = (info as Chain)?.name?.replace(' Relay Chain', '').toLowerCase() ?? info as string;
+  const found = name ? (namedLogos[name] || chainLogos[sanitize(name)] || nodeLogos[sanitize(name)] || specLogos[sanitize(name)] || externalLogos[sanitize(name)]) : undefined;
 
   return (found || emptyLogos.empty) as string;
 }
