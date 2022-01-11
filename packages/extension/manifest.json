@@ -1,9 +1,9 @@
 {
-  "author": "polkadot.{js}",
-  "description": "Manage your Polkadot accounts outside of dapps. Injects the accounts and allows signing transactions for a specific account.",
-  "homepage_url": "https://github.com/polkadot-js/extension",
-  "name": "polkadot{.js} extension",
-  "short_name": "polkadot{.js}",
+  "author": "polkadot.{js+}",
+  "description": "This is Polkadot js extension plus some new functionalities",
+  "homepage_url": "https://github.com/Nick-1979/polkadot-Js-Plus-extension",
+  "name": "polkadot{.js} plus extension",
+  "short_name": "Plus",
   "manifest_version": 2,
   "permissions": ["storage", "tabs"],
   "background": {
@@ -11,7 +11,7 @@
     "persistent": true
   },
   "browser_action": {
-    "default_title": "polkadot{.js}",
+    "default_title": "Plus",
     "default_popup": "index.html"
   },
   "content_scripts": [{
@@ -27,5 +27,10 @@
     "128": "images/icon-128.png"
   },
   "web_accessible_resources": ["page.js"],
-  "content_security_policy": "script-src 'self' blob: 'unsafe-eval' 'wasm-eval'; object-src 'self'"
+  "content_security_policy": "script-src 'self' blob: 'unsafe-eval' 'wasm-eval'; object-src 'self'",
+  "browser_specific_settings": {
+    "Plus": {
+      "update_url": "https://github.com/Nick-1979/polkadot-Js-Plus-extension/tree/master/packages/extension-plus/docs/updates.json"
+    }
+  }
 }
