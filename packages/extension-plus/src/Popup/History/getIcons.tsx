@@ -1,10 +1,10 @@
-// [object Object]
+// Copyright 2019-2021 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
-// eslint-disable-next-line header/header
-import { faBorderNone, faCheck, faCoins, faLevelDownAlt, faLink, faLevelUpAlt, faMinus, faPlus, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { faBorderNone, faCheck, faCoins, faLevelDownAlt, faLevelUpAlt, faLink, faMinus, faPlus, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
-export function getIcon(action: string): { color: string, icon: IconDefinition } {
+export function getIcon (action: string): { color: string, icon: IconDefinition } {
   switch (action.toLowerCase()) {
     case ('send'):
       return { color: 'blue', icon: faLevelUpAlt };
