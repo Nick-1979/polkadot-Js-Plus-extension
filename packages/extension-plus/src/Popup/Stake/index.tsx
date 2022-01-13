@@ -1,31 +1,30 @@
-/* eslint-disable header/header */
-// Copyright 2019-2021 @polkadot/extension-ui authors & contributors
+// Copyright 2019-2021 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
 import type { StakingLedger } from '@polkadot/types/interfaces';
 
-// import type { AccountId, Balance, EraIndex, Exposure, RewardDestination, RewardPoint, StakingLedger, ValidatorPrefs } from '@polkadot/types/interfaces';
 import { faCoins } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { AddCircleOutlineOutlined, CheckOutlined, InfoOutlined, Redeem as RedeemIcon, RemoveCircleOutlineOutlined } from '@mui/icons-material';
 import { Alert, Avatar, Box, Button, CircularProgress, Container, Divider, FormControl, FormControlLabel, FormLabel, Grid, IconButton, InputAdornment, Modal, Paper, Radio, RadioGroup, Skeleton, Tab, Tabs, TextField, Tooltip, Typography } from '@mui/material';
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
+import ReactDom from 'react-dom';
 
 import { DeriveStakingQuery } from '@polkadot/api-derive/types';
 import { AccountJson } from '@polkadot/extension-base/background/types';
 import { Chain } from '@polkadot/extension-chains/types';
-import getLogo from '../../util/getLogo';
-import { AccountsBalanceType, AllValidatorsFromSubscan, savedMetaData, StakingConsts, Validators, ValidatorsName } from '../../util/pjpeTypes';
-import { getAllValidatorsFromSubscan, getStakingReward } from '../../util/staking';
 import { formatBalance } from '@polkadot/util';
 
 import { ActionText, NextStepButton } from '../../../../extension-ui/src/components';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { updateMeta } from '../../../../extension-ui/src/messaging';
 import { DEFAULT_COIN, MAX_ACCEPTED_COMMISSION, MIN_EXTRA_BOND } from '../../util/constants';
+import getLogo from '../../util/getLogo';
 import getNetworkInfo from '../../util/getNetwork';
+import { AccountsBalanceType, AllValidatorsFromSubscan, savedMetaData, StakingConsts, Validators, ValidatorsName } from '../../util/pjpeTypes';
 import { amountToHuman, amountToMachine, balanceToHuman, fixFloatingPoint, prepareMetaData } from '../../util/pjpeUtils';
-// import { reject, useReject } from '../useReject';
+import { getAllValidatorsFromSubscan, getStakingReward } from '../../util/staking';
 import ConfirmStaking from './ConfirmStaking';
 import SelectValidators from './SelectValidators';
 import ValidatorsList from './ValidatorsList';
@@ -107,10 +106,6 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
     setDecimals(decimals);
     setCoin(coin || DEFAULT_COIN);
     setED(ED || 0);
-
-    // getCurrentEraIndex(chain).then((index) => {
-    //   console.log('current era index:', index)
-    // })
 
     setZeroBalanceAlert(Number(staker.balanceInfo?.available) <= 0);
 
@@ -653,7 +648,6 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
   }
 
   const handleWithdrowUnbound = () => {
-
     if (!state) setState('withdrawUnbound');
     handleConfirmStakingModaOpen();
   }
@@ -668,14 +662,14 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
         return stakeAmount;
       case ('withdrawUnbound'):
         return redeemable || 0n;
-      // return amountToMachine(redeemable || '', decimals);
       default:
         return 0n;
     };
   }, [state, unstakeAmount, stakeAmount, redeemable, decimals]);
 
-  return (
+  return ReactDom.createPortal(
     <Modal
+      disablePortal
       keepMounted
       // eslint-disable-next-line react/jsx-no-bind
       onClose={(_event, reason) => {
@@ -859,7 +853,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
                       : <Grid item sx={{ paddingTop: '45px' }} xs={12}></Grid>
                     }
                   </Grid>
-                  <Grid item xs={12} justifyContent='center'>
+                  <Grid item xs={12} justifyContent='center' sx={{textAlign: 'center'}}>
                     <FormControl fullWidth>
                       <Grid alignItems='center' container justifyContent='center'>
                         <Grid item sx={{ fontSize: 12 }} xs={3}>
@@ -1020,7 +1014,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
                 }
               </TabPanel>
               <TabPanel value={tabValue} index={3}>
-                <Grid container sx={{ paddingTop: '20px' }}>
+                <Grid container sx={{ paddingTop: '20px', textAlign: 'center' }}>
                   <Grid xs={12} sx={{ fontSize: 15 }}>
                     {t('Welcome to Staking')}
                   </Grid>
@@ -1101,5 +1095,6 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
         </Container>
       </div>
     </Modal>
+    , document.getElementById('root')
   );
 }

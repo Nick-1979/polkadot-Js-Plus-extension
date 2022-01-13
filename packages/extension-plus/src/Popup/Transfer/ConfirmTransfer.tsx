@@ -2,6 +2,7 @@
 // Copyright 2019-2021 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import ReactDom from 'react-dom';
 import type { KeypairType } from '@polkadot/util-crypto/types';
 
 import { ArrowForwardRounded, CheckRounded, Clear, InfoTwoTone as InfoTwoToneIcon, LaunchRounded, RefreshRounded } from '@mui/icons-material';
@@ -9,9 +10,9 @@ import { Alert, Avatar, Box, Button as MuiButton, CircularProgress, Container, D
 import { grey } from '@mui/material/colors';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
-import { AccountWithChildren } from '@polkadot/extension-base/background/types';
-import { Chain } from '@polkadot/extension-chains/types';
-import { updateMeta } from '@polkadot/extension-ui/messaging';
+import { AccountWithChildren } from '../../../../extension-base/src/background/types';
+import { Chain } from '../../../../extension-chains/src/types';
+import { updateMeta } from '../../../../extension-ui/src/messaging';
 import Identicon from '@polkadot/react-identicon';
 import keyring from '@polkadot/ui-keyring';
 
@@ -265,230 +266,229 @@ export default function ConfirmTx({
       </Grid>
     </>);
 
-  return (
-    <>
-      <Modal
-        hideBackdrop
-        // eslint-disable-next-line react/jsx-no-bind
-        onClose={handleConfirmModaClose}
-        open={confirmModalOpen}
+  return ReactDom.createPortal(
+    <Modal
+      disablePortal
+      // eslint-disable-next-line react/jsx-no-bind
+      onClose={handleConfirmModaClose}
+      open={confirmModalOpen}
+    >
+      <div style={{
+        backgroundColor: '#FFFFFF',
+        display: 'flex',
+        height: '100%',
+        maxWidth: 700,
+        position: 'relative',
+        top: '5px',
+        transform: `translateX(${(window.innerWidth - 560) / 2}px)`,
+        width: '560px'
+      }}
       >
-        <div style={{
-          backgroundColor: '#FFFFFF',
-          display: 'flex',
-          height: '100%',
-          maxWidth: 700,
-          position: 'relative',
-          top: '5px',
-          transform: `translateX(${(window.innerWidth - 560) / 2}px)`,
-          width: '560px'
-        }}
-        >
-          <Container disableGutters maxWidth='md' sx={{ marginTop: 2 }}>
-            <Grid container alignItems='center' >
-              <Grid item xs={12} alignItems='center' container justifyContent='space-between' sx={{ padding: '0px 20px' }}>
-                <Grid item sx={{ textAlign: 'right' }}>
-                  <Avatar
-                    alt={'logo'}
-                    src={getLogo(chain)}
-                  />
-                </Grid>
-                <Grid item justifyContent='center' sx={{ fontSize: 15 }}>
-                  <div style={transfering ? { opacity: '0.4', pointerEvents: 'none' } : {}}>
-                    <ActionText
-                      // className={{'margin': 'auto'}}
-                      onClick={handleReject}
-                      text={t('Reject')}
-                    />
-                  </div>
-                </Grid>
+        <Container disableGutters maxWidth='md' sx={{ marginTop: 2 }}>
+          <Grid container alignItems='center' >
+            <Grid item xs={12} alignItems='center' container justifyContent='space-between' sx={{ padding: '0px 20px' }}>
+              <Grid item sx={{ textAlign: 'right' }}>
+                <Avatar
+                  alt={'logo'}
+                  src={getLogo(chain)}
+                />
               </Grid>
-              <Grid item xs={12}>
-                <Box fontSize={12} fontWeight='fontWeightBold'>
-                  <Divider>
-                    {/* <Chip
+              <Grid item justifyContent='center' sx={{ fontSize: 15 }}>
+                <div style={transfering ? { opacity: '0.4', pointerEvents: 'none' } : {}}>
+                  <ActionText
+                    // className={{'margin': 'auto'}}
+                    onClick={handleReject}
+                    text={t('Reject')}
+                  />
+                </div>
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <Box fontSize={12} fontWeight='fontWeightBold'>
+                <Divider>
+                  {/* <Chip
                       icon={<FontAwesomeIcon icon={faCoins} size='sm' />}
                       label={t('Select Validators')}
                       variant='outlined'
                     /> */}
-                  </Divider>
+                </Divider>
+              </Box>
+            </Grid>
+          </Grid>
+          <Grid container alignItems='center' justifyContent='space-around' sx={{ paddingTop: '20px' }}>
+            <Grid item container alignItems='center' justifyContent='flex-end' xs={5}>
+              {addressWithIdenticon(sender.name, sender.address)}
+            </Grid>
+            <Grid item xs={2} >
+              <Divider orientation='vertical' flexItem>
+                <Avatar sx={{ bgcolor: grey[300] }}>
+                  <ArrowForwardRounded fontSize='small' />
+                </Avatar>
+              </Divider>
+            </Grid>
+            <Grid item container alignItems='center' xs={5}>
+              {addressWithIdenticon(recepient.name, recepient.address)}
+            </Grid>
+            <Grid item container xs={12} sx={{ backgroundColor: '#f7f7f7', padding: '25px 40px 25px' }}>
+              <Grid item xs={3} sx={{ padding: '5px 10px 5px', borderRadius: '5px', border: '2px double grey', justifyContent: 'flex-start', fontSize: 15, textAlign: 'center', fontVariant: 'small-caps' }}>
+                {t('transfer of')}
+              </Grid>
+              <Grid item container justifyContent='center' spacing={1} xs={12} sx={{ fontSize: 18, fontFamily: 'fantasy', textAlign: 'center' }} >
+                <Grid item>
+                  {transferAmountInHuman}
+                </Grid>
+                <Grid item>
+                  {coin}
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item container alignItems='center' xs={12} sx={{ padding: '30px 40px 20px' }}>
+              <Grid item container xs={6}>
+                <Grid item sx={{ fontSize: 13, fontWeight: '600', textAlign: 'left' }}>
+                  {t('Network Fee')}
+                </Grid>
+                <Grid item sx={{ fontSize: 13, marginLeft: '5px', textAlign: 'left' }}>
+                  <Tooltip placement='right-end' title={t<string>('Network fees are paid to network validators who process transactions on the network. This wallet does not profit from fees. Fees are set by the network and fluctuate based on network traffic and transaction complexity.')} arrow>
+                    <InfoTwoToneIcon color='action' fontSize='small' />
+                  </Tooltip>
+                </Grid>
+                <Grid item sx={{ alignItems: 'center', fontSize: 13, textAlign: 'left' }}>
+                  <IconButton onClick={refreshNetworkFee} sx={{ top: -7 }}>
+                    <Tooltip placement='right-end' title={t<string>('get newtwork fee now')} arrow>
+                      <RefreshRounded color='action' fontSize='small' />
+                    </Tooltip>
+                  </IconButton>
+                </Grid>
+              </Grid>
+              <Grid item xs={6} sx={{ fontSize: 13, textAlign: 'right' }}>
+                {fee || <CircularProgress color='inherit' thickness={1} size={20} />}
+                <Box fontSize={11} sx={{ color: 'gray' }}>
+                  {fee ? 'estimated' : 'estimating'}
                 </Box>
               </Grid>
             </Grid>
-            <Grid container alignItems='center' justifyContent='space-around' sx={{ paddingTop: '20px' }}>
-              <Grid item container alignItems='center' justifyContent='flex-end' xs={5}>
-                {addressWithIdenticon(sender.name, sender.address)}
+            <Grid item xs={12}>
+              <Divider />
+            </Grid>
+            <Grid item container alignItems='center' xs={12} sx={{ padding: '10px 40px 20px' }}>
+              <Grid item xs={1} sx={{ fontSize: 13, fontWeight: '600', textAlign: 'left' }}>
+                {t('Total')}
               </Grid>
-              <Grid item xs={2} >
-                <Divider orientation='vertical' flexItem>
-                  <Avatar sx={{ bgcolor: grey[300] }}>
-                    <ArrowForwardRounded fontSize='small' />
-                  </Avatar>
-                </Divider>
+              <Grid item xs={8} sx={{ fontSize: 13, fontWeight: '600', textAlign: 'left' }}>
+                {failAlert
+                  ? <Alert severity='warning' sx={{ fontSize: 11 }}>Transaction most likely fail, consider fee!</Alert>
+                  : ''}
               </Grid>
-              <Grid item container alignItems='center' xs={5}>
-                {addressWithIdenticon(recepient.name, recepient.address)}
-              </Grid>
-              <Grid item container xs={12} sx={{ backgroundColor: '#f7f7f7', padding: '25px 40px 25px' }}>
-                <Grid item xs={3} sx={{ padding: '5px 10px 5px', borderRadius: '5px', border: '2px double grey', justifyContent: 'flex-start', fontSize: 15, textAlign: 'center', fontVariant: 'small-caps' }}>
-                  {t('transfer of')}
-                </Grid>
-                <Grid item container justifyContent='center' spacing={1} xs={12} sx={{ fontSize: 18, fontFamily: 'fantasy', textAlign: 'center' }} >
-                  <Grid item>
-                    {transferAmountInHuman}
-                  </Grid>
-                  <Grid item>
-                    {coin}
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid item container alignItems='center' xs={12} sx={{ padding: '30px 40px 20px' }}>
-                <Grid item container xs={6}>
-                  <Grid item sx={{ fontSize: 13, fontWeight: '600', textAlign: 'left' }}>
-                    {t('Network Fee')}
-                  </Grid>
-                  <Grid item sx={{ fontSize: 13, marginLeft: '5px', textAlign: 'left' }}>
-                    <Tooltip placement='right-end' title={t<string>('Network fees are paid to network validators who process transactions on the network. This wallet does not profit from fees. Fees are set by the network and fluctuate based on network traffic and transaction complexity.')} arrow>
-                      <InfoTwoToneIcon color='action' fontSize='small' />
-                    </Tooltip>
-                  </Grid>
-                  <Grid item sx={{ alignItems: 'center', fontSize: 13, textAlign: 'left' }}>
-                    <IconButton onClick={refreshNetworkFee} sx={{ top: -7 }}>
-                      <Tooltip placement='right-end' title={t<string>('get newtwork fee now')} arrow>
-                        <RefreshRounded color='action' fontSize='small' />
-                      </Tooltip>
-                    </IconButton>
-                  </Grid>
-                </Grid>
-                <Grid item xs={6} sx={{ fontSize: 13, textAlign: 'right' }}>
-                  {fee || <CircularProgress color='inherit' thickness={1} size={20} />}
-                  <Box fontSize={11} sx={{ color: 'gray' }}>
-                    {fee ? 'estimated' : 'estimating'}
-                  </Box>
-                </Grid>
-              </Grid>
-              <Grid item xs={12}>
-                <Divider />
-              </Grid>
-              <Grid item container alignItems='center' xs={12} sx={{ padding: '10px 40px 20px' }}>
-                <Grid item xs={1} sx={{ fontSize: 13, fontWeight: '600', textAlign: 'left' }}>
-                  {t('Total')}
-                </Grid>
-                <Grid item xs={8} sx={{ fontSize: 13, fontWeight: '600', textAlign: 'left' }}>
-                  {failAlert
-                    ? <Alert severity='warning' sx={{ fontSize: 11 }}>Transaction most likely fail, consider fee!</Alert>
-                    : ''}
-                </Grid>
-                <Grid item xs={3} sx={{ fontSize: 13, fontWeight: '600', textAlign: 'right' }}>
-                  {total || ' ... '} {' '} {coin}
-                </Grid>
-              </Grid>
-              <Grid item sx={{ margin: '20px 40px 1px' }} xs={12}>
-                <TextField
-                  InputLabelProps={{
-                    shrink: true
-                  }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position='end'>
-                        <IconButton
-                          onClick={handleClearPassword}
-                        >
-                          {password !== '' ? <Clear /> : ''}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                    startAdornment: (
-                      <InputAdornment position='start'>
-                        {passwordStatus === PASS_MAP.CORRECT ? <CheckRounded color='success' /> : ''}
-                      </InputAdornment>
-                    ),
-                    style: { fontSize: 16 }
-                  }}
-                  autoFocus
-                  fullWidth
-                  error={passwordStatus === PASS_MAP.INCORRECT}
-                  helperText={passwordStatus === PASS_MAP.INCORRECT
-                    ? t('Password is not correct')
-                    : t('Please enter the password of the sender account')}
-                  label={t('Password')}
-                  onChange={handleSavePassword}
-                  // eslint-disable-next-line react/jsx-no-bind
-                  onKeyPress={(event) => {
-                    if (event.key === 'Enter') { handleConfirmTransfer(); }
-                  }}
-                  size='medium'
-                  color='warning'
-                  type='password'
-                  value={password}
-                  variant='outlined'
-                />
+              <Grid item xs={3} sx={{ fontSize: 13, fontWeight: '600', textAlign: 'right' }}>
+                {total || ' ... '} {' '} {coin}
               </Grid>
             </Grid>
-            <Grid container justifyContent='space-between' sx={{ padding: '40px 40px 10px' }}>
-              {txStatus && (txStatus.success !== null)
-                ? <Grid item xs={12}>
-                  <MuiButton fullWidth onClick={handleReject} variant='contained' size='large' color={txStatus.success ? 'success' : 'error'}>
-                    {txStatus.success ? t('Done') : t('Failed')}
-                  </MuiButton>
-                </Grid>
-                : <>
-                  <Grid item xs={1}>
-                    <BackButton onClick={handleConfirmModaClose} />
-                  </Grid>
-                  <Grid item xs={11} sx={{ paddingLeft: '10px' }}>
-                    <Button
-                      data-button-action=''
-                      isBusy={transfering}
-                      isDisabled={confirmDisabled}
-                      onClick={handleConfirmTransfer}
-                    >
-                      {t('Confirm')}
-                    </Button>
-                  </Grid>
-                </>}
-              {txStatus.blockNumber || transactionHash
-                ?
-                // <Grid alignItems='center' container item
-                //   sx={{ border: '1px groove silver', borderRadius: '10px', fontSize: 12, fontWeight: 'bold', marginTop: '10px', p: 1 }}>
-                //   <Grid item xs={10} sx={{ textAlign: 'center' }}>
-                //     {txStatus.success || txStatus.success === null
-                //       ? 'The transaction is ' + String(txStatus ? txStatus.text : '')
-                //       : String(txStatus.text)
-                //     }
-                //     {', block number ' + String(txStatus.blockNumber)}
-                //   </Grid>
-                //   <Grid item xs={2} sx={{ textAlign: 'right' }}>
-                //     <IconButton disabled={!transactionHash} size='small' onClick={openTxOnExplorer}>
-                //       <LaunchRounded />
-                //     </IconButton>
-                //   </Grid>
-                // </Grid>
-
-
-                <Grid alignItems='center' container justifyContent='center' spacing={1} item sx={{ fontSize: 11 }}>
-                  <Grid item  >
-                    {txStatus.success || txStatus.success === null
-                      ? 'The transaction is ' + String(txStatus ? txStatus.text : '')
-                      : String(txStatus.text)
-                    }
-                    {', block number ' + String(txStatus.blockNumber)}
-                  </Grid>
-                  <Grid item  >
-                    <IconButton disabled={!transactionHash} size='small' onClick={openTxOnExplorer}>
-                      <LaunchRounded sx={{ fontSize: 10 }} />
-                    </IconButton>
-                  </Grid>
-                </Grid>
-
-
-                : ''
-              }
+            <Grid item sx={{ margin: '20px 40px 1px' }} xs={12}>
+              <TextField
+                InputLabelProps={{
+                  shrink: true
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position='end'>
+                      <IconButton
+                        onClick={handleClearPassword}
+                      >
+                        {password !== '' ? <Clear /> : ''}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                  startAdornment: (
+                    <InputAdornment position='start'>
+                      {passwordStatus === PASS_MAP.CORRECT ? <CheckRounded color='success' /> : ''}
+                    </InputAdornment>
+                  ),
+                  style: { fontSize: 16 }
+                }}
+                autoFocus
+                fullWidth
+                error={passwordStatus === PASS_MAP.INCORRECT}
+                helperText={passwordStatus === PASS_MAP.INCORRECT
+                  ? t('Password is not correct')
+                  : t('Please enter the password of the sender account')}
+                label={t('Password')}
+                onChange={handleSavePassword}
+                // eslint-disable-next-line react/jsx-no-bind
+                onKeyPress={(event) => {
+                  if (event.key === 'Enter') { handleConfirmTransfer(); }
+                }}
+                size='medium'
+                color='warning'
+                type='password'
+                value={password}
+                variant='outlined'
+              />
             </Grid>
+          </Grid>
+          <Grid container justifyContent='space-between' sx={{ padding: '40px 40px 10px' }}>
+            {txStatus && (txStatus.success !== null)
+              ? <Grid item xs={12}>
+                <MuiButton fullWidth onClick={handleReject} variant='contained' size='large' color={txStatus.success ? 'success' : 'error'}>
+                  {txStatus.success ? t('Done') : t('Failed')}
+                </MuiButton>
+              </Grid>
+              : <>
+                <Grid item xs={1}>
+                  <BackButton onClick={handleConfirmModaClose} />
+                </Grid>
+                <Grid item xs={11} sx={{ paddingLeft: '10px' }}>
+                  <Button
+                    data-button-action=''
+                    isBusy={transfering}
+                    isDisabled={confirmDisabled}
+                    onClick={handleConfirmTransfer}
+                  >
+                    {t('Confirm')}
+                  </Button>
+                </Grid>
+              </>}
+            {txStatus.blockNumber || transactionHash
+              ?
+              // <Grid alignItems='center' container item
+              //   sx={{ border: '1px groove silver', borderRadius: '10px', fontSize: 12, fontWeight: 'bold', marginTop: '10px', p: 1 }}>
+              //   <Grid item xs={10} sx={{ textAlign: 'center' }}>
+              //     {txStatus.success || txStatus.success === null
+              //       ? 'The transaction is ' + String(txStatus ? txStatus.text : '')
+              //       : String(txStatus.text)
+              //     }
+              //     {', block number ' + String(txStatus.blockNumber)}
+              //   </Grid>
+              //   <Grid item xs={2} sx={{ textAlign: 'right' }}>
+              //     <IconButton disabled={!transactionHash} size='small' onClick={openTxOnExplorer}>
+              //       <LaunchRounded />
+              //     </IconButton>
+              //   </Grid>
+              // </Grid>
 
-          </Container>
-        </div>
-      </Modal>
-    </>
+
+              <Grid alignItems='center' container justifyContent='center' spacing={1} item sx={{ fontSize: 11 }}>
+                <Grid item  >
+                  {txStatus.success || txStatus.success === null
+                    ? 'The transaction is ' + String(txStatus ? txStatus.text : '')
+                    : String(txStatus.text)
+                  }
+                  {', block number ' + String(txStatus.blockNumber)}
+                </Grid>
+                <Grid item  >
+                  <IconButton disabled={!transactionHash} size='small' onClick={openTxOnExplorer}>
+                    <LaunchRounded sx={{ fontSize: 10 }} />
+                  </IconButton>
+                </Grid>
+              </Grid>
+
+
+              : ''
+            }
+          </Grid>
+
+        </Container>
+      </div>
+    </Modal>
+    , document.getElementById('root')
   );
 }

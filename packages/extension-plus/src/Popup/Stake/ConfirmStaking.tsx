@@ -1,31 +1,30 @@
-/* eslint-disable header/header */
-// Copyright 2019-2021 @polkadot/extension-ui authors & contributors
+// Copyright 2019-2021 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
-// eslint-disable-next-line simple-import-sort/imports
 import type { StakingLedger } from '@polkadot/types/interfaces';
 
 import { CheckRounded, Clear } from '@mui/icons-material';
 import { Avatar, Button as MuiButton, Container, Divider, Grid, IconButton, InputAdornment, Modal, Skeleton, TextField } from '@mui/material';
+import { grey } from '@mui/material/colors';
 import React, { useContext, useEffect, useState } from 'react';
+import ReactDom from 'react-dom';
 
-import { Chain } from '@polkadot/extension-chains/types';
-import getLogo from '../../util/getLogo';
 import { DeriveStakingQuery } from '@polkadot/api-derive/types';
+import { AccountWithChildren } from '@polkadot/extension-base/background/types';
+import { Chain } from '@polkadot/extension-chains/types';
+import { updateMeta } from '@polkadot/extension-ui/messaging';
 import keyring from '@polkadot/ui-keyring';
 
-import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
-import { AccountsBalanceType, StakingConsts, TransactionDetail, Validators, ValidatorsName } from '../../util/pjpeTypes';
-import getNetworkInfo from '../../util/getNetwork';
-import { amountToHuman, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/pjpeUtils';
-import ValidatorsList from './ValidatorsList';
 import { AccountContext, ActionText, BackButton, Button } from '../../../../extension-ui/src/components';
+import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
+import getLogo from '../../util/getLogo';
+import getNetworkInfo from '../../util/getNetwork';
+import { AccountsBalanceType, StakingConsts, TransactionDetail, Validators, ValidatorsName } from '../../util/pjpeTypes';
+import { amountToHuman, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/pjpeUtils';
 import { bondOrBondExtra, chill, nominate, unbond, withdrawUnbonded } from '../../util/staking';
-import { grey } from '@mui/material/colors';
-import { AccountWithChildren } from '@polkadot/extension-base/background/types';
-import { updateMeta } from '@polkadot/extension-ui/messaging';
+import ValidatorsList from './ValidatorsList';
 
-// import { setReject } from '../useReject';
 
 interface Props {
   chain?: Chain | null;
@@ -373,7 +372,7 @@ export default function ConfirmStaking({
   };
 
   return (
-    <>
+  
       <Modal
         // eslint-disable-next-line react/jsx-no-bind
         onClose={(_event, reason) => {
@@ -557,6 +556,6 @@ export default function ConfirmStaking({
           </Container>
         </div>
       </Modal>
-    </>
+   
   );
 }

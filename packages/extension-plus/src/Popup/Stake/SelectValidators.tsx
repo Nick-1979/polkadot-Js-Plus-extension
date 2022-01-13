@@ -1,6 +1,6 @@
-/* eslint-disable header/header */
-// Copyright 2019-2021 @polkadot/extension-ui authors & contributors
+// Copyright 2019-2021 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
 import type { AccountId, StakingLedger } from '@polkadot/types/interfaces';
 
@@ -20,6 +20,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
+import ReactDom from 'react-dom';
 
 import { DeriveStakingQuery } from '@polkadot/api-derive/types';
 import { Chain } from '@polkadot/extension-chains/types';
@@ -575,144 +576,145 @@ export default function SelectValidators({
     if (selected.length >= 1) { setConfirmStakingModalOpen(true); }
   }
 
-  return (
-    <>
-      <Modal
-        // eslint-disable-next-line react/jsx-no-bind
-        onClose={(_event, reason) => {
-          if (reason !== 'backdropClick') {
-            handleCancel();
-          }
-        }}
-        open={showSelectValidatorsModal}
+  return ReactDom.createPortal(
+    <Modal
+      disablePortal
+      keepMounted
+      // eslint-disable-next-line react/jsx-no-bind
+      onClose={(_event, reason) => {
+        if (reason !== 'backdropClick') {
+          handleCancel();
+        }
+      }}
+      open={showSelectValidatorsModal}
+    >
+      <div style={{
+        backgroundColor: '#FFFFFF',
+        display: 'flex',
+        height: '100%',
+        maxWidth: 700,
+        // overflow: 'scroll',
+        position: 'relative',
+        top: '5px',
+        transform: `translateX(${(window.innerWidth - 560) / 2}px)`,
+        width: '560px'
+      }}
       >
-        <div style={{
-          backgroundColor: '#FFFFFF',
-          display: 'flex',
-          height: '100%',
-          maxWidth: 700,
-          // overflow: 'scroll',
-          position: 'relative',
-          top: '5px',
-          transform: `translateX(${(window.innerWidth - 560) / 2}px)`,
-          width: '560px'
-        }}
-        >
-          <Container disableGutters maxWidth='md' sx={{ marginTop: 2 }}>
-            <Grid alignItems='center' container>
-              <Grid item alignItems='center' container justifyContent='space-between' sx={{ padding: '0px 20px' }}>
-                <Grid item>
-                  <Avatar
-                    alt={'logo'}
-                    src={getLogo(chain)}
-                  />
-                </Grid>
-                <Grid item sx={{ fontSize: 15 }}>
-                  <ActionText
-                    // className={{'margin': 'auto'}}
-                    onClick={handleCancel}
-                    text={t('Cancel')}
-                  />
-                </Grid>
+        <Container disableGutters maxWidth='md' sx={{ marginTop: 2 }}>
+          <Grid alignItems='center' container>
+            <Grid item alignItems='center' container justifyContent='space-between' sx={{ padding: '0px 20px' }}>
+              <Grid item>
+                <Avatar
+                  alt={'logo'}
+                  src={getLogo(chain)}
+                />
               </Grid>
-              <Grid item xs={12}>
-                <Divider />
+              <Grid item sx={{ fontSize: 15 }}>
+                <ActionText
+                  // className={{'margin': 'auto'}}
+                  onClick={handleCancel}
+                  text={t('Cancel')}
+                />
               </Grid>
             </Grid>
-            <Grid alignItems='center' container>
-              <Grid item xs={12} sx={{ textAlign: 'left' }}>
-                {validatorsInfo
-                  ? <EnhancedTable
-                    decimals={decimal}
-                    nominatedValidators={nominatedValidators}
-                    searchedValidators={searchedValidators}
-                    searching={searching}
-                    selected={selected}
-                    setSearchedValidators={setSearchedValidators}
-                    setSearching={setSearching}
-                    setSelected={setSelected}
-                    stakingConsts={stakingConsts}
-                    validators={validators}
-                    validatorsName={validatorsName}
+            <Grid item xs={12}>
+              <Divider />
+            </Grid>
+          </Grid>
+          <Grid alignItems='center' container>
+            <Grid item xs={12} sx={{ textAlign: 'left' }}>
+              {validatorsInfo
+                ? <EnhancedTable
+                  decimals={decimal}
+                  nominatedValidators={nominatedValidators}
+                  searchedValidators={searchedValidators}
+                  searching={searching}
+                  selected={selected}
+                  setSearchedValidators={setSearchedValidators}
+                  setSearching={setSearching}
+                  setSelected={setSelected}
+                  stakingConsts={stakingConsts}
+                  validators={validators}
+                  validatorsName={validatorsName}
+                />
+                : ''}
+            </Grid>
+            <Grid item container justifyContent='center' sx={{ padding: '1px 10px' }} xs={12}>
+              <Grid item sx={{ fontSize: 13, textAlign: 'right' }} xs={4}>
+                <FormControlLabel
+                  control={<Checkbox
+                    color='default'
+                    // defaultChecked
+                    onChange={filterNoNames}
+                    size='small'
                   />
-                  : ''}
+                  }
+                  label={<Box fontSize={12} sx={{ color: 'green' }}>{t('only have a name')}</Box>}
+                />
               </Grid>
-              <Grid item container justifyContent='center' sx={{ padding: '1px 10px' }} xs={12}>
-                <Grid item sx={{ fontSize: 13, textAlign: 'right' }} xs={4}>
-                  <FormControlLabel
-                    control={<Checkbox
-                      color='default'
-                      // defaultChecked
-                      onChange={filterNoNames}
-                      size='small'
-                    />
-                    }
-                    label={<Box fontSize={12} sx={{ color: 'green' }}>{t('only have a name')}</Box>}
+              <Grid item sx={{ fontSize: 13, textAlign: 'center' }} xs={4}>
+                <FormControlLabel
+                  control={<Checkbox
+                    color='default'
+                    defaultChecked
+                    onChange={filterHighCommisions}
+                    size='small'
                   />
-                </Grid>
-                <Grid item sx={{ fontSize: 13, textAlign: 'center' }} xs={4}>
-                  <FormControlLabel
-                    control={<Checkbox
-                      color='default'
-                      defaultChecked
-                      onChange={filterHighCommisions}
-                      size='small'
-                    />
-                    }
-                    label={<Box fontSize={12} sx={{ color: 'red' }}>{t('no ')}{DEFAULT_VALIDATOR_COMMISION_FILTER}+ {t(' commissions')}</Box>}
+                  }
+                  label={<Box fontSize={12} sx={{ color: 'red' }}>{t('no ')}{DEFAULT_VALIDATOR_COMMISION_FILTER}+ {t(' commissions')}</Box>}
+                />
+              </Grid>
+              <Grid item sx={{ fontSize: 13, textAlign: 'left' }} xs={4}>
+                <FormControlLabel
+                  control={<Checkbox
+                    color='default'
+                    defaultChecked
+                    onChange={filterOverSubscribeds}
+                    size='small'
                   />
+                  }
+                  label={<Box fontSize={12} sx={{ color: 'red' }}>{t('no oversubscribeds')}</Box>}
+                />
+              </Grid>
+              <Grid item xs={12} container sx={{ padding: '10px 20px' }}>
+                <Grid item xs={12}>
+                  <NextStepButton
+                    data-button-action='select validators manually'
+                    isDisabled={!selected.length}
+                    onClick={handleSelectValidators}
+                  >
+                    {t('Next')}
+                  </NextStepButton>
                 </Grid>
-                <Grid item sx={{ fontSize: 13, textAlign: 'left' }} xs={4}>
-                  <FormControlLabel
-                    control={<Checkbox
-                      color='default'
-                      defaultChecked
-                      onChange={filterOverSubscribeds}
-                      size='small'
-                    />
-                    }
-                    label={<Box fontSize={12} sx={{ color: 'red' }}>{t('no oversubscribeds')}</Box>}
-                  />
-                </Grid>
-                <Grid item xs={12} container sx={{ padding: '10px 20px' }}>
-                  <Grid item xs={12}>
-                    <NextStepButton
-                      data-button-action='select validators manually'
-                      isDisabled={!selected.length}
-                      onClick={handleSelectValidators}
-                    >
-                      {t('Next')}
-                    </NextStepButton>
-                  </Grid>
 
-                  {selected.length >= 1
-                    ? <ConfirmStaking
-                      amount={state === 'changeValidators' ? 0n : stakeAmount}
-                      chain={chain}
-                      // handleEasyStakingModalClose={handleEasyStakingModalClose}
-                      // lastFee={lastFee}
-                      coin={coin}
-                      ledger={ledger}
-                      nominatedValidators={null}
-                      selectedValidators={selected}
-                      setConfirmStakingModalOpen={setConfirmStakingModalOpen}
-                      setSelectValidatorsModalOpen={setSelectValidatorsModalOpen}
-                      setState={setState}
-                      showConfirmStakingModal={showConfirmStakingModal}
-                      staker={staker}
-                      stakingConsts={stakingConsts}
-                      state={state}
-                      validatorsInfo={validatorsInfo}
-                      validatorsName={validatorsName}
-                      validatorsToList={selected}
-                    />
-                    : 'You need to select at least a validator'}
-                </Grid>
+                {selected.length >= 1
+                  ? <ConfirmStaking
+                    amount={state === 'changeValidators' ? 0n : stakeAmount}
+                    chain={chain}
+                    // handleEasyStakingModalClose={handleEasyStakingModalClose}
+                    // lastFee={lastFee}
+                    coin={coin}
+                    ledger={ledger}
+                    nominatedValidators={null}
+                    selectedValidators={selected}
+                    setConfirmStakingModalOpen={setConfirmStakingModalOpen}
+                    setSelectValidatorsModalOpen={setSelectValidatorsModalOpen}
+                    setState={setState}
+                    showConfirmStakingModal={showConfirmStakingModal}
+                    staker={staker}
+                    stakingConsts={stakingConsts}
+                    state={state}
+                    validatorsInfo={validatorsInfo}
+                    validatorsName={validatorsName}
+                    validatorsToList={selected}
+                  />
+                  : 'You need to select at least a validator'}
               </Grid>
             </Grid>
-          </Container>
-        </div>
-      </Modal>
-    </>
+          </Grid>
+        </Container>
+      </div>
+    </Modal>
+    , document.getElementById('root')
   );
 }

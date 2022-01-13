@@ -1,36 +1,38 @@
-/* eslint-disable header/header */
-// Copyright 2019-2021 @polkadot/extension-ui authors & contributors
+// Copyright 2019-2021 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
-// eslint-disable-next-line simple-import-sort/imports
 import type { AccountJson, AccountWithChildren } from '@polkadot/extension-base/background/types';
 import type { SettingsStruct } from '@polkadot/ui-settings/types';
-import { DEFAULT_TYPE } from '../../../../extension-ui/src/util/defaultType';
+import type { KeypairType } from '@polkadot/util-crypto/types';
+
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ArrowBackIosRounded, CheckRounded as CheckRoundedIcon, Clear as ClearIcon } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Alert, Avatar, Box, Button, Container, Divider, Grid, IconButton, InputAdornment, List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader, Modal, TextField, Tooltip } from '@mui/material';
-import keyring from '@polkadot/ui-keyring';
+import grey from '@mui/material/colors/grey';
 import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from 'react';
-import ConfirmTx from './ConfirmTransfer';
-import { Chain } from '../../../../extension-chains/src/types';
-import type { KeypairType } from '@polkadot/util-crypto/types';
+import ReactDom from 'react-dom';
 
+import Identicon from '@polkadot/react-identicon';
+import keyring from '@polkadot/ui-keyring';
+import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
+
+import { Chain } from '../../../../extension-chains/src/types';
+import { ActionText, NextStepButton } from '../../../../extension-ui/src/components';
+import { AccountContext, SettingsContext } from '../../../../extension-ui/src/components/contexts';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
+import { DEFAULT_TYPE } from '../../../../extension-ui/src/util/defaultType';
+import { DEFAULT_COIN } from '../../util/constants';
 // import getLogo from '../../util/getLogo';
 import getFee from '../../util/getFee';
-import getNetworkInfo from '../../util/getNetwork';
-import isValidAddress from '../../util/validateAddress';
-import { AccountContext, SettingsContext } from '../../../../extension-ui/src/components/contexts';
-import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
-import { amountToHuman, amountToMachine, balanceToHuman, fixFloatingPoint } from '../../util/pjpeUtils';
-import { AccountsBalanceType } from '../../util/pjpeTypes';
-import grey from '@mui/material/colors/grey';
-import { ActionText, NextStepButton } from '../../../../extension-ui/src/components';
-import { DEFAULT_COIN } from '../../util/constants';
-import Identicon from '@polkadot/react-identicon';
 import getLogo from '../../util/getLogo';
+import getNetworkInfo from '../../util/getNetwork';
+import { AccountsBalanceType } from '../../util/pjpeTypes';
+import { amountToHuman, amountToMachine, balanceToHuman, fixFloatingPoint } from '../../util/pjpeUtils';
+import isValidAddress from '../../util/validateAddress';
+import ConfirmTx from './ConfirmTransfer';
 
 interface Props {
   actions?: React.ReactNode;
@@ -379,9 +381,9 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
     );
   }
 
-
-  return (
+  return ReactDom.createPortal(
     <Modal
+      disablePortal
       // eslint-disable-next-line react/jsx-no-bind
       onClose={(_event, reason) => {
         if (reason !== 'backdropClick') {
@@ -637,6 +639,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
           }
         </Container>
       </div>
-    </Modal >
+    </Modal>
+    , document.getElementById('root')
   );
 }

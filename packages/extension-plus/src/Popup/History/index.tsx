@@ -1,7 +1,9 @@
-// Copyright 2019-2021 @polkadot/extension-ui authors & contributors
+// Copyright 2019-2021 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
-import { faAngleRight,faCoins } from '@fortawesome/free-solid-svg-icons';
+import ReactDom from 'react-dom';
+import { faAngleRight, faCoins } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { AllInclusive, CallMade, HistoryRounded } from '@mui/icons-material';
 import { Avatar, Box, Container, Divider, Grid, Link, Modal, Tab, Tabs } from '@mui/material';
@@ -152,7 +154,8 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
     setFetchedHistoriesFromSubscan(historyFromSubscan);
 
     console.log('historyFromSubscan:', historyFromSubscan);
-  }, [transfersTx])
+  }, [transfersTx]);
+
   useEffect(() => {
     if (!chain) {
       console.log('no chain in TransactionHistory');
@@ -232,8 +235,9 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
     setSelectedTransaction(tx);
   }
 
-  return (
+  return ReactDom.createPortal(
     <Modal
+      disablePortal
       keepMounted
       // eslint-disable-next-line react/jsx-no-bind
       onClose={(_event, reason) => {
@@ -350,7 +354,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
             ))}
 
             {!tabHistory.length && <NothingToShow text={t('Nothing to show')} />}
-            
+
             {/* {!moreLoaded && hasMoreToLoad
               ? <Grid item display='flex' justifyContent='center' xs={12} sx={{ paddingTop: '20px' }}>
                 <Button color='primary' onClick={() => setLoadMore(true)} variant='text'>
@@ -385,5 +389,6 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
         </Container>
       </div>
     </Modal>
+    , document.getElementById('root')
   );
 }

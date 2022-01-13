@@ -1,16 +1,14 @@
-/* eslint-disable header/header */
-// Copyright 2019-2021 @polkadot/extension-ui authors & contributors
+// Copyright 2019-2021 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-
-// eslint-disable-next-line simple-import-sort/imports
+/* eslint-disable header/header */
 
 import { CloseRounded, PhotoCameraRounded } from '@mui/icons-material';
 import { Avatar, Box, Chip, Container, Divider, Grid, IconButton, Modal } from '@mui/material';
 import QRCode from 'qrcode.react';
 import React, { Dispatch, SetStateAction, useCallback } from 'react';
+import ReactDom from 'react-dom';
 
-import { Chain } from '@polkadot/extension-chains/types';
-
+import { Chain } from '../../../../extension-ui/src/types';
 import useTranslation from '../../../extension-ui/src/hooks/useTranslation';
 import getLogo from '../util/getLogo';
 
@@ -22,7 +20,7 @@ interface Props {
   setQRcodeModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function AddressQRcode ({ address, chain, name, setQRcodeModalOpen, showQRcodeModalOpen }: Props): React.ReactElement<Props> {
+export default function AddressQRcode({ address, chain, name, setQRcodeModalOpen, showQRcodeModalOpen }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
 
   const handleQRmodalClose = useCallback(
@@ -33,8 +31,9 @@ export default function AddressQRcode ({ address, chain, name, setQRcodeModalOpe
     [setQRcodeModalOpen]
   );
 
-  return (
+  return ReactDom.createPortal(
     <Modal
+      disablePortal
       // eslint-disable-next-line react/jsx-no-bind
       onClose={(_event, reason) => {
         if (reason !== 'backdropClick') {
@@ -67,33 +66,30 @@ export default function AddressQRcode ({ address, chain, name, setQRcodeModalOpe
               </Divider>
             </Box>
           </Grid>
-          <Grid alignItems='center' container justifyContent='center' sx={{ padding: '1px 30px 50px' }}>
-            <Grid item xs={6} sx={{ padding: '30px 1px 30px' }}>
-              <Box fontSize={20} fontWeight='fontWeightBold'>
-                {name || t('unknown')}
-              </Box>
+          <Grid alignItems='center' container justifyContent='space-between' xs={12} sx={{ padding: '30px 60px 30px' }}>
+            <Grid item sx={{ fontSize: 20, fontWeight: 'fontWeightBold' }} >
+              {name || t('unknown')}
             </Grid>
-            <Grid item xs={3} sx={{ padding: '30px 1px 30px' }}>
-            </Grid>
-            <Grid item xs={3} sx={{ padding: '30px 1px 30px' }}>
+
+            <Grid item >
               <Avatar
                 alt={'logo'}
                 src={getLogo(chain)}
               // sx={{ height: 45, width: 45 }}
               />
             </Grid>
-            <Grid item xs={12}>
-              <QRCode value={address} size={300} level='H' />
-            </Grid>
-            <Grid item xs={12} sx={{ padding: '25px 1px 10px' }}>
-              <Box fontSize={14}>
-                {address}
-              </Box>
-            </Grid>
           </Grid>
+          <Grid item xs={12} sx={{ textAlign: 'center' }}>
+            <QRCode value={address} size={300} level='H' />
+          </Grid>
+          <Grid item xs={12} sx={{ fontSize:14, textAlign: 'center', paddingTop: '25px' }}>
+            {address}
+          </Grid>
+
 
         </Container>
       </div>
     </Modal>
+    , document.getElementById('root')
   );
 }

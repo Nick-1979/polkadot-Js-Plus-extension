@@ -1,7 +1,6 @@
-// Copyright 2019-2021 @polkadot/extension-ui authors & contributors
+// Copyright 2019-2021 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-
-// eslint-disable-next-line simple-import-sort/imports
+/* eslint-disable header/header */
 
 import type { AccountId } from '@polkadot/types/interfaces';
 
@@ -19,9 +18,9 @@ import React, { useEffect, useState } from 'react';
 
 import { DeriveStakingQuery } from '@polkadot/api-derive/types';
 import { Chain } from '@polkadot/extension-chains/types';
-import { StakingConsts, ValidatorsName } from '../../util/pjpeTypes';
 
 import getNetworkInfo from '../../util/getNetwork';
+import { StakingConsts, ValidatorsName } from '../../util/pjpeTypes';
 
 interface Props {
   chain?: Chain | null;
@@ -197,18 +196,6 @@ function EnhancedTable(props: TableRowProps) {
     setOrderBy(property);
   };
 
-  // const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   if (event.target.checked) {
-  //     const newSelecteds = rows.map((v) => String(v.accountId));
-
-  //     setSelected(newSelecteds);
-
-  //     return;
-  //   }
-
-  //   setSelected([]);
-  // };
-
   const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected: readonly string[] = [];
@@ -328,18 +315,6 @@ function EnhancedTable(props: TableRowProps) {
           </TableBody>
         </Table>
       </TableContainer>
-      {/* <TablePagination
-        component='div'
-        count={rows.length}
-        labelRowsPerPage={''}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        rowsPerPageOptions={[5]}
-        showFirstButton
-        showLastButton
-      /> */}
     </>
   );
 }

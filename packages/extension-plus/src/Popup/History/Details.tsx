@@ -1,5 +1,6 @@
-// Copyright 2019-2021 @polkadot/extension-ui authors & contributors
+// Copyright 2019-2021 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
 import { faCopy } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,13 +8,14 @@ import { Feed as FeedIcon, LaunchRounded } from '@mui/icons-material';
 import { Avatar, Box, Chip, Container, Divider, Grid, Link, Modal, Paper } from '@mui/material';
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
+import ReactDom from 'react-dom';
 
 import { Chain } from '@polkadot/extension-chains/types';
-import getLogo from '../../util/getLogo';
 
 import ActionText from '../../../../extension-ui/src/components/ActionText';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { SHORT_ADDRESS_CHARACTERS } from '../../util/constants';
+import getLogo from '../../util/getLogo';
 import { TransactionDetail } from '../../util/pjpeTypes';
 import { amountToHuman } from '../../util/pjpeUtils';
 import { getIcon } from './getIcons';
@@ -90,8 +92,9 @@ export default function Details({
     );
   }
 
-  return (
+  return ReactDom.createPortal(
     <Modal
+      disablePortal
       keepMounted
       // eslint-disable-next-line react/jsx-no-bind
       onClose={(_event, reason) => {
@@ -122,7 +125,7 @@ export default function Details({
               />
             </Grid>
             <Grid item sx={{ fontSize: 15, fontWeight: 600 }}>
-              < FeedIcon/> {t('Transaction Detail')}
+              < FeedIcon /> {t('Transaction Detail')}
             </Grid>
             <Grid item sx={{ fontSize: 15 }}>
               <ActionText
@@ -137,22 +140,22 @@ export default function Details({
 
           <Grid item xs={12} sx={{ padding: '25px 15px 8px' }}>
             <Paper elevation={3}>
-              <Grid item container justifyContent='center' sx={{ padding: '30px 10px 20px' }}>
-                <Grid item xs={12}>
+              <Grid item container justifyContent='center' sx={{ fontSize: 11, textAlign: 'center', padding: '30px 10px 20px' }}>
+                <Grid item xs={12} >
                   <FontAwesomeIcon
                     color={getIcon(transaction.action).color}
                     icon={getIcon(transaction.action).icon}
                   />
                   {' '} {transaction.action}
                 </Grid>
-                <Grid item id='transactionStatus' sx={{ fontSize: 15, fontWeight: 'bold', padding: '10px 30px 10px', color: ['success'].includes(transaction.status.toLowerCase()) ? 'green' : 'red' }}>
+                <Grid item xs={12} id='transactionStatus' sx={{ fontSize: 15, fontWeight: 'bold', padding: '10px 1px 10px', color: ['success'].includes(transaction.status.toLowerCase()) ? 'green' : 'red' }}>
                   {['success'].includes(transaction.status.toLowerCase()) ? t('Success') : t('Failed')}
                 </Grid>
-                <Grid xs={12} id='failureText' sx={{ color: 'gray', fontSize: 11 }}>
+                <Grid xs={12} id='failureText' sx={{ color: 'gray'}}>
                   {!['success'].includes(transaction.status.toLowerCase()) ? transaction.status : ''}
                 </Grid>
 
-                <Grid item xs={11} sx={{ fontSize: 11, textAlign: 'center', paddingTop: '10px' }}>
+                <Grid item xs={12} sx={{ paddingTop: '10px' }}>
                   {new Date(transaction.date).toDateString()}{' '}{new Date(transaction.date).toLocaleTimeString()}
                 </Grid>
 
@@ -245,5 +248,6 @@ export default function Details({
         </Container>
       </div>
     </Modal>
+    , document.getElementById('root')
   );
 }
