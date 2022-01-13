@@ -11,6 +11,8 @@ import { PHISHING_PAGE_REDIRECT } from '@polkadot/extension-base/defaults';
 import { canDerive } from '@polkadot/extension-base/utils';
 import uiSettings from '@polkadot/ui-settings';
 
+import CrowdLoans from '../../../extension-plus/src/Popup/CrowdLoans';// added for plus
+import Governance from '../../../extension-plus/src/Popup/Governance';// added for plus
 import { ErrorBoundary, Loading } from '../components';
 import { AccountContext, ActionContext, AuthorizeReqContext, MediaContext, MetadataReqContext, SettingsContext, SigningReqContext } from '../components/contexts';
 import ToastProvider from '../components/Toast/ToastProvider';
@@ -32,9 +34,6 @@ import PhishingDetected from './PhishingDetected';
 import RestoreJson from './RestoreJson';
 import Signing from './Signing';
 import Welcome from './Welcome';
-
-import CrowdLoans from '../../../extension-plus/src/Popup/CrowdLoans';// added for plus
-import Governance from '../../../extension-plus/src/Popup/Governance';// added for plus
 
 const startSettings = uiSettings.get();
 
