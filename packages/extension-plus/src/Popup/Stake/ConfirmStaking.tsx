@@ -3,7 +3,7 @@
 /* eslint-disable header/header */
 
 import type { StakingLedger } from '@polkadot/types/interfaces';
-import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
+import ConfirmationNumberOutlinedIcon  from '@mui/icons-material/ConfirmationNumberOutlined';
 
 import { CheckRounded, Clear } from '@mui/icons-material';
 import { Button as MuiButton, Container, Divider, Grid, IconButton, InputAdornment, Modal, Skeleton, TextField } from '@mui/material';
@@ -403,7 +403,7 @@ export default function ConfirmStaking({
                 />
               </div> */}
 
-          <PlusHeader action={handleReject} chain={chain} closeText={'Reject'} icon={<ConfirmationNumberIcon />} title={'Confirm'} />
+          <PlusHeader action={handleReject} chain={chain} closeText={'Reject'} icon={<ConfirmationNumberOutlinedIcon  />} title={'Confirm'} />
 
           <Grid alignItems='center' container>
             {/* <Grid item sx={{ textAlign: 'center', fontSize: 15, fontWeight: 'bold', padding: '20px 20px 20px' }} xs={12}>

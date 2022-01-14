@@ -5,7 +5,7 @@
 import type { KeypairType } from '@polkadot/util-crypto/types';
 
 import { ArrowForwardRounded, CheckRounded, Clear, InfoTwoTone as InfoTwoToneIcon, LaunchRounded, RefreshRounded } from '@mui/icons-material';
-import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
+import ConfirmationNumberOutlinedIcon  from '@mui/icons-material/ConfirmationNumberOutlined';
 import { Alert, Avatar, Box, Button as MuiButton, CircularProgress, Container, Divider, Grid, IconButton, InputAdornment, Modal, TextField, Tooltip } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
@@ -275,7 +275,7 @@ export default function ConfirmTx({
       }}
       >
         <Container disableGutters maxWidth='md'>
-          <PlusHeader action={handleReject} chain={chain} closeText={'Reject'} icon={<ConfirmationNumberIcon />} title={'Confirm Transfer'} />
+          <PlusHeader action={handleReject} chain={chain} closeText={'Reject'} icon={<ConfirmationNumberOutlinedIcon  />} title={'Confirm Transfer'} />
 
           <Grid container alignItems='center' justifyContent='space-around' sx={{ paddingTop: '10px' }}>
             <Grid item container alignItems='center' justifyContent='flex-end' xs={5}>
