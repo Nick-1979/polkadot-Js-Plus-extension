@@ -1,5 +1,6 @@
-// [object Object]
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
 // eslint-disable-next-line header/header
 import type { Chain } from '@polkadot/extension-chains/types';
@@ -8,8 +9,8 @@ import type { SettingsStruct } from '@polkadot/ui-settings/types';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 
 import getNetworkInfo from './getNetwork';
-import { BalanceType } from './pjpeTypes';
-import { getFormattedAddress, handleAccountBalance } from './pjpeUtils';
+import { BalanceType } from './plusTypes';
+import { getFormattedAddress, handleAccountBalance } from './plusUtils';
 
 export async function getBalance(_address: string | null | undefined, _chain: Chain | null | undefined, settings: SettingsStruct):
 Promise<BalanceType | null> {

@@ -1,18 +1,14 @@
-// [object Object]
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
-// eslint-disable-next-line header/header
-import { ApiPromise, WsProvider } from '@polkadot/api';
-import { formatBalance } from '@polkadot/util';
-
-import getNetworkInfo from '../getNetwork.ts';
+import getChainInfo from '../getChainInfo.ts';
 
 async function getRedeemable (_chain, _stashAccountId) {
   console.log(`getRedeemable is called for ${_stashAccountId}`);
 
-  const { decimals, url } = getNetworkInfo(_chain);
-  const wsProvider = new WsProvider(url);
-  const api = await ApiPromise.create({ provider: wsProvider });
+  const { api } = await getChainInfo(_chain);
+
   const stakingAccount = await api.derive.staking.account(_stashAccountId);
 
   if (!stakingAccount?.redeemable?.gtn(0)) {

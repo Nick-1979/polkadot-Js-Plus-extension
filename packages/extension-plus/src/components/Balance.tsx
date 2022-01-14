@@ -1,6 +1,6 @@
-/* eslint-disable header/header */
-// Copyright 2019-2021 @polkadot/extension-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
 // eslint-disable-next-line simple-import-sort/imports
 import type { ThemeProps } from '../../../extension-ui/src/types';
@@ -10,8 +10,8 @@ import styled from 'styled-components';
 
 import { Chain } from '@polkadot/extension-chains/types';
 
-import { balanceToHuman } from '../util/pjpeUtils';
-import { AccountsBalanceType } from '../util/pjpeTypes';
+import { balanceToHuman } from '../util/plusUtils';
+import { AccountsBalanceType } from '../util/plusTypes';
 
 export interface Props {
   balance: AccountsBalanceType | null;

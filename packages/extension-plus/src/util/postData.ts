@@ -1,5 +1,6 @@
-// [object Object]
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
 // eslint-disable-next-line header/header
 export async function postData (url: string, data = {}) {

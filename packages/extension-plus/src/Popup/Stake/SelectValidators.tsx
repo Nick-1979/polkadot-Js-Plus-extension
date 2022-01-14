@@ -1,9 +1,10 @@
-// Copyright 2019-2021 @polkadot/extension-plus authors & contributors
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
 import type { AccountId, StakingLedger } from '@polkadot/types/interfaces';
 
+import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
 import { ReportProblemOutlined } from '@mui/icons-material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
@@ -23,15 +24,16 @@ import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } fro
 import ReactDom from 'react-dom';
 
 import { DeriveStakingQuery } from '@polkadot/api-derive/types';
-import { Chain } from '@polkadot/extension-chains/types';
 
+import { Chain } from '../../../../extension-chains/src/types';
 import { ActionText, NextStepButton } from '../../../../extension-ui/src/components';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { DEFAULT_VALIDATOR_COMMISION_FILTER } from '../../util/constants';
 import getLogo from '../../util/getLogo';
 import getNetworkInfo from '../../util/getNetwork';
-import { AccountsBalanceType, AllValidatorsFromSubscan, StakingConsts, Validators, ValidatorsName } from '../../util/pjpeTypes';
+import { AccountsBalanceType, StakingConsts, Validators, ValidatorsName } from '../../util/plusTypes';
 import ConfirmStaking from './ConfirmStaking';
+import PlusHeader from '../common/PlusHeader';
 
 interface Props {
   chain?: Chain | null;
@@ -579,7 +581,7 @@ export default function SelectValidators({
   return ReactDom.createPortal(
     <Modal
       disablePortal
-      keepMounted
+      // keepMounted
       // eslint-disable-next-line react/jsx-no-bind
       onClose={(_event, reason) => {
         if (reason !== 'backdropClick') {
@@ -600,27 +602,9 @@ export default function SelectValidators({
         width: '560px'
       }}
       >
-        <Container disableGutters maxWidth='md' sx={{ marginTop: 2 }}>
-          <Grid alignItems='center' container>
-            <Grid item alignItems='center' container justifyContent='space-between' sx={{ padding: '0px 20px' }}>
-              <Grid item>
-                <Avatar
-                  alt={'logo'}
-                  src={getLogo(chain)}
-                />
-              </Grid>
-              <Grid item sx={{ fontSize: 15 }}>
-                <ActionText
-                  // className={{'margin': 'auto'}}
-                  onClick={handleCancel}
-                  text={t('Cancel')}
-                />
-              </Grid>
-            </Grid>
-            <Grid item xs={12}>
-              <Divider />
-            </Grid>
-          </Grid>
+        <Container disableGutters maxWidth='md'>
+          <PlusHeader action={handleCancel} chain={chain} closeText={'Cancel'} icon={<CheckBoxOutlinedIcon />} title={'Select Validators'} />
+
           <Grid alignItems='center' container>
             <Grid item xs={12} sx={{ textAlign: 'left' }}>
               {validatorsInfo

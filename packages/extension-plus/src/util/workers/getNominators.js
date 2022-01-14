@@ -1,18 +1,13 @@
-// [object Object]
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
-// eslint-disable-next-line header/header
-import { ApiPromise, WsProvider } from '@polkadot/api';
-
-import getNetworkInfo from '../getNetwork.ts';
+import getChainInfo from '../getChainInfo.ts';
 
 // get all nominated/elected validators of an address
 export async function getNominators (_chain, _address) {
   try {
-    const { url } = getNetworkInfo(_chain);
-
-    const wsProvider = new WsProvider(url);
-    const api = await ApiPromise.create({ provider: wsProvider });
+    const { api } = await getChainInfo(_chain);
 
     const nominators = await api.query.staking.nominators(_address);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

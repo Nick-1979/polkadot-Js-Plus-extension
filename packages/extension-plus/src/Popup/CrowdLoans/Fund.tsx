@@ -1,6 +1,6 @@
-/* eslint-disable header/header */
-// [object Object]
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
 import { Email, LaunchRounded, SendTimeExtensionOutlined, Twitter } from '@mui/icons-material';
 import { Avatar, Button, Grid, Link, Paper } from '@mui/material';
@@ -9,10 +9,10 @@ import React, { useEffect, useState } from 'react';
 import { LinkOption } from '@polkadot/apps-config/endpoints/types';
 
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
+import getLogo from '../../util/getLogo';
 import getNetworkInfo from '../../util/getNetwork';
-import { Crowdloan } from '../../util/pjpeTypes';
-import { amountToHuman } from '../../util/pjpeUtils';
-import  getLogo from '../../util/getLogo';
+import { Crowdloan } from '../../util/plusTypes';
+import { amountToHuman } from '../../util/plusUtils';
 
 interface Props {
   chainName: string;

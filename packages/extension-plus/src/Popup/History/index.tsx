@@ -1,31 +1,30 @@
-// Copyright 2019-2021 @polkadot/extension-plus authors & contributors
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-import ReactDom from 'react-dom';
-import { faAngleRight, faCoins } from '@fortawesome/free-solid-svg-icons';
+import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { AllInclusive, CallMade, HistoryRounded } from '@mui/icons-material';
-import { Avatar, Box, Container, Divider, Grid, Link, Modal, Tab, Tabs } from '@mui/material';
+import { AllInclusive as AllInclusiveIcon, Brightness7Outlined as Brightness7OutlinedIcon,SwapVert as SwapVertIcon } from '@mui/icons-material';
+import HistoryIcon from '@mui/icons-material/History';
+import { Box, Container, Divider, Grid, Link, Modal, Tab, Tabs } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useReducer, useRef, useState } from 'react';
+import ReactDom from 'react-dom';
 
 import { Chain } from '@polkadot/extension-chains/types';
 
-import ActionText from '../../../../extension-ui/src/components/ActionText';
 import { AccountContext } from '../../../../extension-ui/src/components/contexts';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
-import getLogo from '../../util/getLogo';
-import getNetworkInfo from '../../util/getNetwork';
 import { getTxTransfers } from '../../util/getTransfers';
-import { TransactionDetail, Transfers } from '../../util/pjpeTypes';
-import { getTransactionHistoryFromLocalStorage } from '../../util/pjpeUtils';
+import { AccountsBalanceType, TransactionDetail, Transfers } from '../../util/plusTypes';
+import { getTransactionHistoryFromLocalStorage } from '../../util/plusUtils';
 import { NothingToShow } from '../common/NothingToShow';
+import PlusHeader from '../common/PlusHeader';
 import Details from './Details';
 import { getIcon } from './getIcons';
 
 interface Props {
-  address: string;
+  address: AccountsBalanceType;
   chain?: Chain | null;
   name: string;
   showTxHistoryModal: boolean;
@@ -82,7 +81,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
 
     if (!chain) return;
 
-    const res = await getTxTransfers(chain, address, pageNum, SINGLE_PAGE_SIZE);
+    const res = await getTxTransfers(chain, address.address, pageNum, SINGLE_PAGE_SIZE);
     const { count, transfers } = res.data || {};
     const nextPageNum = pageNum + 1;
 
@@ -139,7 +138,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
 
     transfersTx.transactions.map((tx: Transfers): void => {
       historyFromSubscan.push({
-        action: tx.from === address ? 'send' : 'receive',
+        action: tx.from === address.address ? 'send' : 'receive',
         amount: tx.amount,
         block: tx.block_num,
         date: tx.block_timestamp * 1000, // to be consistent with the locally saved times
@@ -163,12 +162,10 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
       return;
     }
 
-    const { coin, decimals } = getNetworkInfo(chain);
+    setDecimals(address.balanceInfo?.decimals);
+    setCoin(address.balanceInfo?.coin);
 
-    setDecimals(decimals);
-    setCoin(coin);
-
-    localHistories.current = getTransactionHistoryFromLocalStorage(chain, hierarchy, address);
+    localHistories.current = getTransactionHistoryFromLocalStorage(chain, hierarchy, address.address);
   }, [address, hierarchy, chain]);
 
   useEffect(() => {
@@ -261,44 +258,18 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
         // width: '560px'
       }}
       >
-        <Container id='scrollArea' disableGutters maxWidth='md' sx={{ marginTop: 2 }}>
-          <Grid item alignItems='center' container justifyContent='space-between' sx={{ padding: '0px 20px' }}>
-            <Grid item>
-              <Avatar
-                alt={'logo'}
-                src={getLogo(chain)}
-              />
-            </Grid>
-            <Grid item sx={{ fontSize: 15, fontWeight: 600 }}>
-              <HistoryRounded /> {t('Transaction History')}
-            </Grid>
-            <Grid item sx={{ fontSize: 15 }}>
-              <ActionText
-                onClick={handleTxHistoryModalClose}
-                text={t<string>('Close')}
-              />
-            </Grid>
-          </Grid>
-          <Grid xs={12}>
-            <Divider />
-          </Grid>
+        <Container id='scrollArea' disableGutters maxWidth='md'>
+          <PlusHeader action={handleTxHistoryModalClose} chain={chain} closeText={'Close'} icon={<HistoryIcon/>} title={'Transaction History'} />
+
           <Grid item xs={12} sx={{ paddingBottom: '10px' }}>
             <Box>
-              <Tabs
-                textColor='secondary'
-                indicatorColor='secondary'
-                // centered
-                variant='fullWidth'
-                value={tabValue}
-                onChange={handleTabChange}
-              >
-                <Tab icon={<AllInclusive fontSize='small' />} iconPosition='start' label='All' sx={{ fontSize: 10 }} value={TAB_MAP.ALL} />
-                <Tab icon={<CallMade fontSize='small' />} iconPosition='start' label='Transfers' sx={{ fontSize: 10 }} value={TAB_MAP.TRANSFERS} />
-                <Tab icon={<FontAwesomeIcon icon={faCoins} size='lg' />} iconPosition='start' label='Staking' sx={{ fontSize: 10 }} value={TAB_MAP.STAKING} />
+              <Tabs textColor='secondary' indicatorColor='secondary' variant='fullWidth' value={tabValue} onChange={handleTabChange}>
+                <Tab icon={<AllInclusiveIcon fontSize='small' />} iconPosition='start' label='All' sx={{ fontSize: 10 }} value={TAB_MAP.ALL} />
+                <Tab icon={<SwapVertIcon fontSize='small' />} iconPosition='start' label='Transfers' sx={{ fontSize: 10 }} value={TAB_MAP.TRANSFERS} />
+                <Tab icon={<Brightness7OutlinedIcon fontSize='small' />} iconPosition='start' label='Staking' sx={{ fontSize: 10 }} value={TAB_MAP.STAKING} />
               </Tabs>
             </Box>
           </Grid>
-
 
           <Grid alignItems='center' container justifyContent='center' sx={{ padding: '0px 30px 5px' }}>
             {tabHistory?.map((h, index) => (

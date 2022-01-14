@@ -1,11 +1,10 @@
-// [object Object]
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
-// eslint-disable-next-line header/header
-import { ApiPromise, WsProvider } from '@polkadot/api';
 import { hexToBn, hexToString } from '@polkadot/util';
 
-import getNetworkInfo from '../getNetwork.ts';
+import getChainInfo from '../getChainInfo.ts';
 
 const DEFAULT_IDENTITY = {
   // 'judgements': [],
@@ -23,14 +22,12 @@ const DEFAULT_IDENTITY = {
   }
 };
 
+
 async function getIdentities (_chainName, _address) {
   console.log(`getting identities of .... on ${_chainName}`);
 
-  const { url } = getNetworkInfo(null, _chainName);
-  // const url='wss://rpc.polkadot.io';
+  const { api } = await getChainInfo(_chainName);
 
-  const wsProvider = new WsProvider(url);
-  const api = await ApiPromise.create({ provider: wsProvider });
   const identities = await api.query.identity.identityOf.multi(_address);
 
   const ids = identities.map((id) => {
@@ -65,10 +62,7 @@ async function getIdentities (_chainName, _address) {
 
 async function getCrowdloans (_chainName) {
   console.log('getting crowdloans ...');
-
-  const { url } = getNetworkInfo(null, _chainName);
-  const wsProvider = new WsProvider(url);
-  const api = await ApiPromise.create({ provider: wsProvider });
+  const { api } = await getChainInfo(_chainName);
   const allParaIds = (await api.query.paras.paraLifecycles.entries()).map(([key, _]) => key.args[0]);
 
   const [auctionInfo, auctionCounter, funds, leases, header] = await Promise.all([

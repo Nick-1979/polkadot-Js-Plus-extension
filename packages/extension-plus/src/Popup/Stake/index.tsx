@@ -1,13 +1,11 @@
-// Copyright 2019-2021 @polkadot/extension-plus authors & contributors
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
 import type { StakingLedger } from '@polkadot/types/interfaces';
 
-import { faCoins } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { AddCircleOutlineOutlined, CheckOutlined, InfoOutlined, Redeem as RedeemIcon, RemoveCircleOutlineOutlined } from '@mui/icons-material';
-import { Alert, Avatar, Box, Button, CircularProgress, Container, Divider, FormControl, FormControlLabel, FormLabel, Grid, IconButton, InputAdornment, Modal, Paper, Radio, RadioGroup, Skeleton, Tab, Tabs, TextField, Tooltip, Typography } from '@mui/material';
+import { AddCircleOutlineOutlined, Brightness7Outlined as Brightness7OutlinedIcon, CheckOutlined, InfoOutlined, Redeem as RedeemIcon, RemoveCircleOutlineOutlined } from '@mui/icons-material';
+import { Alert, Box, Button, CircularProgress, Container, FormControl, FormControlLabel, FormLabel, Grid, IconButton, InputAdornment, Modal, Paper, Radio, RadioGroup, Skeleton, Tab, Tabs, TextField, Tooltip, Typography } from '@mui/material';
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 import ReactDom from 'react-dom';
 
@@ -16,15 +14,15 @@ import { AccountJson } from '@polkadot/extension-base/background/types';
 import { Chain } from '@polkadot/extension-chains/types';
 import { formatBalance } from '@polkadot/util';
 
-import { ActionText, NextStepButton } from '../../../../extension-ui/src/components';
+import { NextStepButton } from '../../../../extension-ui/src/components';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { updateMeta } from '../../../../extension-ui/src/messaging';
 import { DEFAULT_COIN, MAX_ACCEPTED_COMMISSION, MIN_EXTRA_BOND } from '../../util/constants';
-import getLogo from '../../util/getLogo';
 import getNetworkInfo from '../../util/getNetwork';
-import { AccountsBalanceType, AllValidatorsFromSubscan, savedMetaData, StakingConsts, Validators, ValidatorsName } from '../../util/pjpeTypes';
-import { amountToHuman, amountToMachine, balanceToHuman, fixFloatingPoint, prepareMetaData } from '../../util/pjpeUtils';
+import { AccountsBalanceType, AllValidatorsFromSubscan, savedMetaData, StakingConsts, Validators, ValidatorsName } from '../../util/plusTypes';
+import { amountToHuman, amountToMachine, balanceToHuman, fixFloatingPoint, prepareMetaData } from '../../util/plusUtils';
 import { getAllValidatorsFromSubscan, getStakingReward } from '../../util/staking';
+import PlusHeader from '../common/PlusHeader';
 import ConfirmStaking from './ConfirmStaking';
 import SelectValidators from './SelectValidators';
 import ValidatorsList from './ValidatorsList';
@@ -61,7 +59,6 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
   const [nextButtonCaption, setNextButtonCaption] = useState<string>(t('Next'));
   const [nextToStakeButtonDisabled, setNextToStakeButtonDisabled] = useState(true);
   const [nextToUnStakeButtonDisabled, setNextToUnStakeButtonDisabled] = useState(true);
-
   const [maxStake, setMaxStake] = useState<string>('0');
   const [totalReceivedReward, setTotalReceivedReward] = useState<string>();
   const [showConfirmStakingModal, setConfirmStakingModalOpen] = useState<boolean>(false);
@@ -542,11 +539,13 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
     setAlert('');
     setUnstakeAmountInHuman(fixFloatingPoint(value));
 
+    if (!Number(value)) {return;}
+
     const currentlyStaked = BigInt(ledger ? ledger.active.toString() : '0');
 
     console.log(`Number(currentlyStakedInHuman) ${Number(currentlyStakedInHuman)}  Number(value) ${Number(value)}`);
 
-    if (Number(currentlyStakedInHuman) && Number(value) > Number(currentlyStakedInHuman)) {
+    if (Number(value) > Number(currentlyStakedInHuman)) {
       setAlert(t('It is more than already staked!'));
 
       return;
@@ -691,35 +690,9 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
         width: '560px'
       }}
       >
-        <Container disableGutters maxWidth='md' sx={{ marginTop: 2 }}>
-          <Grid container justifyContent='flex-start'>
-            <Grid item alignItems='center' container justifyContent='space-between' sx={{ padding: '0px 20px' }}>
-              <Grid item>
-                <Avatar
-                  alt={'logo'}
-                  src={getLogo(chain)}
-                // sx={{ height: 45, width: 45 }}
-                />
-              </Grid>
-              <Grid item sx={{ fontSize: 15, fontWeight: 600 }}>
-                <FontAwesomeIcon
-                  icon={faCoins}
-                  size='sm'
-                />
-                {" "} {t('Easy Staking')}
-              </Grid>
-              <Grid item sx={{ fontSize: 15 }}>
-                <ActionText
-                  // className={{'margin': 'auto'}}
-                  onClick={handleEasyStakingModalClose}
-                  text={t<string>('Close')}
-                />
-              </Grid>
-            </Grid>
-            <Grid item xs={12}>
-              <Divider />
-            </Grid>
-          </Grid>
+        <Container disableGutters maxWidth='md'>
+          <PlusHeader action={handleEasyStakingModalClose} chain={chain} closeText={'Close'} icon={<Brightness7OutlinedIcon />} title={'Easy Staking'} />
+
           <Grid alignItems='center' container>
             <Grid alignItems='center' container item justifyContent='center' xs={12}>
               <Paper elevation={4} sx={{ borderRadius: '10px', margin: '25px 30px 10px', p: 3, fontSize: 11 }}>
@@ -853,7 +826,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
                       : <Grid item sx={{ paddingTop: '45px' }} xs={12}></Grid>
                     }
                   </Grid>
-                  <Grid item xs={12} justifyContent='center' sx={{textAlign: 'center'}}>
+                  <Grid item xs={12} justifyContent='center' sx={{ textAlign: 'center' }}>
                     <FormControl fullWidth>
                       <Grid alignItems='center' container justifyContent='center'>
                         <Grid item sx={{ fontSize: 12 }} xs={3}>
@@ -926,7 +899,6 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
                       inputProps={{ step: '.01' }}
                       label={t('Amount')}
                       name='unstakeAmount'
-                      // onBlur={(event) => handleUnstakeAmountOnBlur(event.target.value)}
                       onChange={handleUnstakeAmountOnChange}
                       placeholder='0.0'
                       type='number'
@@ -935,9 +907,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
                     />
                   </Grid>
                   {ledger?.total
-                    ? <Grid container item justifyContent='space-between' sx={{ padding: '0px 30px 10px' }} xs={12}>
-                      <Grid item sx={{ fontSize: 12 }}>
-                      </Grid>
+                    ? <Grid container item justifyContent='flex-end' sx={{ padding: '0px 30px 10px' }} xs={12}>
                       <Grid item sx={{ fontSize: 12 }}>
                         {Number(ledger?.active)
                           ? <>
@@ -998,19 +968,18 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
                     </Grid>
                   </Grid>
                   : !noNominatedValidators
-                    ? <>
-                      <Grid container sx={{ paddingTop: '40px' }} >
-                        <Grid xs={12}>
-                          <CircularProgress />
-                        </Grid>
-                        <Grid xs={12} sx={{ fontSize: 13, paddingTop: '20px' }}>
-                          {t('Getting nominators ...')}
-                        </Grid>
+                    ? <Grid container direction='column' alignItems='center' justifyContent='center' sx={{ paddingTop: '40px' }} >
+                      <Grid item>
+                        <CircularProgress />
                       </Grid>
-                    </>
-                    : <Box fontSize={13} mt={3}>
+                      <Grid item sx={{ fontSize: 13, paddingTop: '20px' }}>
+                        {t('Getting nominators ...')}
+                      </Grid>
+                    </Grid>
+
+                    : <Grid xs={12} sx={{ fontSize: 13, marginTop: '60px', textAlign: 'center' }}>
                       {t('You do not nominated any validators yet.')}
-                    </Box>
+                    </Grid>
                 }
               </TabPanel>
               <TabPanel value={tabValue} index={3}>

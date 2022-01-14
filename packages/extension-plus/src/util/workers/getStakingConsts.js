@@ -1,17 +1,12 @@
-// [object Object]
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
-// eslint-disable-next-line header/header
-import { ApiPromise, WsProvider } from '@polkadot/api';
-
-import getNetworkInfo from '../getNetwork.ts';
+import getChainInfo from '../getChainInfo.ts';
 
 async function getStackingConsts (_chain) {
   try {
-    const { decimals, url } = getNetworkInfo(_chain);
-
-    const wsProvider = new WsProvider(url);
-    const api = await ApiPromise.create({ provider: wsProvider });
+    const { api, decimals } = await getChainInfo(_chain);
 
     const maxNominations = api.consts.staking.maxNominations.toHuman();
     const maxNominatorRewardedPerValidator = api.consts.staking.maxNominatorRewardedPerValidator.toHuman();

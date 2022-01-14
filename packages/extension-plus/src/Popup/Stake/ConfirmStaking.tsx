@@ -1,11 +1,12 @@
-// Copyright 2019-2021 @polkadot/extension-plus authors & contributors
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
 import type { StakingLedger } from '@polkadot/types/interfaces';
+import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
 
 import { CheckRounded, Clear } from '@mui/icons-material';
-import { Avatar, Button as MuiButton, Container, Divider, Grid, IconButton, InputAdornment, Modal, Skeleton, TextField } from '@mui/material';
+import { Button as MuiButton, Container, Divider, Grid, IconButton, InputAdornment, Modal, Skeleton, TextField } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React, { useContext, useEffect, useState } from 'react';
 import ReactDom from 'react-dom';
@@ -18,12 +19,12 @@ import keyring from '@polkadot/ui-keyring';
 
 import { AccountContext, ActionText, BackButton, Button } from '../../../../extension-ui/src/components';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
-import getLogo from '../../util/getLogo';
 import getNetworkInfo from '../../util/getNetwork';
-import { AccountsBalanceType, StakingConsts, TransactionDetail, Validators, ValidatorsName } from '../../util/pjpeTypes';
-import { amountToHuman, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/pjpeUtils';
+import { AccountsBalanceType, StakingConsts, TransactionDetail, Validators, ValidatorsName } from '../../util/plusTypes';
+import { amountToHuman, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/plusUtils';
 import { bondOrBondExtra, chill, nominate, unbond, withdrawUnbonded } from '../../util/staking';
 import ValidatorsList from './ValidatorsList';
+import PlusHeader from '../common/PlusHeader';
 
 
 interface Props {
@@ -49,7 +50,7 @@ interface Props {
 export default function ConfirmStaking({
   amount, chain, coin, ledger, nominatedValidators, selectedValidators, setConfirmStakingModalOpen,
   setSelectValidatorsModalOpen, setState, showConfirmStakingModal, staker, stakingConsts, state, validatorsName, validatorsToList }
-: Props): React.ReactElement<Props> {
+  : Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { hierarchy } = useContext(AccountContext);
   const [decimals, setDecimals] = useState<number>(1);
@@ -255,7 +256,7 @@ export default function ConfirmStaking({
           }
         }
 
-        const {block, failureText, fee, status, txHash } = await nominate(chain, staker.address, signer, selectedValidatorsAccountId);
+        const { block, failureText, fee, status, txHash } = await nominate(chain, staker.address, signer, selectedValidatorsAccountId);
 
         const history: TransactionDetail = {
           action: 'nominate',
@@ -366,183 +367,173 @@ export default function ConfirmStaking({
     setState('');
     setConfirmingState('');
     if (setSelectValidatorsModalOpen) setSelectValidatorsModalOpen(false);
-    
+
     handleConfirmStakingModalClose();
     // setReject(true);
   };
 
-  return (
-  
-      <Modal
-        // eslint-disable-next-line react/jsx-no-bind
-        onClose={(_event, reason) => {
-          if (reason !== 'backdropClick') {
-            handleConfirmStakingModalClose();
-          }
-        }}
-        open={showConfirmStakingModal}
+  return ReactDom.createPortal(
+    <Modal
+      disablePortal
+      // eslint-disable-next-line react/jsx-no-bind
+      onClose={(_event, reason) => {
+        if (reason !== 'backdropClick') {
+          handleConfirmStakingModalClose();
+        }
+      }}
+      open={showConfirmStakingModal}
+    >
+      <div style={{
+        backgroundColor: '#FFFFFF',
+        display: 'flex',
+        height: '100%',
+        maxWidth: 700,
+        // overflow: 'scroll',
+        position: 'relative',
+        top: '5px',
+        transform: `translateX(${(window.innerWidth - 560) / 2}px)`,
+        width: '560px'
+      }}
       >
-        <div style={{
-          backgroundColor: '#FFFFFF',
-          display: 'flex',
-          height: '100%',
-          maxWidth: 700,
-          // overflow: 'scroll',
-          position: 'relative',
-          top: '5px',
-          transform: `translateX(${(window.innerWidth - 560) / 2}px)`,
-          width: '560px'
-        }}
-        >
-          <Container disableGutters maxWidth='md' sx={{ marginTop: 2 }}>
-            <Grid item alignItems='center' container justifyContent='space-between' sx={{ padding: '0px 20px' }}>
-              <Grid item >
-                <Avatar
-                  alt={'logo'}
-                  src={getLogo(chain)}
+        <Container disableGutters maxWidth='md'>
+          {/* <div style={confirmingState === 'confirming' ? { opacity: '0.4', pointerEvents: 'none' } : {}}>
+                <ActionText
+                  onClick={}
+                  text={t('Reject')}
                 />
-              </Grid>
-              <Grid item sx={{ fontSize: 15 }}>
-                <div style={confirmingState === 'confirming' ? { opacity: '0.4', pointerEvents: 'none' } : {}}>
-                  <ActionText
-                    onClick={handleReject}
-                    text={t('Reject')}
-                  />
-                </div>
-              </Grid>
-              <Grid item xs={12}>
-                <Divider />
-              </Grid>
-            </Grid>
-            <Grid alignItems='center' container>
-              {/* <Grid item sx={{ textAlign: 'center', fontSize: 15, fontWeight: 'bold', padding: '20px 20px 20px' }} xs={12}>
+              </div> */}
+
+          <PlusHeader action={handleReject} chain={chain} closeText={'Reject'} icon={<ConfirmationNumberIcon />} title={'Confirm'} />
+
+          <Grid alignItems='center' container>
+            {/* <Grid item sx={{ textAlign: 'center', fontSize: 15, fontWeight: 'bold', padding: '20px 20px 20px' }} xs={12}>
                 {stateInHuman(state)}
 
               </Grid> */}
-              <Grid item container xs={12} sx={{ backgroundColor: '#f7f7f7', padding: '25px 40px 10px' }}>
-                <Grid item xs={3} sx={{ border: '2px double grey', borderRadius: '5px', fontSize: 15, justifyContent: 'flex-start', padding: '5px 10px 5px', textAlign: 'center', fontVariant: 'small-caps' }}>
-                  {stateInHuman(confirmingState || state)}
+            <Grid item container xs={12} sx={{ backgroundColor: '#f7f7f7', padding: '25px 40px 10px' }}>
+              <Grid item xs={3} sx={{ border: '2px double grey', borderRadius: '5px', fontSize: 15, justifyContent: 'flex-start', padding: '5px 10px 5px', textAlign: 'center', fontVariant: 'small-caps' }}>
+                {stateInHuman(confirmingState || state)}
+              </Grid>
+              {amount
+                ? <Grid item container justifyContent='center' spacing={1} xs={12} sx={{ fontFamily: 'fantasy', fontSize: 18, textAlign: 'center' }}>
+                  <Grid item>
+                    {amountToHuman(amount.toString(), decimals)}
+                  </Grid>
+                  <Grid item>
+                    {coin}
+                  </Grid>
                 </Grid>
-                {amount
-                  ? <Grid item container justifyContent='center' spacing={1} xs={12} sx={{ fontFamily: 'fantasy', fontSize: 18, textAlign: 'center' }}>
-                    <Grid item>
-                      {amountToHuman(amount.toString(), decimals)}
-                    </Grid>
-                    <Grid item>
-                      {coin}
-                    </Grid>
-                  </Grid>
-                  : ''}
+                : ''}
 
-                <Grid item xs={12} container justifyContent='space-between' alignItems='center' sx={{ fontSize: 12, paddingTop: '30px' }} >
-                  <Grid item container xs={5} justifyContent='flex-start' spacing={1}>
-                    <Grid item sx={{ fontSize: 12, fontWeight: '600' }}>
-                      {t('Currently staked')}{': '}
-                    </Grid>
-                    <Grid item sx={{ fontSize: 12 }}>
-                      {!ledger
-                        ? <Skeleton sx={{ display: 'inline-block', fontWeight: '600', width: '60px' }} />
-                        : <>
-                          {currentlyStaked ? amountToHuman(currentlyStaked.toString(), decimals) : '0.00'}
-                        </>
-                      }{coin}
-                    </Grid>
+              <Grid item xs={12} container justifyContent='space-between' alignItems='center' sx={{ fontSize: 12, paddingTop: '30px' }} >
+                <Grid item container xs={5} justifyContent='flex-start' spacing={1}>
+                  <Grid item sx={{ fontSize: 12, fontWeight: '600' }}>
+                    {t('Currently staked')}{': '}
                   </Grid>
-                  <Grid container item justifyContent='flex-end' spacing={1} xs={5}>
-                    <Grid item sx={{ fontSize: 12, fontWeight: '600' }}>
-                      {t('Total')}{': '}
-                    </Grid>
-                    <Grid item sx={{ fontSize: 12 }}>
-                      {!ledger
-                        ? <Skeleton sx={{ display: 'inline-block', fontWeight: '600', width: '60px' }} />
-                        : <>
-                          {totalStakedInHuman}
-                        </>
-                      }{coin}
-                    </Grid>
+                  <Grid item sx={{ fontSize: 12 }}>
+                    {!ledger
+                      ? <Skeleton sx={{ display: 'inline-block', fontWeight: '600', width: '60px' }} />
+                      : <>
+                        {currentlyStaked ? amountToHuman(currentlyStaked.toString(), decimals) : '0.00'}
+                      </>
+                    }{coin}
+                  </Grid>
+                </Grid>
+                <Grid container item justifyContent='flex-end' spacing={1} xs={5}>
+                  <Grid item sx={{ fontSize: 12, fontWeight: '600' }}>
+                    {t('Total')}{': '}
+                  </Grid>
+                  <Grid item sx={{ fontSize: 12 }}>
+                    {!ledger
+                      ? <Skeleton sx={{ display: 'inline-block', fontWeight: '600', width: '60px' }} />
+                      : <>
+                        {totalStakedInHuman}
+                      </>
+                    }{coin}
                   </Grid>
                 </Grid>
               </Grid>
-              {stakingConsts && !['withdrawUnbound', 'unstake'].includes(state)
-                ? <>
-                  <Grid item sx={{ textAlign: 'center', color: grey[600], fontFamily: 'fantasy', fontSize: 16, padding: '15px 50px 5px' }} xs={12}>
-                    {t('VALIDATORS')}
-                  </Grid>
-                  <Grid item sx={{ fontSize: 14, padding: '1px 20px 0px' }} xs={12}>
-
-                    <ValidatorsList
-                      chain={chain}
-                      stakingConsts={stakingConsts}
-                      validatorsInfo={validatorsToList}
-                      validatorsName={validatorsName} />
-
-                  </Grid>
-                </>
-                : <Grid sx={{ margin: '110px' }}>{' '}</Grid>
-              }
             </Grid>
-            <Grid item sx={{ margin: '30px 30px 5px' }} xs={12}>
-              <TextField
-                InputLabelProps={{
-                  shrink: true
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position='end'>
-                      <IconButton
-                        onClick={handleClearPassword}
-                      >
-                        {password !== '' ? <Clear /> : ''}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                  startAdornment: (
-                    <InputAdornment position='start'>
-                      {passwordIsCorrect === 1 ? <CheckRounded color='success' /> : ''}
-                    </InputAdornment>
-                  ),
-                  style: { fontSize: 16 }
-                }}
-                autoFocus={!['confirming', 'failed', 'success'].includes(confirmingState)}
-                color='warning'
-                disabled={!ledger}
-                error={passwordIsCorrect === -1}
-                fullWidth
-                helperText={passwordIsCorrect === -1 ? t('Password is not correct') : t('Please enter the stake account password')}
-                label={t('Password')}
-                onChange={handleSavePassword}
-                onKeyPress={(event) => {
-                  if (event.key === 'Enter') { handleConfirm(); }
-                }}
-                size='medium'
-                type='password'
-                value={password}
-                variant='outlined'
-              />
-            </Grid>
-            <Grid container item justifyContent='space-between' sx={{ padding: '5px 30px 0px' }} xs={12}>
-              {['success', 'failed'].includes(confirmingState)
-                ? <Grid item xs={12}>
-                  <MuiButton fullWidth onClick={handleReject} variant='contained'
-                    color={confirmingState === 'success' ? 'success' : 'error'} size='large'>
-                    {confirmingState === 'success' ? t('Done') : t('Failed')}
-                  </MuiButton>
+            {stakingConsts && !['withdrawUnbound', 'unstake'].includes(state)
+              ? <>
+                <Grid item sx={{ textAlign: 'center', color: grey[600], fontFamily: 'fantasy', fontSize: 16, padding: '15px 50px 5px' }} xs={12}>
+                  {t('VALIDATORS')}
                 </Grid>
-                : <>
-                  <Grid item xs={1}>
-                    <BackButton onClick={handleConfirmStakingModalBack} />
-                  </Grid>
-                  <Grid item xs={11} sx={{ paddingLeft: '10px' }}>
-                    <Button
-                      data-button-action=''
-                      isBusy={confirmingState === 'confirming'}
-                      isDisabled={!ledger}
-                      onClick={handleConfirm}
+                <Grid item sx={{ fontSize: 14, padding: '1px 20px 0px' }} xs={12}>
+
+                  <ValidatorsList
+                    chain={chain}
+                    stakingConsts={stakingConsts}
+                    validatorsInfo={validatorsToList}
+                    validatorsName={validatorsName} />
+
+                </Grid>
+              </>
+              : <Grid sx={{ margin: '110px' }}>{' '}</Grid>
+            }
+          </Grid>
+          <Grid item sx={{ margin: '30px 30px 5px' }} xs={12}>
+            <TextField
+              InputLabelProps={{
+                shrink: true
+              }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <IconButton
+                      onClick={handleClearPassword}
                     >
-                      {t('Confirm')}
-                    </Button>
-                  </Grid>
-                  {/* <Grid item xs={3} justifyContent='center' sx={{ paddingTop: 2, fontSize: 15 }}>
+                      {password !== '' ? <Clear /> : ''}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+                startAdornment: (
+                  <InputAdornment position='start'>
+                    {passwordIsCorrect === 1 ? <CheckRounded color='success' /> : ''}
+                  </InputAdornment>
+                ),
+                style: { fontSize: 16 }
+              }}
+              autoFocus={!['confirming', 'failed', 'success'].includes(confirmingState)}
+              color='warning'
+              disabled={!ledger}
+              error={passwordIsCorrect === -1}
+              fullWidth
+              helperText={passwordIsCorrect === -1 ? t('Password is not correct') : t('Please enter the stake account password')}
+              label={t('Password')}
+              onChange={handleSavePassword}
+              onKeyPress={(event) => {
+                if (event.key === 'Enter') { handleConfirm(); }
+              }}
+              size='medium'
+              type='password'
+              value={password}
+              variant='outlined'
+            />
+          </Grid>
+          <Grid container item justifyContent='space-between' sx={{ padding: '5px 30px 0px' }} xs={12}>
+            {['success', 'failed'].includes(confirmingState)
+              ? <Grid item xs={12}>
+                <MuiButton fullWidth onClick={handleReject} variant='contained'
+                  color={confirmingState === 'success' ? 'success' : 'error'} size='large'>
+                  {confirmingState === 'success' ? t('Done') : t('Failed')}
+                </MuiButton>
+              </Grid>
+              : <>
+                <Grid item xs={1}>
+                  <BackButton onClick={handleConfirmStakingModalBack} />
+                </Grid>
+                <Grid item xs={11} sx={{ paddingLeft: '10px' }}>
+                  <Button
+                    data-button-action=''
+                    isBusy={confirmingState === 'confirming'}
+                    isDisabled={!ledger}
+                    onClick={handleConfirm}
+                  >
+                    {t('Confirm')}
+                  </Button>
+                </Grid>
+                {/* <Grid item xs={3} justifyContent='center' sx={{ paddingTop: 2, fontSize: 15 }}>
                     <div style={state === 'confirming' ? { opacity: '0.4', pointerEvents: 'none' } : {}}>
                       <ActionText
                         // className={{'margin': 'auto'}}
@@ -551,11 +542,11 @@ export default function ConfirmStaking({
                       />
                     </div>
                   </Grid> */}
-                </>}
-            </Grid>
-          </Container>
-        </div>
-      </Modal>
-   
+              </>}
+          </Grid>
+        </Container>
+      </div>
+    </Modal>
+    , document.getElementById('root')
   );
 }

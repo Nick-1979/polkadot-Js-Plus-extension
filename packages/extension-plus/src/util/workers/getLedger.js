@@ -1,10 +1,8 @@
-// [object Object]
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
-// eslint-disable-next-line header/header
-import { ApiPromise, WsProvider } from '@polkadot/api';
-
-import getNetworkInfo from '../getNetwork.ts';
+import getChainInfo from '../getChainInfo.ts';
 
 async function getLedger (_address, _chain) {
   if (!_address) {
@@ -19,10 +17,7 @@ async function getLedger (_address, _chain) {
     unlocking: []
   };
 
-  const { url } = getNetworkInfo(_chain);
-
-  const wsProvider = new WsProvider(url);
-  const api = await ApiPromise.create({ provider: wsProvider });
+  const { api } = await getChainInfo(_chain);
 
   const data = await api.query.staking.ledger(_address);
 

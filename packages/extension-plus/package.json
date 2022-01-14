@@ -2,7 +2,7 @@
   "author": "Kami Ekbatanifard <ekbatanifard@gmail.com>",
   "bugs": "https://github.com/polkadot-js/extension/issues",
   "contributors": [],
-  "description": "A sample signer extension for the @polkadot/api",
+  "description": "A user-friendly wallet to interact with the Polkadot/Substrate based blockchains through a browser.",
   "homepage": "https://github.com/polkadot-js/extension/tree/master/packages/extension-plus#readme",
   "license": "Apache-2",
   "maintainers": [],
@@ -14,5 +14,5 @@
   },
   "sideEffects": true,
   "type": "module",
-  "version": "0.42.5-14"
+  "version": "0.1"
 }

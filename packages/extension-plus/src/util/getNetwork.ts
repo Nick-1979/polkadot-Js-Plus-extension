@@ -1,6 +1,7 @@
 /* eslint-disable sort-keys */
-// [object Object]
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
 // eslint-disable-next-line header/header
 import type { Chain } from '@polkadot/extension-chains/types';
@@ -111,6 +112,15 @@ export default function getNetworkInfo(chain?: Chain | null | undefined, chainNa
       return {
         coin: 'KAR',
         url: 'wss://karura.polkawallet.io',
+        decimals: 12,
+        ED: 1,
+        defaultFee: '16100000000',
+        minNominatorBond: '0'
+      };
+    case ('Acala'):
+      return {
+        coin: 'ACR',
+        url: 'wss://acala.polkawallet.io',
         decimals: 12,
         ED: 1,
         defaultFee: '16100000000',

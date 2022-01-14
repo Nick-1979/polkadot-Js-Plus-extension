@@ -13,8 +13,6 @@ import type { KeypairType } from '@polkadot/util-crypto/types';
 
 import { TypeRegistry } from '@polkadot/types';
 
-// import { BalanceType } from '../../../extension-plus/src/util/pjpeTypes'; // added for plus
-// import type { Chain } from '@polkadot/extension-chains/types'; // added for plus
 import { ALLOWED_PATH } from '../defaults';
 import { AuthUrls } from './handlers/State';
 
@@ -62,16 +60,7 @@ export type AccountsContext = {
   accounts: AccountJson[];
   hierarchy: AccountWithChildren[];
   master?: AccountJson;
-  // balance?: AccountsBalanceType[]; // added for plus
-
 }
-
-// added for plus
-// interface AccountsBalanceType {
-//   address: string | null;
-//   chain: Chain | null;
-//   balance: BalanceType | null;
-// }
 
 export interface AuthorizeRequest {
   id: string;

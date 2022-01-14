@@ -1,5 +1,6 @@
-// [object Object]
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
 // Import the API, Keyring and some utility functions
 // eslint-disable-next-line header/header
@@ -11,7 +12,7 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { KeyringPair } from '@polkadot/keyring/types';
 
 import getNetworkInfo from './getNetwork';
-import { TransactionStatus, TxInfo } from './pjpeTypes';
+import { TransactionStatus, TxInfo } from './plusTypes';
 
 export default async function signAndTransfer(
   _senderKeyring: KeyringPair,

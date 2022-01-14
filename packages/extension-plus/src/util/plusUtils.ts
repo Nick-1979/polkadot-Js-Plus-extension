@@ -1,7 +1,8 @@
 /* eslint-disable camelcase */
 
-// [object Object]
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
 // eslint-disable-next-line header/header
 import { AccountWithChildren } from '@polkadot/extension-base/background/types';
@@ -9,7 +10,7 @@ import { Chain } from '@polkadot/extension-chains/types';
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
 import { FLOATING_POINT_DIGIT } from './constants';
-import { AccountsBalanceType, savedMetaData, TransactionDetail } from './pjpeTypes';
+import { AccountsBalanceType, savedMetaData, TransactionDetail } from './plusTypes';
 
 // eslint-disable-next-line header/header
 

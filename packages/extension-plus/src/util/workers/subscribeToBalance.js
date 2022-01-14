@@ -1,16 +1,12 @@
-// [object Object]
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
-// eslint-disable-next-line header/header
-import { ApiPromise, WsProvider } from '@polkadot/api';
-
-import getNetworkInfo from '../getNetwork.ts';
-import {handleAccountBalance} from '../pjpeUtils.ts';
+import getChainInfo from '../getChainInfo.ts';
+import { handleAccountBalance } from '../plusUtils.ts';
 
 async function subscribeToBalance (_address, _chain, _formattedAddress) {
-  const { coin, decimals, url } = getNetworkInfo(_chain);
-  const wsProvider = new WsProvider(url);
-  const api = await ApiPromise.create({ provider: wsProvider });
+  const { api, coin, decimals } = await getChainInfo(_chain);
 
   await api.query.system.account(_formattedAddress, ({ data: balance }) => {
     if (balance) {
@@ -34,7 +30,6 @@ async function subscribeToBalance (_address, _chain, _formattedAddress) {
 onmessage = (e) => {
   const { address, chain, formattedAddress } = e.data;
 
-  // console.log(`subscribing to balance change of formattedAddress: ${formattedAddress} on chain ${chain?.name}`);
   // eslint-disable-next-line no-void
   void subscribeToBalance(address, chain, formattedAddress);
 };

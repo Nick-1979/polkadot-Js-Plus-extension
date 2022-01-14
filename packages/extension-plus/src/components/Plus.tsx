@@ -1,6 +1,6 @@
-/* eslint-disable header/header */
-// Copyright 2019-2021 @polkadot/extension-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
 // eslint-disable-next-line simple-import-sort/imports
 import type { KeypairType } from '@polkadot/util-crypto/types';
@@ -15,8 +15,8 @@ import styled from 'styled-components';
 import { Chain } from '@polkadot/extension-chains/types';
 
 import useTranslation from '../../../extension-ui/src/hooks/useTranslation';
-import { prepareMetaData } from '../util/pjpeUtils';
-import { AccountsBalanceType, BalanceType, savedMetaData } from '../util/pjpeTypes';
+import { prepareMetaData } from '../util/plusUtils';
+import { AccountsBalanceType, BalanceType, savedMetaData } from '../util/plusTypes';
 import { AccountContext } from '../../../extension-ui/src/components/contexts';
 import AddressQRcode from '../Popup/AddressQRcode';
 import EasyStaking from '../Popup/Stake';
@@ -163,13 +163,7 @@ function Plus({ address, chain, formattedAddress, givenType, name,
   }, [accounts, chain]);
 
   useEffect((): void => {
-    console.log('chain', chain);
-
-    if (!chain) {
-      console.log('do not show balance for now chain ');
-
-      return;
-    }
+    if (!chain) { return; }
 
     const acc = accounts.find((acc) => acc.address === address);
 
@@ -331,9 +325,9 @@ function Plus({ address, chain, formattedAddress, givenType, name,
               ? <Grid item id='coinPrice' xs={12} sx={{ color: grey[600], fontSize: 10, textAlign: 'center' }}>
                 {chain && <> {'1 '}{getCoin(balance)}{' = $'}{price}</>}
               </Grid>
-              : <Grid item id='emptyCoinPrice' xs={12} sx={{ color: grey[400],  fontSize: 10, textAlign: 'center' }}>
+              : <Grid item id='emptyCoinPrice' xs={12} sx={{ color: grey[400], fontSize: 10, textAlign: 'center' }}>
                 {'1 ---  =  $ --- '}
-               </Grid>
+              </Grid>
           }
         </Grid>
       </Grid>
@@ -363,7 +357,7 @@ function Plus({ address, chain, formattedAddress, givenType, name,
       {
         showTxHistoryModal
           ? <TransactionHistory
-            address={String(address)}
+            address={sender}
             chain={chain}
             name={name}
             setTxHistoryModalOpen={setTxHistoryModalOpen}

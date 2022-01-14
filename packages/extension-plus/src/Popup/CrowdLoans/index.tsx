@@ -1,6 +1,6 @@
-/* eslint-disable header/header */
-// Copyright 2019-2021 @polkadot/extension-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
 import type { ThemeProps } from '../../../../extension-ui/src/types';
 
@@ -23,7 +23,7 @@ import { Header } from '../../../../extension-ui/src/partials';
 import { RELAY_CHAINS } from '../../util/constants';
 import getLogo from '../../util/getLogo';
 import getNetworkInfo from '../../util/getNetwork';
-import { Auction, Crowdloan } from '../../util/pjpeTypes';
+import { Auction, Crowdloan } from '../../util/plusTypes';
 import { NothingToShow } from '../common/NothingToShow';
 import ConfirmCrowdloan from './ConfirmContribution';
 import Fund from './Fund';

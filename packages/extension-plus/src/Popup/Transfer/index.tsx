@@ -1,14 +1,13 @@
-// Copyright 2019-2021 @polkadot/extension-plus authors & contributors
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-import type { AccountJson, AccountWithChildren } from '@polkadot/extension-base/background/types';
 import type { SettingsStruct } from '@polkadot/ui-settings/types';
 import type { KeypairType } from '@polkadot/util-crypto/types';
+import type { AccountJson, AccountWithChildren } from '../../../../extension-base/src/background/types';
 
-import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ArrowBackIosRounded, CheckRounded as CheckRoundedIcon, Clear as ClearIcon } from '@mui/icons-material';
+import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Alert, Avatar, Box, Button, Container, Divider, Grid, IconButton, InputAdornment, List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader, Modal, TextField, Tooltip } from '@mui/material';
 import grey from '@mui/material/colors/grey';
@@ -20,18 +19,18 @@ import keyring from '@polkadot/ui-keyring';
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
 import { Chain } from '../../../../extension-chains/src/types';
-import { ActionText, NextStepButton } from '../../../../extension-ui/src/components';
+import { NextStepButton } from '../../../../extension-ui/src/components';
 import { AccountContext, SettingsContext } from '../../../../extension-ui/src/components/contexts';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { DEFAULT_TYPE } from '../../../../extension-ui/src/util/defaultType';
-import { DEFAULT_COIN } from '../../util/constants';
-// import getLogo from '../../util/getLogo';
+import getChainInfo from '../../util/getChainInfo';
 import getFee from '../../util/getFee';
 import getLogo from '../../util/getLogo';
 import getNetworkInfo from '../../util/getNetwork';
-import { AccountsBalanceType } from '../../util/pjpeTypes';
-import { amountToHuman, amountToMachine, balanceToHuman, fixFloatingPoint } from '../../util/pjpeUtils';
+import { AccountsBalanceType } from '../../util/plusTypes';
+import { amountToHuman, amountToMachine, balanceToHuman, fixFloatingPoint } from '../../util/plusUtils';
 import isValidAddress from '../../util/validateAddress';
+import PlusHeader from '../common/PlusHeader';
 import ConfirmTx from './ConfirmTransfer';
 
 interface Props {
@@ -53,8 +52,7 @@ interface Recoded {
   type: KeypairType;
 }
 
-export default function TransferFunds({ chain, givenType, sender, setTransferModalOpen, transferModalOpen,
-}: Props): React.ReactElement<Props> {
+export default function TransferFunds({ chain, givenType, sender, setTransferModalOpen, transferModalOpen }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { accounts } = useContext(AccountContext);
   const [availableBalance, setAvailableBalance] = useState<string>('');
@@ -73,6 +71,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
   const [allAddresesOnThisChain, setAllAddresesOnThisChain] = useState<AccountsBalanceType[] | null>();
   const [transferBetweenMyAccountsButtonText, setTransferBetweenMyAccountsButtonText] = useState<string>(t('Transfer between my accounts'));
   const [coin, setCoin] = useState('');
+  const [decimals, setDecimals] = useState<number>(1);
   const [ED, setED] = useState(0);
   const [allAmountLoading, setAllAmountLoading] = useState(false);
   const [safeMaxAmountLoading, setsafeMaxAmountLoading] = useState(false);
@@ -80,21 +79,19 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
   const [senderAddressOpacity, setSenderAddressOpacity] = useState<number>(0.2);
 
   useEffect(() => {
-    if (recepientAddressIsValid) { setSenderAddressOpacity(0.7) }
-    else setSenderAddressOpacity(0.2)
+    if (recepientAddressIsValid) { setSenderAddressOpacity(0.7); } else setSenderAddressOpacity(0.2);
   }, [recepientAddressIsValid]);
 
   useEffect((): void => {
-    const { ED, coin } = getNetworkInfo(chain);
-
-    setCoin(coin || DEFAULT_COIN);
+    const { ED } = getNetworkInfo(chain);
     setED(ED || 0);
-
-    console.log('chain', chain)
+    console.log('chain', chain);
   }, [chain]);
 
   useEffect((): void => {
     setAvailableBalance(balanceToHuman(sender, 'available'));
+    setCoin(sender.balanceInfo?.coin);
+    setDecimals(sender.balanceInfo?.decimals);
   }, [sender]);
 
   // find an account in our list
@@ -147,7 +144,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
 
   function handleAddressIsValid(_isValid: boolean, _address: string, _name?: string) {
     setRecepient({ address: _address, chain: null, name: _name });
-    console.log('{ address: _address, chain: null, name: String(_name) },', _name)
+    console.log('{ address: _address, chain: null, name: String(_name) },', _name);
     setRecepientAddressIsValid(_isValid);
   }
 
@@ -165,7 +162,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
       setZeroBalanceAlert(false);
     }
 
-    const { decimals, defaultFee } = getNetworkInfo(chain);
+    const { defaultFee } = getNetworkInfo(chain);
 
     if (Number(transferAmountInHuman) < Number(availableBalance) &&
       (Number(availableBalance) < Number(transferAmountInHuman) +
@@ -204,7 +201,6 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
   }
 
   function handleTransferAmountOnBlur(value: string) {
-    const { decimals } = getNetworkInfo(chain);
     let floatingPointDigit = 0;
     const v = value.split('.');
 
@@ -256,7 +252,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
       return;
     }
 
-    const { ED, decimals } = getNetworkInfo(chain);
+    const { ED } = getNetworkInfo(chain);
 
     setLastFee(fee);
     let subtrahend = BigInt(fee);
@@ -404,42 +400,42 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
       }}
       >
 
-        <Container disableGutters maxWidth='md' sx={{ marginTop: 2 }}>
-          <Grid item alignItems='center' container justifyContent='space-between' sx={{ padding: '0px 20px' }}>
-            <Grid item>
-              <Avatar
-                alt={'logo'}
-                src={getLogo(chain)}
-              />
-            </Grid>
-            <Grid item sx={{ fontSize: 15, fontWeight: 600 }}>
-              <FontAwesomeIcon
-                className='sendIcon'
-                icon={faPaperPlane}
-                size='sm'
-              />
-              {' '} {t('Transfer Funds')}
-            </Grid>
-            <Grid item sx={{ fontSize: 15 }}>
-              <ActionText
-                onClick={handleTransferModalClose}
-                text={t('Close')}
-              />
-            </Grid>
-          </Grid>
+        <Container
+          disableGutters
+          maxWidth='md'
+        >
+          <PlusHeader
+            action={handleTransferModalClose}
+            chain={chain}
+            closeText={'Close'}
+            icon={<SendOutlinedIcon />}
+            title={'Transfer Funds'}
+          />
 
-          <Grid xs={12}>
-            <Divider />
-          </Grid>
+          <Grid
+            alignItems='center'
+            container
+            justifyContent='center'
+            sx={{ padding: '5px 20px' }}
+          >
 
-          <Grid alignItems='center' container justifyContent='center' sx={{ padding: '5px 20px' }}>
-
-            <Grid item xs={12} id='senderAddress' container spacing={1} alignItems='center'
-              sx={{ opacity: senderAddressOpacity, padding: '20px 10px 50px' }} justifyContent='flex-start'>
-              <Grid item sx={{ color: grey[800], fontSize: 13, textAlign: 'left' }}>
+            <Grid
+              alignItems='center'
+              container
+              id='senderAddress'
+              item
+              justifyContent='flex-start'
+              spacing={1}
+              sx={{ opacity: senderAddressOpacity, padding: '20px 10px 50px' }}
+              xs={12}
+            >
+              <Grid
+                item
+                sx={{ color: grey[800], fontSize: 13, textAlign: 'left' }}
+              >
                 {t('Sender')}:
               </Grid>
-              <Grid item >
+              <Grid item>
                 <Identicon
                   prefix={chain?.ss58Format ?? 42}
                   size={18}
@@ -447,12 +443,19 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
                   value={sender.address}
                 />
               </Grid>
-              <Grid item sx={{ fontSize: 12, textAlign: 'left' }}>
+              <Grid
+                item
+                sx={{ fontSize: 12, textAlign: 'left' }}
+              >
                 {sender.name ? `${sender.name} (${sender.address})` : makeAddressShort(String(sender.address))}
               </Grid>
             </Grid>
 
-            <Grid item xs={12} sx={{ paddingBottom: '20px' }}>
+            <Grid
+              item
+              sx={{ paddingBottom: '20px' }}
+              xs={12}
+            >
               <TextField
                 InputProps={{
                   endAdornment: (
@@ -495,7 +498,11 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
           </Grid>
 
           {!recepientAddressIsValid &&
-            <Grid item xs={12} sx={{ paddingLeft: '20px' }}>
+            <Grid
+              item
+              sx={{ paddingLeft: '20px' }}
+              xs={12}
+            >
               <Button
                 fullWidth
                 onClick={showAlladdressesOnThisChain}
@@ -518,19 +525,43 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
                 sx={{ padding: '30px 30px 20px' }}
                 xs={12}
               >
-                <Grid item sx={{ color: grey[800], fontSize: '15px', fontWeight: '600', marginTop: 5, textAlign: 'left' }} xs={3}>
+                <Grid
+                  item
+                  sx={{ color: grey[800], fontSize: '15px', fontWeight: '600', marginTop: 5, textAlign: 'left' }}
+                  xs={3}
+                >
                   {t('Asset:')}
                 </Grid>
-                <Grid item xs={9}>
-                  <Box mt={2} sx={{ border: '1px groove silver', borderRadius: '10px', p: 1 }}>
-                    <Grid container justifyContent='flex-start' spacing={1}>
-                      <Grid item xs={2}>
-                        <Avatar alt={`${coin} logo`} // src={getLogoSource(coin)} 
+                <Grid
+                  item
+                  xs={9}
+                >
+                  <Box
+                    mt={2}
+                    sx={{ border: '1px groove silver', borderRadius: '10px', p: 1 }}
+                  >
+                    <Grid
+                      container
+                      justifyContent='flex-start'
+                      spacing={1}
+                    >
+                      <Grid
+                        item
+                        xs={2}
+                      >
+                        <Avatar
+                          alt={`${coin} logo`} // src={getLogoSource(coin)}
                           src={getLogo(chain)}
                           sx={{ height: 45, width: 45 }}
                         />
                       </Grid>
-                      <Grid container direction='column' item justifyContent='flex-start' xs={10}>
+                      <Grid
+                        container
+                        direction='column'
+                        item
+                        justifyContent='flex-start'
+                        xs={10}
+                      >
                         <Grid sx={{ fontSize: '14px', textAlign: 'left' }}>{coin}</Grid>
                         <Grid sx={{ fontSize: '12px', textAlign: 'left' }}>{t('Available Balance')}: {availableBalance}</Grid>
                       </Grid>
@@ -538,11 +569,19 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
                   </Box>
                 </Grid>
 
-                <Grid item sx={{ fontSize: '15px', fontWeight: '600', color: grey[800], marginTop: '30px', textAlign: 'left' }} xs={3}>
+                <Grid
+                  item
+                  sx={{ fontSize: '15px', fontWeight: '600', color: grey[800], marginTop: '30px', textAlign: 'left' }}
+                  xs={3}
+                >
                   {t('Amount:')}
 
                   <Grid item>
-                    <Tooltip placement='right-end' title={t<string>('Transfer all amount and deactivate the account.')} arrow>
+                    <Tooltip
+                      arrow
+                      placement='right-end'
+                      title={t<string>('Transfer all amount and deactivate the account.')}
+                    >
                       <LoadingButton
                         color='primary'
                         disabled={safeMaxAmountLoading}
@@ -559,7 +598,11 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
                   </Grid>
 
                   <Grid item>
-                    <Tooltip placement='right-end' title={t<string>('Transfer max amount where the account remains active.')} arrow>
+                    <Tooltip
+                      arrow
+                      placement='right-end'
+                      title={t<string>('Transfer max amount where the account remains active.')}
+                    >
                       <LoadingButton
                         color='primary'
                         disabled={allAmountLoading}
@@ -626,13 +669,14 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
                   availableBalance={availableBalance}
                   chain={chain}
                   coin={coin}
+                  confirmModalOpen={confirmModalOpen}
+                  decimals={decimals}
                   handleTransferModalClose={handleTransferModalClose}
                   lastFee={lastFee}
                   recepient={recepient}
                   sender={sender}
-                  transferAmount={transferAmount}
                   setConfirmModalOpen={setConfirmModalOpen}
-                  confirmModalOpen={confirmModalOpen}
+                  transferAmount={transferAmount}
                 />
                 : ''}
             </div>

@@ -1,12 +1,13 @@
-// [object Object]
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
 // eslint-disable-next-line header/header
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { KeyringPair } from '@polkadot/keyring/types';
 
 import getNetworkInfo from './getNetwork';
-import { TxInfo } from './pjpeTypes';
+import { TxInfo } from './plusTypes';
 import { signAndSend } from './signAndSend';
 
 export default async function contribute(

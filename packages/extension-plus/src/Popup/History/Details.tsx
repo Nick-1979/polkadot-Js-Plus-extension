@@ -1,23 +1,23 @@
-// Copyright 2019-2021 @polkadot/extension-plus authors & contributors
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
 import { faCopy } from '@fortawesome/free-regular-svg-icons';
+import DetailsIcon from '@mui/icons-material/Details';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Feed as FeedIcon, LaunchRounded } from '@mui/icons-material';
-import { Avatar, Box, Chip, Container, Divider, Grid, Link, Modal, Paper } from '@mui/material';
+import { LaunchRounded } from '@mui/icons-material';
+import { Box, Chip, Container, Divider, Grid, Link, Modal, Paper } from '@mui/material';
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import ReactDom from 'react-dom';
 
 import { Chain } from '@polkadot/extension-chains/types';
 
-import ActionText from '../../../../extension-ui/src/components/ActionText';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { SHORT_ADDRESS_CHARACTERS } from '../../util/constants';
-import getLogo from '../../util/getLogo';
-import { TransactionDetail } from '../../util/pjpeTypes';
-import { amountToHuman } from '../../util/pjpeUtils';
+import { TransactionDetail } from '../../util/plusTypes';
+import { amountToHuman } from '../../util/plusUtils';
+import PlusHeader from '../common/PlusHeader';
 import { getIcon } from './getIcons';
 
 interface Props {
@@ -116,29 +116,10 @@ export default function Details({
         width: '560px'
       }}
       >
-        <Container id='scrollArea' disableGutters maxWidth='md' sx={{ marginTop: 2 }}>
-          <Grid item id='header' alignItems='center' container justifyContent='space-between' sx={{ padding: '0px 20px' }}>
-            <Grid item>
-              <Avatar
-                alt={'logo'}
-                src={getLogo(chain)}
-              />
-            </Grid>
-            <Grid item sx={{ fontSize: 15, fontWeight: 600 }}>
-              < FeedIcon /> {t('Transaction Detail')}
-            </Grid>
-            <Grid item sx={{ fontSize: 15 }}>
-              <ActionText
-                onClick={handleDetailsModalClose}
-                text={t<string>('Close')}
-              />
-            </Grid>
-          </Grid>
-          <Grid xs={12}>
-            <Divider />
-          </Grid>
+        <Container id='scrollArea' disableGutters maxWidth='md'>
+          <PlusHeader action={handleDetailsModalClose} chain={chain} closeText={'Close'} icon={<DetailsIcon/>} title={'Transaction Detail'} />
 
-          <Grid item xs={12} sx={{ padding: '25px 15px 8px' }}>
+          <Grid item xs={12} sx={{ padding: '15px 15px 8px' }}>
             <Paper elevation={3}>
               <Grid item container justifyContent='center' sx={{ fontSize: 11, textAlign: 'center', padding: '30px 10px 20px' }}>
                 <Grid item xs={12} >

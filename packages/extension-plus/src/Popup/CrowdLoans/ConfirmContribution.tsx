@@ -1,6 +1,6 @@
-/* eslint-disable header/header */
-// Copyright 2019-2021 @polkadot/extension-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
 import { CheckRounded, Clear } from '@mui/icons-material';
 import { Avatar, Button as MuiButton, Container, Divider, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Modal, Select, SelectChangeEvent, TextField } from '@mui/material';
@@ -22,8 +22,8 @@ import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import contribute from '../../util/contribute';
 import getLogo from '../../util/getLogo';
 import getNetworkInfo from '../../util/getNetwork';
-import { Auction, Crowdloan, TransactionDetail } from '../../util/pjpeTypes';
-import { amountToHuman, amountToMachine, fixFloatingPoint, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/pjpeUtils';
+import { Auction, Crowdloan, TransactionDetail } from '../../util/plusTypes';
+import { amountToHuman, amountToMachine, fixFloatingPoint, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/plusUtils';
 import Fund from './Fund';
 
 interface Props {

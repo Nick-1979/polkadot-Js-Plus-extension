@@ -1,30 +1,31 @@
-/* eslint-disable header/header */
-// Copyright 2019-2021 @polkadot/extension-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
-import ReactDom from 'react-dom';
 import type { KeypairType } from '@polkadot/util-crypto/types';
 
 import { ArrowForwardRounded, CheckRounded, Clear, InfoTwoTone as InfoTwoToneIcon, LaunchRounded, RefreshRounded } from '@mui/icons-material';
+import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
 import { Alert, Avatar, Box, Button as MuiButton, CircularProgress, Container, Divider, Grid, IconButton, InputAdornment, Modal, TextField, Tooltip } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
+import ReactDom from 'react-dom';
 
-import { AccountWithChildren } from '../../../../extension-base/src/background/types';
-import { Chain } from '../../../../extension-chains/src/types';
-import { updateMeta } from '../../../../extension-ui/src/messaging';
 import Identicon from '@polkadot/react-identicon';
 import keyring from '@polkadot/ui-keyring';
 
-import { ActionText, BackButton, Button } from '../../../../extension-ui/src/components';
+import { AccountWithChildren } from '../../../../extension-base/src/background/types';
+import { Chain } from '../../../../extension-chains/src/types';
+import { BackButton, Button } from '../../../../extension-ui/src/components';
 import { AccountContext } from '../../../../extension-ui/src/components/contexts';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
+import { updateMeta } from '../../../../extension-ui/src/messaging';
 import getFee from '../../util/getFee';
-import getLogo from '../../util/getLogo';
 import getNetworkInfo from '../../util/getNetwork';
-import { AccountsBalanceType, TransactionDetail, TransactionStatus } from '../../util/pjpeTypes';
-import { amountToHuman, fixFloatingPoint, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/pjpeUtils';
+import { AccountsBalanceType, TransactionDetail, TransactionStatus } from '../../util/plusTypes';
+import { amountToHuman, fixFloatingPoint, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/plusUtils';
 import signAndTransfer from '../../util/signAndTransfer';
+import PlusHeader from '../common/PlusHeader';
 
 interface Props {
   availableBalance: string;
@@ -35,6 +36,7 @@ interface Props {
   children?: React.ReactNode;
   className?: string;
   confirmModalOpen: boolean;
+  decimals: number;
   setConfirmModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   genesisHash?: string | null;
   isExternal?: boolean | null;
@@ -54,13 +56,14 @@ const PASS_MAP = {
   EMPTY: 0,
   INCORRECT: -1,
   CORRECT: 1
-}
+};
 
 export default function ConfirmTx({
   availableBalance,
   chain,
   coin,
   confirmModalOpen,
+  decimals,
   handleTransferModalClose,
   lastFee,
   recepient,
@@ -84,8 +87,6 @@ export default function ConfirmTx({
   const { hierarchy } = useContext(AccountContext);
 
   useEffect(() => {
-    const { decimals } = getNetworkInfo(chain);
-
     setTransferAmountInHuman(amountToHuman(String(transferAmount), decimals));
     console.log('chain:', chain);
   }, [chain, transferAmount]);
@@ -115,8 +116,6 @@ export default function ConfirmTx({
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       const { block, failureText, fee, status, txHash } = await signAndTransfer(pair, String(recepient.address), transferAmount, chain, setTxStatus)
-
-      const { decimals } = getNetworkInfo(chain);
 
       const currentTransactionDetail: TransactionDetail = {
         action: 'send',
@@ -169,7 +168,7 @@ export default function ConfirmTx({
   }
 
   function getDefaultFeeAndSetTotal(lastFee?: string): void {
-    const { decimals, defaultFee } = getNetworkInfo(chain);
+    const { defaultFee } = getNetworkInfo(chain);
 
     lastFee = lastFee || defaultFee;
 
@@ -209,14 +208,6 @@ export default function ConfirmTx({
   const openTxOnExplorer = useCallback(() => window.open('https://' + network + '.subscan.io/extrinsic/' + String(transactionHash), '_blank')
     , [network, transactionHash]);
 
-  // function handleConfirmModaOpen(): void {
-  //   setConfirmModalOpen(true);
-  // }
-
-  // function handleNext() {
-  //   handleConfirmModaOpen();
-  // }
-
   const refreshNetworkFee = (): void => {
     setFee('');
     const localConfirmDisabled = confirmDisabled;
@@ -234,7 +225,6 @@ export default function ConfirmTx({
           return;
         }
 
-        const { decimals } = getNetworkInfo(chain);
         const t = transferAmount + BigInt(f);
         const fixedPointTotal = fixFloatingPoint(Number(t) / (10 ** decimals));
 
@@ -284,42 +274,14 @@ export default function ConfirmTx({
         width: '560px'
       }}
       >
-        <Container disableGutters maxWidth='md' sx={{ marginTop: 2 }}>
-          <Grid container alignItems='center' >
-            <Grid item xs={12} alignItems='center' container justifyContent='space-between' sx={{ padding: '0px 20px' }}>
-              <Grid item sx={{ textAlign: 'right' }}>
-                <Avatar
-                  alt={'logo'}
-                  src={getLogo(chain)}
-                />
-              </Grid>
-              <Grid item justifyContent='center' sx={{ fontSize: 15 }}>
-                <div style={transfering ? { opacity: '0.4', pointerEvents: 'none' } : {}}>
-                  <ActionText
-                    // className={{'margin': 'auto'}}
-                    onClick={handleReject}
-                    text={t('Reject')}
-                  />
-                </div>
-              </Grid>
-            </Grid>
-            <Grid item xs={12}>
-              <Box fontSize={12} fontWeight='fontWeightBold'>
-                <Divider>
-                  {/* <Chip
-                      icon={<FontAwesomeIcon icon={faCoins} size='sm' />}
-                      label={t('Select Validators')}
-                      variant='outlined'
-                    /> */}
-                </Divider>
-              </Box>
-            </Grid>
-          </Grid>
-          <Grid container alignItems='center' justifyContent='space-around' sx={{ paddingTop: '20px' }}>
+        <Container disableGutters maxWidth='md'>
+          <PlusHeader action={handleReject} chain={chain} closeText={'Reject'} icon={<ConfirmationNumberIcon />} title={'Confirm Transfer'} />
+
+          <Grid container alignItems='center' justifyContent='space-around' sx={{ paddingTop: '10px' }}>
             <Grid item container alignItems='center' justifyContent='flex-end' xs={5}>
               {addressWithIdenticon(sender.name, sender.address)}
             </Grid>
-            <Grid item xs={2} >
+            <Grid item>
               <Divider orientation='vertical' flexItem>
                 <Avatar sx={{ bgcolor: grey[300] }}>
                   <ArrowForwardRounded fontSize='small' />
@@ -329,6 +291,9 @@ export default function ConfirmTx({
             <Grid item container alignItems='center' xs={5}>
               {addressWithIdenticon(recepient.name, recepient.address)}
             </Grid>
+          </Grid>
+
+          <Grid container alignItems='center' justifyContent='space-around' sx={{ paddingTop: '20px' }}>
             <Grid item container xs={12} sx={{ backgroundColor: '#f7f7f7', padding: '25px 40px 25px' }}>
               <Grid item xs={3} sx={{ padding: '5px 10px 5px', borderRadius: '5px', border: '2px double grey', justifyContent: 'flex-start', fontSize: 15, textAlign: 'center', fontVariant: 'small-caps' }}>
                 {t('transfer of')}
@@ -425,7 +390,7 @@ export default function ConfirmTx({
               />
             </Grid>
           </Grid>
-          <Grid container justifyContent='space-between' sx={{ padding: '40px 40px 10px' }}>
+          <Grid container justifyContent='space-between' sx={{ padding: '30px 40px 10px' }}>
             {txStatus && (txStatus.success !== null)
               ? <Grid item xs={12}>
                 <MuiButton fullWidth onClick={handleReject} variant='contained' size='large' color={txStatus.success ? 'success' : 'error'}>

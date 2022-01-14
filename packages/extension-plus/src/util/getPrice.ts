@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
-// [object Object]
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 // eslint-disable-next-line header/header
 import { Chain } from '@polkadot/extension-chains/types';
 import request from 'umi-request';

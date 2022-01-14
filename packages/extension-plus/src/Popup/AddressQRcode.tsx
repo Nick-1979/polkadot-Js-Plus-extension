@@ -1,16 +1,18 @@
-// Copyright 2019-2021 @polkadot/extension-plus authors & contributors
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-import { CloseRounded, PhotoCameraRounded } from '@mui/icons-material';
-import { Avatar, Box, Chip, Container, Divider, Grid, IconButton, Modal } from '@mui/material';
+import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
+import { Container, Grid, Modal } from '@mui/material';
 import QRCode from 'qrcode.react';
 import React, { Dispatch, SetStateAction, useCallback } from 'react';
 import ReactDom from 'react-dom';
 
-import { Chain } from '../../../../extension-ui/src/types';
+import Identicon from '@polkadot/react-identicon';
+
 import useTranslation from '../../../extension-ui/src/hooks/useTranslation';
-import getLogo from '../util/getLogo';
+import { Chain } from '../../../extension-ui/src/types';
+import PlusHeader from './common/PlusHeader';
 
 interface Props {
   address: string;
@@ -53,39 +55,30 @@ export default function AddressQRcode({ address, chain, name, setQRcodeModalOpen
         width: '560px'
       }}
       >
-        <Container>
-          <Grid container justifyContent='flex-start' xs={12} sx={{ paddingTop: '10px' }}>
-            <IconButton edge='start' size='small' onClick={handleQRmodalClose}>
-              <CloseRounded fontSize='small' />
-            </IconButton>
-          </Grid>
-          <Grid xs={12}>
-            <Box fontSize={12} fontWeight='fontWeightBold'>
-              <Divider>
-                <Chip icon={<PhotoCameraRounded />} label={t('Scan with Camera')} variant='outlined' />
-              </Divider>
-            </Box>
-          </Grid>
-          <Grid alignItems='center' container justifyContent='space-between' xs={12} sx={{ padding: '30px 60px 30px' }}>
-            <Grid item sx={{ fontSize: 20, fontWeight: 'fontWeightBold' }} >
-              {name || t('unknown')}
-            </Grid>
+        <Container disableGutters maxWidth='md'>
+          <PlusHeader action={handleQRmodalClose} chain={chain} closeText={'Close'} icon={<QrCodeScannerIcon />} title={'Scan with Camera'} />
 
-            <Grid item >
-              <Avatar
-                alt={'logo'}
-                src={getLogo(chain)}
-              // sx={{ height: 45, width: 45 }}
-              />
-            </Grid>
+          <Grid item xs={12} sx={{ fontSize: 18, fontWeight: 'fontWeightBold', textAlign: 'center', padding:'40px 1px 20px' }} >
+            {name || t('unknown')}
           </Grid>
+
           <Grid item xs={12} sx={{ textAlign: 'center' }}>
             <QRCode value={address} size={300} level='H' />
           </Grid>
-          <Grid item xs={12} sx={{ fontSize:14, textAlign: 'center', paddingTop: '25px' }}>
-            {address}
-          </Grid>
 
+          <Grid alignItems='center' container justifyContent='center' spacing={1} xs={12} sx={{ padding: '30px 50px' }}>
+            <Grid item>
+              <Identicon
+                prefix={chain?.ss58Format ?? 42}
+                size={24}
+                theme={chain?.icon || 'polkadot'}
+                value={address}
+              />
+            </Grid>
+            <Grid item sx={{ fontSize: 14, textAlign: 'center', paddingTop: '25px' }}>
+              {address}
+            </Grid>
+          </Grid>
 
         </Container>
       </div>

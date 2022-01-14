@@ -1,4 +1,4 @@
-// Copyright 2019-2021 @polkadot/extension-plus authors & contributors
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
@@ -20,7 +20,7 @@ import { DeriveStakingQuery } from '@polkadot/api-derive/types';
 import { Chain } from '@polkadot/extension-chains/types';
 
 import getNetworkInfo from '../../util/getNetwork';
-import { StakingConsts, ValidatorsName } from '../../util/pjpeTypes';
+import { StakingConsts, ValidatorsName } from '../../util/plusTypes';
 
 interface Props {
   chain?: Chain | null;

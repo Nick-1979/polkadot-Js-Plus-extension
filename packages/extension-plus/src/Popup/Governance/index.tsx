@@ -1,6 +1,6 @@
-/* eslint-disable header/header */
-// Copyright 2019-2021 @polkadot/extension-ui authors & contributors
+// Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable header/header */
 
 import type { ThemeProps } from '../../../../extension-ui/src/types';
 
@@ -18,7 +18,6 @@ interface Props extends ThemeProps {
   className?: string;
 }
 
-
 function Governance({ className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const [selectedRelaychain, setSelectedRelaychain] = useState<string>('polkadot');
@@ -26,8 +25,6 @@ function Governance({ className }: Props): React.ReactElement<Props> {
   const handleBlockchainChange = (event: SelectChangeEvent) => {
     setSelectedRelaychain(event.target.value);
   };
-
-  // const gotoPolkassembly = () => selectedRelaychain && window.open(`https://${selectedRelaychain}.polkassembly.io`, '_blank');
 
   return (
     <>
