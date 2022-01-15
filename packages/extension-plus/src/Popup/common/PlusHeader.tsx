@@ -13,7 +13,7 @@ import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import getLogo from '../../util/getLogo';
 
 interface Props {
-  chain: Chain;
+  chain: string | Chain;
   // icon: IconDefinition;
   icon:React.ReactElement;
   title: string;

@@ -6,13 +6,14 @@ import type { ThemeProps } from '../../../../extension-ui/src/types';
 
 import { AccountBalance, Groups, HowToVote } from '@mui/icons-material';
 import { Avatar, Container, FormControl, FormHelperText, Grid, InputLabel, Link, MenuItem, Paper, Select, SelectChangeEvent } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import styled from 'styled-components';
 
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { Header } from '../../../../extension-ui/src/partials';
 import { RELAY_CHAINS } from '../../util/constants';
 import getLogo from '../../util/getLogo';
+import Democracy from './Democracy';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -21,10 +22,15 @@ interface Props extends ThemeProps {
 function Governance({ className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const [selectedRelaychain, setSelectedRelaychain] = useState<string>('polkadot');
+  const [showDemocracyModal, setDemocracyModalOpen] = useState<boolean>(false);
 
   const handleBlockchainChange = (event: SelectChangeEvent) => {
     setSelectedRelaychain(event.target.value);
   };
+
+  const handleDemocracyModal = useCallback(() => {
+    setDemocracyModalOpen(true);
+  }, []);
 
   return (
     <>
@@ -34,7 +40,7 @@ function Governance({ className }: Props): React.ReactElement<Props> {
         text={t<string>('Governance')}
       />
       <Container>
-        <Grid item xs={12}sx={{ margin: '0px 30px' }}>
+        <Grid item xs={12} sx={{ margin: '0px 30px' }}>
           <FormControl fullWidth>
             <InputLabel id='select-relay-chain'>{t('Relay chain')}</InputLabel>
             <Select
@@ -63,7 +69,7 @@ function Governance({ className }: Props): React.ReactElement<Props> {
           </FormControl>
         </Grid>
 
-        <Paper elevation={4} sx={{ borderRadius: '10px', margin: '20px 30px 10px', p: '20px 40px' }}>
+        <Paper elevation={4} onClick={handleDemocracyModal} sx={{ borderRadius: '10px', cursor:'pointer', margin: '20px 30px 10px', p: '20px 40px' }}>
           <Grid container >
             <Grid item xs={4}>
               <HowToVote color='primary' fontSize='large' />
@@ -78,7 +84,7 @@ function Governance({ className }: Props): React.ReactElement<Props> {
             </Grid>
           </Grid>
         </Paper>
-        <Paper elevation={4} sx={{ borderRadius: '10px', margin: '20px 30px 10px', p: '20px 40px' }}>
+        <Paper elevation={4} sx={{ borderRadius: '10px', cursor:'pointer', margin: '20px 30px 10px', p: '20px 40px' }}>
           <Grid container >
             <Grid item xs={4}>
               <Groups color='success' fontSize='large' />
@@ -93,7 +99,7 @@ function Governance({ className }: Props): React.ReactElement<Props> {
             </Grid>
           </Grid>
         </Paper>
-        <Paper elevation={4} sx={{ borderRadius: '10px', margin: '20px 30px 10px', p: '20px 40px' }}>
+        <Paper elevation={4} sx={{ borderRadius: '10px', cursor:'pointer', margin: '20px 30px 10px', p: '20px 40px' }}>
           <Grid container >
             <Grid item xs={4}>
               <AccountBalance color='secondary' fontSize='large' />
@@ -134,20 +140,29 @@ function Governance({ className }: Props): React.ReactElement<Props> {
           </Paper>
         </Link>
       </Container>
+
+      {showDemocracyModal &&
+        <Democracy
+          chainName={selectedRelaychain}
+          setDemocracyModalOpen={setDemocracyModalOpen}
+          showDemocracyModal={showDemocracyModal}
+        />
+      }
+
     </>
   );
 }
 
 export default styled(Governance)`
-  height: calc(100vh - 2px);
-  overflow: auto;
-  scrollbar - width: none;
+      height: calc(100vh - 2px);
+      overflow: auto;
+      scrollbar - width: none;
 
-  &:: -webkit - scrollbar {
-    display: none;
-    width:0,
+      &:: -webkit - scrollbar {
+        display: none;
+      width:0,
   }
-  .empty-list {
-    text-align: center;
+      .empty-list {
+        text - align: center;
   }
-`;
+      `;

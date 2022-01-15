@@ -7,7 +7,8 @@ import type { Chain } from '@polkadot/extension-chains/types';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { createWsEndpoints } from '@polkadot/apps-config';
 
-const allEndpoints = createWsEndpoints((key, value) => value || key);
+const allEndpoints = createWsEndpoints((key: string, value: string | undefined) => value || key);
+
 
 interface chainInfo {
   api: ApiPromise;

@@ -11,7 +11,7 @@ import { Dispatch, SetStateAction } from 'react';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { KeyringPair } from '@polkadot/keyring/types';
 
-import getNetworkInfo from './getNetwork';
+import getChainInfo from './getChainInfo';
 import { TransactionStatus, TxInfo } from './plusTypes';
 
 export default async function signAndTransfer(
@@ -21,9 +21,7 @@ export default async function signAndTransfer(
   _chain: Chain | null | undefined,
   setTxStatus: Dispatch<SetStateAction<TransactionStatus>>): Promise<TxInfo> {
 
-  const { url } = getNetworkInfo(_chain);
-  const wsProvider = new WsProvider(url);
-  const api = await ApiPromise.create({ provider: wsProvider });
+  const { api } = await getChainInfo(_chain);
 
   return new Promise((resolve) => {
     try {

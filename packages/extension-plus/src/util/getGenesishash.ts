@@ -2,18 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-// Import the API, Keyring and some utility functions
-// eslint-disable-next-line header/header
-import { ApiPromise, WsProvider } from '@polkadot/api';
-
-import getNetworkInfo from './getNetwork';
+import getChainInfo from './getChainInfo';
 
 export default async function getGenesishash(_chainName: string): Promise<string> {
-  const { url } = getNetworkInfo(null,_chainName);
-
-  const wsProvider = new WsProvider(url);
-
-  const api = await ApiPromise.create({ provider: wsProvider });
-
+  const { api } = await getChainInfo(_chainName);
   return api.genesisHash.toHex();
 }

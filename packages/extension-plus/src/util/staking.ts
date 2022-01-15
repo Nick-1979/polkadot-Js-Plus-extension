@@ -8,8 +8,7 @@ import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { Chain } from '@polkadot/extension-chains/types';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { ISubmittableResult } from '@polkadot/types/types';
-
-import getNetworkInfo from './getNetwork';
+import getChainInfo from './getChainInfo';
 import { TxInfo, ValidatorsFromSubscan } from './plusTypes';
 import { postData } from './postData';
 import { signAndSend } from './signAndSend';
@@ -258,8 +257,6 @@ export async function getStakingReward(_chain: Chain | null | undefined, _staker
   });
 }
 
-
-
 export async function unbond(
   _chain: Chain | null | undefined,
   _controllerAccountId: string | null,
@@ -274,10 +271,7 @@ export async function unbond(
       return { status: 'failed' };
     }
 
-    const { url } = getNetworkInfo(_chain);
-
-    const wsProvider = new WsProvider(url);
-    const api = await ApiPromise.create({ provider: wsProvider });
+    const { api } = await getChainInfo(_chain);
 
     const unbonded = api.tx.staking.unbond(_value);
 
@@ -302,10 +296,7 @@ export async function nominate(
       return { status: 'failed' };
     }
 
-    const { url } = getNetworkInfo(_chain);
-
-    const wsProvider = new WsProvider(url);
-    const api = await ApiPromise.create({ provider: wsProvider });
+    const { api } = await getChainInfo(_chain);
     const nominated = api.tx.staking.nominate(_selectedValidators);
 
     return signAndSend(api, nominated, _signer);
@@ -326,9 +317,7 @@ export async function getCurrentEraIndex(_chain: Chain | null | undefined): Prom
       return null;
     }
 
-    const { url } = getNetworkInfo(_chain);
-    const wsProvider = new WsProvider(url);
-    const api = await ApiPromise.create({ provider: wsProvider });
+    const { api } = await getChainInfo(_chain);
 
     return new Promise((resolve) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -366,10 +355,8 @@ export async function bondOrBondExtra(
      * Account - Pay into a custom account.
      * Controller - Pay into the controller account.
      */
-    const { url } = getNetworkInfo(_chain);
 
-    const wsProvider = new WsProvider(url);
-    const api = await ApiPromise.create({ provider: wsProvider });
+    const { api } = await getChainInfo(_chain);
     let bonded: SubmittableExtrinsic<'promise', ISubmittableResult>;
 
     if (Number(_alreadyBondedAmount) > 0) {
@@ -399,9 +386,7 @@ export async function chill(
       return { status: 'failed' };
     }
 
-    const { url } = getNetworkInfo(_chain);
-    const wsProvider = new WsProvider(url);
-    const api = await ApiPromise.create({ provider: wsProvider });
+    const { api } = await getChainInfo(_chain);
     const chilled = api.tx.staking.chill();
 
     return signAndSend(api, chilled, _signer);
@@ -425,9 +410,7 @@ export async function withdrawUnbonded(
       return { status: 'failed' };
     }
 
-    const { url } = getNetworkInfo(_chain);
-    const wsProvider = new WsProvider(url);
-    const api = await ApiPromise.create({ provider: wsProvider });
+    const { api } = await getChainInfo(_chain);
 
     const optSpans = await api.query.staking.slashingSpans(_controllerId);
     const spanCount = optSpans.isNone ? 0 : optSpans.unwrap().prior.length + 1;
