@@ -100,10 +100,6 @@ export default function ConfirmTx({
     return updateMeta(accountSubstrateAddress, prepareMetaData(chain, 'history', savedHistory));
   }
 
-  useEffect(() => {
-    if (!transactionHash || !chain) { return; }
-  }, [transactionHash, txStatus, chain]);
-
   async function handleConfirmTransfer() {
     // console.log('handleConfirmTransfer is runing ...')
     setTransfering(true);
