@@ -23,6 +23,7 @@ import { AccountsBalanceType, AllValidatorsFromSubscan, savedMetaData, StakingCo
 import { amountToHuman, amountToMachine, balanceToHuman, fixFloatingPoint, prepareMetaData } from '../../util/plusUtils';
 import { getAllValidatorsFromSubscan, getStakingReward } from '../../util/staking';
 import PlusHeader from '../common/PlusHeader';
+import Progress from '../common/Progress';
 import ConfirmStaking from './ConfirmStaking';
 import SelectValidators from './SelectValidators';
 import ValidatorsList from './ValidatorsList';
@@ -539,7 +540,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
     setAlert('');
     setUnstakeAmountInHuman(fixFloatingPoint(value));
 
-    if (!Number(value)) {return;}
+    if (!Number(value)) { return; }
 
     const currentlyStaked = BigInt(ledger ? ledger.active.toString() : '0');
 
@@ -968,15 +969,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
                     </Grid>
                   </Grid>
                   : !noNominatedValidators
-                    ? <Grid container direction='column' alignItems='center' justifyContent='center' sx={{ paddingTop: '40px' }} >
-                      <Grid item>
-                        <CircularProgress />
-                      </Grid>
-                      <Grid item sx={{ fontSize: 13, paddingTop: '20px' }}>
-                        {t('Getting nominators ...')}
-                      </Grid>
-                    </Grid>
-
+                    ? <Progress title={'Getting nominators ...'} />
                     : <Grid xs={12} sx={{ fontSize: 13, marginTop: '60px', textAlign: 'center' }}>
                       {t('You do not nominated any validators yet.')}
                     </Grid>
@@ -1008,14 +1001,8 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
                         {t('Minimum')} {coin}s {t('that must remain in you account: ')} <Box component='span' sx={{ fontWeight: 'bold' }}> {amountToHuman(String(stakingConsts?.existentialDeposit), decimals)}</Box> {coin}s {t('plus some fees')}
                       </Grid>
                     </>
-                    : <>
-                      <Grid xs={12} sx={{ padding: '20px 1px 20px' }} >
-                        <CircularProgress />
-                      </Grid>
-                      <Grid xs={12} sx={{ fontSize: 11 }}>
-                        {t('Getting information ...')}
-                      </Grid>
-                    </>}
+                    : <Progress title={'Getting information ...'} />
+                  }
                 </Grid>
               </TabPanel>
             </Grid>
