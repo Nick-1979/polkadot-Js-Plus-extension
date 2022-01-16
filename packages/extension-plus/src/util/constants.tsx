@@ -4,6 +4,7 @@
 
 // eslint-disable-next-line header/header
 export const FLOATING_POINT_DIGIT = 5;
+export const BLOCK_RATE = 6 //sec
 export const DEFAULT_TOKEN_DECIMALS = 12;
 export const MIN_EXTRA_BOND = 1 / (10 ** FLOATING_POINT_DIGIT);
 export const DEFAULT_COIN = 'WND';
