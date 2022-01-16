@@ -6,7 +6,7 @@ import type { ThemeProps } from '../../../../extension-ui/src/types';
 
 import { AccountBalance, Groups, HowToVote } from '@mui/icons-material';
 import { Avatar, Container, FormControl, FormHelperText, Grid, InputLabel, Link, MenuItem, Paper, Select, SelectChangeEvent } from '@mui/material';
-import React, { useState, useCallback } from 'react';
+import React, { useCallback,useState } from 'react';
 import styled from 'styled-components';
 
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
@@ -14,7 +14,7 @@ import { Header } from '../../../../extension-ui/src/partials';
 import { RELAY_CHAINS } from '../../util/constants';
 import getLogo from '../../util/getLogo';
 import Democracy from './Democracy/index';
-import Council from './Council';
+import CouncilIndex from './Council/index';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -156,7 +156,7 @@ function Governance({ className }: Props): React.ReactElement<Props> {
       }
       
       {showCouncilModal &&
-        <Council
+        <CouncilIndex
           chainName={selectedRelaychain}
           setCouncilModalOpen={setCouncilModalOpen}
           showCouncilModal={showCouncilModal}

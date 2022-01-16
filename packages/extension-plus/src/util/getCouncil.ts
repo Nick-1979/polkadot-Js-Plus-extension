@@ -2,26 +2,33 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-import getChainInfo from './getChainInfo';
+import type { DeriveElectionsInfo } from '@polkadot/api-derive/types';
+
 import { hexToBn, hexToString } from '@polkadot/util';
 
+import getChainInfo from './getChainInfo';
+
 const DEFAULT_IDENTITY = {
-  // 'judgements': [],
-  //  'deposit':202580000000,
-  info: {
-    // 'additional':[],
-    display: null,
-    legal: null,
-    web: null,
-    //  'riot':{'none':null},
-    email: null,
-    //  'pgpFingerprint':null,
-    //  'image':{'none':null},
-    twitter: null
-  }
+  display: null,
+  legal: null,
+  web: null,
+  email: null,
+  twitter: null
 };
 
-async function getIdentities (_chainName, _address) {
+interface identity {
+  display: string;
+  legal: string;
+  web: string;
+  email: string;
+  twitter: string;
+}
+
+interface councilInfo extends DeriveElectionsInfo {
+  identities: identity[];
+}
+
+async function getIdentities(_chainName, _address) {
   console.log(`getting identities of .... on ${_chainName}`);
 
   const { api } = await getChainInfo(_chainName);
@@ -60,15 +67,17 @@ async function getIdentities (_chainName, _address) {
 }
 
 
-export default async function getCouncil(_chain: string, type: string): Promise<any> {
-
+export default async function getCouncil(_chain: string, type: string): Promise<councilInfo> {
   const { api } = await getChainInfo(_chain);
 
-  
-   const council = await api.derive.council.members();
-   getIdentities(_chain,council)
+  let info = await api.derive.elections.info();
+  const ids = info.members.map((m) => m[0]).concat(info.runnersUp.map((c) => c[0]));
 
-  console.log('council:', council.toString())
+  const identities = await getIdentities(_chain, ids);
 
-  return council;
+  info['identities'] = identities;
+
+  console.log('info:', info);
+
+  return info as councilInfo;
 }

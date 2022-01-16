@@ -2,19 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-import { OpenInNew as OpenInNewIcon, BatchPrediction as BatchPredictionIcon, CheckCircleOutline as CheckCircleOutlineIcon, HowToVote as HowToVoteIcon, RemoveCircleOutline as RemoveCircleOutlineIcon, ThumbDownAlt as ThumbDownAltIcon, ThumbUpAlt as ThumbUpAltIcon, WhereToVote as WhereToVoteIcon } from '@mui/icons-material';
-import { Button, Container, Divider, Grid, Link, LinearProgress, Modal, Paper, Tab, Tabs } from '@mui/material';
+import { BatchPrediction as BatchPredictionIcon, CheckCircleOutline as CheckCircleOutlineIcon, HowToVote as HowToVoteIcon, OpenInNew as OpenInNewIcon, RemoveCircleOutline as RemoveCircleOutlineIcon, ThumbDownAlt as ThumbDownAltIcon, ThumbUpAlt as ThumbUpAltIcon, WhereToVote as WhereToVoteIcon } from '@mui/icons-material';
+import { Button, Container, Divider, Grid, LinearProgress, Link, Modal, Paper, Tab, Tabs } from '@mui/material';
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 import ReactDom from 'react-dom';
+
+import { DeriveProposal,DeriveReferendumExt } from '@polkadot/api-derive/types';
 
 import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
 import getChainInfo from '../../../util/getChainInfo';
 import getCouncil from '../../../util/getCouncil';
-import Councils from './Councils';
+import getCurrentBlockNumber from '../../../util/getCurrentBlockNumber';
 import PlusHeader from '../../common/PlusHeader';
 import Progress from '../../common/Progress';
-import { DeriveReferendumExt, DeriveProposal } from '@polkadot/api-derive/types';
-import getCurrentBlockNumber from '../../../util/getCurrentBlockNumber';
+import Council from './Council';
 
 interface Props {
   chainName: string;
@@ -22,10 +23,10 @@ interface Props {
   setCouncilModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function Council({ chainName, setCouncilModalOpen, showCouncilModal }: Props): React.ReactElement<Props> {
+export default function CouncilIndex({ chainName, setCouncilModalOpen, showCouncilModal }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const [tabValue, setTabValue] = useState('council');
-  const [council, setReferenduns] = useState<DeriveReferendumExt[]>();
+  const [council, setCouncil] = useState<DeriveReferendumExt[]>();
   const [motions, setMotions] = useState<DeriveProposal[]>();
   const [decimals, setDecimals] = useState<number>(1);
   const [coin, setCoin] = useState<string>();
@@ -39,16 +40,18 @@ export default function Council({ chainName, setCouncilModalOpen, showCouncilMod
     });
 
     // eslint-disable-next-line no-void
-    void getCouncil(chainName, 'council').then(r => {
-      setReferenduns(r);
+    void getCouncil(chainName, 'council').then((c) => {
+      console.log('ccccccccc',c)
+      setCouncil(c);
     });
 
-
-    getCurrentBlockNumber(chainName).then((n)=>{
+    // eslint-disable-next-line no-void
+    void getCurrentBlockNumber(chainName).then((n) => {
       setCurrentBlockNumber(n);
-    })
-    
-  }, [chainName])
+    });
+
+  }, []);
+
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
   };
@@ -95,17 +98,17 @@ export default function Council({ chainName, setCouncilModalOpen, showCouncilMod
             </Grid>
             {tabValue === 'council'
               ? <>{council
-                ? <Council council={council} chainName={chainName} coin={coin} decimals={decimals} currentBlockNumber={currentBlockNumber}/>
+                ? <Council council={council} chainName={chainName} coin={coin} decimals={decimals} currentBlockNumber={currentBlockNumber} />
                 : <Progress title={'Getting Council ...'} />}
               </>
               : ''}
 
-            {tabValue === 'motions'
+            {/* {tabValue === 'motions'
               ? <>{motions
                 ? <Council council={council} chainName={chainName} coin={coin} decimals={decimals} />
                 : <Progress title={'Getting Motions ...'} />}
               </>
-              : ''}
+              : ''} */}
 
           </Grid>
         </Container>

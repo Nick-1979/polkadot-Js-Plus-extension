@@ -2,16 +2,18 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-import { Paper, Grid, Link, Divider, LinearProgress, Button } from '@mui/material';
-import { DeriveReferendumExt } from '@polkadot/api-derive/types';
-import { OpenInNew as OpenInNewIcon, CheckCircleOutline as CheckCircleOutlineIcon, HowToVote as HowToVoteIcon, RemoveCircleOutline as RemoveCircleOutlineIcon, ThumbDownAlt as ThumbDownAltIcon, ThumbUpAlt as ThumbUpAltIcon, WhereToVote as WhereToVoteIcon } from '@mui/icons-material';
-import { amountToHuman } from '../../../util/plusUtils';
-import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
+import { CheckCircleOutline as CheckCircleOutlineIcon, HowToVote as HowToVoteIcon, OpenInNew as OpenInNewIcon, RemoveCircleOutline as RemoveCircleOutlineIcon, ThumbDownAlt as ThumbDownAltIcon, ThumbUpAlt as ThumbUpAltIcon, WhereToVote as WhereToVoteIcon } from '@mui/icons-material';
+import { Button,Divider, Grid, LinearProgress, Link, Paper } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+
+import { DeriveReferendumExt } from '@polkadot/api-derive/types';
+
+import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
 import { BLOCK_RATE } from '../../../util/constants';
+import { amountToHuman } from '../../../util/plusUtils';
 
 interface Props {
-    referendums: DeriveReferendumExt[];
+    council: DeriveReferendumExt[];
     chainName: string;
     coin: string;
     decimals: number;
@@ -40,13 +42,13 @@ function remainingTime(currentBlockNumber: number, end: number): string {
     return time;
 }
 
-export default function Councils({ chainName, coin, currentBlockNumber, decimals, referendums }: Props): React.ReactElement<Props> {
+export default function Council({ chainName, coin, council, currentBlockNumber, decimals }: Props): React.ReactElement<Props> {
     const { t } = useTranslation();
 
     return (
         <>
-            {referendums?.length
-                ? referendums.map((r, index) => (
+            {/* {council?.length
+                ? council.map((r, index) => (
                     <Paper elevation={4} key={index} sx={{ borderRadius: '10px', margin: '20px 30px 10px', p: '10px 40px' }}>
                         <Grid container justifyContent='space-between'>
                             <Grid item>
@@ -130,8 +132,8 @@ export default function Councils({ chainName, coin, currentBlockNumber, decimals
 
                     </Paper>))
                 : <Grid xs={12} sx={{ textAlign: 'center', paddingTop: 3 }}>
-                    {t('No active referendum')}
-                </Grid>}
+                    {t('No data')}
+                </Grid>} */}
         </>
     )
 }
