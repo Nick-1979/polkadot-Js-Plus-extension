@@ -13,7 +13,8 @@ import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { Header } from '../../../../extension-ui/src/partials';
 import { RELAY_CHAINS } from '../../util/constants';
 import getLogo from '../../util/getLogo';
-import Democracy from './Democracy';
+import Democracy from './Democracy/index';
+import Council from './Council';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -23,6 +24,7 @@ function Governance({ className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const [selectedRelaychain, setSelectedRelaychain] = useState<string>('polkadot');
   const [showDemocracyModal, setDemocracyModalOpen] = useState<boolean>(false);
+  const [showCouncilModal, setCouncilModalOpen] = useState<boolean>(false);
 
   const handleBlockchainChange = (event: SelectChangeEvent) => {
     setSelectedRelaychain(event.target.value);
@@ -30,6 +32,10 @@ function Governance({ className }: Props): React.ReactElement<Props> {
 
   const handleDemocracyModal = useCallback(() => {
     setDemocracyModalOpen(true);
+  }, []);
+
+  const handleCouncilModal = useCallback(() => {
+    setCouncilModalOpen(true);
   }, []);
 
   return (
@@ -69,7 +75,7 @@ function Governance({ className }: Props): React.ReactElement<Props> {
           </FormControl>
         </Grid>
 
-        <Paper elevation={4} onClick={handleDemocracyModal} sx={{ borderRadius: '10px', cursor:'pointer', margin: '20px 30px 10px', p: '20px 40px' }}>
+        <Paper elevation={4} onClick={handleDemocracyModal} sx={{ borderRadius: '10px', cursor: 'pointer', margin: '20px 30px 10px', p: '20px 40px' }}>
           <Grid container >
             <Grid item xs={4}>
               <HowToVote color='primary' fontSize='large' />
@@ -84,7 +90,7 @@ function Governance({ className }: Props): React.ReactElement<Props> {
             </Grid>
           </Grid>
         </Paper>
-        <Paper elevation={4} sx={{ borderRadius: '10px', cursor:'pointer', margin: '20px 30px 10px', p: '20px 40px' }}>
+        <Paper elevation={4} onClick={handleCouncilModal} sx={{ borderRadius: '10px', cursor: 'pointer', margin: '20px 30px 10px', p: '20px 40px' }}>
           <Grid container >
             <Grid item xs={4}>
               <Groups color='success' fontSize='large' />
@@ -99,7 +105,7 @@ function Governance({ className }: Props): React.ReactElement<Props> {
             </Grid>
           </Grid>
         </Paper>
-        <Paper elevation={4} sx={{ borderRadius: '10px', cursor:'pointer', margin: '20px 30px 10px', p: '20px 40px' }}>
+        <Paper elevation={4} sx={{ borderRadius: '10px', cursor: 'pointer', margin: '20px 30px 10px', p: '20px 40px' }}>
           <Grid container >
             <Grid item xs={4}>
               <AccountBalance color='secondary' fontSize='large' />
@@ -146,6 +152,14 @@ function Governance({ className }: Props): React.ReactElement<Props> {
           chainName={selectedRelaychain}
           setDemocracyModalOpen={setDemocracyModalOpen}
           showDemocracyModal={showDemocracyModal}
+        />
+      }
+      
+      {showCouncilModal &&
+        <Council
+          chainName={selectedRelaychain}
+          setCouncilModalOpen={setCouncilModalOpen}
+          showCouncilModal={showCouncilModal}
         />
       }
 
