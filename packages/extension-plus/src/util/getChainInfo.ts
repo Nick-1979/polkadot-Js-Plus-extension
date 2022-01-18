@@ -15,11 +15,12 @@ interface chainInfo {
   coin: string;
   decimals: number;
   url: string;
+  genesisHash: string;
 }
 
 export default async function getChainInfo(_chain: Chain | string): Promise<chainInfo> {
   const chainName = (_chain as Chain)?.name?.replace(' Relay Chain', '') ?? _chain as string;
-  const { value } = allEndpoints.find((e) => (String(e.text).toLowerCase() === chainName.toLowerCase()));
+  const { genesisHash, value } = allEndpoints.find((e) => (String(e.text).toLowerCase() === chainName.toLowerCase()));
 
   const wsProvider = new WsProvider(value as string);
 
@@ -29,6 +30,7 @@ export default async function getChainInfo(_chain: Chain | string): Promise<chai
     api: api,
     coin: api.registry.chainTokens[0],
     decimals: api.registry.chainDecimals[0],
+    genesisHash: genesisHash,
     url: value as string
   };
 }
