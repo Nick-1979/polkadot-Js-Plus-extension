@@ -2,138 +2,152 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-import { CheckCircleOutline as CheckCircleOutlineIcon, HowToVote as HowToVoteIcon, OpenInNew as OpenInNewIcon, RemoveCircleOutline as RemoveCircleOutlineIcon, ThumbDownAlt as ThumbDownAltIcon, ThumbUpAlt as ThumbUpAltIcon, WhereToVote as WhereToVoteIcon } from '@mui/icons-material';
-import { Button,Divider, Grid, LinearProgress, Link, Paper } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { CancelOutlined as CancelOutlinedIcon, Email as EmailIcon, HowToReg as HowToRegIcon, LaunchRounded as LaunchRoundedIcon, Twitter as TwitterIcon } from '@mui/icons-material';
+import { Button, Container, Divider, Grid, Link, Paper } from '@mui/material';
+import React, { useEffect } from 'react';
 
-import { DeriveReferendumExt } from '@polkadot/api-derive/types';
+import Identicon from '@polkadot/react-identicon';
 
+import { Chain } from '../../../../../extension-chains/src/types';
+import useMetadata from '../../../../../extension-ui/src/hooks/useMetadata';
 import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
-import { BLOCK_RATE } from '../../../util/constants';
+import { CouncilInfo } from '../../../util/plusTypes';
 import { amountToHuman } from '../../../util/plusUtils';
+import { grey } from '@mui/material/colors';
 
 interface Props {
-    council: DeriveReferendumExt[];
-    chainName: string;
-    coin: string;
-    decimals: number;
-    currentBlockNumber: number;
+  councilInfo: CouncilInfo;
+  genesisHash: string;
+  coin: string;
+  decimals: number;
+  currentBlockNumber: number;
 }
 
-function remainingTime(currentBlockNumber: number, end: number): string {
-    end = Number(end.toString())
-    let mins = Math.floor((end - currentBlockNumber) * BLOCK_RATE / 60);
-    console.log('mins', mins)
-    if (!mins) return 'finished';
+export default function Council({ coin, councilInfo, currentBlockNumber, decimals, genesisHash }: Props): React.ReactElement<Props> {
+  const { t } = useTranslation();
+  const chain = useMetadata(genesisHash, true);
 
-    let hrs = Math.floor(mins / 60);
-    const days = Math.floor(hrs / 24);
+  console.log('councilInfo', councilInfo);
 
-    let time = ''
-    if (days)
-        time += days + ' days ';
-    hrs -= days * 24;
-    if (hrs)
-        time += hrs + ' hours ';
-    mins -= hrs * 60;
-    if (mins)
-        time += mins + ' mins ';
+  const { accountInfos, members } = councilInfo;
 
-    return time;
-}
+  useEffect(() => {
+    console.log('chain', chain);
+  }, [chain])
 
-export default function Council({ chainName, coin, council, currentBlockNumber, decimals }: Props): React.ReactElement<Props> {
-    const { t } = useTranslation();
+  return (
+    <Container disableGutters maxWidth='md'>
+      <Paper elevation={4} sx={{ borderRadius: '10px', margin: '20px 30px 10px', p: '10px 40px' }}>
+        <Grid container justifyContent='space-between' sx={{ textAlign: 'center' }}>
+          <Grid item>
+            {t('Seats')}<br />
+            {members.length}/{councilInfo.desiredSeats.toString()}
+          </Grid>
+          <Grid item>
+            {t('Runners up')}<br />
+            {councilInfo.runnersUp.length}/{councilInfo.desiredRunnersUp.toString()}
+          </Grid>
+          <Grid item>
+            {t('Candidates')}<br />
+            {councilInfo.candidateCount.toString()}
+          </Grid>
+        </Grid>
 
-    return (
-        <>
-            {/* {council?.length
-                ? council.map((r, index) => (
-                    <Paper elevation={4} key={index} sx={{ borderRadius: '10px', margin: '20px 30px 10px', p: '10px 40px' }}>
-                        <Grid container justifyContent='space-between'>
-                            <Grid item>
-                                {r?.image.proposal._meta.name}
-                            </Grid>
-                            <Grid item>
-                                #{String(r?.index)} {' '}
-                                <Link target='_blank' rel='noreferrer' href={`https://${chainName}.subscan.io/referenda/${r?.index}`}>
-                                    <OpenInNewIcon sx={{ fontSize: 10 }} />
-                                </Link>
-                            </Grid>
-                        </Grid>
-                        <Grid item>
-                            <Divider />
-                        </Grid>
+        <Grid item sx={{ padding: '20px 0px 20px ' }}>
+          <Divider />
+        </Grid>
 
-                        <Grid item xs={12} sx={{ color: 'green' }}>
-                            {t('Remaining Time')}{': '} {remainingTime(currentBlockNumber, r.status.end)}
-                        </Grid>
-                        <Grid container justifyContent='space-between' sx={{ fontSize: 11, paddingTop: 1, color: 'red' }}>
-                            <Grid item>
-                                {t('End')}{': '}{r.status.end.toString()}
-                            </Grid>
-                            <Grid item>
-                                {t('Delay')}{': '}{r.status.delay.toString()}
-                            </Grid>
-                            <Grid item>
-                                {t('Threshold')}{': '} {r.status.threshold.toString()}
-                            </Grid>
-                        </Grid>
+        <Grid container justifyContent='space-between' sx={{ textAlign: 'center' }}>
+          <Grid item>
+            {t('My votes')}
+          </Grid>
+          <Grid item >
+            <Button variant='outlined' color='secondary' startIcon={<CancelOutlinedIcon />}> {t('Cancel votes')}</Button>
+          </Grid>
+          <Grid item >
+            <Button variant='contained' color='warning' startIcon={<HowToRegIcon />}> {t('Vote')}</Button>
+          </Grid>
+        </Grid>
+      </Paper>
 
-                        <Grid item xs={12} sx={{ margin: '20px 1px 10px' }}>
-                            {r.image.proposal._meta.docs}
-                        </Grid>
-                        <Grid item xs={12} sx={{ border: '1px dotted', borderRadius: '10px', padding: 1, margin: '20px 1px 20px' }}>
-                            {t('Hash')}<br />
-                            {r.imageHash.toString()}
-                        </Grid>
+      <Container id='scrollArea' sx={{ height: '300px', overflowY: 'auto' }}>
+        <Grid xs={12} sx={{ fontSize: 14, fontWeigth: 'bold', textAlign: 'center', padding: '20px 1px 10px' }}>
+          {t('Members')}
+        </Grid>
 
-                        <Grid container justifyContent='space-between' sx={{ paddingTop: 1 }}>
-                            <Grid item>
-                                {t('Aye')}
-                            </Grid>
-                            <Grid item>
-                                {r?.isPassing
-                                    ? <Grid item>
-                                        <CheckCircleOutlineIcon color='success' sx={{ fontSize: 15 }} />
-                                        {' '}{t('Passing')}
-                                    </Grid>
-                                    : <Grid item >
-                                        <RemoveCircleOutlineIcon color='secondary' sx={{ fontSize: 15 }} />
-                                        {' '}{t('Failing')}
-                                    </Grid>
-                                }
-                            </Grid>
-                            <Grid item>
-                                {t('Nay')}
-                            </Grid>
-                        </Grid>
+        {members
+          ? members.map((c, index) => (
+            <Paper elevation={2} key={index} sx={{ borderRadius: '10px', margin: '10px 20px 1px', p: '10px 20px' }}>
+              <Grid container>
+                <Grid item xs={1}>
+                  <Identicon
+                    prefix={chain?.ss58Format ?? 42}
+                    size={24}
+                    theme={chain?.icon || 'polkadot'}
+                    value={String(c[0])}
+                  />
+                </Grid>
+                <Grid container item xs={11} justifyContent='space-between'>
+                  <Grid container item xs={6}>
+                    {accountInfos[index].identity.displayParent &&
+                      <Grid item>
+                        {accountInfos[index].identity.displayParent} /
+                      </Grid>
+                    }
+                    <Grid item sx={accountInfos[index].identity.displayParent && { color: grey[400] }}>
+                      {accountInfos[index].identity.display} { }
+                    </Grid>
 
-                        <Grid container justifyContent='space-between' sx={{ paddingTop: 1 }}>
-                            <Grid item xs={12}>
-                                <LinearProgress variant='determinate' value={100 * (Number(r.status.tally.ayes) / (Number(r.status.tally.nays) + Number(r.status.tally.ayes)))} />
-                            </Grid>
-                            <Grid item>
-                                {amountToHuman(r.status.tally.ayes.toString(), decimals)}{coin}
-                            </Grid>
-                            <Grid item>
-                                {amountToHuman(Number(r.status.tally.nays).toString(), decimals)}{coin}
-                            </Grid>
-                        </Grid>
+                    {accountInfos[index].identity.twitter &&
+                      <Grid item>
+                        <Link href={`https://TwitterIcon.com/${accountInfos[index].identity.twitter}`}>
+                          <TwitterIcon
+                            color='primary'
+                            sx={{ fontSize: 15 }}
+                          />
+                        </Link>
+                      </Grid>
+                    }
 
-                        <Grid container justifyContent='space-between' sx={{ paddingTop: 2 }}>
-                            <Grid item>
-                                <Button variant='contained' startIcon={<ThumbUpAltIcon />}> {t('Aye')}</Button>
-                            </Grid>
-                            <Grid item>
-                                <Button variant='outlined' endIcon={<ThumbDownAltIcon />}> {t('Nay')}</Button>
-                            </Grid>
-                        </Grid>
+                    {accountInfos[index].identity.email &&
+                      <Grid item>
+                        <Link href={`mailto:${accountInfos[index].identity.email}`}>
+                          <EmailIcon
+                            color='secondary'
+                            sx={{ fontSize: 15 }}
+                          />
+                        </Link>
+                      </Grid>
+                    }
 
-                    </Paper>))
-                : <Grid xs={12} sx={{ textAlign: 'center', paddingTop: 3 }}>
-                    {t('No data')}
-                </Grid>} */}
-        </>
-    )
+                    {accountInfos[index].identity.web &&
+                      <Grid item>
+                        <Link
+                          href={accountInfos[index].identity.web}
+                          rel='noreferrer'
+                          target='_blank'
+                        >
+                          <LaunchRoundedIcon
+                            color='primary'
+                            sx={{ fontSize: 15 }}
+                          />
+                        </Link>
+                      </Grid>
+                    }
+                  </Grid>
+                  <Grid item xs={5} sx={{textAlign:'right' }}>
+                    {t('Backed')}{': '} {amountToHuman(c[1].toString(), decimals, 2)} {coin}
+                  </Grid>
+                </Grid>
+
+              </Grid>
+
+            </Paper>))
+          : <Grid xs={12} sx={{ textAlign: 'center', paddingTop: 3 }}>
+            {t('No data')}
+          </Grid>}
+      </Container>
+
+    </Container>
+  )
 }

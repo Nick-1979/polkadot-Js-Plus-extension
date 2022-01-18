@@ -2,17 +2,18 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-import { BatchPrediction as BatchPredictionIcon, CheckCircleOutline as CheckCircleOutlineIcon, HowToVote as HowToVoteIcon, OpenInNew as OpenInNewIcon, RemoveCircleOutline as RemoveCircleOutlineIcon, ThumbDownAlt as ThumbDownAltIcon, ThumbUpAlt as ThumbUpAltIcon, WhereToVote as WhereToVoteIcon } from '@mui/icons-material';
-import { Button, Container, Divider, Grid, LinearProgress, Link, Modal, Paper, Tab, Tabs } from '@mui/material';
+import { AutoAwesomeMotion as AutoAwesomeMotionIcon, HowToVote as HowToVoteIcon, People as PeopleIcon } from '@mui/icons-material';
+import { Container, Grid, Modal, Tab, Tabs } from '@mui/material';
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 import ReactDom from 'react-dom';
 
-import { DeriveProposal,DeriveReferendumExt } from '@polkadot/api-derive/types';
+import { DeriveProposal } from '@polkadot/api-derive/types';
 
 import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
 import getChainInfo from '../../../util/getChainInfo';
 import getCouncil from '../../../util/getCouncil';
 import getCurrentBlockNumber from '../../../util/getCurrentBlockNumber';
+import { CouncilInfo } from '../../../util/plusTypes';
 import PlusHeader from '../../common/PlusHeader';
 import Progress from '../../common/Progress';
 import Council from './Council';
@@ -26,30 +27,30 @@ interface Props {
 export default function CouncilIndex({ chainName, setCouncilModalOpen, showCouncilModal }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const [tabValue, setTabValue] = useState('council');
-  const [council, setCouncil] = useState<DeriveReferendumExt[]>();
+  const [councilInfo, setCouncilInfo] = useState<CouncilInfo>();
   const [motions, setMotions] = useState<DeriveProposal[]>();
   const [decimals, setDecimals] = useState<number>(1);
   const [coin, setCoin] = useState<string>();
   const [currentBlockNumber, setCurrentBlockNumber] = useState<number>();
+  const [genesisHash, setGenesisHash] = useState<string>();
 
   useEffect(() => {
     // eslint-disable-next-line no-void
     void getChainInfo(chainName).then((r) => {
       setDecimals(r.decimals);
       setCoin(r.coin);
+      setGenesisHash(r.genesisHash);
     });
 
     // eslint-disable-next-line no-void
     void getCouncil(chainName, 'council').then((c) => {
-      console.log('ccccccccc',c)
-      setCouncil(c);
+      setCouncilInfo(c);
     });
 
     // eslint-disable-next-line no-void
     void getCurrentBlockNumber(chainName).then((n) => {
       setCurrentBlockNumber(n);
     });
-
   }, []);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -63,7 +64,6 @@ export default function CouncilIndex({ chainName, setCouncilModalOpen, showCounc
     },
     [setCouncilModalOpen]
   );
-
 
   return ReactDom.createPortal(
     <Modal
@@ -92,14 +92,14 @@ export default function CouncilIndex({ chainName, setCouncilModalOpen, showCounc
           <Grid container>
             <Grid item xs={12} sx={{ margin: '0px 30px' }}>
               <Tabs indicatorColor='secondary' onChange={handleTabChange} textColor='secondary' value={tabValue} variant='fullWidth'>
-                <Tab icon={<WhereToVoteIcon fontSize='small' />} iconPosition='start' label='Council' sx={{ fontSize: 11 }} value='council' />
-                <Tab icon={<BatchPredictionIcon fontSize='small' />} iconPosition='start' label='Motions' sx={{ fontSize: 11 }} value='motions' />
+                <Tab icon={<PeopleIcon fontSize='small' />} iconPosition='start' label='Council' sx={{ fontSize: 11 }} value='council' />
+                <Tab icon={<AutoAwesomeMotionIcon fontSize='small' />} iconPosition='start' label='Motions' sx={{ fontSize: 11 }} value='motions' />
               </Tabs>
             </Grid>
             {tabValue === 'council'
-              ? <>{council
-                ? <Council council={council} chainName={chainName} coin={coin} decimals={decimals} currentBlockNumber={currentBlockNumber} />
-                : <Progress title={'Getting Council ...'} />}
+              ? <>{councilInfo
+                ? <Council councilInfo={councilInfo} genesisHash={genesisHash} coin={coin} decimals={decimals} currentBlockNumber={currentBlockNumber} />
+                : <Progress title={'Loading ...'} />}
               </>
               : ''}
 

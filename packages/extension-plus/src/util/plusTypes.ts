@@ -1,10 +1,9 @@
-/* eslint-disable camelcase */
-
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
+/* eslint-disable camelcase */
 
-import { DeriveStakingQuery } from '@polkadot/api-derive/types';
+import type { DeriveAccountInfo,DeriveElectionsInfo, DeriveStakingQuery } from '@polkadot/api-derive/types';
 
 export interface TransactionStatus {
   blockNumber: string | null;
@@ -184,4 +183,8 @@ export interface Transfers {
   success: boolean
   to: string;
   to_account_display: AccountDisplay;
+}
+
+export interface CouncilInfo extends DeriveElectionsInfo {
+  accountInfos: DeriveAccountInfo[];
 }
