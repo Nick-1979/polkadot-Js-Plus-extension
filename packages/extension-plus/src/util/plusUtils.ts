@@ -14,7 +14,7 @@ import { AccountsBalanceType, savedMetaData, TransactionDetail } from './plusTyp
 
 // eslint-disable-next-line header/header
 
-export function fixFloatingPoint(_number: number | string): string {
+export function fixFloatingPoint(_number: number | string, decimalDigit = FLOATING_POINT_DIGIT): string {
   const sNumber = String(_number);
   const dotIndex = sNumber.indexOf('.');
 
@@ -24,7 +24,7 @@ export function fixFloatingPoint(_number: number | string): string {
     return sNumber;
   }
 
-  return sNumber.slice(0, dotIndex) + sNumber.slice(dotIndex, dotIndex + FLOATING_POINT_DIGIT + 1);
+  return sNumber.slice(0, dotIndex) + sNumber.slice(dotIndex, dotIndex + decimalDigit + 1);
 }
 
 export function balanceToHuman(_balance: AccountsBalanceType | null, _type: string): string {
@@ -45,14 +45,14 @@ export function balanceToHuman(_balance: AccountsBalanceType | null, _type: stri
   }
 }
 
-export function amountToHuman(_amount: string | undefined, _decimals: number): string {
+export function amountToHuman(_amount: string | undefined, _decimals: number, decimalDigits?: number): string {
   if (!_amount) return '';
 
   _amount = String(_amount).replaceAll(',', '');
 
   const x = 10 ** _decimals;
 
-  return fixFloatingPoint(Number(_amount) / x);
+  return fixFloatingPoint(Number(_amount) / x, decimalDigits);
 }
 
 export function amountToMachine(_amount: string | undefined, _decimals: number): bigint {
@@ -139,8 +139,8 @@ export function getTransactionHistoryFromLocalStorage(
 }
 
 export const getWebsiteFavico = (url: string | undefined): string => {
-  if(!url) return '';
-  
+  if (!url) return '';
+
   return 'https://s2.googleusercontent.com/s2/favicons?domain=' + url;
 }
 
