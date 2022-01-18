@@ -5,6 +5,7 @@
 import { CancelOutlined as CancelOutlinedIcon, HowToReg as HowToRegIcon } from '@mui/icons-material';
 import { Button, Container, Divider, Grid, Paper } from '@mui/material';
 import React from 'react';
+
 import useMetadata from '../../../../../extension-ui/src/hooks/useMetadata';
 import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
 import { CouncilInfo } from '../../../util/plusTypes';
@@ -15,16 +16,15 @@ interface Props {
   genesisHash: string;
   coin: string;
   decimals: number;
-  currentBlockNumber: number;
 }
 
-export default function Council({ coin, councilInfo, currentBlockNumber, decimals, genesisHash }: Props): React.ReactElement<Props> {
+export default function Overview({ coin, councilInfo, decimals, genesisHash }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const chain = useMetadata(genesisHash, true);
 
   console.log('councilInfo', councilInfo);
 
-  const { accountInfos, members, runnersUp, candidates, candidateCount, desiredSeats, desiredRunnersUp } = councilInfo;
+  const { accountInfos, candidateCount, candidates, desiredRunnersUp, desiredSeats, members, runnersUp } = councilInfo;
   const membersInfo = {
     desiredSeats: Number(desiredSeats),
     backed: members.map((m) => m[1].toString()),
@@ -67,10 +67,10 @@ export default function Council({ coin, councilInfo, currentBlockNumber, decimal
           <Grid item>
             {t('My votes')}
           </Grid>
-          <Grid item >
+          <Grid item>
             <Button variant='outlined' size='small' color='secondary' startIcon={<CancelOutlinedIcon />}> {t('Cancel votes')}</Button>
           </Grid>
-          <Grid item >
+          <Grid item>
             <Button variant='contained' size='small' color='warning' startIcon={<HowToRegIcon />}> {t('Vote')}</Button>
           </Grid>
         </Grid>
@@ -86,6 +86,7 @@ export default function Council({ coin, councilInfo, currentBlockNumber, decimal
           {t('No data')}
         </Grid>
       }
+      
     </Container>
   )
 }

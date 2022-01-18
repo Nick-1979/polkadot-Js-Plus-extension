@@ -3,7 +3,7 @@
 /* eslint-disable header/header */
 /* eslint-disable camelcase */
 
-import type { DeriveAccountInfo, DeriveElectionsInfo, DeriveStakingQuery } from '@polkadot/api-derive/types';
+import type { DeriveAccountInfo, DeriveElectionsInfo, DeriveStakingQuery, DeriveCollectiveProposal } from '@polkadot/api-derive/types';
 
 export interface TransactionStatus {
   blockNumber: string | null;
@@ -194,4 +194,10 @@ export interface PersonsInfo {
   desiredSeats: number,
   backed: string[],
   infos: DeriveAccountInfo[]
+}
+
+export interface MotionsInfo {
+  proposals: DeriveCollectiveProposal[];
+  proposalInfo: any[];
+  accountInfo: DeriveAccountInfo[]
 }

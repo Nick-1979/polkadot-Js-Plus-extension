@@ -1,22 +1,23 @@
+/* eslint-disable react/jsx-max-props-per-line */
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-import { AutoAwesomeMotion as AutoAwesomeMotionIcon, HowToVote as HowToVoteIcon, People as PeopleIcon } from '@mui/icons-material';
+import { AutoAwesomeMotion as AutoAwesomeMotionIcon, Groups as GroupsIcon, People as PeopleIcon } from '@mui/icons-material';
 import { Container, Grid, Modal, Tab, Tabs } from '@mui/material';
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 import ReactDom from 'react-dom';
-
-import { DeriveProposal } from '@polkadot/api-derive/types';
 
 import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
 import getChainInfo from '../../../util/getChainInfo';
 import getCouncil from '../../../util/getCouncil';
 import getCurrentBlockNumber from '../../../util/getCurrentBlockNumber';
-import { CouncilInfo } from '../../../util/plusTypes';
+import getMotions from '../../../util/getMotions';
+import { CouncilInfo, MotionsInfo } from '../../../util/plusTypes';
 import PlusHeader from '../../common/PlusHeader';
 import Progress from '../../common/Progress';
-import Council from './Council';
+import Motions from './Motions';
+import Overview from './Overview';
 
 interface Props {
   chainName: string;
@@ -28,7 +29,7 @@ export default function CouncilIndex({ chainName, setCouncilModalOpen, showCounc
   const { t } = useTranslation();
   const [tabValue, setTabValue] = useState('council');
   const [councilInfo, setCouncilInfo] = useState<CouncilInfo>();
-  const [motions, setMotions] = useState<DeriveProposal[]>();
+  const [motions, setMotions] = useState<MotionsInfo>();
   const [decimals, setDecimals] = useState<number>(1);
   const [coin, setCoin] = useState<string>();
   const [currentBlockNumber, setCurrentBlockNumber] = useState<number>();
@@ -43,9 +44,17 @@ export default function CouncilIndex({ chainName, setCouncilModalOpen, showCounc
     });
 
     // eslint-disable-next-line no-void
-    void getCouncil(chainName, 'council').then((c) => {
+    void getCouncil(chainName).then((c) => {
       setCouncilInfo(c);
     });
+
+    // eslint-disable-next-line no-void
+    void getMotions(chainName).then((m) => {
+      console.log('motionsmm', m);
+
+      setMotions(m);
+    });
+
 
     // eslint-disable-next-line no-void
     void getCurrentBlockNumber(chainName).then((n) => {
@@ -88,7 +97,7 @@ export default function CouncilIndex({ chainName, setCouncilModalOpen, showCounc
       }}
       >
         <Container disableGutters maxWidth='md'>
-          <PlusHeader action={handleCouncilModalClose} chain={chainName} closeText={'Close'} icon={<HowToVoteIcon />} title={'Council'} />
+          <PlusHeader action={handleCouncilModalClose} chain={chainName} closeText={'Close'} icon={<GroupsIcon />} title={'Council'} />
           <Grid container>
             <Grid item xs={12} sx={{ margin: '0px 30px' }}>
               <Tabs indicatorColor='secondary' onChange={handleTabChange} textColor='secondary' value={tabValue} variant='fullWidth'>
@@ -98,17 +107,17 @@ export default function CouncilIndex({ chainName, setCouncilModalOpen, showCounc
             </Grid>
             {tabValue === 'council'
               ? <>{councilInfo
-                ? <Council councilInfo={councilInfo} genesisHash={genesisHash} coin={coin} decimals={decimals} currentBlockNumber={currentBlockNumber} />
-                : <Progress title={'Loading ...'} />}
+                ? <Overview coin={coin} councilInfo={councilInfo} decimals={decimals} genesisHash={genesisHash} />
+                : <Progress title={'Loading members info ...'} />}
               </>
               : ''}
 
-            {/* {tabValue === 'motions'
+            {tabValue === 'motions'
               ? <>{motions
-                ? <Council council={council} chainName={chainName} coin={coin} decimals={decimals} />
-                : <Progress title={'Getting Motions ...'} />}
+                ? <Motions genesisHash={genesisHash} coin={coin} currentBlockNumber={currentBlockNumber} decimals={decimals} motions={motions} />
+                : <Progress title={'Loading motions ...'} />}
               </>
-              : ''} */}
+              : ''}
 
           </Grid>
         </Container>

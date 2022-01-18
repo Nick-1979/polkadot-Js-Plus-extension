@@ -9,7 +9,7 @@ import { AccountWithChildren } from '@polkadot/extension-base/background/types';
 import { Chain } from '@polkadot/extension-chains/types';
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
-import { FLOATING_POINT_DIGIT } from './constants';
+import { BLOCK_RATE, FLOATING_POINT_DIGIT } from './constants';
 import { AccountsBalanceType, savedMetaData, TransactionDetail } from './plusTypes';
 
 // eslint-disable-next-line header/header
@@ -144,3 +144,27 @@ export const getWebsiteFavico = (url: string | undefined): string => {
   return 'https://s2.googleusercontent.com/s2/favicons?domain=' + url;
 }
 
+export function remainingTime(currentBlockNumber: number, end: number): string {
+  end = Number(end.toString())
+  let mins = Math.floor((end - currentBlockNumber) * BLOCK_RATE / 60);
+
+  if (!mins) return 'finished';
+
+  let hrs = Math.floor(mins / 60);
+  const days = Math.floor(hrs / 24);
+
+  let time = '';
+
+  mins -= hrs * 60;
+
+  if (mins) { time += mins + ' mins '; }
+
+  hrs -= days * 24;
+
+  if (hrs) { time = hrs + ' hours ' + time; }
+
+  if (days) { time = days + ' days ' + time; }
+
+
+  return time;
+}

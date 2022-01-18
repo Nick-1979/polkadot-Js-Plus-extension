@@ -100,14 +100,14 @@ export default function Democracy({ chainName, setDemocracyModalOpen, showDemocr
             {tabValue === 'referendums'
               ? <>{referendums
                 ? <Referendums referendums={referendums} chainName={chainName} coin={coin} decimals={decimals} currentBlockNumber={currentBlockNumber}/>
-                : <Progress title={'Getting Referendums ...'} />}
+                : <Progress title={'Loading referendums ...'} />}
               </>
               : ''}
 
             {tabValue === 'proposals'
               ? <>{proposals
                 ? <Referendums referendums={referendums} chainName={chainName} coin={coin} decimals={decimals} />
-                : <Progress title={'Getting Proposals ...'} />}
+                : <Progress title={'Loading proposals ...'} />}
               </>
               : ''}
 

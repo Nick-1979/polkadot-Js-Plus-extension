@@ -4,7 +4,7 @@
 
 import type { ThemeProps } from '../../../../extension-ui/src/types';
 
-import { AccountBalance, Groups, HowToVote } from '@mui/icons-material';
+import { AccountBalance, Groups as GroupsIcon, HowToVote } from '@mui/icons-material';
 import { Avatar, Container, FormControl, FormHelperText, Grid, InputLabel, Link, MenuItem, Paper, Select, SelectChangeEvent } from '@mui/material';
 import React, { useCallback,useState } from 'react';
 import styled from 'styled-components';
@@ -93,7 +93,7 @@ function Governance({ className }: Props): React.ReactElement<Props> {
         <Paper elevation={4} onClick={handleCouncilModal} sx={{ borderRadius: '10px', cursor: 'pointer', margin: '20px 30px 10px', p: '20px 40px' }}>
           <Grid container >
             <Grid item xs={4}>
-              <Groups color='success' fontSize='large' />
+              <GroupsIcon color='success' fontSize='large' />
             </Grid>
             <Grid container item xs={8}>
               <Grid item xs={12} sx={{ fontSize: 15, fontWeight: '600' }}>
