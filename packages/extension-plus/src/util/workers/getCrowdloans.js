@@ -4,24 +4,8 @@
 
 import { hexToBn, hexToString } from '@polkadot/util';
 
+import { DEFAULT_IDENTITY } from '../constants';
 import getChainInfo from '../getChainInfo.ts';
-
-const DEFAULT_IDENTITY = {
-  // 'judgements': [],
-  //  'deposit':202580000000,
-  info: {
-    // 'additional':[],
-    display: null,
-    legal: null,
-    web: null,
-    //  'riot':{'none':null},
-    email: null,
-    //  'pgpFingerprint':null,
-    //  'image':{'none':null},
-    twitter: null
-  }
-};
-
 
 async function getIdentities (_chainName, _address) {
   console.log(`getting identities of .... on ${_chainName}`);
