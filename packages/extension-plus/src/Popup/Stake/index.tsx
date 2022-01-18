@@ -46,7 +46,6 @@ interface TabPanelProps {
 const workers: Worker[] = [];
 
 export default function EasyStaking({ account, chain, setStakingModalOpen, showStakingModal, staker }: Props): React.ReactElement<Props> {
-  // useReject();
   const { t } = useTranslation();
   const [coin, setCoin] = useState('');
   const [ED, setED] = useState(0);

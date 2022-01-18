@@ -25,13 +25,8 @@ interface Props {
 export default function AddressQRcode({ address, chain, name, setQRcodeModalOpen, showQRcodeModalOpen }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
 
-  const handleQRmodalClose = useCallback(
-    (): void => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      setQRcodeModalOpen(false);
-    },
-    [setQRcodeModalOpen]
-  );
+ handleQRmodalClose = useCallback((): void => {setQRcodeModalOpen(false);},
+    [setQRcodeModalOpen]);
 
   return ReactDom.createPortal(
     <Modal
