@@ -1,16 +1,16 @@
 {
   "author": "Kami Ekbatanifard <ekbatanifard@gmail.com>",
-  "bugs": "https://github.com/polkadot-js/extension/issues",
+  "bugs": "https://github.com/Nick-1979/polkadot-Js-Plus-extension/issues",
   "contributors": [],
   "description": "A user-friendly wallet to interact with the Polkadot/Substrate based blockchains through a browser.",
-  "homepage": "https://github.com/polkadot-js/extension/tree/master/packages/extension-plus#readme",
+  "homepage": "https://github.com/Nick-1979/polkadot-Js-Plus-extension/blob/master/README.md",
   "license": "Apache-2",
   "maintainers": [],
   "name": "@polkadot/plus",
   "repository": {
     "directory": "packages/extension-plus",
     "type": "git",
-    "url": "https://github.com/polkadot-js/extension.git"
+    "url": "https://github.com/Nick-1979/polkadot-Js-Plus-extension.git"
   },
   "sideEffects": true,
   "type": "module",
