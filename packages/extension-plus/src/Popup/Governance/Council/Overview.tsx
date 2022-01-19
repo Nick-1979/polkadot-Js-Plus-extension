@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-import { CancelOutlined as CancelOutlinedIcon, HowToReg as HowToRegIcon } from '@mui/icons-material';
+import { CancelOutlined as CancelOutlinedIcon, Preview as PreviewIcon, HowToReg as HowToRegIcon } from '@mui/icons-material';
 import { Button, Container, Divider, Grid, Paper } from '@mui/material';
 import React from 'react';
 
@@ -65,11 +65,11 @@ export default function Overview({ coin, councilInfo, decimals, genesisHash }: P
 
         <Grid container justifyContent='space-between' sx={{ textAlign: 'center' }}>
           <Grid item>
-            {t('My votes')}
+            <Button variant='outlined' size='small' color='primary' startIcon={<PreviewIcon />}>  {t('View my votes')}</Button>
           </Grid>
-          <Grid item>
+          {/* <Grid item>
             <Button variant='outlined' size='small' color='secondary' startIcon={<CancelOutlinedIcon />}> {t('Cancel votes')}</Button>
-          </Grid>
+          </Grid> */}
           <Grid item>
             <Button variant='contained' size='small' color='warning' startIcon={<HowToRegIcon />}> {t('Vote')}</Button>
           </Grid>
@@ -86,7 +86,7 @@ export default function Overview({ coin, councilInfo, decimals, genesisHash }: P
           {t('No data')}
         </Grid>
       }
-      
+
     </Container>
   )
 }

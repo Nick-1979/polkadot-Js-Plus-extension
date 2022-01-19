@@ -37,16 +37,13 @@ export default function Motions({ coin, decimals, genesisHash, currentBlockNumbe
     <Container disableGutters maxWidth='md'>
       {proposals.length
         ? proposals.map((p, index) => (
-          <Paper elevation={4} key={index} sx={{ borderRadius: '10px', margin: '20px 30px 10px', p: '10px 40px' }}>
+          <Paper elevation={4} key={index} sx={{ borderRadius: '10px', margin: '20px 30px 10px', p: '10px 20px' }}>
             <Grid container justifyContent='space-between' sx={{ textAlign: 'center' }}>
               <Grid item>
                 {t('Index')}<br />
-                <b> {p.votes.index}</b>
+                <b style={{ fontSize: 15}}> {p.votes.index}</b>
               </Grid>
-              <Grid item>
-                {t('Threshold')}<br />
-                {p.votes.threshold}
-              </Grid>
+              
               <Grid item>
                 {t('Voting end')}<br />
                 {remainingTime(currentBlockNumber, p.votes.end)}<br />
@@ -55,6 +52,10 @@ export default function Motions({ coin, decimals, genesisHash, currentBlockNumbe
               <Grid item>
                 {t('Vots')}<br />
                 {t('Aye')}{' '}{p.votes.ayes.length}/{p.votes.threshold}
+              </Grid>
+              <Grid item>
+                {t('Threshold')}<br />
+                {p.votes.threshold}
               </Grid>
               <Grid item container justifyContent='flex-end' >
                 <Grid item>
