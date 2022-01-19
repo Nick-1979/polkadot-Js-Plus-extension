@@ -20,13 +20,14 @@ import { cryptoWaitReady } from '@polkadot/util-crypto';
 
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { Header } from '../../../../extension-ui/src/partials';
+import { NothingToShow } from '../../components/NothingToShow';
 import { RELAY_CHAINS } from '../../util/constants';
 import getLogo from '../../util/getLogo';
 import getNetworkInfo from '../../util/getNetwork';
 import { Auction, Crowdloan } from '../../util/plusTypes';
-import { NothingToShow } from '../common/NothingToShow';
 import ConfirmCrowdloan from './ConfirmContribution';
 import Fund from './Fund';
+import Progress from '../../components/Progress';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -243,16 +244,7 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
         </Grid>
 
         {!auction && selectedBlockchain &&
-          <Grid container id='progressAlert' xs={12} sx={{ padding: '100px 100px 20px ', textAlign: 'center' }}>
-            <Grid item xs={12}>
-              <CircularProgress />
-            </Grid>
-
-            <Grid item xs={12} sx={{ fontSize: '10' }}>
-              {t('Getting Auction/Crowdloans on')} {selectedBlockchain.charAt(0).toUpperCase() + selectedBlockchain.slice(1)} ...
-            </Grid>
-
-          </Grid>
+          <Progress title={t('Loading Auction/Crowdloans of ') + ` ${selectedBlockchain.charAt(0).toUpperCase()}${selectedBlockchain.slice(1)} ...`} />
         }
 
         {auction && !auction.auctionInfo && tabValue === 'auction' &&

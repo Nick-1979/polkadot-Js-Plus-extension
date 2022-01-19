@@ -11,10 +11,11 @@ import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation
 import getChainInfo from '../../../util/getChainInfo';
 import getDemocracy from '../../../util/getDemocracy';
 import Referendums from './Referendums';
-import PlusHeader from '../../common/PlusHeader';
-import Progress from '../../common/Progress';
+import PlusHeader from '../../../components/PlusHeader';
+import Progress from '../../../components/Progress';
 import { DeriveReferendumExt, DeriveProposal } from '@polkadot/api-derive/types';
 import getCurrentBlockNumber from '../../../util/getCurrentBlockNumber';
+import Popup from '../../../components/Popup';
 
 interface Props {
   chainName: string;
@@ -48,10 +49,10 @@ export default function Democracy({ chainName, setDemocracyModalOpen, showDemocr
       setProposals(r);
     });
 
-    getCurrentBlockNumber(chainName).then((n)=>{
+    getCurrentBlockNumber(chainName).then((n) => {
       setCurrentBlockNumber(n);
     })
-    
+
   }, [chainName])
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
@@ -65,56 +66,30 @@ export default function Democracy({ chainName, setDemocracyModalOpen, showDemocr
     [setDemocracyModalOpen]
   );
 
+  return (
+    <Popup showModal={showDemocracyModal} handleClose={handleDemocracyModalClose}>
+      <PlusHeader action={handleDemocracyModalClose} chain={chainName} closeText={'Close'} icon={<HowToVoteIcon />} title={'Democracy'} />
+      <Grid container>
+        <Grid item xs={12} sx={{ margin: '0px 30px' }}>
+          <Tabs indicatorColor='secondary' onChange={handleTabChange} textColor='secondary' value={tabValue} variant='fullWidth'>
+            <Tab icon={<WhereToVoteIcon fontSize='small' />} iconPosition='start' label='Referendums' sx={{ fontSize: 11 }} value='referendums' />
+            <Tab icon={<BatchPredictionIcon fontSize='small' />} iconPosition='start' label='Proposals' sx={{ fontSize: 11 }} value='proposals' />
+          </Tabs>
+        </Grid>
+        {tabValue === 'referendums'
+          ? <>{referendums
+            ? <Referendums referendums={referendums} chainName={chainName} coin={coin} decimals={decimals} currentBlockNumber={currentBlockNumber} />
+            : <Progress title={'Loading referendums ...'} />}
+          </>
+          : ''}
 
-  return ReactDom.createPortal(
-    <Modal
-      disablePortal
-      // eslint-disable-next-line react/jsx-no-bind
-      onClose={(_event, reason) => {
-        if (reason !== 'backdropClick') {
-          handleDemocracyModalClose();
-        }
-      }}
-      open={showDemocracyModal}
-    >
-      <div style={{
-        backgroundColor: '#FFFFFF',
-        display: 'flex',
-        height: '100%',
-        maxWidth: 700,
-        position: 'relative',
-        top: '5px',
-        transform: `translateX(${(window.innerWidth - 560) / 2}px)`,
-        width: '560px'
-      }}
-      >
-        <Container disableGutters maxWidth='md'>
-          <PlusHeader action={handleDemocracyModalClose} chain={chainName} closeText={'Close'} icon={<HowToVoteIcon />} title={'Democracy'} />
-          <Grid container>
-            <Grid item xs={12} sx={{ margin: '0px 30px' }}>
-              <Tabs indicatorColor='secondary' onChange={handleTabChange} textColor='secondary' value={tabValue} variant='fullWidth'>
-                <Tab icon={<WhereToVoteIcon fontSize='small' />} iconPosition='start' label='Referendums' sx={{ fontSize: 11 }} value='referendums' />
-                <Tab icon={<BatchPredictionIcon fontSize='small' />} iconPosition='start' label='Proposals' sx={{ fontSize: 11 }} value='proposals' />
-              </Tabs>
-            </Grid>
-            {tabValue === 'referendums'
-              ? <>{referendums
-                ? <Referendums referendums={referendums} chainName={chainName} coin={coin} decimals={decimals} currentBlockNumber={currentBlockNumber}/>
-                : <Progress title={'Loading referendums ...'} />}
-              </>
-              : ''}
-
-            {tabValue === 'proposals'
-              ? <>{proposals
-                ? <Referendums referendums={referendums} chainName={chainName} coin={coin} decimals={decimals} />
-                : <Progress title={'Loading proposals ...'} />}
-              </>
-              : ''}
-
-          </Grid>
-        </Container>
-      </div>
-    </Modal>
-    , document.getElementById('root')
+        {tabValue === 'proposals'
+          ? <>{proposals
+            ? <Referendums referendums={referendums} chainName={chainName} coin={coin} decimals={decimals} />
+            : <Progress title={'Loading proposals ...'} />}
+          </>
+          : ''}
+      </Grid>
+    </Popup>
   );
 }

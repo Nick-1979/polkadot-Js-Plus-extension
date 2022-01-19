@@ -47,7 +47,7 @@ export default function Motions({ coin, decimals, genesisHash, currentBlockNumbe
               <Grid item>
                 {t('Voting end')}<br />
                 {remainingTime(currentBlockNumber, p.votes.end)}<br />
-                {p.votes.end}
+                #{p.votes.end}
               </Grid>
               <Grid item>
                 {t('Vots')}<br />

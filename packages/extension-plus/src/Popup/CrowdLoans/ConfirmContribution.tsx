@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-import { CheckRounded, Clear } from '@mui/icons-material';
-import { Avatar, Button as MuiButton, Container, Divider, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Modal, Select, SelectChangeEvent, TextField } from '@mui/material';
+import { CheckRounded, Clear, ConfirmationNumberOutlined as ConfirmationNumberOutlinedIcon } from '@mui/icons-material';
+import { Button as MuiButton, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Select, SelectChangeEvent, TextField } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React, { useContext, useEffect, useState } from 'react';
 
@@ -16,11 +16,12 @@ import Identicon from '@polkadot/react-identicon';
 import keyring from '@polkadot/ui-keyring';
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
-import { ActionText, BackButton, Button } from '../../../../extension-ui/src/components';
+import { BackButton, Button } from '../../../../extension-ui/src/components';
 import { AccountContext } from '../../../../extension-ui/src/components/contexts';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
+import PlusHeader from '../../components/PlusHeader';
+import Popup from '../../components/Popup';
 import contribute from '../../util/contribute';
-import getLogo from '../../util/getLogo';
 import getNetworkInfo from '../../util/getNetwork';
 import { Auction, Crowdloan, TransactionDetail } from '../../util/plusTypes';
 import { amountToHuman, amountToMachine, fixFloatingPoint, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/plusUtils';
@@ -79,7 +80,7 @@ export default function ConfirmCrowdloan({ auction,
     if (allAddresesOnThisChain.length) { setSelectedAddress(allAddresesOnThisChain[0]); }
   }, [allAddresesOnThisChain]);
 
-  function handleConfirmModaClose(): void {
+  const handleConfirmModaClose = (): void => {
     setConfirmModalOpen(false);
   }
 
@@ -161,173 +162,134 @@ export default function ConfirmCrowdloan({ auction,
   }
 
   return (
-    <>
-      <Modal
-        hideBackdrop
-        // eslint-disable-next-line react/jsx-no-bind
-        onClose={handleConfirmModaClose}
-        open={confirmModalOpen}
-      >
-        <div style={{
-          backgroundColor: '#FFFFFF',
-          display: 'flex',
-          height: '100%',
-          maxWidth: 700,
-          position: 'relative',
-          top: '5px',
-          transform: `translateX(${(window.innerWidth - 560) / 2}px)`,
-          width: '560px'
-        }}
-        >
-          <Container disableGutters maxWidth='md' sx={{ marginTop: 2 }}>
-            <Grid alignItems='center' container item justifyContent='space-between' sx={{ padding: '0px 20px' }}>
-              <Grid item>
-                <Avatar
-                  alt={'logo'}
-                  src={getLogo(selectedBlockchain)}
-                />
-              </Grid>
-              <Grid item sx={{ fontSize: 15 }}>
-                <div style={confirmingState === 'confirming' ? { opacity: '0.4', pointerEvents: 'none' } : {}}>
-                  <ActionText
-                    onClick={handleReject}
-                    text={t('Reject')}
-                  />
-                </div>
-              </Grid>
-              <Grid item xs={12}>
-                <Divider />
-              </Grid>
-            </Grid>
+    <Popup handleClose={handleConfirmModaClose} showModal={confirmModalOpen}>
+      <PlusHeader action={handleReject} chain={selectedBlockchain} closeText={'Reject'} icon={<ConfirmationNumberOutlinedIcon fontSize='small'/>} title={'Confirm'} />
 
-            <Grid container sx={{ padding: '30px 40px 20px' }}>
-              <FormControl fullWidth>
-                <InputLabel id='selec-address'>{t('Account')}</InputLabel>
-                <Select value={selectedAddress}
-                  label='Select address'
-                  onChange={handleAddressChange}
-                  sx={{ height: 50 }}
+      <Grid container sx={{ padding: '30px 40px 20px' }}>
+        <FormControl fullWidth>
+          <InputLabel id='selec-address'>{t('Account')}</InputLabel>
+          <Select value={selectedAddress}
+            label='Select address'
+            onChange={handleAddressChange}
+            sx={{ height: 50 }}
 
-                >
-                  {allAddresesOnThisChain?.map((address) => (
-                    <MenuItem key={address} value={address}>
-                      <Grid container alignItems='center' justifyContent='space-between'>
-                        <Grid item>
-                          <Identicon
-                            size={25}
-                            theme={'polkadot'}
-                            value={address}
-                          />
-                        </Grid>
-                        <Grid item sx={{ fontSize: 13 }}>
-                          {address}
-                        </Grid>
-                      </Grid>
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <FormHelperText>{t('Selected account to contribute')}</FormHelperText>
-
-            </Grid>
-
-            <Grid item sx={{ padding: '1px 40px 20px' }} xs={12}>
-              <TextField
-                InputLabelProps={{ shrink: true }}
-                InputProps={{ endAdornment: (<InputAdornment position='end'>{coin}</InputAdornment>) }}
-                autoFocus
-                color='warning'
-                // error={reapeAlert || noFeeAlert || zeroBalanceAlert}
-                fullWidth
-                helperText={(t('Minimum contribution: ') + amountToHuman(auction.minContribution, decimals) + ' ' + coin)}
-                label={t('Amount')}
-                margin='dense'
-                name='contributionAmount'
-                // onBlur={(event) => handleTransferAmountOnBlur(event.target.value)}
-                onChange={(event) => handleContributionAmountChange(event.target.value)}
-                placeholder={amountToHuman(auction.minContribution, decimals)}
-                size='medium'
-                type='number'
-                value={contributionAmountInHuman}
-                variant='outlined'
-              />
-            </Grid>
-
-            <Grid item sx={{ textAlign: 'center', color: grey[600], fontFamily: 'fantasy', fontSize: 16, padding: '1px 50px 5px' }} xs={12}>
-              {t('Crowdloan to contribute')}
-            </Grid>
-
-            <Grid item sx={{ padding: '1px 30px' }} xs={12}>
-              <Fund chainName={selectedBlockchain} crowdloan={crowdloan} endpoints={endpoints} />
-            </Grid>
-
-            <Grid item sx={{ margin: '20px 30px 5px' }} xs={12}>
-              <TextField
-                InputLabelProps={{
-                  shrink: true
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position='end'>
-                      <IconButton
-                        onClick={handleClearPassword}
-                      >
-                        {password !== '' ? <Clear /> : ''}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                  startAdornment: (
-                    <InputAdornment position='start'>
-                      {passwordIsCorrect === 1 ? <CheckRounded color='success' /> : ''}
-                    </InputAdornment>
-                  ),
-                  style: { fontSize: 16 }
-                }}
-                // autoFocus={!['confirming', 'failed', 'success'].includes(confirmingState)}
-                color='warning'
-                // disabled={!ledger}
-                error={passwordIsCorrect === -1}
-                fullWidth
-                helperText={passwordIsCorrect === -1 ? t('Password is not correct') : t('Please enter the stake account password')}
-                label={t('Password')}
-                onChange={handleSavePassword}
-                onKeyPress={(event) => {
-                  if (event.key === 'Enter') { handleConfirm(); }
-                }}
-                size='medium'
-                type='password'
-                value={password}
-                variant='outlined'
-              />
-            </Grid>
-
-            <Grid container item justifyContent='space-between' sx={{ padding: '5px 30px 0px' }} xs={12}>
-              {['success', 'failed'].includes(confirmingState)
-                ? <Grid item xs={12}>
-                  <MuiButton fullWidth onClick={handleReject} variant='contained'
-                    color={confirmingState === 'success' ? 'success' : 'error'} size='large'>
-                    {confirmingState === 'success' ? t('Done') : t('Failed')}
-                  </MuiButton>
+          >
+            {allAddresesOnThisChain?.map((address) => (
+              <MenuItem key={address} value={address}>
+                <Grid container alignItems='center' justifyContent='space-between'>
+                  <Grid item>
+                    <Identicon
+                      size={25}
+                      theme={'polkadot'}
+                      value={address}
+                    />
+                  </Grid>
+                  <Grid item sx={{ fontSize: 13 }}>
+                    {address}
+                  </Grid>
                 </Grid>
-                : <>
-                  <Grid item xs={1}>
-                    <BackButton onClick={handleConfirmCrowdloanModalBack} />
-                  </Grid>
-                  <Grid item xs={11} sx={{ paddingLeft: '10px' }}>
-                    <Button
-                      data-button-action=''
-                      isBusy={confirmingState === 'confirming'}
-                      isDisabled={!selectedAddress}
-                      onClick={handleConfirm}
-                    >
-                      {t('Confirm')}
-                    </Button>
-                  </Grid>
-                </>}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormHelperText>{t('Selected account to contribute')}</FormHelperText>
+
+      </Grid>
+
+      <Grid item sx={{ padding: '1px 40px 20px' }} xs={12}>
+        <TextField
+          InputLabelProps={{ shrink: true }}
+          InputProps={{ endAdornment: (<InputAdornment position='end'>{coin}</InputAdornment>) }}
+          autoFocus
+          color='warning'
+          // error={reapeAlert || noFeeAlert || zeroBalanceAlert}
+          fullWidth
+          helperText={(t('Minimum contribution: ') + amountToHuman(auction.minContribution, decimals) + ' ' + coin)}
+          label={t('Amount')}
+          margin='dense'
+          name='contributionAmount'
+          // onBlur={(event) => handleTransferAmountOnBlur(event.target.value)}
+          onChange={(event) => handleContributionAmountChange(event.target.value)}
+          placeholder={amountToHuman(auction.minContribution, decimals)}
+          size='medium'
+          type='number'
+          value={contributionAmountInHuman}
+          variant='outlined'
+        />
+      </Grid>
+
+      <Grid item sx={{ textAlign: 'center', color: grey[600], fontFamily: 'fantasy', fontSize: 16, padding: '1px 50px 5px' }} xs={12}>
+        {t('Crowdloan to contribute')}
+      </Grid>
+
+      <Grid item sx={{ padding: '1px 30px' }} xs={12}>
+        <Fund chainName={selectedBlockchain} crowdloan={crowdloan} endpoints={endpoints} />
+      </Grid>
+
+      <Grid item sx={{ margin: '20px 30px 5px' }} xs={12}>
+        <TextField
+          InputLabelProps={{
+            shrink: true
+          }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position='end'>
+                <IconButton
+                  onClick={handleClearPassword}
+                >
+                  {password !== '' ? <Clear /> : ''}
+                </IconButton>
+              </InputAdornment>
+            ),
+            startAdornment: (
+              <InputAdornment position='start'>
+                {passwordIsCorrect === 1 ? <CheckRounded color='success' /> : ''}
+              </InputAdornment>
+            ),
+            style: { fontSize: 16 }
+          }}
+          // autoFocus={!['confirming', 'failed', 'success'].includes(confirmingState)}
+          color='warning'
+          // disabled={!ledger}
+          error={passwordIsCorrect === -1}
+          fullWidth
+          helperText={passwordIsCorrect === -1 ? t('Password is not correct') : t('Please enter the stake account password')}
+          label={t('Password')}
+          onChange={handleSavePassword}
+          onKeyPress={(event) => {
+            if (event.key === 'Enter') { handleConfirm(); }
+          }}
+          size='medium'
+          type='password'
+          value={password}
+          variant='outlined'
+        />
+      </Grid>
+
+      <Grid container item justifyContent='space-between' sx={{ padding: '5px 30px 0px' }} xs={12}>
+        {['success', 'failed'].includes(confirmingState)
+          ? <Grid item xs={12}>
+            <MuiButton fullWidth onClick={handleReject} variant='contained'
+              color={confirmingState === 'success' ? 'success' : 'error'} size='large'>
+              {confirmingState === 'success' ? t('Done') : t('Failed')}
+            </MuiButton>
+          </Grid>
+          : <>
+            <Grid item xs={1}>
+              <BackButton onClick={handleConfirmCrowdloanModalBack} />
             </Grid>
-          </Container>
-        </div>
-      </Modal>
-    </>
+            <Grid item xs={11} sx={{ paddingLeft: '10px' }}>
+              <Button
+                data-button-action=''
+                isBusy={confirmingState === 'confirming'}
+                isDisabled={!selectedAddress}
+                onClick={handleConfirm}
+              >
+                {t('Confirm')}
+              </Button>
+            </Grid>
+          </>}
+      </Grid>
+    </Popup>
   );
 }

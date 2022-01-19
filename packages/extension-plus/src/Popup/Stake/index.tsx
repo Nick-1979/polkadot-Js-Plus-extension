@@ -5,9 +5,8 @@
 import type { StakingLedger } from '@polkadot/types/interfaces';
 
 import { AddCircleOutlineOutlined, Brightness7Outlined as Brightness7OutlinedIcon, CheckOutlined, InfoOutlined, Redeem as RedeemIcon, RemoveCircleOutlineOutlined } from '@mui/icons-material';
-import { Alert, Box, Button, CircularProgress, Container, FormControl, FormControlLabel, FormLabel, Grid, IconButton, InputAdornment, Modal, Paper, Radio, RadioGroup, Skeleton, Tab, Tabs, TextField, Tooltip, Typography } from '@mui/material';
+import { Alert, Box, Button, CircularProgress, FormControl, FormControlLabel, FormLabel, Grid, IconButton, InputAdornment, Paper, Radio, RadioGroup, Skeleton, Tab, Tabs, TextField, Tooltip, Typography } from '@mui/material';
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
-import ReactDom from 'react-dom';
 
 import { DeriveStakingQuery } from '@polkadot/api-derive/types';
 import { AccountJson } from '@polkadot/extension-base/background/types';
@@ -17,13 +16,14 @@ import { formatBalance } from '@polkadot/util';
 import { NextStepButton } from '../../../../extension-ui/src/components';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { updateMeta } from '../../../../extension-ui/src/messaging';
+import PlusHeader from '../../components/PlusHeader';
+import Popup from '../../components/Popup';
+import Progress from '../../components/Progress';
 import { DEFAULT_COIN, MAX_ACCEPTED_COMMISSION, MIN_EXTRA_BOND } from '../../util/constants';
 import getNetworkInfo from '../../util/getNetwork';
 import { AccountsBalanceType, AllValidatorsFromSubscan, savedMetaData, StakingConsts, Validators, ValidatorsName } from '../../util/plusTypes';
 import { amountToHuman, amountToMachine, balanceToHuman, fixFloatingPoint, prepareMetaData } from '../../util/plusUtils';
 import { getAllValidatorsFromSubscan, getStakingReward } from '../../util/staking';
-import PlusHeader from '../common/PlusHeader';
-import Progress from '../common/Progress';
 import ConfirmStaking from './ConfirmStaking';
 import SelectValidators from './SelectValidators';
 import ValidatorsList from './ValidatorsList';
@@ -666,390 +666,364 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
     };
   }, [state, unstakeAmount, stakeAmount, redeemable, decimals]);
 
-  return ReactDom.createPortal(
-    <Modal
-      disablePortal
-      keepMounted
-      // eslint-disable-next-line react/jsx-no-bind
-      onClose={(_event, reason) => {
-        if (reason !== 'backdropClick') {
-          handleEasyStakingModalClose();
-        }
-      }}
-      open={showStakingModal}
-    >
-      <div style={{
-        backgroundColor: '#FFFFFF',
-        display: 'flex',
-        height: '100%',
-        maxWidth: 700,
-        // overflow: 'scroll',
-        position: 'relative',
-        top: '5px',
-        transform: `translateX(${(window.innerWidth - 560) / 2}px)`,
-        width: '560px'
-      }}
-      >
-        <Container disableGutters maxWidth='md'>
-          <PlusHeader action={handleEasyStakingModalClose} chain={chain} closeText={'Close'} icon={<Brightness7OutlinedIcon />} title={'Easy Staking'} />
+  return (
+    <Popup showModal={showStakingModal} handleClose={handleEasyStakingModalClose}>
+      <PlusHeader action={handleEasyStakingModalClose} chain={chain} closeText={'Close'} icon={<Brightness7OutlinedIcon fontSize='small' />} title={'Easy Staking'} />
 
-          <Grid alignItems='center' container>
-            <Grid alignItems='center' container item justifyContent='center' xs={12}>
-              <Paper elevation={4} sx={{ borderRadius: '10px', margin: '25px 30px 10px', p: 3, fontSize: 11 }}>
-                <Grid container item >
-                  <Grid item container sx={{ padding: '10px 0px 20px' }} justifyContent='space-between'>
-                    <Grid item >
-                      <b> Available: </b> <Box component='span' sx={{ fontWeight: 600 }}> {availableBalance}</Box>
-                    </Grid>
-                    <Grid item >
-                      <b> Staked: </b> {!ledger
-                        ? <Skeleton sx={{ display: 'inline-block', fontWeight: '600', width: '60px' }} />
-                        : <Box component='span' sx={{ fontWeight: 600 }}>
-                          {currentlyStakedInHuman || '0.00'}
-                        </Box>
-                      }
-                    </Grid>
-                  </Grid>
-                  <Grid item container justifyContent='space-between'>
-                    <Grid item >
-                      <b> Reward: </b>{!totalReceivedReward
-                        ? <Skeleton sx={{ display: 'inline-block', fontWeight: '600', width: '50px' }} />
-                        : <Box component='span' sx={{ fontWeight: 600 }}> {totalReceivedReward}</Box>
-                      }
-                    </Grid>
-                    <Grid item >
-                      <b> Redeemable: </b>{redeemable === null
-                        ? <Skeleton sx={{ display: 'inline-block', fontWeight: '600', width: '50px' }} />
-                        : <Box component='span' sx={{ fontWeight: 600 }}>
-                          {redeemable ? amountToHuman(String(redeemable), decimals) : '0.00'}   {' '}
-                        </Box>
-                      }
-                      <Tooltip title='Withdraw unbounded' arrow placement='top'>
-                        <IconButton onClick={handleWithdrowUnbound} size='small' edge='start' disabled={!redeemable}>
-                          <RedeemIcon color={redeemable ? 'warning' : 'disabled'} fontSize='inherit' />
-                        </IconButton>
-                      </Tooltip>
-                    </Grid>
-                    <Grid item >
-                      <b> Unstaking:</b> {!ledger
-                        ? <Skeleton sx={{ display: 'inline-block', fontWeight: '600', width: '50px' }} />
-                        : <Box component='span' sx={{ fontWeight: 600 }}>
-                          {unlockingAmount ? amountToHuman(String(unlockingAmount), decimals) : '0.00'}
-                          {' '}
-                        </Box>
-                      }
-                    </Grid>
-                  </Grid>
+      <Grid alignItems='center' container>
+        <Grid alignItems='center' container item justifyContent='center' xs={12}>
+          <Paper elevation={4} sx={{ borderRadius: '10px', margin: '25px 30px 10px', p: 3, fontSize: 11 }}>
+            <Grid container item >
+              <Grid item container sx={{ padding: '10px 0px 20px' }} justifyContent='space-between'>
+                <Grid item >
+                  <b> Available: </b> <Box component='span' sx={{ fontWeight: 600 }}> {availableBalance}</Box>
                 </Grid>
-              </Paper>
-            </Grid>
-            <Grid item xs={12}>
-              <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs
-                  textColor='secondary'
-                  indicatorColor='secondary'
-                  centered value={tabValue} onChange={handleTabChange}>
-                  <Tab icon={<AddCircleOutlineOutlined fontSize='small' />} iconPosition='start' label='Stake' sx={{ fontSize: 11 }} />
-                  <Tab icon={<RemoveCircleOutlineOutlined fontSize='small' />} iconPosition='start' label='Unstake' sx={{ fontSize: 11 }} />
-                  <Tab
-                    icon={gettingNominatedValidatorsInfoFromBlockchain && !noNominatedValidators
-                      ? <CircularProgress thickness={2} size={12} />
-                      : <CheckOutlined fontSize='small' />}
-                    iconPosition='start' label='Nominated Validators' sx={{ fontSize: 11 }}
-                  />
-                  <Tab
-                    icon={gettingStakingConstsFromBlockchain ? <CircularProgress thickness={2} size={12} /> : <InfoOutlined fontSize='small' />}
-                    iconPosition='start' label='Info' sx={{ fontSize: 11 }}
-                  />
-                </Tabs>
-              </Box>
-              <TabPanel value={tabValue} index={0}>
-                <Grid container>
-                  <Grid item sx={{ padding: '10px 30px 0px' }} xs={12}>
-                    <TextField
-                      InputLabelProps={{ shrink: true }}
-                      InputProps={{ endAdornment: (<InputAdornment position='end'>{coin}</InputAdornment>) }}
-                      autoFocus
-                      color='warning'
-                      error={zeroBalanceAlert}
-                      fullWidth
-                      helperText={zeroBalanceAlert ? t('Available balance is zero.') : ''}
-                      inputProps={{ step: '.01' }}
-                      label={t('Amount')}
-                      name='stakeAmount'
-                      // onBlur={(event) => handleStakeAmountOnBlur(event.target.value)}
-                      onChange={handleStakeAmountOnChange}
-                      placeholder='0.0'
-                      // size='small'
-                      type='number'
-                      value={stakeAmountInHuman}
-                      variant='outlined'
-                    />
-                  </Grid>
-                  {!zeroBalanceAlert &&
-                    <Grid container item justifyContent='space-between' sx={{ padding: '0px 30px 10px' }} xs={12}>
-                      <Grid item sx={{ fontSize: 12 }}>
-                        {minStakeable &&
-                          <>
-                            Min :
-                            <Button
-                              onClick={handleMinStakeClicked}
-                              variant='text'
-                            >
-                              {`${minStakeable} ${coin}`}
-                            </Button>
-                          </>
-                        }
-                      </Grid>
-                      <Grid item sx={{ fontSize: 12 }}>
-                        {maxStake &&
-                          <>
-                            Max :
-                            <Button
-                              onClick={handleMaxStakeClicked}
-                              variant='text'
-                            >
-                              {`${maxStake} ${coin}`}
-                            </Button>
-                          </>
-                        }
-                      </Grid>
-                    </Grid>
+                <Grid item >
+                  <b> Staked: </b> {!ledger
+                    ? <Skeleton sx={{ display: 'inline-block', fontWeight: '600', width: '60px' }} />
+                    : <Box component='span' sx={{ fontWeight: 600 }}>
+                      {currentlyStakedInHuman || '0.00'}
+                    </Box>
                   }
-                  <Grid item container sx={{ fontSize: 13, fontWeight: '600', textAlign: 'center', padding: '5px 30px 5px' }} xs={12}>
-                    {alert
-                      ? <Grid item xs={12}>
-                        <Alert severity='error' sx={{ fontSize: 12 }} >
-                          {alert}
-                        </Alert>
-                      </Grid>
-                      : <Grid item sx={{ paddingTop: '45px' }} xs={12}></Grid>
+                </Grid>
+              </Grid>
+              <Grid item container justifyContent='space-between'>
+                <Grid item >
+                  <b> Reward: </b>{!totalReceivedReward
+                    ? <Skeleton sx={{ display: 'inline-block', fontWeight: '600', width: '50px' }} />
+                    : <Box component='span' sx={{ fontWeight: 600 }}> {totalReceivedReward}</Box>
+                  }
+                </Grid>
+                <Grid item >
+                  <b> Redeemable: </b>{redeemable === null
+                    ? <Skeleton sx={{ display: 'inline-block', fontWeight: '600', width: '50px' }} />
+                    : <Box component='span' sx={{ fontWeight: 600 }}>
+                      {redeemable ? amountToHuman(String(redeemable), decimals) : '0.00'}   {' '}
+                    </Box>
+                  }
+                  <Tooltip title='Withdraw unbounded' arrow placement='top'>
+                    <IconButton onClick={handleWithdrowUnbound} size='small' edge='start' disabled={!redeemable}>
+                      <RedeemIcon color={redeemable ? 'warning' : 'disabled'} fontSize='inherit' />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+                <Grid item >
+                  <b> Unstaking:</b> {!ledger
+                    ? <Skeleton sx={{ display: 'inline-block', fontWeight: '600', width: '50px' }} />
+                    : <Box component='span' sx={{ fontWeight: 600 }}>
+                      {unlockingAmount ? amountToHuman(String(unlockingAmount), decimals) : '0.00'}
+                      {' '}
+                    </Box>
+                  }
+                </Grid>
+              </Grid>
+            </Grid>
+          </Paper>
+        </Grid>
+        <Grid item xs={12}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs
+              textColor='secondary'
+              indicatorColor='secondary'
+              centered value={tabValue} onChange={handleTabChange}>
+              <Tab icon={<AddCircleOutlineOutlined fontSize='small' />} iconPosition='start' label='Stake' sx={{ fontSize: 11 }} />
+              <Tab icon={<RemoveCircleOutlineOutlined fontSize='small' />} iconPosition='start' label='Unstake' sx={{ fontSize: 11 }} />
+              <Tab
+                icon={gettingNominatedValidatorsInfoFromBlockchain && !noNominatedValidators
+                  ? <CircularProgress thickness={2} size={12} />
+                  : <CheckOutlined fontSize='small' />}
+                iconPosition='start' label='Nominated Validators' sx={{ fontSize: 11 }}
+              />
+              <Tab
+                icon={gettingStakingConstsFromBlockchain ? <CircularProgress thickness={2} size={12} /> : <InfoOutlined fontSize='small' />}
+                iconPosition='start' label='Info' sx={{ fontSize: 11 }}
+              />
+            </Tabs>
+          </Box>
+          <TabPanel value={tabValue} index={0}>
+            <Grid container>
+              <Grid item sx={{ padding: '10px 30px 0px' }} xs={12}>
+                <TextField
+                  InputLabelProps={{ shrink: true }}
+                  InputProps={{ endAdornment: (<InputAdornment position='end'>{coin}</InputAdornment>) }}
+                  autoFocus
+                  color='warning'
+                  error={zeroBalanceAlert}
+                  fullWidth
+                  helperText={zeroBalanceAlert ? t('Available balance is zero.') : ''}
+                  inputProps={{ step: '.01' }}
+                  label={t('Amount')}
+                  name='stakeAmount'
+                  // onBlur={(event) => handleStakeAmountOnBlur(event.target.value)}
+                  onChange={handleStakeAmountOnChange}
+                  placeholder='0.0'
+                  // size='small'
+                  type='number'
+                  value={stakeAmountInHuman}
+                  variant='outlined'
+                />
+              </Grid>
+              {!zeroBalanceAlert &&
+                <Grid container item justifyContent='space-between' sx={{ padding: '0px 30px 10px' }} xs={12}>
+                  <Grid item sx={{ fontSize: 12 }}>
+                    {minStakeable &&
+                      <>
+                        Min :
+                        <Button
+                          onClick={handleMinStakeClicked}
+                          variant='text'
+                        >
+                          {`${minStakeable} ${coin}`}
+                        </Button>
+                      </>
                     }
                   </Grid>
-                  <Grid item xs={12} justifyContent='center' sx={{ textAlign: 'center' }}>
-                    <FormControl fullWidth>
-                      <Grid alignItems='center' container justifyContent='center'>
-                        <Grid item sx={{ fontSize: 12 }} xs={3}>
-                          <FormLabel sx={{ fontSize: 12, fontWeight: '500', color: 'black' }}>{t('Validator selection')}:</FormLabel>
-                        </Grid>
-                        <Grid item xs={9} sx={{ textAlign: 'right' }}>
-                          <RadioGroup
-                            defaultValue='Auto'
-                            onChange={handleValidatorSelectionType}
-                            row
-                            value={validatorSelectionType}
-                          >
-                            <FormControlLabel
-                              control={<Radio sx={{ fontSize: 12, '& .MuiSvgIcon-root': { fontSize: 14 } }} />}
-                              label={<Box fontSize={12}>Auto <Box
-                                component='span'
-                                sx={{ color: 'gray' }}
-                              > (best return)</Box></Box>}
-                              value='Auto'
-                            />
-                            <FormControlLabel
-                              control={<Radio sx={{ fontSize: 12, '& .MuiSvgIcon-root': { fontSize: 14 } }} />}
-                              label={<Box fontSize={12}>Manual</Box>}
-                              sx={{ fontSize: 12 }}
-                              value='Manual'
-                            />
-                            {nominatedValidators &&
-                              <FormControlLabel
-                                control={<Radio sx={{ fontSize: 12, '& .MuiSvgIcon-root': { fontSize: 14 } }} />}
-                                label={<Box fontSize={12}>Keep nominated</Box>}
-                                sx={{ fontSize: 12 }}
-                                value='KeepNominated'
-                              />
-                            }
-                          </RadioGroup>
-                        </Grid>
-                      </Grid>
-                    </FormControl>
-                  </Grid>
-                  <Grid item sx={{ padding: '20px 10px 0px' }} xs={12}>
-                    <Grid item xs={12}>
-                      <NextStepButton
-                        data-button-action='next to stake'
-                        isBusy={!ledger && !validatorsInfoIsUpdated && ['KeepNominated', 'Auto'].includes(validatorSelectionType) && state !== ''}
-                        isDisabled={nextToStakeButtonDisabled}
-                        onClick={handleNextToStake}
-                      >
-                        {nextButtonCaption}
-                      </NextStepButton>
-                    </Grid>
-
-
-                  </Grid>
-                </Grid>
-              </TabPanel>
-              <TabPanel value={tabValue} index={1}>
-                <Grid container title='Unstake'>
-                  <Grid item sx={{ padding: '10px 30px 0px' }} xs={12}>
-                    <TextField
-                      InputLabelProps={{ shrink: true }}
-                      InputProps={{ endAdornment: (<InputAdornment position='end'>{coin}</InputAdornment>) }}
-                      autoFocus
-                      color='info'
-                      error={!currentlyStakedInHuman || Number(unstakeAmountInHuman) > Number(currentlyStakedInHuman)}
-                      fullWidth
-                      helperText={currentlyStakedInHuman === null
-                        ? t('Fetching data from blockchain ...')
-                        : (Number(currentlyStakedInHuman) === 0 && t('Nothing to unstake'))
-                      }
-                      inputProps={{ step: '.01' }}
-                      label={t('Amount')}
-                      name='unstakeAmount'
-                      onChange={handleUnstakeAmountOnChange}
-                      placeholder='0.0'
-                      type='number'
-                      value={unstakeAmountInHuman}
-                      variant='outlined'
-                    />
-                  </Grid>
-                  {ledger?.total
-                    ? <Grid container item justifyContent='flex-end' sx={{ padding: '0px 30px 10px' }} xs={12}>
-                      <Grid item sx={{ fontSize: 12 }}>
-                        {Number(ledger?.active)
-                          ? <>
-                            Max :
-                            <Button
-                              onClick={handleMaxUnstakeClicked}
-                              variant='text'
-                            >
-                              {`${String(currentlyStakedInHuman)} ${coin}`}
-                            </Button>
-                          </>
-                          : ''}
-                      </Grid>
-                    </Grid>
-                    : ''}
-                  <Grid item container sx={{ fontSize: 13, fontWeight: '600', padding: '5px 30px 5px', textAlign: 'center' }} xs={12}>
-                    {alert
-                      ? <Grid item xs={12}>
-                        <Alert severity='error' sx={{ fontSize: 12 }} >
-                          {alert}
-                        </Alert>
-                      </Grid>
-                      : <Grid item sx={{ paddingTop: '45px' }} xs={12}></Grid>
+                  <Grid item sx={{ fontSize: 12 }}>
+                    {maxStake &&
+                      <>
+                        Max :
+                        <Button
+                          onClick={handleMaxStakeClicked}
+                          variant='text'
+                        >
+                          {`${maxStake} ${coin}`}
+                        </Button>
+                      </>
                     }
                   </Grid>
-                  <Grid xs={12} item sx={{ padding: '50px 10px 0px' }} >
-                    <NextStepButton
-                      data-button-action='next to unstake'
-                      isBusy={state === 'unstake'}
-                      isDisabled={nextToUnStakeButtonDisabled}
-                      // !Number(currentlyStakedInHuman) || !unstakeAmountInHuman || Number(unstakeAmountInHuman) > Number(currentlyStakedInHuman)}
-                      onClick={handleNextToUnstake}
-                    >
-                      {t('Next')}
-                    </NextStepButton>
-                  </Grid>
                 </Grid>
-              </TabPanel>
-              <TabPanel value={tabValue} index={2}>
-                {nominatedValidators && stakingConsts
-                  ? <Grid container>
-                    <Grid item xs={12} sx={{ paddingBottom: '20px' }}>
-                      <ValidatorsList
-                        chain={chain}
-                        stakingConsts={stakingConsts}
-                        validatorsInfo={nominatedValidators}
-                        validatorsName={validatorsName} />
-                    </Grid>
-                    <Grid item sx={{ padding: '20px 10px 0px' }} xs={12}>
-                      <NextStepButton
-                        data-button-action='Change Nominated Validators'
-                        isBusy={validatorsInfo && state === 'changeValidators'}
-                        // isDisabled={nextToStakeButtonDisabled}
-                        onClick={handleSelectValidatorsModaOpen}
-                      >
-                        {t('Change nominated validators')}
-                      </NextStepButton>
-                    </Grid>
+              }
+              <Grid item container sx={{ fontSize: 13, fontWeight: '600', textAlign: 'center', padding: '5px 30px 5px' }} xs={12}>
+                {alert
+                  ? <Grid item xs={12}>
+                    <Alert severity='error' sx={{ fontSize: 12 }} >
+                      {alert}
+                    </Alert>
                   </Grid>
-                  : !noNominatedValidators
-                    ? <Progress title={'Getting nominators ...'} />
-                    : <Grid xs={12} sx={{ fontSize: 13, marginTop: '60px', textAlign: 'center' }}>
-                      {t('You do not nominated any validators yet.')}
-                    </Grid>
+                  : <Grid item sx={{ paddingTop: '45px' }} xs={12}></Grid>
                 }
-              </TabPanel>
-              <TabPanel value={tabValue} index={3}>
-                <Grid container sx={{ paddingTop: '20px', textAlign: 'center' }}>
-                  <Grid xs={12} sx={{ fontSize: 15 }}>
-                    {t('Welcome to Staking')}
+              </Grid>
+              <Grid item xs={12} justifyContent='center' sx={{ textAlign: 'center' }}>
+                <FormControl fullWidth>
+                  <Grid alignItems='center' container justifyContent='center'>
+                    <Grid item sx={{ fontSize: 12 }} xs={3}>
+                      <FormLabel sx={{ fontSize: 12, fontWeight: '500', color: 'black' }}>{t('Validator selection')}:</FormLabel>
+                    </Grid>
+                    <Grid item xs={9} sx={{ textAlign: 'right' }}>
+                      <RadioGroup
+                        defaultValue='Auto'
+                        onChange={handleValidatorSelectionType}
+                        row
+                        value={validatorSelectionType}
+                      >
+                        <FormControlLabel
+                          control={<Radio sx={{ fontSize: 12, '& .MuiSvgIcon-root': { fontSize: 14 } }} />}
+                          label={<Box fontSize={12}>Auto <Box
+                            component='span'
+                            sx={{ color: 'gray' }}
+                          > (best return)</Box></Box>}
+                          value='Auto'
+                        />
+                        <FormControlLabel
+                          control={<Radio sx={{ fontSize: 12, '& .MuiSvgIcon-root': { fontSize: 14 } }} />}
+                          label={<Box fontSize={12}>Manual</Box>}
+                          sx={{ fontSize: 12 }}
+                          value='Manual'
+                        />
+                        {nominatedValidators &&
+                          <FormControlLabel
+                            control={<Radio sx={{ fontSize: 12, '& .MuiSvgIcon-root': { fontSize: 14 } }} />}
+                            label={<Box fontSize={12}>Keep nominated</Box>}
+                            sx={{ fontSize: 12 }}
+                            value='KeepNominated'
+                          />
+                        }
+                      </RadioGroup>
+                    </Grid>
                   </Grid>
-                  <Grid xs={12} sx={{ fontSize: 12, paddingBottom: '40px' }}>
-                    {t('Information you need to know about')}
-                  </Grid>
-                  {stakingConsts
-                    ? <>
-                      <Grid xs={12} sx={{ fontSize: 11, paddingBottom: '5px' }}>
-                        {t('Maximum validators you can select: ')}<Box component='span' sx={{ fontWeight: 'bold' }}>  {stakingConsts?.maxNominations}</Box>
-                      </Grid>
-                      <Grid xs={12} sx={{ fontSize: 11, paddingBottom: '5px' }}>
-                        {t('Minimum')} {coin}s {t('to be a staker: ')} <Box component='span' sx={{ fontWeight: 'bold' }}> {minNominatorBondInHuman}</Box> {coin}s
-                      </Grid>
-                      <Grid xs={12} sx={{ fontSize: 11, paddingBottom: '5px' }}>
-                        {t('Maximum stakers of a validator, who receives rewards: ')} <Box component='span' sx={{ fontWeight: 'bold' }}> {stakingConsts?.maxNominatorRewardedPerValidator}</Box>
-                      </Grid>
-                      <Grid xs={12} sx={{ fontSize: 11, paddingBottom: '5px' }}>
-                        {t('Days it takes to receive your funds back after unstaking:  ')}<Box component='span' sx={{ fontWeight: 'bold' }}>  {stakingConsts?.bondingDuration}</Box>  {t('days')}
-                      </Grid>
-                      <Grid xs={12} sx={{ fontSize: 11, paddingBottom: '5px' }}>
-                        {t('Minimum')} {coin}s {t('that must remain in you account: ')} <Box component='span' sx={{ fontWeight: 'bold' }}> {amountToHuman(String(stakingConsts?.existentialDeposit), decimals)}</Box> {coin}s {t('plus some fees')}
-                      </Grid>
-                    </>
-                    : <Progress title={'Getting information ...'} />
-                  }
+                </FormControl>
+              </Grid>
+              <Grid item sx={{ padding: '20px 10px 0px' }} xs={12}>
+                <Grid item xs={12}>
+                  <NextStepButton
+                    data-button-action='next to stake'
+                    isBusy={!ledger && !validatorsInfoIsUpdated && ['KeepNominated', 'Auto'].includes(validatorSelectionType) && state !== ''}
+                    isDisabled={nextToStakeButtonDisabled}
+                    onClick={handleNextToStake}
+                  >
+                    {nextButtonCaption}
+                  </NextStepButton>
                 </Grid>
-              </TabPanel>
-            </Grid>
-          </Grid>
 
-          {stakingConsts && validatorsInfo &&
-            <SelectValidators
-              chain={chain}
-              coin={coin}
-              ledger={ledger}
-              handleEasyStakingModalClose={handleEasyStakingModalClose}
-              setSelectValidatorsModalOpen={setSelectValidatorsModalOpen}
-              setState={setState}
-              showSelectValidatorsModal={showSelectValidatorsModal}
-              stakeAmount={stakeAmount}
-              staker={staker}
-              stakingConsts={stakingConsts}
-              state={state}
-              validatorsInfo={validatorsInfo}
-              // validatorsInfoFromSubscan={validatorsInfoFromSubscan}
-              validatorsName={validatorsName}
-              nominatedValidators={selectedValidators}
-            />
-          }
-          {ledger && staker && (selectedValidators || nominatedValidators) && state !== '' &&
-            <ConfirmStaking
-              amount={getAmountToConfirm()}
-              chain={chain}
-              // handleEasyStakingModalClose={handleEasyStakingModalClose}
-              // lastFee={lastFee}
-              coin={coin}
-              ledger={ledger}
-              nominatedValidators={nominatedValidators}
-              selectedValidators={selectedValidators}
-              setConfirmStakingModalOpen={setConfirmStakingModalOpen}
-              setState={setState}
-              showConfirmStakingModal={showConfirmStakingModal}
-              staker={staker}
-              stakingConsts={stakingConsts}
-              state={state}
-              validatorsInfo={validatorsInfo}
-              validatorsName={validatorsName}
-              validatorsToList={selectedValidators}
-            />
-          }
-        </Container>
-      </div>
-    </Modal>
-    , document.getElementById('root')
+
+              </Grid>
+            </Grid>
+          </TabPanel>
+          <TabPanel value={tabValue} index={1}>
+            <Grid container title='Unstake'>
+              <Grid item sx={{ padding: '10px 30px 0px' }} xs={12}>
+                <TextField
+                  InputLabelProps={{ shrink: true }}
+                  InputProps={{ endAdornment: (<InputAdornment position='end'>{coin}</InputAdornment>) }}
+                  autoFocus
+                  color='info'
+                  error={!currentlyStakedInHuman || Number(unstakeAmountInHuman) > Number(currentlyStakedInHuman)}
+                  fullWidth
+                  helperText={currentlyStakedInHuman === null
+                    ? t('Fetching data from blockchain ...')
+                    : (Number(currentlyStakedInHuman) === 0 && t('Nothing to unstake'))
+                  }
+                  inputProps={{ step: '.01' }}
+                  label={t('Amount')}
+                  name='unstakeAmount'
+                  onChange={handleUnstakeAmountOnChange}
+                  placeholder='0.0'
+                  type='number'
+                  value={unstakeAmountInHuman}
+                  variant='outlined'
+                />
+              </Grid>
+              {ledger?.total
+                ? <Grid container item justifyContent='flex-end' sx={{ padding: '0px 30px 10px' }} xs={12}>
+                  <Grid item sx={{ fontSize: 12 }}>
+                    {Number(ledger?.active)
+                      ? <>
+                        Max :
+                        <Button
+                          onClick={handleMaxUnstakeClicked}
+                          variant='text'
+                        >
+                          {`${String(currentlyStakedInHuman)} ${coin}`}
+                        </Button>
+                      </>
+                      : ''}
+                  </Grid>
+                </Grid>
+                : ''}
+              <Grid item container sx={{ fontSize: 13, fontWeight: '600', padding: '5px 30px 5px', textAlign: 'center' }} xs={12}>
+                {alert
+                  ? <Grid item xs={12}>
+                    <Alert severity='error' sx={{ fontSize: 12 }} >
+                      {alert}
+                    </Alert>
+                  </Grid>
+                  : <Grid item sx={{ paddingTop: '45px' }} xs={12}></Grid>
+                }
+              </Grid>
+              <Grid xs={12} item sx={{ padding: '50px 10px 0px' }} >
+                <NextStepButton
+                  data-button-action='next to unstake'
+                  isBusy={state === 'unstake'}
+                  isDisabled={nextToUnStakeButtonDisabled}
+                  // !Number(currentlyStakedInHuman) || !unstakeAmountInHuman || Number(unstakeAmountInHuman) > Number(currentlyStakedInHuman)}
+                  onClick={handleNextToUnstake}
+                >
+                  {t('Next')}
+                </NextStepButton>
+              </Grid>
+            </Grid>
+          </TabPanel>
+          <TabPanel value={tabValue} index={2}>
+            {nominatedValidators && stakingConsts
+              ? <Grid container>
+                <Grid item xs={12} sx={{ paddingBottom: '20px' }}>
+                  <ValidatorsList
+                    chain={chain}
+                    stakingConsts={stakingConsts}
+                    validatorsInfo={nominatedValidators}
+                    validatorsName={validatorsName} />
+                </Grid>
+                <Grid item sx={{ padding: '20px 10px 0px' }} xs={12}>
+                  <NextStepButton
+                    data-button-action='Change Nominated Validators'
+                    isBusy={validatorsInfo && state === 'changeValidators'}
+                    // isDisabled={nextToStakeButtonDisabled}
+                    onClick={handleSelectValidatorsModaOpen}
+                  >
+                    {t('Change nominated validators')}
+                  </NextStepButton>
+                </Grid>
+              </Grid>
+              : !noNominatedValidators
+                ? <Progress title={'Loading nominators ...'} />
+                : <Grid xs={12} sx={{ fontSize: 13, marginTop: '60px', textAlign: 'center' }}>
+                  {t('You do not nominated any validators yet.')}
+                </Grid>
+            }
+          </TabPanel>
+          <TabPanel value={tabValue} index={3}>
+            <Grid container sx={{ paddingTop: '20px', textAlign: 'center' }}>
+              <Grid xs={12} sx={{ fontSize: 15 }}>
+                {t('Welcome to Staking')}
+              </Grid>
+              <Grid xs={12} sx={{ fontSize: 12, paddingBottom: '40px' }}>
+                {t('Information you need to know about')}
+              </Grid>
+              {stakingConsts
+                ? <>
+                  <Grid xs={12} sx={{ fontSize: 11, paddingBottom: '5px' }}>
+                    {t('Maximum validators you can select: ')}<Box component='span' sx={{ fontWeight: 'bold' }}>  {stakingConsts?.maxNominations}</Box>
+                  </Grid>
+                  <Grid xs={12} sx={{ fontSize: 11, paddingBottom: '5px' }}>
+                    {t('Minimum')} {coin}s {t('to be a staker: ')} <Box component='span' sx={{ fontWeight: 'bold' }}> {minNominatorBondInHuman}</Box> {coin}s
+                  </Grid>
+                  <Grid xs={12} sx={{ fontSize: 11, paddingBottom: '5px' }}>
+                    {t('Maximum stakers of a validator, who receives rewards: ')} <Box component='span' sx={{ fontWeight: 'bold' }}> {stakingConsts?.maxNominatorRewardedPerValidator}</Box>
+                  </Grid>
+                  <Grid xs={12} sx={{ fontSize: 11, paddingBottom: '5px' }}>
+                    {t('Days it takes to receive your funds back after unstaking:  ')}<Box component='span' sx={{ fontWeight: 'bold' }}>  {stakingConsts?.bondingDuration}</Box>  {t('days')}
+                  </Grid>
+                  <Grid xs={12} sx={{ fontSize: 11, paddingBottom: '5px' }}>
+                    {t('Minimum')} {coin}s {t('that must remain in you account: ')} <Box component='span' sx={{ fontWeight: 'bold' }}> {amountToHuman(String(stakingConsts?.existentialDeposit), decimals)}</Box> {coin}s {t('plus some fees')}
+                  </Grid>
+                </>
+                : <Progress title={'Loading information ...'} />
+              }
+            </Grid>
+          </TabPanel>
+        </Grid>
+      </Grid>
+
+      {stakingConsts && validatorsInfo &&
+        <SelectValidators
+          chain={chain}
+          coin={coin}
+          ledger={ledger}
+          handleEasyStakingModalClose={handleEasyStakingModalClose}
+          setSelectValidatorsModalOpen={setSelectValidatorsModalOpen}
+          setState={setState}
+          showSelectValidatorsModal={showSelectValidatorsModal}
+          stakeAmount={stakeAmount}
+          staker={staker}
+          stakingConsts={stakingConsts}
+          state={state}
+          validatorsInfo={validatorsInfo}
+          // validatorsInfoFromSubscan={validatorsInfoFromSubscan}
+          validatorsName={validatorsName}
+          nominatedValidators={selectedValidators}
+        />
+      }
+      {ledger && staker && (selectedValidators || nominatedValidators) && state !== '' &&
+        <ConfirmStaking
+          amount={getAmountToConfirm()}
+          chain={chain}
+          // handleEasyStakingModalClose={handleEasyStakingModalClose}
+          // lastFee={lastFee}
+          coin={coin}
+          ledger={ledger}
+          nominatedValidators={nominatedValidators}
+          selectedValidators={selectedValidators}
+          setConfirmStakingModalOpen={setConfirmStakingModalOpen}
+          setState={setState}
+          showConfirmStakingModal={showConfirmStakingModal}
+          staker={staker}
+          stakingConsts={stakingConsts}
+          state={state}
+          validatorsInfo={validatorsInfo}
+          validatorsName={validatorsName}
+          validatorsToList={selectedValidators}
+        />
+      }
+    </Popup>
   );
 }

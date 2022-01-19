@@ -14,7 +14,7 @@ import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation
 import { PersonsInfo } from '../../../util/plusTypes';
 import { amountToHuman } from '../../../util/plusUtils';
 import { grey } from '@mui/material/colors';
-import { ShortAddress } from '../../common/ShortAddress';
+import { ShortAddress } from '../../../components/ShortAddress';
 
 interface Props {
   personsInfo: PersonsInfo;
