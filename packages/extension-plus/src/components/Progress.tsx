@@ -5,7 +5,7 @@
 import { CircularProgress, Grid } from '@mui/material';
 import React from 'react';
 
-import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
+import useTranslation from '../../../extension-ui/src/hooks/useTranslation';
 
 interface Props {
   title: string;

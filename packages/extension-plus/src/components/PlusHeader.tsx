@@ -7,38 +7,39 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Avatar, Divider, Grid } from '@mui/material';
 import React from 'react';
 
-import { Chain } from '../../../../extension-chains/src/types';
-import { ActionText } from '../../../../extension-ui/src/components';
-import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
-import getLogo from '../../util/getLogo';
+import { Chain } from '../../../extension-chains/src/types';
+import { ActionText } from '../../../extension-ui/src/components';
+import useTranslation from '../../../extension-ui/src/hooks/useTranslation';
+import getLogo from '../util/getLogo';
 
 interface Props {
   chain: string | Chain;
   // icon: IconDefinition;
-  icon:React.ReactElement;
+  icon: React.ReactElement;
   title: string;
   closeText: string;
   action: () => void;
 }
 
-export default function PlusHeader ({ action, chain, closeText, icon, title }: Props): React.ReactElement<Props> {
+export default function PlusHeader({ action, chain, closeText, icon, title }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
 
   return (
-    <Grid alignItems='center' container item justifyContent='space-between' sx={{fontSize: 15, padding: '20px 20px 1px' }}>
+    <Grid alignItems='center' container item justifyContent='space-between' sx={{ fontSize: 15, padding: '20px 20px 1px' }}>
       <Grid item>
         <Avatar
           alt={'logo'}
           src={getLogo(chain)}
         />
       </Grid>
-      <Grid item sx={{fontWeight: 500 }}>
+      <Grid item sx={{ fontWeight: 350 }}>
         {/* <FontAwesomeIcon
           icon={icon}
           size='sm'
         /> */}
         {icon}
-        {' '} {t<string>(title)}
+        {' '} 
+        {t<string>(title)}
       </Grid>
       <Grid item>
         <ActionText
