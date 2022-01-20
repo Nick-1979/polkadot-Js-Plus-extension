@@ -5,7 +5,7 @@
 import type { ThemeProps } from '../../../../extension-ui/src/types';
 
 import { ExpandMore, Gavel as GavelIcon, Groups as GroupsIcon } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionSummary, Avatar, CircularProgress, FormControl, FormHelperText, Grid, InputLabel, MenuItem, Paper, Select, Tab, Tabs, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Avatar, FormControl, FormHelperText, Grid, InputLabel, MenuItem, Paper, Select, Tab, Tabs, Typography } from '@mui/material';
 import { deepOrange } from '@mui/material/colors';
 import grey from '@mui/material/colors/grey';
 import { SelectChangeEvent } from '@mui/material/Select';
@@ -20,14 +20,13 @@ import { cryptoWaitReady } from '@polkadot/util-crypto';
 
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { Header } from '../../../../extension-ui/src/partials';
-import { NothingToShow } from '../../components/NothingToShow';
+import { NothingToShow, Progress } from '../../components';
 import { RELAY_CHAINS } from '../../util/constants';
+import getChainInfo from '../../util/getChainInfo';
 import getLogo from '../../util/getLogo';
-import getNetworkInfo from '../../util/getNetwork';
-import { Auction, Crowdloan } from '../../util/plusTypes';
-import ConfirmCrowdloan from './ConfirmContribution';
+import { Auction, ChainInfo, Crowdloan } from '../../util/plusTypes';
+import Contribute from './Contribute';
 import Fund from './Fund';
-import Progress from '../../components/Progress';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -37,20 +36,19 @@ const allEndpoints = createWsEndpoints((key: string, value: string | undefined) 
 
 function Crowdloans({ className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-  const [decimals, setDecimals] = useState<number>(1);
   const [contributingTo, setContributingTo] = useState<Crowdloan | null>(null);
   const [auction, setAuction] = useState<Auction | null>(null);
   const [activeCrowdloans, setActiveCrowdloans] = useState<Crowdloan[] | undefined>(undefined);
   const [auctionWinners, setAuctionWinners] = useState<Crowdloan[] | undefined>(undefined);
   const [selectedBlockchain, setSelectedBlockchain] = useState<string>('');
   const [tabValue, setTabValue] = React.useState('auction');
-  const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);
+  const [contributeModal, setContributeModalOpen] = useState<boolean>(false);
   const [endpoints, setEndpoints] = useState<LinkOption[]>([]);
   const [expanded, setExpanded] = React.useState<string | false>(false);
+  const [chainInfo, setChainInfo] = useState<ChainInfo>();
 
   function getCrowdloands(_selectedBlockchain: string) {
     const crowdloanWorker: Worker = new Worker(new URL('../../util/workers/getCrowdloans.js', import.meta.url));
-
     const chain = _selectedBlockchain;// TODO: change it
 
     crowdloanWorker.postMessage({ chain });
@@ -74,26 +72,21 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
   }
 
   useEffect(() => {
-    try {
-      // eslint-disable-next-line no-void
-      void cryptoWaitReady().then(() => {
-        keyring.loadAll({ store: new AccountsStore() });
-      });
-    } catch (e) {
-      console.log('Keyring is already loaded ', e);
-    }
+    // eslint-disable-next-line no-void
+    void cryptoWaitReady().then(() => {
+      keyring.loadAll({ store: new AccountsStore() });
+    });
+
   }, []);
 
   useEffect(() => {
     if (selectedBlockchain) {
       setAuction(null);
       setContributingTo(null);
-
       getCrowdloands(selectedBlockchain);
 
-      const { decimals } = getNetworkInfo(null, selectedBlockchain);
-
-      setDecimals(decimals);
+      // eslint-disable-next-line no-void
+      void getChainInfo(selectedBlockchain).then((i) => setChainInfo(i));
 
       const { genesisHash } = allEndpoints.find((e: LinkOption) => (String(e.text).toLowerCase() === selectedBlockchain.toLowerCase())) as LinkOption;
       const endpoints = allEndpoints.filter((e) => (e.genesisHashRelay === genesisHash));
@@ -121,7 +114,7 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
   const handleContribute = useCallback((crowdloan: Crowdloan): void => {
     setContributingTo(crowdloan);
 
-    setConfirmModalOpen(true);
+    setContributeModalOpen(true);
   }, []);
 
   const handleAccordionChange =
@@ -154,7 +147,7 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
           ? crowdloans.map((crowdloan) => (
             <Grid container item key={crowdloan.fund.paraId} xs={12}>
               {crowdloan.fund.paraId &&
-                <Fund chainName={selectedBlockchain} endpoints={endpoints} crowdloan={crowdloan} handleContribute={handleContribute} isActive={type === 'active'} />
+                <Fund coin={chainInfo.coin} decimals={chainInfo.decimals} endpoints={endpoints} crowdloan={crowdloan} handleContribute={handleContribute} isActive={type === 'active'} />
               }
             </Grid>
 
@@ -179,7 +172,7 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
         <Grid item container xs={12} sx={{ color: grey[600], fontFamily: 'fantasy', fontSize: 15, paddingLeft: '10px' }} >
           {t('Bids')}
         </Grid>
-        <Fund chainName={selectedBlockchain} endpoints={endpoints} crowdloan={crowdloan} />
+        <Fund coin={chainInfo.coin} decimals={chainInfo.decimals} endpoints={endpoints} crowdloan={crowdloan} />
       </Paper>
     );
   };
@@ -192,11 +185,6 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
         text={t<string>('Crowdloan')}
       />
       <>
-        {/* <InputFilter
-          onChange={_onChangeFilter}
-          placeholder={t<string>('parachain name')}
-          value={filter}
-        /> */}
         <Grid container id='selectRelyChain' sx={{ padding: '5px 35px' }}>
           <Grid item xs={12}>
             <FormControl fullWidth>
@@ -207,18 +195,18 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
                 onChange={handleBlockchainChange}
                 sx={{ height: 50 }}
               >
-                {RELAY_CHAINS.map((chain) =>
-                  <MenuItem key={chain.name} value={chain.name.toLowerCase()}>
+                {RELAY_CHAINS.map((r) =>
+                  <MenuItem key={r.name} value={r.name.toLowerCase()}>
                     <Grid container alignItems='center' justifyContent='space-between'>
                       <Grid item>
                         <Avatar
                           alt={'logo'}
-                          src={getLogo(chain.name.toLowerCase())}
+                          src={getLogo(r.name.toLowerCase())}
                           sx={{ height: 24, width: 24 }}
                         />
                       </Grid>
                       <Grid item sx={{ fontSize: 15 }}>
-                        {chain.name}
+                        {r.name}
                       </Grid>
                     </Grid>
                   </MenuItem>
@@ -327,15 +315,14 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
         }
 
         {
-          confirmModalOpen && auction && contributingTo &&
-          <ConfirmCrowdloan
+          contributeModal && auction && contributingTo &&
+          <Contribute
             auction={auction}
-            confirmModalOpen={confirmModalOpen}
+            contributeModal={contributeModal}
             crowdloan={contributingTo}
-            decimals={decimals}
+            chainInfo={chainInfo}
             endpoints={endpoints}
-            selectedBlockchain={selectedBlockchain}
-            setConfirmModalOpen={setConfirmModalOpen}
+            setContributeModalOpen={setContributeModalOpen}
 
           />
         }

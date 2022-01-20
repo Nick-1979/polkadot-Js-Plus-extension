@@ -7,20 +7,16 @@ import type { Chain } from '@polkadot/extension-chains/types';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { createWsEndpoints } from '@polkadot/apps-config';
 
+import { ChainInfo } from './plusTypes';
+
 const allEndpoints = createWsEndpoints((key: string, value: string | undefined) => value || key);
 
-
-interface chainInfo {
-  api: ApiPromise;
-  coin: string;
-  decimals: number;
-  url: string;
-  genesisHash: string;
-}
-
-export default async function getChainInfo(_chain: Chain | string): Promise<chainInfo> {
+export default async function getChainInfo(_chain: Chain | string): Promise<ChainInfo> {
   const chainName = (_chain as Chain)?.name?.replace(' Relay Chain', '') ?? _chain as string;
-  const { genesisHash, value } = allEndpoints.find((e) => (String(e.text).toLowerCase() === chainName.toLowerCase()));
+
+  // if (!chainName) return null;
+
+  const { genesisHash, value } = allEndpoints.find((e) => (String(e.text)?.toLowerCase() === chainName.toLowerCase()));
 
   const wsProvider = new WsProvider(value as string);
 
@@ -30,7 +26,7 @@ export default async function getChainInfo(_chain: Chain | string): Promise<chai
     api: api,
     coin: api.registry.chainTokens[0],
     decimals: api.registry.chainDecimals[0],
-    genesisHash: genesisHash,
+    genesisHash: genesisHash as string,
     url: value as string
   };
 }

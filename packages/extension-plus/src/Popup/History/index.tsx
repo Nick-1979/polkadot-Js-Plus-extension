@@ -6,7 +6,7 @@ import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { AllInclusive as AllInclusiveIcon, Brightness7Outlined as Brightness7OutlinedIcon, SwapVert as SwapVertIcon } from '@mui/icons-material';
 import HistoryIcon from '@mui/icons-material/History';
-import { Box, Divider, Grid, Link, Tab, Tabs } from '@mui/material';
+import { Box, Container, Divider, Grid, Link, Tab, Tabs } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useReducer, useRef, useState } from 'react';
 
@@ -17,11 +17,9 @@ import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { getTxTransfers } from '../../util/getTransfers';
 import { AccountsBalanceType, TransactionDetail, Transfers } from '../../util/plusTypes';
 import { getTransactionHistoryFromLocalStorage } from '../../util/plusUtils';
-import { NothingToShow } from '../../components/NothingToShow';
-import PlusHeader from '../../components/PlusHeader';
+import { NothingToShow,PlusHeader , Popup} from '../../components';
 import Details from './Details';
 import { getIcon } from './getIcons';
-import Popup from '../../components/Popup';
 
 interface Props {
   address: AccountsBalanceType;
@@ -232,7 +230,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
         </Box>
       </Grid>
 
-      <Grid alignItems='flex-start' container justifyContent='center' id='scrollArea' sx={{ padding: '0px 30px 5px', height: '450px', overflowY: 'auto' }}>
+      <Container id='scrollArea' sx={{ textAlign:'center', padding: '0px 30px 5px', height: '450px', overflowY: 'auto' }}>
         {tabHistory?.map((h, index) => (
           <Grid container key={index} alignItems='center'>
             <Grid item xs={1}>
@@ -294,8 +292,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
             )
           }
         </div>
-
-      </Grid>
+      </Container>
       {selectedTransaction && showDetailModal &&
         <Details
           chain={chain}

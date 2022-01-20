@@ -2,34 +2,33 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-import { CancelOutlined as CancelOutlinedIcon, Email as EmailIcon, HowToReg as HowToRegIcon, LaunchRounded as LaunchRoundedIcon, Twitter as TwitterIcon } from '@mui/icons-material';
-import { Button, Container, Divider, Grid, Link, Paper } from '@mui/material';
-import React, { useEffect } from 'react';
+import { Email as EmailIcon, LaunchRounded as LaunchRoundedIcon, Twitter as TwitterIcon } from '@mui/icons-material';
+import { Grid, Link, Paper } from '@mui/material';
+import { grey } from '@mui/material/colors';
+import React from 'react';
 
 import Identicon from '@polkadot/react-identicon';
 
 import { Chain } from '../../../../../extension-chains/src/types';
-import useMetadata from '../../../../../extension-ui/src/hooks/useMetadata';
 import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
+import { ShortAddress } from '../../../components';
 import { PersonsInfo } from '../../../util/plusTypes';
 import { amountToHuman } from '../../../util/plusUtils';
-import { grey } from '@mui/material/colors';
-import { ShortAddress } from '../../../components/ShortAddress';
 
 interface Props {
   personsInfo: PersonsInfo;
-  membersType: string;
+  membersType?: string;
   chain: Chain;
   coin: string;
   decimals: number;
 }
 
-export default function Members({ coin, personsInfo, membersType, decimals, chain }: Props): React.ReactElement<Props> {
+export default function Members({ chain, coin, decimals, membersType, personsInfo }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
 
   return (
     <>
-      <Grid xs={12} sx={{ fontSize: 14, fontWeigth: 'bold',color: grey[600], fontFamily: 'fantasy', textAlign: 'center', padding: '20px 1px 10px' }}>
+      <Grid xs={12} sx={{ fontSize: 14, fontWeigth: 'bold', color: grey[600], fontFamily: 'fantasy', textAlign: 'center', padding: '20px 1px 10px' }}>
         {membersType}
       </Grid>
 
@@ -58,10 +57,9 @@ export default function Members({ coin, personsInfo, membersType, decimals, chai
 
                   {!(m.identity.displayParent || m.identity.display) &&
                     <Grid item>
-                      <ShortAddress address={String(m.accountId)}/>
+                      <ShortAddress address={String(m.accountId)} />
                     </Grid>
                   }
-
 
                   {m.identity.twitter &&
                     <Grid item>
@@ -100,16 +98,20 @@ export default function Members({ coin, personsInfo, membersType, decimals, chai
                     </Grid>
                   }
                 </Grid>
-                <Grid item xs={5} sx={{ textAlign: 'right' }}>
-                  {t('Backed')}{': '} {amountToHuman(personsInfo.backed[index], decimals, 2)} {coin}
-                </Grid>
+                {personsInfo?.backed &&
+                  <Grid item xs={5} sx={{ textAlign: 'right' }}>
+                    {t('Backed')}{': '} {amountToHuman(personsInfo.backed[index], decimals, 2)} {coin}
+                  </Grid>
+                }
               </Grid>
 
             </Grid>
 
           </Paper>))
         : <Grid xs={12} sx={{ textAlign: 'center', paddingTop: 2 }}>
-          {t('No ')}{membersType.toLowerCase()} {t(' found')}
+          {membersType &&
+            <>{t('No ')}{membersType.toLowerCase()} {t(' found')}</>
+          }
         </Grid>}
 
     </>

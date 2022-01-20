@@ -8,9 +8,7 @@ import { Grid, Tab, Tabs } from '@mui/material';
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 
 import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
-import PlusHeader from '../../../components/PlusHeader';
-import Popup from '../../../components/Popup';
-import Progress from '../../../components/Progress';
+import { PlusHeader, Popup, Progress } from '../../../components';
 import getChainInfo from '../../../util/getChainInfo';
 import getCouncil from '../../../util/getCouncil';
 import getCurrentBlockNumber from '../../../util/getCurrentBlockNumber';
@@ -50,11 +48,8 @@ export default function CouncilIndex({ chainName, setCouncilModalOpen, showCounc
 
     // eslint-disable-next-line no-void
     void getMotions(chainName).then((m) => {
-      console.log('motionsmm', m);
-
       setMotions(m);
     });
-
 
     // eslint-disable-next-line no-void
     void getCurrentBlockNumber(chainName).then((n) => {
@@ -93,7 +88,7 @@ export default function CouncilIndex({ chainName, setCouncilModalOpen, showCounc
 
         {tabValue === 'motions'
           ? <>{motions
-            ? <Motions genesisHash={genesisHash} coin={coin} currentBlockNumber={currentBlockNumber} decimals={decimals} motions={motions} />
+            ? <Motions coin={coin} currentBlockNumber={currentBlockNumber} decimals={decimals} genesisHash={genesisHash} motions={motions} />
             : <Progress title={'Loading motions ...'} />}
           </>
           : ''}

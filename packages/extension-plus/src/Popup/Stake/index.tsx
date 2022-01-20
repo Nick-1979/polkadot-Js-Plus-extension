@@ -16,9 +16,7 @@ import { formatBalance } from '@polkadot/util';
 import { NextStepButton } from '../../../../extension-ui/src/components';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { updateMeta } from '../../../../extension-ui/src/messaging';
-import PlusHeader from '../../components/PlusHeader';
-import Popup from '../../components/Popup';
-import Progress from '../../components/Progress';
+import { PlusHeader, Popup, Progress } from '../../components';
 import { DEFAULT_COIN, MAX_ACCEPTED_COMMISSION, MIN_EXTRA_BOND } from '../../util/constants';
 import getNetworkInfo from '../../util/getNetwork';
 import { AccountsBalanceType, AllValidatorsFromSubscan, savedMetaData, StakingConsts, Validators, ValidatorsName } from '../../util/plusTypes';
@@ -202,6 +200,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
       }
 
       let value = unlockingValue;
+
       if (redeemable) { value = unlockingValue - redeemable }
 
       setUnlockingAmount(value);

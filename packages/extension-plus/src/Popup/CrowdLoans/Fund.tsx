@@ -13,33 +13,23 @@ import getLogo from '../../util/getLogo';
 import getNetworkInfo from '../../util/getNetwork';
 import { Crowdloan } from '../../util/plusTypes';
 import { amountToHuman } from '../../util/plusUtils';
+import { Chain } from '../../../../extension-chains/src/types';
+import getChainInfo from '../../util/getChainInfo';
 
 interface Props {
-  chainName: string;
+  coin: string;
   crowdloan: Crowdloan;
+  decimals: number;
   endpoints: LinkOption[];
   isActive?: boolean;
   handleContribute?: (arg0: Crowdloan) => void
 }
 
-export default function Fund({ chainName, crowdloan, endpoints, handleContribute, isActive }: Props): React.ReactElement<Props> {
+export default function Fund({ coin, crowdloan, decimals, endpoints, handleContribute, isActive }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-
-  const [decimals, setDecimals] = useState<number>(1);
-  const [coin, setCoin] = useState<string>('');
-
   const getText = (paraId: string): string | undefined => (endpoints.find((e) => e?.paraId === Number(paraId))?.text as string);
   const getHomePage = (paraId: string): string | undefined => (endpoints.find((e) => e?.paraId === Number(paraId))?.homepage as string);
   const getInfo = (paraId: string): string | undefined => (endpoints.find((e) => e?.paraId === Number(paraId))?.info as string);
-
-  useEffect(() => {
-    if (chainName) {
-      const { coin, decimals } = getNetworkInfo(null, chainName);
-      setCoin(coin);
-
-      setDecimals(decimals);
-    }
-  }, [chainName]);
 
   return (
     <Grid item sx={{ paddingTop: '10px' }} xs={12}>
@@ -47,18 +37,10 @@ export default function Fund({ chainName, crowdloan, endpoints, handleContribute
         <Grid alignItems='center' container sx={{ padding: '10px' }}>
           <Grid container item justifyContent='flex-start' spacing={1} sx={{ fontSize: 13, fontWeight: 'fontWeightBold' }} xs={6}>
             <Grid item>
-              {/* {(crowdloan.identity.info.web || getHomePage(crowdloan.fund.paraId)) &&
-                <Avatar
-                  src={getWebsiteFavico(crowdloan.identity.info.web || getHomePage(crowdloan.fund.paraId))}
-                  sx={{ height: 24, width: 24 }}
-                />
-              }  */}
-
               <Avatar
                 src={getLogo(getInfo(crowdloan.fund.paraId))}
                 sx={{ height: 24, width: 24 }}
               />
-
             </Grid>
 
             <Grid item>

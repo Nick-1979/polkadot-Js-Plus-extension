@@ -4,8 +4,8 @@
 
 // eslint-disable-next-line simple-import-sort/imports
 import type { ThemeProps } from '../../../extension-ui/src/types';
-import { Box, Grid, Skeleton } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { Skeleton } from '@mui/material';
+import React from 'react';
 import styled from 'styled-components';
 
 import { Chain } from '@polkadot/extension-chains/types';
@@ -40,7 +40,7 @@ function Balance({ balance, type, chain, price }: Props): React.ReactElement<Pro
       {balance === null
         ? <Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }} />
         : <>
-          <span style={{ fontSize: 11, fontWeight: 600 }} >
+          <span style={{ fontSize: 11, fontWeight: 600 }}>
             {bal || '0.00'}{' '}
           </span>
         </>}

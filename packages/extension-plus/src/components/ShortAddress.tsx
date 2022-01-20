@@ -9,7 +9,7 @@ interface Props {
     charsCount?: number;
 }
 
-export function ShortAddress({ address, charsCount = 4 }: Props): React.ReactElement {
+export default function ShortAddress({ address, charsCount = 4 }: Props): React.ReactElement {
     return (
         <span style={{ fontFamily: 'Monospace', fontSize: 14 }}>
             {address.slice(0, charsCount) + '...' + address.slice(-1 * charsCount)}

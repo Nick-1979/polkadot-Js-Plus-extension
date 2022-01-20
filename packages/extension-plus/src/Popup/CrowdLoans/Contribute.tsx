@@ -1,87 +1,55 @@
+/* eslint-disable react/jsx-max-props-per-line */
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-import { CheckRounded, Clear, ConfirmationNumberOutlined as ConfirmationNumberOutlinedIcon } from '@mui/icons-material';
-import { Button as MuiButton, FormControl, FormHelperText, Grid, IconButton, InputAdornment, InputLabel, MenuItem, Select, SelectChangeEvent, TextField } from '@mui/material';
+import { AllOut as AllOutIcon, CheckRounded, Clear } from '@mui/icons-material';
+import { Button as MuiButton, Grid, IconButton, InputAdornment, SelectChangeEvent, TextField } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React, { useContext, useEffect, useState } from 'react';
 
 import { LinkOption } from '@polkadot/apps-config/endpoints/types';
 import { AccountWithChildren } from '@polkadot/extension-base/background/types';
 import { Chain } from '@polkadot/extension-chains/types';
-// import { updateMeta } from '../../../../extension-ui/messaging';
 import { updateMeta } from '@polkadot/extension-ui/messaging';
-import Identicon from '@polkadot/react-identicon';
 import keyring from '@polkadot/ui-keyring';
-import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
 import { BackButton, Button } from '../../../../extension-ui/src/components';
 import { AccountContext } from '../../../../extension-ui/src/components/contexts';
+import useMetadata from '../../../../extension-ui/src/hooks/useMetadata';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
-import PlusHeader from '../../components/PlusHeader';
-import Popup from '../../components/Popup';
+import { AllAddresses, PlusHeader, Popup } from '../../components';
 import contribute from '../../util/contribute';
-import getNetworkInfo from '../../util/getNetwork';
-import { Auction, Crowdloan, TransactionDetail } from '../../util/plusTypes';
+import { Auction, ChainInfo, Crowdloan, TransactionDetail } from '../../util/plusTypes';
 import { amountToHuman, amountToMachine, fixFloatingPoint, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/plusUtils';
 import Fund from './Fund';
 
 interface Props {
   auction: Auction;
   crowdloan: Crowdloan;
-  confirmModalOpen: boolean;
-  setConfirmModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  decimals: number;
+  contributeModal: boolean;
+  setContributeModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   endpoints: LinkOption[];
-  selectedBlockchain: string;
-
+  chainInfo: ChainInfo;
 }
 
-export default function ConfirmCrowdloan({ auction,
-  confirmModalOpen,
+export default function Contribute({ auction,
+  chainInfo,
+  contributeModal,
   crowdloan,
-  decimals,
   endpoints,
-  selectedBlockchain,
-  setConfirmModalOpen }: Props): React.ReactElement<Props> {
-
+  setContributeModalOpen }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-
+  const chain = useMetadata(chainInfo.genesisHash, true);
   const [password, setPassword] = useState<string>('');
   const [contributionAmountInHuman, setContributionAmountInHuman] = useState<string>('');
   const [passwordIsCorrect, setPasswordIsCorrect] = useState<number>(0);// 0: no password, -1: password incorrect, 1:password correct
   const [selectedAddress, setSelectedAddress] = useState<string>('');
-  const [allAddresesOnThisChain, setAllAddresesOnThisChain] = useState<string[]>([]);
   const [confirmingState, setConfirmingState] = useState<string>('');
-  const { accounts } = useContext(AccountContext);
   const { hierarchy } = useContext(AccountContext);
-  const [coin, setCoin] = useState<string>('');
-
-  function showAlladdressesOnThisChain(prefix: number): void {
-    const allAddresesOnSameChain = accounts.map((acc): string => {
-      const publicKey = decodeAddress(acc.address);
-
-      return encodeAddress(publicKey, prefix);
-    });
-
-    setAllAddresesOnThisChain(allAddresesOnSameChain);
-  };
-
-  useEffect(() => {
-    const { coin, prefix } = getNetworkInfo(null, selectedBlockchain);
-
-    setCoin(coin);
-
-    if (prefix !== undefined) { showAlladdressesOnThisChain(prefix); }
-  }, []);
-
-  useEffect(() => {
-    if (allAddresesOnThisChain.length) { setSelectedAddress(allAddresesOnThisChain[0]); }
-  }, [allAddresesOnThisChain]);
 
   const handleConfirmModaClose = (): void => {
-    setConfirmModalOpen(false);
+    setContributeModalOpen(false);
   }
 
   function saveHistory(chain: Chain | null, hierarchy: AccountWithChildren[], address: string, currentTransactionDetail: TransactionDetail, _chainName?: string): Promise<boolean> {
@@ -102,9 +70,9 @@ export default function ConfirmCrowdloan({ auction,
       signer.unlock(password);
       setPasswordIsCorrect(1);
 
-      const contributingAmountInMachine = amountToMachine(contributionAmountInHuman, decimals);
+      const contributingAmountInMachine = amountToMachine(contributionAmountInHuman, chainInfo.decimals);
 
-      const { block, failureText, fee, status, txHash } = await contribute(signer, crowdloan.fund.paraId, contributingAmountInMachine, selectedBlockchain)
+      const { block, failureText, fee, status, txHash } = await contribute(signer, crowdloan.fund.paraId, contributingAmountInMachine, chain)
 
       const history: TransactionDetail = {
         action: 'contribute',
@@ -121,7 +89,7 @@ export default function ConfirmCrowdloan({ auction,
       console.log('history', history);
 
       // eslint-disable-next-line no-void
-      void saveHistory(null, hierarchy, selectedAddress, history, selectedBlockchain);
+      void saveHistory(chain, hierarchy, selectedAddress, history);
     } catch (e) {
       console.log('error:', e);
       setPasswordIsCorrect(-1);
@@ -162,55 +130,26 @@ export default function ConfirmCrowdloan({ auction,
   }
 
   return (
-    <Popup handleClose={handleConfirmModaClose} showModal={confirmModalOpen}>
-      <PlusHeader action={handleReject} chain={selectedBlockchain} closeText={'Reject'} icon={<ConfirmationNumberOutlinedIcon fontSize='small'/>} title={'Confirm'} />
+    <Popup handleClose={handleConfirmModaClose} showModal={contributeModal}>
+      <PlusHeader action={handleReject} chain={chain} closeText={'Reject'} icon={<AllOutIcon fontSize='small' />} title={'Contribute'} />
 
-      <Grid container sx={{ padding: '30px 40px 20px' }}>
-        <FormControl fullWidth>
-          <InputLabel id='selec-address'>{t('Account')}</InputLabel>
-          <Select value={selectedAddress}
-            label='Select address'
-            onChange={handleAddressChange}
-            sx={{ height: 50 }}
+      <AllAddresses chain={chain} selectedAddress={selectedAddress} setSelectedAddress={setSelectedAddress} text={t('Select account to contribute')} />
 
-          >
-            {allAddresesOnThisChain?.map((address) => (
-              <MenuItem key={address} value={address}>
-                <Grid container alignItems='center' justifyContent='space-between'>
-                  <Grid item>
-                    <Identicon
-                      size={25}
-                      theme={'polkadot'}
-                      value={address}
-                    />
-                  </Grid>
-                  <Grid item sx={{ fontSize: 13 }}>
-                    {address}
-                  </Grid>
-                </Grid>
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormHelperText>{t('Selected account to contribute')}</FormHelperText>
-
-      </Grid>
-
-      <Grid item sx={{ padding: '1px 40px 20px' }} xs={12}>
+      <Grid item sx={{ padding: '20px 40px 20px' }} xs={12}>
         <TextField
           InputLabelProps={{ shrink: true }}
-          InputProps={{ endAdornment: (<InputAdornment position='end'>{coin}</InputAdornment>) }}
+          InputProps={{ endAdornment: (<InputAdornment position='end'>{chainInfo.coin}</InputAdornment>) }}
           autoFocus
           color='warning'
           // error={reapeAlert || noFeeAlert || zeroBalanceAlert}
           fullWidth
-          helperText={(t('Minimum contribution: ') + amountToHuman(auction.minContribution, decimals) + ' ' + coin)}
+          helperText={(t('Minimum contribution: ') + amountToHuman(auction.minContribution, chainInfo.decimals) + ' ' + chainInfo.coin)}
           label={t('Amount')}
           margin='dense'
           name='contributionAmount'
           // onBlur={(event) => handleTransferAmountOnBlur(event.target.value)}
           onChange={(event) => handleContributionAmountChange(event.target.value)}
-          placeholder={amountToHuman(auction.minContribution, decimals)}
+          placeholder={amountToHuman(auction.minContribution, chainInfo.decimals)}
           size='medium'
           type='number'
           value={contributionAmountInHuman}
@@ -218,12 +157,12 @@ export default function ConfirmCrowdloan({ auction,
         />
       </Grid>
 
-      <Grid item sx={{ textAlign: 'center', color: grey[600], fontFamily: 'fantasy', fontSize: 16, padding: '1px 50px 5px' }} xs={12}>
+      <Grid item sx={{ color: grey[600], fontFamily: 'fantasy', fontSize: 16, padding: '1px 50px 5px', textAlign: 'center' }} xs={12}>
         {t('Crowdloan to contribute')}
       </Grid>
 
       <Grid item sx={{ padding: '1px 30px' }} xs={12}>
-        <Fund chainName={selectedBlockchain} crowdloan={crowdloan} endpoints={endpoints} />
+        {chain && <Fund coin={chainInfo.coin} decimals={chainInfo.decimals} crowdloan={crowdloan} endpoints={endpoints} />}
       </Grid>
 
       <Grid item sx={{ margin: '20px 30px 5px' }} xs={12}>

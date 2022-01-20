@@ -43,3 +43,10 @@ export const DEFAULT_IDENTITY = {
     twitter: null
   }
 };
+
+export const PASSWORD_MAP = {
+  INCORRECT: -1,
+  // eslint-disable-next-line sort-keys
+  CORRECT: 0,
+  EMPTY: 1
+};

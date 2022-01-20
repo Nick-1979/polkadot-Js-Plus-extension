@@ -24,12 +24,11 @@ import { DeriveStakingQuery } from '@polkadot/api-derive/types';
 import { Chain } from '../../../../extension-chains/src/types';
 import { NextStepButton } from '../../../../extension-ui/src/components';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
-import PlusHeader from '../../components/PlusHeader';
+import {PlusHeader,Popup} from '../../components';
 import { DEFAULT_VALIDATOR_COMMISION_FILTER } from '../../util/constants';
 import getNetworkInfo from '../../util/getNetwork';
 import { AccountsBalanceType, StakingConsts, Validators, ValidatorsName } from '../../util/plusTypes';
 import ConfirmStaking from './ConfirmStaking';
-import Popup from '../../components/Popup';
 
 interface Props {
   chain?: Chain | null;

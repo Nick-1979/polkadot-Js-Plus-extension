@@ -52,7 +52,7 @@ export function amountToHuman(_amount: string | undefined, _decimals: number, de
 
   const x = 10 ** _decimals;
 
-  return fixFloatingPoint(Number(_amount) / x, decimalDigits);
+  return Number(fixFloatingPoint(Number(_amount) / x, decimalDigits)).toLocaleString();
 }
 
 export function amountToMachine(_amount: string | undefined, _decimals: number): bigint {

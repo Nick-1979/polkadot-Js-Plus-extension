@@ -26,7 +26,7 @@ import { AccountJson } from '@polkadot/extension-base/background/types';
 import { updateMeta } from '../../../extension-ui/src/messaging';
 import { grey } from '@mui/material/colors';
 import { getPriceInUsd } from '../util/getPrice';
-import Balance from './Balance';
+import { Balance } from './';
 
 export interface Props {
   actions?: React.ReactNode;

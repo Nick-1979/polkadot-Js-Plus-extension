@@ -1,15 +1,17 @@
+/* eslint-disable react/jsx-max-props-per-line */
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
 import { CancelOutlined as CancelOutlinedIcon, Preview as PreviewIcon, HowToReg as HowToRegIcon } from '@mui/icons-material';
 import { Button, Container, Divider, Grid, Paper } from '@mui/material';
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 
 import useMetadata from '../../../../../extension-ui/src/hooks/useMetadata';
 import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
 import { CouncilInfo } from '../../../util/plusTypes';
 import Members from './Members';
+import MyVotes from './MyVotes';
 
 interface Props {
   councilInfo: CouncilInfo;
@@ -21,25 +23,33 @@ interface Props {
 export default function Overview({ coin, councilInfo, decimals, genesisHash }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const chain = useMetadata(genesisHash, true);
+  const [showMyVotesModal, setShowMyVotesModal] = useState<boolean>(false);
 
   console.log('councilInfo', councilInfo);
 
   const { accountInfos, candidateCount, candidates, desiredRunnersUp, desiredSeats, members, runnersUp } = councilInfo;
   const membersInfo = {
-    desiredSeats: Number(desiredSeats),
     backed: members.map((m) => m[1].toString()),
+    // desiredSeats: Number(desiredSeats),
     infos: accountInfos.slice(0, members.length)
   }
   const runnersUpInfo = {
-    desiredSeats: Number(desiredRunnersUp),
     backed: runnersUp.map((m) => m[1].toString()),
+    // desiredSeats: Number(desiredRunnersUp),
     infos: accountInfos.slice(members.length, members.length + runnersUp.length)
   }
   const candidatesInfo = {
-    desiredSeats: Number(candidateCount),
     backed: candidates.map((m) => m[1].toString()),
+    // desiredSeats: Number(candidateCount),
     infos: accountInfos.slice(members.length + runnersUp.length)
   }
+
+  const allCouncilInfo = {
+    backed: membersInfo.backed.concat(runnersUpInfo.backed, candidatesInfo.backed),
+    infos: accountInfos
+  };
+
+  const handleShowMyVotes = useCallback(() => { setShowMyVotesModal(true); }, []);
 
   return (
     <Container disableGutters maxWidth='md'>
@@ -65,28 +75,37 @@ export default function Overview({ coin, councilInfo, decimals, genesisHash }: P
 
         <Grid container justifyContent='space-between' sx={{ textAlign: 'center' }}>
           <Grid item>
-            <Button variant='outlined' size='small' color='primary' startIcon={<PreviewIcon />}>  {t('View my votes')}</Button>
+            <Button color='primary' onClick={handleShowMyVotes} size='small' startIcon={<PreviewIcon />} variant='outlined'>  {t('My votes')}</Button>
           </Grid>
           {/* <Grid item>
             <Button variant='outlined' size='small' color='secondary' startIcon={<CancelOutlinedIcon />}> {t('Cancel votes')}</Button>
           </Grid> */}
           <Grid item>
-            <Button variant='contained' size='small' color='warning' startIcon={<HowToRegIcon />}> {t('Vote')}</Button>
+            <Button color='warning' size='small' startIcon={<HowToRegIcon />} variant='contained'> {t('Vote')}</Button>
           </Grid>
         </Grid>
       </Paper>
 
       {councilInfo
         ? <Container id='scrollArea' sx={{ height: '300px', overflowY: 'auto' }}>
-          <Members coin={coin} decimals={decimals} chain={chain} personsInfo={membersInfo} membersType={t('Members')} />
-          <Members coin={coin} decimals={decimals} chain={chain} personsInfo={runnersUpInfo} membersType={t('Runners up')} />
-          <Members coin={coin} decimals={decimals} chain={chain} personsInfo={candidatesInfo} membersType={t('Candidates')} />
+          <Members chain={chain} coin={coin} decimals={decimals} membersType={t('Members')} personsInfo={membersInfo} />
+          <Members chain={chain} coin={coin} decimals={decimals} membersType={t('Runners up')} personsInfo={runnersUpInfo} />
+          <Members chain={chain} coin={coin} decimals={decimals} membersType={t('Candidates')} personsInfo={candidatesInfo} />
         </Container>
-        : <Grid xs={12} sx={{ textAlign: 'center', paddingTop: 3 }}>
+        : <Grid sx={{ textAlign: 'center', paddingTop: 3 }} xs={12}>
           {t('No data')}
         </Grid>
       }
 
+      {showMyVotesModal &&
+        <MyVotes
+          chain={chain}
+          coin={coin}
+          decimals={decimals}
+          allCouncilInfo={allCouncilInfo}
+          setShowMyVotesModal={setShowMyVotesModal}
+          showMyVotesModal={showMyVotesModal} />
+      }
     </Container>
-  )
+  );
 }

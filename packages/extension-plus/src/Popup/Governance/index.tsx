@@ -5,16 +5,20 @@
 import type { ThemeProps } from '../../../../extension-ui/src/types';
 
 import { AccountBalance, Groups as GroupsIcon, HowToVote } from '@mui/icons-material';
-import { Avatar, Container, FormControl, FormHelperText, Grid, InputLabel, Link, MenuItem, Paper, Select, SelectChangeEvent } from '@mui/material';
-import React, { useCallback,useState } from 'react';
+import { Avatar, Container, FormControl, Grid, InputLabel, Link, MenuItem, Paper, Select, SelectChangeEvent } from '@mui/material';
+import React, { useCallback,useEffect,useState } from 'react';
 import styled from 'styled-components';
+
+import { AccountsStore } from '@polkadot/extension-base/stores';
+import keyring from '@polkadot/ui-keyring';
+import { cryptoWaitReady } from '@polkadot/util-crypto';
 
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { Header } from '../../../../extension-ui/src/partials';
 import { RELAY_CHAINS } from '../../util/constants';
 import getLogo from '../../util/getLogo';
-import Democracy from './Democracy/index';
 import CouncilIndex from './Council/index';
+import Democracy from './Democracy/index';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -26,7 +30,14 @@ function Governance({ className }: Props): React.ReactElement<Props> {
   const [showDemocracyModal, setDemocracyModalOpen] = useState<boolean>(false);
   const [showCouncilModal, setCouncilModalOpen] = useState<boolean>(false);
 
-  const handleBlockchainChange = (event: SelectChangeEvent) => {
+  useEffect(() => {
+    // eslint-disable-next-line no-void
+    void cryptoWaitReady().then(() => {
+      keyring.loadAll({ store: new AccountsStore() });
+    });
+  }, []);
+
+  const handleChainChange = (event: SelectChangeEvent) => {
     setSelectedRelaychain(event.target.value);
   };
 
@@ -52,7 +63,7 @@ function Governance({ className }: Props): React.ReactElement<Props> {
             <Select
               value={selectedRelaychain}
               label='Select relay chain'
-              onChange={handleBlockchainChange}
+              onChange={handleChainChange}
               sx={{ height: 50 }}
             >
               {RELAY_CHAINS.map((chain) =>
@@ -127,7 +138,7 @@ function Governance({ className }: Props): React.ReactElement<Props> {
           target='_blank'
         >
           <Paper elevation={4} sx={{ borderRadius: '10px', margin: '20px 30px 10px', p: '20px 40px' }}>
-            <Grid container >
+            <Grid container>
               <Grid item xs={4}>
                 <Avatar
                   alt={'Polkassembly logo'}
@@ -154,7 +165,7 @@ function Governance({ className }: Props): React.ReactElement<Props> {
           showDemocracyModal={showDemocracyModal}
         />
       }
-      
+
       {showCouncilModal &&
         <CouncilIndex
           chainName={selectedRelaychain}
@@ -162,7 +173,6 @@ function Governance({ className }: Props): React.ReactElement<Props> {
           showCouncilModal={showCouncilModal}
         />
       }
-
     </>
   );
 }

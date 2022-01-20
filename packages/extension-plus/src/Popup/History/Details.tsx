@@ -13,8 +13,7 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 import { Chain } from '@polkadot/extension-chains/types';
 
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
-import PlusHeader from '../../components/PlusHeader';
-import Popup from '../../components/Popup';
+import {PlusHeader, Popup} from '../../components';
 import { SHORT_ADDRESS_CHARACTERS } from '../../util/constants';
 import { TransactionDetail } from '../../util/plusTypes';
 import { amountToHuman } from '../../util/plusUtils';

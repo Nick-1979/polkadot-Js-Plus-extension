@@ -2,22 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-// eslint-disable-next-line header/header
-import { ApiPromise, WsProvider } from '@polkadot/api';
+import chain from '@polkadot/apps-config/api/chain';
 import { KeyringPair } from '@polkadot/keyring/types';
 
-import getNetworkInfo from './getNetwork';
+import getChainInfo from './getChainInfo';
 import { TxInfo } from './plusTypes';
 import { signAndSend } from './signAndSend';
+
 
 export default async function contribute(
   _signer: KeyringPair,
   _paraId: string,
   _amount: bigint,
-  _chainName: string): Promise<TxInfo> {
-  const { url } = getNetworkInfo(null, _chainName);
-  const wsProvider = new WsProvider(url);
-  const api = await ApiPromise.create({ provider: wsProvider });
+  _chain: Chain): Promise<TxInfo> {
+  const { api } = await getChainInfo(chain);
 
   try {
     if (!_amount) {

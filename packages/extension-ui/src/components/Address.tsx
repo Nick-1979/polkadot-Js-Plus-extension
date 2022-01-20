@@ -18,7 +18,7 @@ import styled from 'styled-components';
 
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
-import Plus from '../../../extension-plus/src/components/Plus'; // added for Plus
+import { Plus } from '../../../extension-plus/src/components'; // added for Plus
 import details from '../assets/details.svg';
 import useMetadata from '../hooks/useMetadata';
 import useOutsideClick from '../hooks/useOutsideClick';
@@ -98,7 +98,7 @@ function recodeAddress(address: string, accounts: AccountWithChildren[], chain: 
 const ACCOUNTS_SCREEN_HEIGHT = 550;
 const defaultRecoded = { account: null, formatted: null, prefix: 42, type: DEFAULT_TYPE };
 
-function Address({ actions, address, children, className, genesisHash, isExternal, isHardware, isHidden, name, parentName,showBalance, suri, toggleActions, type: givenType }: Props): React.ReactElement<Props> {
+function Address({ actions, address, children, className, genesisHash, isExternal, isHardware, isHidden, name, parentName, showBalance, suri, toggleActions, type: givenType }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { accounts } = useContext(AccountContext);
   const settings = useContext(SettingsContext);

@@ -4,6 +4,7 @@
 /* eslint-disable camelcase */
 
 import type { DeriveAccountInfo, DeriveElectionsInfo, DeriveStakingQuery, DeriveCollectiveProposal } from '@polkadot/api-derive/types';
+import { ApiPromise } from '@polkadot/api';
 
 export interface TransactionStatus {
   blockNumber: string | null;
@@ -191,8 +192,8 @@ export interface CouncilInfo extends DeriveElectionsInfo {
 }
 
 export interface PersonsInfo {
-  desiredSeats: number,
-  backed: string[],
+  desiredSeats?: number,
+  backed?: string[],
   infos: DeriveAccountInfo[]
 }
 
@@ -200,4 +201,12 @@ export interface MotionsInfo {
   proposals: DeriveCollectiveProposal[];
   proposalInfo: any[];
   accountInfo: DeriveAccountInfo[]
+}
+
+export interface ChainInfo {
+  api: ApiPromise;
+  coin: string;
+  decimals: number;
+  url: string;
+  genesisHash: string;
 }

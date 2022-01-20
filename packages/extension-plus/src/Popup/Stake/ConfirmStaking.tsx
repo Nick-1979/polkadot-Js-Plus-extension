@@ -24,8 +24,7 @@ import { AccountsBalanceType, StakingConsts, TransactionDetail, Validators, Vali
 import { amountToHuman, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/plusUtils';
 import { bondOrBondExtra, chill, nominate, unbond, withdrawUnbonded } from '../../util/staking';
 import ValidatorsList from './ValidatorsList';
-import PlusHeader from '../../components/PlusHeader';
-import Popup from '../../components/Popup';
+import { PlusHeader, Popup } from '../../components';
 
 
 interface Props {
@@ -375,7 +374,7 @@ export default function ConfirmStaking({
 
   return (
     <Popup showModal={showConfirmStakingModal} handleClose={handleConfirmStakingModalClose}>
-      <PlusHeader action={handleReject} chain={chain} closeText={'Reject'} icon={<ConfirmationNumberOutlinedIcon fontSize='small'/>} title={'Confirm'} />
+      <PlusHeader action={handleReject} chain={chain} closeText={'Reject'} icon={<ConfirmationNumberOutlinedIcon fontSize='small' />} title={'Confirm'} />
 
       <Grid alignItems='center' container>
         {/* <Grid item sx={{ textAlign: 'center', fontSize: 15, fontWeight: 'bold', padding: '20px 20px 20px' }} xs={12}>

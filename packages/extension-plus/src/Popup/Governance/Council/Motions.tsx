@@ -43,7 +43,7 @@ export default function Motions({ coin, decimals, genesisHash, currentBlockNumbe
                 {t('Index')}<br />
                 <b style={{ fontSize: 15}}> {p.votes.index}</b>
               </Grid>
-              
+
               <Grid item>
                 {t('Voting end')}<br />
                 {remainingTime(currentBlockNumber, p.votes.end)}<br />
@@ -57,7 +57,7 @@ export default function Motions({ coin, decimals, genesisHash, currentBlockNumbe
                 {t('Threshold')}<br />
                 {p.votes.threshold}
               </Grid>
-              <Grid item container justifyContent='flex-end' >
+              <Grid item container justifyContent='flex-end'>
                 <Grid item>
                   <Link
                     href={`https://${chainName}.polkassembly.io/motion/${p.votes.index}`}
@@ -68,7 +68,7 @@ export default function Motions({ coin, decimals, genesisHash, currentBlockNumbe
                     <Avatar
                       alt={'Polkassembly'}
                       src={getLogo('polkassembly')}
-                      sx={{ width: 24, height: 24 }}
+                      sx={{ height: 24, width: 24 }}
                     />
                   </Link>
                 </Grid>
@@ -82,7 +82,7 @@ export default function Motions({ coin, decimals, genesisHash, currentBlockNumbe
                     <Avatar
                       alt={'subscan'}
                       src={getLogo('subscan')}
-                      sx={{ width: 24, height: 24 }}
+                      sx={{ height: 24, width: 24 }}
                     />
                   </Link>
                 </Grid>

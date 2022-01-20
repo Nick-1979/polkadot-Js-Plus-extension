@@ -11,11 +11,9 @@ import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation
 import getChainInfo from '../../../util/getChainInfo';
 import getDemocracy from '../../../util/getDemocracy';
 import Referendums from './Referendums';
-import PlusHeader from '../../../components/PlusHeader';
-import Progress from '../../../components/Progress';
+import {PlusHeader,Progress,Popup} from '../../../components';
 import { DeriveReferendumExt, DeriveProposal } from '@polkadot/api-derive/types';
 import getCurrentBlockNumber from '../../../util/getCurrentBlockNumber';
-import Popup from '../../../components/Popup';
 
 interface Props {
   chainName: string;
