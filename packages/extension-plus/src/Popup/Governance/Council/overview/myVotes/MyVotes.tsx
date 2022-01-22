@@ -3,22 +3,22 @@
 /* eslint-disable header/header */
 
 import { CheckRounded, Clear, Preview as PreviewIcon } from '@mui/icons-material';
-import { Container, Grid, IconButton, InputAdornment, TextField } from '@mui/material';
+import { Container, Grid, IconButton, InputAdornment, TextField, Button as MuiButton} from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { Chain } from '../../../../../extension-chains/src/types';
-import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
-import { AllAddresses, Password, PlusHeader, Popup, Progress } from '../../../components';
-import getVotes from '../../../util/getVotes';
-import Members from './Members';
-import { PersonsInfo } from '../../../util/plusTypes';
-import { amountToHuman } from '../../../util/plusUtils';
+import { Chain } from '../../../../../../../extension-chains/src/types';
+import useTranslation from '../../../../../../../extension-ui/src/hooks/useTranslation';
+import { AllAddresses, Password, PlusHeader, Popup, Progress } from '../../../../../components';
+import getVotes from '../../../../../util/getVotes';
+import Members from '../Members';
+import { PersonsInfo } from '../../../../../util/plusTypes';
+import { amountToHuman } from '../../../../../util/plusUtils';
 import type { DeriveCouncilVote } from '@polkadot/api-derive/types';
-import { BackButton, Button } from '../../../../../extension-ui/src/components';
-import cancelVotes from '../../../util/cancelVotes';
+import { BackButton, Button } from '../../../../../../../extension-ui/src/components';
+import cancelVotes from '../../../../../util/cancelVotes';
 import keyring from '@polkadot/ui-keyring';
-import { PASSWORD_MAP } from '../../../util/constants';
+import { PASSWORD_MAP } from '../../../../../util/constants';
 
 interface Props {
   chain: Chain;
@@ -36,7 +36,7 @@ export default function MyVotes({ allCouncilInfo, chain, coin, decimals, setShow
   const [filteredPersonsInfo, setFilteredPersonsInfo] = useState<PersonsInfo>();
   const [password, setPassword] = useState<string>('');
   const [passwordStatus, setPasswordStatus] = useState<number>(PASSWORD_MAP.EMPTY);// 0: no password, -1: password incorrect, 1:password correct
-  const [isCanceling, setIsCanceling] = useState<boolean>(false);
+  const [state, setState] = useState<string>('');
   
   const handleClose = useCallback((): void => {
     setShowMyVotesModal(false);
@@ -71,7 +71,7 @@ export default function MyVotes({ allCouncilInfo, chain, coin, decimals, setShow
 
   const handleCancelVotes = async () => {
     try {
-      setIsCanceling(true);
+      setState('confirming');
       const signer = keyring.getPair(selectedAddress);
 
       signer.unlock(password);
@@ -79,12 +79,11 @@ export default function MyVotes({ allCouncilInfo, chain, coin, decimals, setShow
       const { block, failureText, fee, status, txHash } = await cancelVotes(chain, selectedAddress, signer);
 
       console.log('cancel vote', failureText);
-      setIsCanceling(false);
+      setState(status);
     } catch (e) {
       console.log('error:', e);
       setPasswordStatus(PASSWORD_MAP.INCORRECT);
-      // setConfirmingState('');
-      setIsCanceling(false);
+      setState('');
     }
   };
 
@@ -109,34 +108,33 @@ export default function MyVotes({ allCouncilInfo, chain, coin, decimals, setShow
             handleSavePassword={handleSavePassword}
             handleIt={handleCancelVotes}
             password={password}
-            passwordStatus={passwordStatus} />
+            passwordStatus={passwordStatus}
+            isDisabled={!votesInfo?.votes.length} />
 
           <Grid container item justifyContent='space-between' sx={{ padding: '5px 10px 0px' }} xs={12}>
-            {/* {['success', 'failed'].includes(confirmingState)
+            {['success', 'failed'].includes(state)
           ? <Grid item xs={12}>
-            <MuiButton fullWidth onClick={handleReject} variant='contained'
-              color={confirmingState === 'success' ? 'success' : 'error'} size='large'>
-              {confirmingState === 'success' ? t('Done') : t('Failed')}
+            <MuiButton fullWidth onClick={handleClose} variant='contained'
+              color={state === 'success' ? 'success' : 'error'} size='large'>
+              {state === 'success' ? t('Done') : t('Failed')}
             </MuiButton>
           </Grid>
-          : <> */}
+          : <>
             <Grid item xs={1}>
               <BackButton onClick={handleClose} />
             </Grid>
             <Grid item xs={11} sx={{ paddingLeft: '10px' }}>
               <Button
                 data-button-action=''
-                isBusy={isCanceling}
-                isDisabled={!votesInfo}
+                isBusy={state==='confirming'}
+                isDisabled={!votesInfo?.votes.length}
                 onClick={handleCancelVotes}
               >
                 {t('Cancel votes')}
               </Button>
             </Grid>
-            {/* </>} */}
+            </>}
           </Grid>
-
-
         </Grid>
         : <Progress title={t('Loading votes ...')} />
       }

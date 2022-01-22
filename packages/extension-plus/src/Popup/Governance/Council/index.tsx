@@ -14,8 +14,8 @@ import getCouncil from '../../../util/getCouncil';
 import getCurrentBlockNumber from '../../../util/getCurrentBlockNumber';
 import getMotions from '../../../util/getMotions';
 import { CouncilInfo, MotionsInfo } from '../../../util/plusTypes';
-import Motions from './Motions';
-import Overview from './Overview';
+import Motions from './motions/Motions';
+import Overview from './overview/Overview';
 
 interface Props {
   chainName: string;

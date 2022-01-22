@@ -8,11 +8,11 @@ import React, { useEffect, useState } from 'react';
 
 import Identicon from '@polkadot/react-identicon';
 
-import useMetadata from '../../../../../extension-ui/src/hooks/useMetadata';
-import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
-import getLogo from '../../../util/getLogo';
-import { MotionsInfo } from '../../../util/plusTypes';
-import { remainingTime } from '../../../util/plusUtils';
+import useMetadata from '../../../../../../extension-ui/src/hooks/useMetadata';
+import useTranslation from '../../../../../../extension-ui/src/hooks/useTranslation';
+import getLogo from '../../../../util/getLogo';
+import { MotionsInfo } from '../../../../util/plusTypes';
+import { remainingTime } from '../../../../util/plusUtils';
 import { grey } from '@mui/material/colors';
 
 interface Props {

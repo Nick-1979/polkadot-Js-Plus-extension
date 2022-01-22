@@ -13,11 +13,12 @@ interface Props {
   handleClearPassword: () => void;
   password: string;
   passwordStatus: number;
-  handleSavePassword: () => void;
+  handleSavePassword: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleIt: () => void;
+  isDisabled?:boolean;
 }
 
-export default function Password({ handleClearPassword, handleIt, handleSavePassword, password, passwordStatus }: Props): React.ReactElement<Props> {
+export default function Password({ handleClearPassword, handleIt, handleSavePassword, isDisabled = false, password, passwordStatus }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
 
   return (
@@ -45,7 +46,7 @@ export default function Password({ handleClearPassword, handleIt, handleSavePass
         }}
         // autoFocus={!['confirming', 'failed', 'success'].includes(confirmingState)}
         color='warning'
-        // disabled={!ledger}
+        disabled={isDisabled}
         error={passwordStatus === PASSWORD_MAP.INCORRECT}
         fullWidth
         helperText={passwordStatus === PASSWORD_MAP.INCORRECT ? t('Password is not correct') : t('Please enter the account password')}

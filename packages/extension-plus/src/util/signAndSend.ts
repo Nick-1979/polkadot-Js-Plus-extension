@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-// eslint-disable-next-line header/header
 import { ApiPromise } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { KeyringPair } from '@polkadot/keyring/types';
@@ -43,15 +42,15 @@ export async function signAndSend(
         const signedBlock = await api.rpc.chain.getBlock(result.status.asFinalized);
         const blockNumber = signedBlock.block.header.number;
 
-        const senderAddres = _signer.address;
+        const senderAddress = _signer.address;
 
         let txHash = '';
 
-        // seatch for the hash of the extrinsic in the block
+        // search for the hash of the extrinsic in the block
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         signedBlock.block.extrinsics.forEach(async (ex) => {
           if (ex.isSigned) {
-            if (ex.signer.toString() === senderAddres) {
+            if (ex.signer.toString() === senderAddress) {
               txHash = ex.hash.toHex();
 
               const queryInfo = await api.rpc.payment.queryInfo(ex.toHex(), signedBlock.block.hash);
