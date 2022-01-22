@@ -76,7 +76,9 @@ export default function MyVotes({ allCouncilInfo, chain, coin, decimals, setShow
 
       signer.unlock(password);
       setPasswordStatus(PASSWORD_MAP.CORRECT);
-      const { block, failureText, fee, status, txHash } = await cancelVotes(chain, selectedAddress, signer);
+      const { block, failureText, fee, status, txHash } = await cancelVotes(chain, signer);
+
+      // TODO: can save to history here
 
       console.log('cancel vote', failureText);
       setState(status);

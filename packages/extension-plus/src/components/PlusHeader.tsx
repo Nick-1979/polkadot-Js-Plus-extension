@@ -26,10 +26,11 @@ export default function PlusHeader({ action, chain, closeText, icon, title }: Pr
 
   return (
     <Grid alignItems='center' container item justifyContent='space-between' sx={{ fontSize: 15, padding: '20px 20px 1px' }}>
-      <Grid item>
+      <Grid item sx={{paddingBottom:'5px'}}>
         <Avatar
           alt={'logo'}
           src={getLogo(chain)}
+          sx={{ height: 30, width: 30 }}
         />
       </Grid>
       <Grid item sx={{ fontWeight: 350 }}>

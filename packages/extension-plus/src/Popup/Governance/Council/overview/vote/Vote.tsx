@@ -2,22 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-
-import {HowToReg as HowToRegIcon} from '@mui/icons-material';
+import { HowToReg as HowToRegIcon } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
+
+import keyring from '@polkadot/ui-keyring';
+
 import { Chain } from '../../../../../../../extension-chains/src/types';
+import { BackButton, Button } from '../../../../../../../extension-ui/src/components';
 import useTranslation from '../../../../../../../extension-ui/src/hooks/useTranslation';
 import { AllAddresses, Password, PlusHeader, Popup, Progress } from '../../../../../components';
-import getVotes from '../../../../../util/getVotes';
-import Members from '../../Members';
-import type { DeriveCouncilVote } from '@polkadot/api-derive/types';
-import { BackButton, Button } from '../../../../../../../extension-ui/src/components';
-import cancelVotes from '../../../../../util/cancelVotes';
-import keyring from '@polkadot/ui-keyring';
 import { PASSWORD_MAP } from '../../../../../util/constants';
-import type { DeriveAccountInfo } from '@polkadot/api-derive/types';
-import { CouncilInfo } from '../../../../../util/plusTypes';
+import getVotingBond from '../../../../../util/getVoyingBond';
+import { PersonsInfo } from '../../../../../util/plusTypes';
+import { amountToHuman } from '../../../../../util/plusUtils';
+import vote from '../../../../../util/vote';
 import VoteMembers from './VoteMembers';
 
 interface Props {
@@ -31,12 +30,29 @@ interface Props {
 
 export default function Vote({ allCouncilInfo, chain, coin, decimals, setShowVotesModal, showVotesModal }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-  const [selectedAddress, setSelectedAddress] = useState<string>('');
-  const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
+  const [selectedVoterAddress, setSelectedVoterAddress] = useState<string>('');
+  const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
   const [password, setPassword] = useState<string>('');
   const [passwordStatus, setPasswordStatus] = useState<number>(PASSWORD_MAP.EMPTY);// 0: no password, -1: password incorrect, 1:password correct
   const [isVoting, setIsVoting] = useState<boolean>(false);
-  
+  const [votingBondBase, setVotingBondBase] = useState<bigint>();
+  const [votingBondFactor, setVotingBondFactor] = useState<bigint>();
+  const [votingBond, setVotingBond] = useState<bigint>();
+
+  useEffect(() => {
+    // eslint-disable-next-line no-void
+    void getVotingBond(chain).then((r) => {
+      console.log('voting bond', r);
+      setVotingBondBase(BigInt(r[0].toString()));
+      setVotingBondFactor(BigInt(r[1].toString()));
+    });
+  }, [chain]);
+
+  useEffect(() => {
+    if (votingBondBase && votingBondFactor)
+      {setVotingBond(BigInt(votingBondBase) + votingBondFactor * BigInt(selectedCandidates.length));}
+  }, [selectedCandidates, votingBondBase, votingBondFactor]);
+
   const handleClose = useCallback((): void => {
     setShowVotesModal(false);
   }, []);
@@ -55,18 +71,17 @@ export default function Vote({ allCouncilInfo, chain, coin, decimals, setShowVot
   const handleVote = async () => {
     try {
       setIsVoting(true);
-      const signer = keyring.getPair(selectedAddress);
+      const signer = keyring.getPair(selectedVoterAddress);
 
       signer.unlock(password);
       setPasswordStatus(PASSWORD_MAP.CORRECT);
-      const { block, failureText, fee, status, txHash } = await cancelVotes(chain, selectedAddress, signer);
+      const { block, failureText, fee, status, txHash } = await vote(chain, selectedCandidates, votingBond, signer);
 
-      console.log('cancel vote', failureText);
+      console.log('vote failureText', failureText);
       setIsVoting(false);
     } catch (e) {
       console.log('error:', e);
       setPasswordStatus(PASSWORD_MAP.INCORRECT);
-      // setConfirmingState('');
       setIsVoting(false);
     }
   };
@@ -75,13 +90,18 @@ export default function Vote({ allCouncilInfo, chain, coin, decimals, setShowVot
     <Popup handleClose={handleClose} showModal={showVotesModal}>
       <PlusHeader action={handleClose} chain={chain} closeText={'Close'} icon={<HowToRegIcon fontSize='small' />} title={'Vote'} />
 
-      <AllAddresses chain={chain} selectedAddress={selectedAddress} setSelectedAddress={setSelectedAddress} text={t('select account to vote')} />
+      <AllAddresses chain={chain} selectedAddress={selectedVoterAddress} setSelectedAddress={setSelectedVoterAddress} text={t('Select voter account')} />
 
+      {votingBond &&
+        <Grid item xs={12} sx={{ textAlign: 'right', paddingRight: 4 }}>
+          {t('Voting bond')}:{amountToHuman(votingBond.toString(), decimals, 4)}
+        </Grid>
+      }
       {allCouncilInfo
         ? <Grid container sx={{ padding: '0px 30px' }}>
-         
+
           <Grid item xs={12} id='scrollArea' sx={{ height: '250px', overflowY: 'auto' }}>
-            <VoteMembers chain={chain} coin={coin} decimals={decimals} membersType={t('Select accounts')} personsInfo={allCouncilInfo} />
+            <VoteMembers chain={chain} coin={coin} decimals={decimals} setSelectedCandidates={setSelectedCandidates} membersType={t('Accounts to vote')} personsInfo={allCouncilInfo} />
           </Grid>
 
           <Password
@@ -107,7 +127,7 @@ export default function Vote({ allCouncilInfo, chain, coin, decimals, setShowVot
               <Button
                 data-button-action=''
                 isBusy={isVoting}
-                isDisabled={!selectedMembers.length}
+                isDisabled={!selectedCandidates.length}
                 onClick={handleVote}
               >
                 {t('Vote')}

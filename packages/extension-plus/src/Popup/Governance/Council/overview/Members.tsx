@@ -28,13 +28,13 @@ export default function Members({ chain, coin, decimals, membersType, personsInf
 
   return (
     <>
-      <Grid xs={12} sx={{ fontSize: 14, fontWeigth: 'bold', color: grey[600], fontFamily: 'fantasy', textAlign: 'center', padding: '20px 1px 10px' }}>
+      <Grid xs={12} sx={{ fontSize: 14, fontWeigth: 'bold', color: grey[600], fontFamily: 'fantasy', textAlign: 'center', p: '10px 1px 10px' }}>
         {membersType}
       </Grid>
 
       {personsInfo.infos.length
         ? personsInfo.infos.map((m, index) => (
-          <Paper elevation={2} key={index} sx={{ borderRadius: '10px', margin: '10px 20px 1px', p: '10px 20px 10px' }}>
+          <Paper elevation={2} key={index} sx={{ borderRadius: '10px', margin: '10px 20px 1px', p: '5px 20px 5px' }}>
             <Grid container>
               <Grid item xs={1}>
                 <Identicon
@@ -99,7 +99,7 @@ export default function Members({ chain, coin, decimals, membersType, personsInf
                   }
                 </Grid>
                 {personsInfo?.backed &&
-                  <Grid item xs={5} sx={{ textAlign: 'right' }}>
+                  <Grid item xs={5} sx={{ textAlign: 'left' }}>
                     {t('Backed')}{': '} {amountToHuman(personsInfo.backed[index], decimals, 2)} {coin}
                   </Grid>
                 }

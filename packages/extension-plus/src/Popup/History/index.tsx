@@ -14,10 +14,10 @@ import { Chain } from '@polkadot/extension-chains/types';
 
 import { AccountContext } from '../../../../extension-ui/src/components/contexts';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
+import { NothingToShow, PlusHeader, Popup} from '../../components';
 import { getTxTransfers } from '../../util/getTransfers';
 import { AccountsBalanceType, TransactionDetail, Transfers } from '../../util/plusTypes';
 import { getTransactionHistoryFromLocalStorage } from '../../util/plusUtils';
-import { NothingToShow,PlusHeader , Popup} from '../../components';
 import Details from './Details';
 import { getIcon } from './getIcons';
 

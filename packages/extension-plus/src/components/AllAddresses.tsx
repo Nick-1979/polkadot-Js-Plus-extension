@@ -14,7 +14,7 @@ import useTranslation from '../../../extension-ui/src/hooks/useTranslation';
 import { Chain } from '../../../extension-chains/src/types';
 
 interface Props {
-  chain:  Chain;
+  chain: Chain;
   setSelectedAddress: React.Dispatch<React.SetStateAction<string>>;
   selectedAddress: string;
   text:string;
