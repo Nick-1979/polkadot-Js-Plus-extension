@@ -52,7 +52,7 @@ export default function AllAddresses({ chain, selectedAddress, setSelectedAddres
   };
 
   return (
-    <Grid container sx={{ padding: '20px 40px 10px' }}>
+    <Grid container sx={{ padding: '20px 40px 0px' }}>
       <FormControl fullWidth>
         <InputLabel id='selec-address'>{t('Account')}</InputLabel>
         <Select value={selectedAddress}
