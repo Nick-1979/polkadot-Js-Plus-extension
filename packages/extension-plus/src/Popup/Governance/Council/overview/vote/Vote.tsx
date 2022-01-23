@@ -3,7 +3,7 @@
 /* eslint-disable header/header */
 
 import { HowToReg as HowToRegIcon } from '@mui/icons-material';
-import { Grid } from '@mui/material';
+import { Grid, Skeleton } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 
 import keyring from '@polkadot/ui-keyring';
@@ -49,8 +49,7 @@ export default function Vote({ allCouncilInfo, chain, coin, decimals, setShowVot
   }, [chain]);
 
   useEffect(() => {
-    if (votingBondBase && votingBondFactor)
-      {setVotingBond(BigInt(votingBondBase) + votingBondFactor * BigInt(selectedCandidates.length));}
+    if (votingBondBase && votingBondFactor) { setVotingBond(BigInt(votingBondBase) + votingBondFactor * BigInt(selectedCandidates.length)); }
   }, [selectedCandidates, votingBondBase, votingBondFactor]);
 
   const handleClose = useCallback((): void => {
@@ -92,15 +91,21 @@ export default function Vote({ allCouncilInfo, chain, coin, decimals, setShowVot
 
       <AllAddresses chain={chain} selectedAddress={selectedVoterAddress} setSelectedAddress={setSelectedVoterAddress} text={t('Select voter account')} />
 
-      {votingBond &&
-        <Grid item xs={12} sx={{ textAlign: 'right', paddingRight: 4 }}>
-          {t('Voting bond')}:{amountToHuman(votingBond.toString(), decimals, 4)}
-        </Grid>
-      }
+
+      <Grid item xs={12} sx={{ textAlign: 'right', padding:'0px 40px 10px'}}>
+         {t('Voting bond')}:{' '}
+         {votingBond ?
+          <>
+           {amountToHuman(votingBond.toString(), decimals, 4)}{' '}{coin}
+          </>
+          :<Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }}/>
+        }
+      </Grid>
+
       {allCouncilInfo
         ? <Grid container sx={{ padding: '0px 30px' }}>
 
-          <Grid item xs={12} id='scrollArea' sx={{ height: '250px', overflowY: 'auto' }}>
+          <Grid item xs={12} id='scrollArea' sx={{ height: '250px', overflowY: 'auto', paddingBottom:'5px' }}>
             <VoteMembers chain={chain} coin={coin} decimals={decimals} setSelectedCandidates={setSelectedCandidates} membersType={t('Accounts to vote')} personsInfo={allCouncilInfo} />
           </Grid>
 
