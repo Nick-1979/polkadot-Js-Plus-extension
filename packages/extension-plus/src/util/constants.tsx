@@ -13,6 +13,7 @@ export const DEFAULT_VALIDATOR_COMMISION_FILTER = 20;
 export const TRANSACTION_HISTROY_DEFAULT_ROWS = 6;
 export const MAX_ACCEPTED_COMMISSION = 50;
 export const SHORT_ADDRESS_CHARACTERS = 6;
+export const MAX_VOTES = 16;
 export const RELAY_CHAINS = [
   {
     name: 'Polkadot',

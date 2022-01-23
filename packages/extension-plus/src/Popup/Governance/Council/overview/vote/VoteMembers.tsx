@@ -14,6 +14,7 @@ import useTranslation from '../../../../../../../extension-ui/src/hooks/useTrans
 import { ShortAddress } from '../../../../../components';
 import { PersonsInfo } from '../../../../../util/plusTypes';
 import { amountToHuman } from '../../../../../util/plusUtils';
+import { MAX_VOTES } from '../../../../../util/constants';
 
 interface Props {
   personsInfo: PersonsInfo;
@@ -34,6 +35,11 @@ export default function VoteMembers({ chain, coin, decimals, membersType, person
     console.log('(event.target.checked:', event.target.checked);
     console.log('index:', index);
 
+    // check if reached to MAX_VOTES
+    if(event.target.checked && (candidates.filter((c) => c.selected)).length === MAX_VOTES){
+      event.target.checked=false;
+      return;
+    }
     const lastSelectedIndex = candidates.indexOf(candidates.find((p) => false === p.selected));
 
     const temp = candidates[index];
