@@ -19,6 +19,7 @@ import { RELAY_CHAINS } from '../../util/constants';
 import getLogo from '../../util/getLogo';
 import CouncilIndex from './Council/index';
 import Democracy from './Democracy/index';
+import SelectRelay from '../../components/SelectRelay';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -58,7 +59,7 @@ function Governance({ className }: Props): React.ReactElement<Props> {
       />
       <Container>
         <Grid item xs={12} sx={{ margin: '0px 30px' }}>
-          <FormControl fullWidth>
+          {/* <FormControl fullWidth>
             <InputLabel id='select-relay-chain'>{t('Relay chain')}</InputLabel>
             <Select
               value={selectedRelaychain}
@@ -83,7 +84,10 @@ function Governance({ className }: Props): React.ReactElement<Props> {
                 </MenuItem>
               )}
             </Select>
-          </FormControl>
+          </FormControl> */}
+
+          <SelectRelay selectedBlockchain={selectedRelaychain} handleChainChange={handleChainChange}/>
+
         </Grid>
 
         <Paper elevation={4} onClick={handleDemocracyModal} sx={{ borderRadius: '10px', cursor: 'pointer', margin: '20px 30px 10px', p: '20px 40px' }}>

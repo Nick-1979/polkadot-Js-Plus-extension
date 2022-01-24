@@ -27,6 +27,7 @@ import getLogo from '../../util/getLogo';
 import { Auction, ChainInfo, Crowdloan } from '../../util/plusTypes';
 import Contribute from './Contribute';
 import Fund from './Fund';
+import SelectRelay from '../../components/SelectRelay';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -102,7 +103,7 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
     setAuctionWinners(auction?.crowdloans.filter((c) => c.fund.end < auction.currentBlockNumber || c.fund.hasLeased));
   }, [auction]);
 
-  const handleBlockchainChange = (event: SelectChangeEvent) => {
+  const handleChainChange = (event: SelectChangeEvent) => {
     setSelectedBlockchain(event.target.value);
   };
 
@@ -181,12 +182,12 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
       />
       <Grid container id='selectRelyChain' sx={{ padding: '5px 35px' }}>
         <Grid item xs={12}>
-          <FormControl fullWidth>
+          {/* <FormControl fullWidth>
             <InputLabel id='select-blockchain'>{t('Relay chain')}</InputLabel>
             <Select
               value={selectedBlockchain}
               label='Select blockchain'
-              onChange={handleBlockchainChange}
+              onChange={handleChainChange}
               sx={{ height: 50 }}
               // defaultOpen={true}
               native
@@ -216,7 +217,9 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
               )}
             </Select>
             {!selectedBlockchain && <FormHelperText>{t('Please select a relay chain')}</FormHelperText>}
-          </FormControl>
+          </FormControl> */}
+
+          <SelectRelay selectedBlockchain={selectedBlockchain} handleChainChange={handleChainChange} hasEmpty/>
         </Grid>
         <Grid item xs={12} sx={{ paddingBottom: '10px' }}>
           <Tabs
