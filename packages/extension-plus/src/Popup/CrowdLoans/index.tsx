@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-max-props-per-line */
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
@@ -28,6 +29,7 @@ import { Auction, ChainInfo, Crowdloan } from '../../util/plusTypes';
 import Contribute from './Contribute';
 import Fund from './Fund';
 import SelectRelay from '../../components/SelectRelay';
+import CrowdloanList from './CrowdloanList';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -45,7 +47,7 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
   const [tabValue, setTabValue] = React.useState('auction');
   const [contributeModal, setContributeModalOpen] = useState<boolean>(false);
   const [endpoints, setEndpoints] = useState<LinkOption[]>([]);
-  const [expanded, setExpanded] = React.useState<string | false>(false);
+  const [expanded, setExpanded] = React.useState<string>('active');
   const [chainInfo, setChainInfo] = useState<ChainInfo>();
 
   function getCrowdloands(_selectedBlockchain: string) {
@@ -115,43 +117,11 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
 
   const handleAccordionChange =
     (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
-      setExpanded(isExpanded ? panel : false);
+      setExpanded(isExpanded ? panel : '');
     };
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
-  };
-
-  const showCrowdloans = (type: string): React.ReactElement => {
-    let crowdloans: Crowdloan[] | undefined;
-
-    switch (type) {
-      case ('active'):
-        crowdloans = activeCrowdloans;
-        break;
-      case ('winers'):
-        crowdloans = auctionWinners;
-        break;
-      default:
-        console.log('Unknown type');
-        break;
-    }
-
-    return (
-      <div>
-        {crowdloans?.length
-          ? crowdloans.map((crowdloan) => (
-            <Grid container item key={crowdloan.fund.paraId} xs={12}>
-              {crowdloan.fund.paraId &&
-                <Fund coin={chainInfo.coin} decimals={chainInfo.decimals} endpoints={endpoints} crowdloan={crowdloan} handleContribute={handleContribute} isActive={type === 'active'} />
-              }
-            </Grid>
-
-          ))
-          : <Grid item xs={12} sx={{ fontSize: 12, textAlign: 'center' }}> {t('There is no item to show')}</Grid>
-        }
-      </div>
-    );
   };
 
   const ShowBids = (): React.ReactElement => {
@@ -164,14 +134,34 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
     if (!crowdloan) return <div />;
 
     return (
-      <Paper elevation={3}>
-        <Grid item container xs={12} sx={{ color: grey[600], fontFamily: 'fantasy', fontSize: 15, paddingLeft: '10px' }} >
-          {t('Bids')}
+      <Grid container>
+        <Grid item xs={12}>
+          <Paper elevation={3}>
+            <Grid sx={{ color: grey[600], fontFamily: 'fantasy', fontSize: 15, paddingLeft: '10px' }}>
+              {t('Bids')}
+            </Grid>
+            <Fund coin={chainInfo.coin} crowdloan={crowdloan} decimals={chainInfo.decimals} endpoints={endpoints} />
+          </Paper>
         </Grid>
-        <Fund coin={chainInfo.coin} decimals={chainInfo.decimals} endpoints={endpoints} crowdloan={crowdloan} />
-      </Paper>
+      </Grid>
     );
   };
+
+  const ShowAuction = () => (
+    <Paper elevation={6} sx={{ backgroundColor: grey[100], margin: '20px' }}>
+      <Grid container item justifyContent='flex-start' sx={{ padding: '15px 10px 15px' }}>
+        <Grid item xs={1}>
+          <Avatar sx={{ bgcolor: deepOrange[500], fontSize: 13, height: 30, width: 30, }}>
+            #{auction.auctionCounter}
+          </Avatar>
+        </Grid>
+        <Grid item xs={3} sx={{ fontSize: 15, fontWeight: 'fontWeightBold' }}>{t('Auction')}</Grid>
+        <Grid item xs={4} sx={{ fontSize: 12, textAlign: 'center' }}>{t('Lease')}: {' '} {auction.auctionInfo[0]}</Grid>
+        <Grid item xs={4} sx={{ fontSize: 12, textAlign: 'right' }}>{t('Stage')}: {' #'} {auction.auctionInfo[1]}</Grid>
+        <Grid item xs={12} sx={{ fontSize: 12, textAlign: 'right' }}>{t('current block')}:{' #'}{auction.currentBlockNumber}</Grid>
+      </Grid>
+    </Paper>
+  );
 
   return (
     <>
@@ -182,54 +172,10 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
       />
       <Grid container id='selectRelyChain' sx={{ padding: '5px 35px' }}>
         <Grid item xs={12}>
-          {/* <FormControl fullWidth>
-            <InputLabel id='select-blockchain'>{t('Relay chain')}</InputLabel>
-            <Select
-              value={selectedBlockchain}
-              label='Select blockchain'
-              onChange={handleChainChange}
-              sx={{ height: 50 }}
-              // defaultOpen={true}
-              native
-            >
-              <option value={''}>
-                {''}
-              </option>
-              {RELAY_CHAINS.map((r) =>
-                // <MenuItem key={r.name} value={r.name.toLowerCase()}>
-                //   <Grid container alignItems='center' justifyContent='space-between'>
-                //     <Grid item>
-                //       <Avatar
-                //         alt={'logo'}
-                //         src={getLogo(r.name.toLowerCase())}
-                //         sx={{ height: 24, width: 24 }}
-                //       />
-                //     </Grid>
-                //     <Grid item sx={{ fontSize: 15 }}>
-                //       {r.name}
-                //     </Grid>
-                //   </Grid>
-                // </MenuItem>
-
-                <option key={r.name} value={r.name.toLowerCase()}>
-                  {r.name.toLowerCase()}
-                </option>
-              )}
-            </Select>
-            {!selectedBlockchain && <FormHelperText>{t('Please select a relay chain')}</FormHelperText>}
-          </FormControl> */}
-
-          <SelectRelay selectedBlockchain={selectedBlockchain} handleChainChange={handleChainChange} hasEmpty/>
+          <SelectRelay selectedBlockchain={selectedBlockchain} handleChainChange={handleChainChange} hasEmpty />
         </Grid>
         <Grid item xs={12} sx={{ paddingBottom: '10px' }}>
-          <Tabs
-            indicatorColor='secondary'
-            onChange={handleTabChange}
-            // centered
-            textColor='secondary'
-            value={tabValue}
-            variant='fullWidth'
-          >
+          <Tabs indicatorColor='secondary' onChange={handleTabChange} textColor='secondary' value={tabValue} variant='fullWidth'>
             <Tab icon={<GavelIcon fontSize='small' />} iconPosition='start' label='Auction' sx={{ fontSize: 11 }} value='auction' />
             <Tab icon={<GroupsIcon fontSize='small' />} iconPosition='start' label='Crowdloans' sx={{ fontSize: 11 }} value='crowdloan' />
           </Tabs>
@@ -247,85 +193,25 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
 
       {auction && auction.auctionInfo && tabValue === 'auction' &&
         <>
-          <Paper elevation={6} sx={{ backgroundColor: grey[100], margin: '20px' }}>
-            <Grid container item justifyContent='flex-start' sx={{ padding: '15px 10px 15px' }}>
-              <Grid item xs={1} >
-                <Avatar sx={{ bgcolor: deepOrange[500], fontSize: 13, height: 30, width: 30, }}>
-                  #{auction.auctionCounter}
-                </Avatar>
-              </Grid>
-              <Grid item xs={3} sx={{ fontSize: 15, fontWeight: 'fontWeightBold' }}>{t('Auction')}</Grid>
-              <Grid item xs={4} sx={{ fontSize: 12, textAlign: 'center' }}>{t('Lease')}: {' '} {auction.auctionInfo[0]}</Grid>
-              <Grid item xs={4} sx={{ fontSize: 12, textAlign: 'right' }}>{t('Stage')}: {' #'} {auction.auctionInfo[1]}</Grid>
-              <Grid item xs={12} sx={{ fontSize: 12, textAlign: 'right' }}>{t('current block')}:{' #'}{auction.currentBlockNumber}</Grid>
-            </Grid>
-          </Paper>
-
-          <Grid container item xs={12}>
-            <Grid item xs={12}>
-              <ShowBids />
-            </Grid>
-          </Grid>
+          <ShowAuction />
+          <ShowBids />
         </>
       }
 
       {auction && tabValue === 'crowdloan' &&
         <Grid container id='crowdloan-list'>
-
-          <Accordion disableGutters expanded={expanded === 'active'} onChange={handleAccordionChange('active')}
-            sx={{ backgroundColor: grey[200], flexGrow: 1 }}>
-            <AccordionSummary
-              expandIcon={<ExpandMore />}
-              id='activeCrowdloansHeader'
-            >
-              <Typography sx={{ flexShrink: 0, width: '33%' }} variant='body2'>
-                {t('Active')}({activeCrowdloans?.length})
-              </Typography>
-              <Typography variant='caption' sx={{ color: 'text.secondary' }}>{t('view active crowdloans')}</Typography>
-            </AccordionSummary>
-            <AccordionDetails sx={{ height: 250, overflowY: 'auto' }}>
-              {showCrowdloans('active')}
-            </AccordionDetails>
-          </Accordion>
-
-          <Accordion disableGutters expanded={expanded === 'winners'} onChange={handleAccordionChange('winners')}
-            sx={{ backgroundColor: grey[300], flexGrow: 1 }}>
-            <AccordionSummary
-              expandIcon={<ExpandMore />}
-              id='crowdloansWinnersHeader'
-            >
-              <Typography variant='body2' sx={{ width: '33%', flexShrink: 0 }}>
-                {t('Winers')}({auctionWinners?.length})
-              </Typography>
-              <Typography variant='caption' sx={{ color: 'text.secondary' }}>{t('view auction winers')}</Typography>
-            </AccordionSummary>
-            <AccordionDetails sx={{ height: 200, overflowY: 'auto' }}>
-              {showCrowdloans('winers')}
-            </AccordionDetails>
-          </Accordion>
-
-          <Accordion disableGutters expanded={expanded === 'ended'} onChange={handleAccordionChange('ended')}
-            sx={{ backgroundColor: grey[400], flexGrow: 1 }}>
-            <AccordionSummary expandIcon={<ExpandMore />} id='crowdloansEndedHeader'>
-              <Typography variant='body2' sx={{ width: '33%', flexShrink: 0 }}>
-                {t('Ended')}(0)
-              </Typography>
-              <Typography variant='caption'
-                sx={{ color: 'text.secondary' }}>{t('view ended crowdloans')}</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              {showCrowdloans('ended')}
-            </AccordionDetails>
-          </Accordion>
+          <CrowdloanList chainInfo={chainInfo} crowdloans={activeCrowdloans} description={t('view active crowdloans')} endpoints={endpoints} expanded={expanded} handleAccordionChange={handleAccordionChange} handleContribute={handleContribute} height={250} title={t('Active')} />
+          <CrowdloanList chainInfo={chainInfo} crowdloans={auctionWinners} description={t('view auction winers')} endpoints={endpoints} expanded={expanded} handleAccordionChange={handleAccordionChange} handleContribute={handleContribute} height={200} title={t('Winners')} />
+          <CrowdloanList chainInfo={chainInfo} crowdloans={[]} description={t('view ended crowdloans')} endpoints={endpoints} expanded={expanded} handleAccordionChange={handleAccordionChange} handleContribute={handleContribute} height={150} title={t('Ended')} />
         </Grid>
       }
 
       {contributeModal && auction && contributingTo &&
         <Contribute
           auction={auction}
+          chainInfo={chainInfo}
           contributeModal={contributeModal}
           crowdloan={contributingTo}
-          chainInfo={chainInfo}
           endpoints={endpoints}
           setContributeModalOpen={setContributeModalOpen}
 
@@ -336,15 +222,15 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
 }
 
 export default styled(Crowdloans)`
-  height: calc(100vh - 2px);
-  overflow: auto;
-  scrollbar - width: none;
+        height: calc(100vh - 2px);
+        overflow: auto;
+        scrollbar - width: none;
 
-  &:: -webkit - scrollbar {
-    display: none;
-    width:0,
+        &:: -webkit - scrollbar {
+          display: none;
+        width:0,
   }
-  .empty-list {
-    text-align: center;
+        .empty-list {
+          text - align: center;
   }
-`;
+        `;
