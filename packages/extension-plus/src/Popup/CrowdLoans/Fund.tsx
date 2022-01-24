@@ -98,9 +98,9 @@ export default function Fund({ coin, crowdloan, decimals, endpoints, handleContr
             </Grid>
 
             <Grid sx={{ fontSize: 11, textAlign: 'center' }}>
-              <b>{amountToHuman(crowdloan.fund.raised, decimals)}</b>
+              <b>{Number(amountToHuman(crowdloan.fund.raised, decimals)).toLocaleString()}</b>
               /
-              {amountToHuman(crowdloan.fund.cap, decimals)}
+              {Number(amountToHuman(crowdloan.fund.cap, decimals)).toLocaleString()}
               <br />
               {t('Raised/Cap')}{' '}({coin})
             </Grid>

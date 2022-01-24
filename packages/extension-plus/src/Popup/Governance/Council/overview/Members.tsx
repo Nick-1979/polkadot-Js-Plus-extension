@@ -100,7 +100,7 @@ export default function Members({ chain, coin, decimals, membersType, personsInf
                 </Grid>
                 {personsInfo?.backed &&
                   <Grid item xs={5} sx={{ textAlign: 'left' }}>
-                    {t('Backed')}{': '} {amountToHuman(personsInfo.backed[index], decimals, 2)} {coin}
+                    {t('Backed')}{': '} {Number(amountToHuman(personsInfo.backed[index], decimals, 2)).toLocaleString()} {coin}
                   </Grid>
                 }
               </Grid>

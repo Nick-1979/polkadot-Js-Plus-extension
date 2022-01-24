@@ -98,7 +98,7 @@ export default function MyVotes({ allCouncilInfo, chain, coin, decimals, setShow
       {votesInfo && filteredPersonsInfo
         ? <Grid container sx={{ padding: '0px 30px' }}>
           <Grid item xs={12} sx={{ fontSize: 12, textAlign: 'right', paddingRight: '10px' }}>
-            {t('Staked:')} {amountToHuman(votesInfo.stake.toString(), decimals)} {' '}{coin}
+            {t('Staked:')} {Number(amountToHuman(votesInfo.stake.toString(), decimals)).toLocaleString()} {' '}{coin}
 
           </Grid>
           <Grid item xs={12} id='scrollArea' sx={{ height: '250px', overflowY: 'auto' }}>
