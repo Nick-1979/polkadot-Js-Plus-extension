@@ -11,7 +11,7 @@ import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation
 import getChainInfo from '../../../util/getChainInfo';
 import getDemocracy from '../../../util/getDemocracy';
 import Referendums from './Referendums';
-import {PlusHeader,Progress,Popup} from '../../../components';
+import { PlusHeader, Progress, Popup } from '../../../components';
 import { DeriveReferendumExt, DeriveProposal } from '@polkadot/api-derive/types';
 import getCurrentBlockNumber from '../../../util/getCurrentBlockNumber';
 
@@ -66,7 +66,7 @@ export default function Democracy({ chainName, setDemocracyModalOpen, showDemocr
 
   return (
     <Popup showModal={showDemocracyModal} handleClose={handleDemocracyModalClose}>
-      <PlusHeader action={handleDemocracyModalClose} chain={chainName} closeText={'Close'} icon={<HowToVoteIcon fontSize='small'/>} title={'Democracy'} />
+      <PlusHeader action={handleDemocracyModalClose} chain={chainName} closeText={'Close'} icon={<HowToVoteIcon fontSize='small' />} title={'Democracy'} />
       <Grid container>
         <Grid item xs={12} sx={{ margin: '0px 30px' }}>
           <Tabs indicatorColor='secondary' onChange={handleTabChange} textColor='secondary' value={tabValue} variant='fullWidth'>
@@ -75,10 +75,11 @@ export default function Democracy({ chainName, setDemocracyModalOpen, showDemocr
           </Tabs>
         </Grid>
         {tabValue === 'referendums'
-          ? <>{referendums
-            ? <Referendums referendums={referendums} chainName={chainName} coin={coin} decimals={decimals} currentBlockNumber={currentBlockNumber} />
-            : <Progress title={'Loading referendums ...'} />}
-          </>
+          ? <Grid item xs={12} sx={{ height: 450, overflowY: 'auto' }}>
+            {referendums
+              ? <Referendums referendums={referendums} chainName={chainName} coin={coin} decimals={decimals} currentBlockNumber={currentBlockNumber} />
+              : <Progress title={'Loading referendums ...'} />}
+          </Grid>
           : ''}
 
         {tabValue === 'proposals'

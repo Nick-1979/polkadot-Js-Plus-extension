@@ -27,13 +27,13 @@ export default function Referendums({ chainName, coin, currentBlockNumber, decim
     <>
       {referendums?.length
         ? referendums.map((r, index) => (
-          <Paper elevation={4} key={index} sx={{ borderRadius: '10px', margin: '20px 30px 10px', p: '10px 40px' }}>
+          <Paper elevation={4} key={index} sx={{ borderRadius: '10px', margin: '20px 30px 10px', p: '10px 20px' }}>
             <Grid container justifyContent='space-between'>
               <Grid item>
-                {r?.image.proposal._meta.name}
+                {r?.image?.proposal._meta.name}
               </Grid>
               <Grid item>
-                                #{String(r?.index)} {' '}
+                #{String(r?.index)} {' '}
                 <Link target='_blank' rel='noreferrer' href={`https://${chainName}.subscan.io/referenda/${r?.index}`}>
                   <OpenInNewIcon sx={{ fontSize: 10 }} />
                 </Link>
@@ -59,7 +59,7 @@ export default function Referendums({ chainName, coin, currentBlockNumber, decim
             </Grid>
 
             <Grid item xs={12} sx={{ margin: '20px 1px 10px' }}>
-              {r.image.proposal._meta.docs}
+              {r.image?.proposal._meta.docs}
             </Grid>
             <Grid item xs={12} sx={{ border: '1px dotted', borderRadius: '10px', padding: 1, margin: '20px 1px 20px' }}>
               {t('Hash')}<br />
@@ -92,10 +92,10 @@ export default function Referendums({ chainName, coin, currentBlockNumber, decim
                 <LinearProgress variant='determinate' value={100 * (Number(r.status.tally.ayes) / (Number(r.status.tally.nays) + Number(r.status.tally.ayes)))} />
               </Grid>
               <Grid item>
-                {amountToHuman(r.status.tally.ayes.toString(), decimals)}{coin}
+                {Number(amountToHuman(r.status.tally.ayes.toString(), decimals)).toLocaleString()}{coin}
               </Grid>
               <Grid item>
-                {amountToHuman(Number(r.status.tally.nays).toString(), decimals)}{coin}
+                {Number(amountToHuman(Number(r.status.tally.nays).toString(), decimals)).toLocaleString()}{coin}
               </Grid>
             </Grid>
 
