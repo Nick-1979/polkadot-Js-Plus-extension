@@ -10,8 +10,8 @@ export default async function getCouncil(_chain: string): Promise<CouncilInfo> {
   const info = await api.derive.elections.info();
 
   const ids = info.members.map((m) => m[0].toString())
-    .concat(info.runnersUp.map((c) => c[0].toString()))
-    .concat(info.candidates.map((c) => c[0].toString()));
+    .concat(info.runnersUp.map((r) => r[0].toString()))
+    .concat(info.candidates.map((c) => c.toString()));// note: candidates do not have backed
 
   // eslint-disable-next-line dot-notation
   info['accountInfos'] = await Promise.all(ids.map((a) => api.derive.accounts.info(a)));
