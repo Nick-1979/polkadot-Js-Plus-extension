@@ -218,7 +218,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
 
   return (
     <Popup showModal={showTxHistoryModal} handleClose={handleTxHistoryModalClose}>
-      <PlusHeader action={handleTxHistoryModalClose} chain={chain} closeText={'Close'} icon={<HistoryIcon />} title={'Transaction History'} />
+      <PlusHeader action={handleTxHistoryModalClose} chain={chain} closeText={'Close'} icon={<HistoryIcon fontSize='small'/>} title={'Transaction History'} />
 
       <Grid item xs={12} sx={{ paddingBottom: '10px' }}>
         <Box>

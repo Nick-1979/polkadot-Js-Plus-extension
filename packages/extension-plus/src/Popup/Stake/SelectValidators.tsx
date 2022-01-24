@@ -575,7 +575,7 @@ export default function SelectValidators({
 
   return (
     <Popup showModal={showSelectValidatorsModal} handleClose={handleCancel}>
-      <PlusHeader action={handleCancel} chain={chain} closeText={'Cancel'} icon={<RecommendOutlinedIcon />} title={'Select Validators'} />
+      <PlusHeader action={handleCancel} chain={chain} closeText={'Cancel'} icon={<RecommendOutlinedIcon fontSize='small'/>} title={'Select Validators'} />
 
       <Grid alignItems='center' container>
         <Grid item xs={12} sx={{ textAlign: 'left' }}>

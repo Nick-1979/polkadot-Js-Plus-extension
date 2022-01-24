@@ -66,7 +66,7 @@ export default function Democracy({ chainName, setDemocracyModalOpen, showDemocr
 
   return (
     <Popup showModal={showDemocracyModal} handleClose={handleDemocracyModalClose}>
-      <PlusHeader action={handleDemocracyModalClose} chain={chainName} closeText={'Close'} icon={<HowToVoteIcon />} title={'Democracy'} />
+      <PlusHeader action={handleDemocracyModalClose} chain={chainName} closeText={'Close'} icon={<HowToVoteIcon fontSize='small'/>} title={'Democracy'} />
       <Grid container>
         <Grid item xs={12} sx={{ margin: '0px 30px' }}>
           <Tabs indicatorColor='secondary' onChange={handleTabChange} textColor='secondary' value={tabValue} variant='fullWidth'>

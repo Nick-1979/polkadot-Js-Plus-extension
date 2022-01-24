@@ -31,7 +31,7 @@ export default function AddressQRcode({ address, chain, name, setQRcodeModalOpen
 
   return (
     <Popup handleClose={handleQRmodalClose} showModal={showQRcodeModalOpen}>
-      <PlusHeader action={handleQRmodalClose} chain={chain} closeText={'Close'} icon={<QrCodeScannerIcon />} title={'Scan with camera'} />
+      <PlusHeader action={handleQRmodalClose} chain={chain} closeText={'Close'} icon={<QrCodeScannerIcon fontSize='small' />} title={'Scan with camera'} />
 
       <Grid item xs={12} sx={{ fontSize: 18, fontWeight: 'fontWeightBold', textAlign: 'center', padding: '40px 1px 20px' }} >
         {name || t('unknown')}
