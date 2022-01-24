@@ -81,7 +81,10 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
   }, [recepientAddressIsValid]);
 
   useEffect((): void => {
+
+    // TODO: get ED from chain, api.consts.balances.existentialDeposit
     const { ED } = getNetworkInfo(chain);
+
     setED(ED || 0);
     console.log('chain', chain);
   }, [chain]);
