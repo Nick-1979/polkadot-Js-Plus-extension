@@ -9,7 +9,7 @@ import getChainInfo from './getChainInfo';
 import { TxInfo } from './plusTypes';
 import { signAndSend } from './signAndSend';
 
-export default async function vote(_chain: Chain, candidates: string[], value: string, signer: KeyringPair): Promise<Promise<TxInfo>> {
+export default async function voteElection(_chain: Chain, candidates: string[], value: string, signer: KeyringPair): Promise<Promise<TxInfo>> {
   const { api } = await getChainInfo(_chain);
   const electionApi = api.tx.phragmenElection ?? api.tx.electionsPhragmen ?? api.tx.elections;
 
