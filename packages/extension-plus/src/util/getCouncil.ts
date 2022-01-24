@@ -7,8 +7,8 @@ import { CouncilInfo } from './plusTypes';
 
 export default async function getCouncil(_chain: string): Promise<CouncilInfo> {
   const { api } = await getChainInfo(_chain);
-  const info = await api.derive.elections.info();
-
+  const info = await api.derive.elections?.info();
+ 
   const ids = info.members.map((m) => m[0].toString())
     .concat(info.runnersUp.map((r) => r[0].toString()))
     .concat(info.candidates.map((c) => c.toString()));// note: candidates do not have backed
