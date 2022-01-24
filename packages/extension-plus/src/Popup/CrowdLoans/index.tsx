@@ -188,22 +188,31 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
               label='Select blockchain'
               onChange={handleBlockchainChange}
               sx={{ height: 50 }}
+              // defaultOpen={true}
+              native
             >
+              <option value={''}>
+                {''}
+              </option>
               {RELAY_CHAINS.map((r) =>
-                <MenuItem key={r.name} value={r.name.toLowerCase()}>
-                  <Grid container alignItems='center' justifyContent='space-between'>
-                    <Grid item>
-                      <Avatar
-                        alt={'logo'}
-                        src={getLogo(r.name.toLowerCase())}
-                        sx={{ height: 24, width: 24 }}
-                      />
-                    </Grid>
-                    <Grid item sx={{ fontSize: 15 }}>
-                      {r.name}
-                    </Grid>
-                  </Grid>
-                </MenuItem>
+                // <MenuItem key={r.name} value={r.name.toLowerCase()}>
+                //   <Grid container alignItems='center' justifyContent='space-between'>
+                //     <Grid item>
+                //       <Avatar
+                //         alt={'logo'}
+                //         src={getLogo(r.name.toLowerCase())}
+                //         sx={{ height: 24, width: 24 }}
+                //       />
+                //     </Grid>
+                //     <Grid item sx={{ fontSize: 15 }}>
+                //       {r.name}
+                //     </Grid>
+                //   </Grid>
+                // </MenuItem>
+
+                <option key={r.name} value={r.name.toLowerCase()}>
+                  {r.name.toLowerCase()}
+                </option>
               )}
             </Select>
             {!selectedBlockchain && <FormHelperText>{t('Please select a relay chain')}</FormHelperText>}
@@ -234,27 +243,27 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
       }
 
       {auction && auction.auctionInfo && tabValue === 'auction' &&
-        <Paper elevation={6} sx={{ backgroundColor: grey[100], margin: '20px' }}>
-          <Grid container item justifyContent='flex-start' sx={{ padding: '15px 10px 15px' }}>
-            <Grid item xs={1} >
-              <Avatar sx={{ bgcolor: deepOrange[500], fontSize: 13, height: 30, width: 30, }}>
-                #{auction.auctionCounter}
-              </Avatar>
+        <>
+          <Paper elevation={6} sx={{ backgroundColor: grey[100], margin: '20px' }}>
+            <Grid container item justifyContent='flex-start' sx={{ padding: '15px 10px 15px' }}>
+              <Grid item xs={1} >
+                <Avatar sx={{ bgcolor: deepOrange[500], fontSize: 13, height: 30, width: 30, }}>
+                  #{auction.auctionCounter}
+                </Avatar>
+              </Grid>
+              <Grid item xs={3} sx={{ fontSize: 15, fontWeight: 'fontWeightBold' }}>{t('Auction')}</Grid>
+              <Grid item xs={4} sx={{ fontSize: 12, textAlign: 'center' }}>{t('Lease')}: {' '} {auction.auctionInfo[0]}</Grid>
+              <Grid item xs={4} sx={{ fontSize: 12, textAlign: 'right' }}>{t('Stage')}: {' #'} {auction.auctionInfo[1]}</Grid>
+              <Grid item xs={12} sx={{ fontSize: 12, textAlign: 'right' }}>{t('current block')}:{' #'}{auction.currentBlockNumber}</Grid>
             </Grid>
-            <Grid item xs={3} sx={{ fontSize: 15, fontWeight: 'fontWeightBold' }}>{t('Auction')}</Grid>
-            <Grid item xs={4} sx={{ fontSize: 12, textAlign: 'center' }}>{t('Lease')}: {' '} {auction.auctionInfo[0]}</Grid>
-            <Grid item xs={4} sx={{ fontSize: 12, textAlign: 'right' }}>{t('Stage')}: {' #'} {auction.auctionInfo[1]}</Grid>
-            <Grid item xs={12} sx={{ fontSize: 12, textAlign: 'right' }}>{t('current block')}:{' #'}{auction.currentBlockNumber}</Grid>
-          </Grid>
-        </Paper>
-      }
+          </Paper>
 
-      {auction && tabValue === 'auction' &&
-        <Grid container item xs={12}>
-          <Grid item xs={12}>
-            <ShowBids />
+          <Grid container item xs={12}>
+            <Grid item xs={12}>
+              <ShowBids />
+            </Grid>
           </Grid>
-        </Grid>
+        </>
       }
 
       {auction && tabValue === 'crowdloan' &&
