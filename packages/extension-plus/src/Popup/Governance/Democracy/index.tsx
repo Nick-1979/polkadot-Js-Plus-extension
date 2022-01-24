@@ -14,29 +14,30 @@ import Referendums from './Referendums';
 import { PlusHeader, Progress, Popup } from '../../../components';
 import { DeriveReferendumExt, DeriveProposal } from '@polkadot/api-derive/types';
 import getCurrentBlockNumber from '../../../util/getCurrentBlockNumber';
+import { VOTE_MAP } from '../../../util/constants';
+import VoteReferendum from './VoteReferendum';
+import useMetadata from '../../../../../extension-ui/src/hooks/useMetadata';
+import { ChainInfo } from '../../../util/plusTypes';
 
 interface Props {
   chainName: string;
   showDemocracyModal: boolean;
+  chainInfo: ChainInfo;
   setDemocracyModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function Democracy({ chainName, setDemocracyModalOpen, showDemocracyModal }: Props): React.ReactElement<Props> {
+export default function Democracy({ chainName, chainInfo, setDemocracyModalOpen, showDemocracyModal }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const [tabValue, setTabValue] = useState('referendums');
   const [referendums, setReferenduns] = useState<DeriveReferendumExt[]>();
   const [proposals, setProposals] = useState<DeriveProposal[]>();
-  const [decimals, setDecimals] = useState<number>(1);
-  const [coin, setCoin] = useState<string>();
   const [currentBlockNumber, setCurrentBlockNumber] = useState<number>();
+  const [showVoteReferendumModal, setShowVoteReferendumModal] = useState<boolean>(false);
+  const [vote, setVote] = useState<{ voteType: number, refId: string }>();
+  const chain = useMetadata(chainInfo.genesisHash, true);
+
 
   useEffect(() => {
-    // eslint-disable-next-line no-void
-    void getChainInfo(chainName).then((r) => {
-      setDecimals(r.decimals);
-      setCoin(r.coin);
-    });
-
     // eslint-disable-next-line no-void
     void getDemocracy(chainName, 'referendums').then(r => {
       setReferenduns(r);
@@ -47,11 +48,12 @@ export default function Democracy({ chainName, setDemocracyModalOpen, showDemocr
       setProposals(r);
     });
 
-    getCurrentBlockNumber(chainName).then((n) => {
+    // eslint-disable-next-line no-void
+    void getCurrentBlockNumber(chainName).then((n) => {
       setCurrentBlockNumber(n);
-    })
+    });
+  }, [chainName]);
 
-  }, [chainName])
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
   };
@@ -64,6 +66,15 @@ export default function Democracy({ chainName, setDemocracyModalOpen, showDemocr
     [setDemocracyModalOpen]
   );
 
+  const handleVote = useCallback((voteType: number, refId: string) => {
+    setShowVoteReferendumModal(true);
+    setVote({ refId: refId, voteType: voteType });
+  }, []);
+
+  const handleVoteReferendumModalClose = useCallback(() => {
+    setShowVoteReferendumModal(false);
+  }, []);
+
   return (
     <Popup showModal={showDemocracyModal} handleClose={handleDemocracyModalClose}>
       <PlusHeader action={handleDemocracyModalClose} chain={chainName} closeText={'Close'} icon={<HowToVoteIcon fontSize='small' />} title={'Democracy'} />
@@ -74,20 +85,30 @@ export default function Democracy({ chainName, setDemocracyModalOpen, showDemocr
             <Tab icon={<BatchPredictionIcon fontSize='small' />} iconPosition='start' label='Proposals' sx={{ fontSize: 11 }} value='proposals' />
           </Tabs>
         </Grid>
+
         {tabValue === 'referendums'
           ? <Grid item xs={12} sx={{ height: 450, overflowY: 'auto' }}>
             {referendums
-              ? <Referendums referendums={referendums} chainName={chainName} coin={coin} decimals={decimals} currentBlockNumber={currentBlockNumber} />
+              ? <Referendums handleVote={handleVote} referendums={referendums} chainName={chainName} chainInfo={chainInfo} currentBlockNumber={currentBlockNumber} />
               : <Progress title={'Loading referendums ...'} />}
           </Grid>
           : ''}
 
         {tabValue === 'proposals'
           ? <>{proposals
-            ? <Referendums referendums={referendums} chainName={chainName} coin={coin} decimals={decimals} />
+            ? <Referendums referendums={referendums} chainName={chainName} chainInfo={chainInfo} />
             : <Progress title={'Loading proposals ...'} />}
           </>
           : ''}
+
+        {showVoteReferendumModal &&
+          <VoteReferendum
+            chain={chain}
+            chainInfo={chainInfo}
+            handleVoteReferendumModalClose={handleVoteReferendumModalClose}
+            showVoteReferendumModal={showVoteReferendumModal}
+            vote={vote} />
+        }
       </Grid>
     </Popup>
   );

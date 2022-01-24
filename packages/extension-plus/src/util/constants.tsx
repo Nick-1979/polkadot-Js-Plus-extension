@@ -51,3 +51,8 @@ export const PASSWORD_MAP = {
   CORRECT: 0,
   EMPTY: 1
 };
+
+export const VOTE_MAP = {
+  AYE: 1,
+  NAY: 0
+};

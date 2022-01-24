@@ -2,25 +2,26 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-import { Paper, Grid, Link, Divider, LinearProgress, Button } from '@mui/material';
+import { CheckCircleOutline as CheckCircleOutlineIcon, OpenInNew as OpenInNewIcon, RemoveCircleOutline as RemoveCircleOutlineIcon, ThumbDownAlt as ThumbDownAltIcon, ThumbUpAlt as ThumbUpAltIcon } from '@mui/icons-material';
+import { Button, Divider, Grid, LinearProgress, Link, Paper } from '@mui/material';
+import React from 'react';
+
 import { DeriveReferendumExt } from '@polkadot/api-derive/types';
-import { OpenInNew as OpenInNewIcon, CheckCircleOutline as CheckCircleOutlineIcon, HowToVote as HowToVoteIcon, RemoveCircleOutline as RemoveCircleOutlineIcon, ThumbDownAlt as ThumbDownAltIcon, ThumbUpAlt as ThumbUpAltIcon, WhereToVote as WhereToVoteIcon } from '@mui/icons-material';
-import { amountToHuman, remainingTime } from '../../../util/plusUtils';
+
 import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
-import React, { useEffect, useState } from 'react';
-import { BLOCK_RATE } from '../../../util/constants';
+import { VOTE_MAP } from '../../../util/constants';
+import { amountToHuman, remainingTime } from '../../../util/plusUtils';
+import { ChainInfo } from '../../../util/plusTypes';
 
 interface Props {
   referendums: DeriveReferendumExt[];
   chainName: string;
-  coin: string;
-  decimals: number;
+  chainInfo: ChainInfo;
   currentBlockNumber: number;
+  handleVote: (voteType: number, refId: string) => void;
 }
 
-
-
-export default function Referendums({ chainName, coin, currentBlockNumber, decimals, referendums }: Props): React.ReactElement<Props> {
+export default function Referendums({ chainInfo, chainName, currentBlockNumber, handleVote, referendums }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
 
   return (
@@ -92,19 +93,19 @@ export default function Referendums({ chainName, coin, currentBlockNumber, decim
                 <LinearProgress variant='determinate' value={100 * (Number(r.status.tally.ayes) / (Number(r.status.tally.nays) + Number(r.status.tally.ayes)))} />
               </Grid>
               <Grid item>
-                {Number(amountToHuman(r.status.tally.ayes.toString(), decimals)).toLocaleString()}{coin}
+                {Number(amountToHuman(r.status.tally.ayes.toString(), chainInfo.decimals)).toLocaleString()}{chainInfo.coin}
               </Grid>
               <Grid item>
-                {Number(amountToHuman(Number(r.status.tally.nays).toString(), decimals)).toLocaleString()}{coin}
+                {Number(amountToHuman(Number(r.status.tally.nays).toString(), chainInfo.decimals)).toLocaleString()}{chainInfo.coin}
               </Grid>
             </Grid>
 
             <Grid container justifyContent='space-between' sx={{ paddingTop: 2 }}>
               <Grid item>
-                <Button variant='contained' startIcon={<ThumbUpAltIcon />}> {t('Aye')}</Button>
+                <Button onClick={() => handleVote(VOTE_MAP.AYE, String(r?.index))} startIcon={<ThumbUpAltIcon />} variant='contained'> {t('Aye')}</Button>
               </Grid>
               <Grid item>
-                <Button variant='outlined' endIcon={<ThumbDownAltIcon />}> {t('Nay')}</Button>
+                <Button onClick={() => handleVote(VOTE_MAP.NAY, String(r?.index))} variant='outlined' endIcon={<ThumbDownAltIcon />}> {t('Nay')}</Button>
               </Grid>
             </Grid>
 

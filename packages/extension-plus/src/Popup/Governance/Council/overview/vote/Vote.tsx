@@ -13,10 +13,10 @@ import { BackButton, Button } from '../../../../../../../extension-ui/src/compon
 import useTranslation from '../../../../../../../extension-ui/src/hooks/useTranslation';
 import { AllAddresses, Password, PlusHeader, Popup, Progress } from '../../../../../components';
 import { PASSWORD_MAP } from '../../../../../util/constants';
-import getVotingBond from '../../../../../util/getVoyingBond';
+import getVotingBond from '../../../../../util/getVotingBond';
 import { PersonsInfo } from '../../../../../util/plusTypes';
 import { amountToHuman } from '../../../../../util/plusUtils';
-import vote from '../../../../../util/vote';
+import voteElection from '../../../../../util/voteElection';
 import VoteMembers from './VoteMembers';
 
 interface Props {
@@ -74,7 +74,7 @@ export default function Vote({ allCouncilInfo, chain, coin, decimals, setShowVot
 
       signer.unlock(password);
       setPasswordStatus(PASSWORD_MAP.CORRECT);
-      const { block, failureText, fee, status, txHash } = await vote(chain, selectedCandidates, votingBond, signer);
+      const { block, failureText, fee, status, txHash } = await voteElection(chain, selectedCandidates, votingBond, signer);
 
       console.log('vote failureText', failureText);
       setIsVoting(false);
