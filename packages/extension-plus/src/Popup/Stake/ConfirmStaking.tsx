@@ -19,7 +19,7 @@ import keyring from '@polkadot/ui-keyring';
 
 import { AccountContext, ActionText, BackButton, Button } from '../../../../extension-ui/src/components';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
-import getNetworkInfo from '../../util/getNetwork';
+import getChainInfo from '../../util/getNetwork';
 import { AccountsBalanceType, StakingConsts, TransactionDetail, Validators, ValidatorsName } from '../../util/plusTypes';
 import { amountToHuman, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/plusUtils';
 import { bondOrBondExtra, chill, nominate, unbond, withdrawUnbonded } from '../../util/staking';
@@ -95,7 +95,7 @@ export default function ConfirmStaking({
   useEffect(() => {
     if (!chain) { return; }
 
-    const { decimals } = getNetworkInfo(chain);
+    const { decimals } = getChainInfo(chain);
 
     setDecimals(decimals);
   }, [chain]);
