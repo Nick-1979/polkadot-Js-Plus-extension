@@ -9,7 +9,7 @@ import ReactDom from 'react-dom';
 
 import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
 import getChainInfo from '../../../util/getChainInfo';
-import getDemocracy from '../../../util/getDemocracy';
+import getReferendums from '../../../util/getReferendums';
 import Referendums from './Referendums';
 import { PlusHeader, Progress, Popup } from '../../../components';
 import { DeriveReferendumExt, DeriveProposal } from '@polkadot/api-derive/types';
@@ -18,6 +18,7 @@ import { VOTE_MAP } from '../../../util/constants';
 import VoteReferendum from './VoteReferendum';
 import useMetadata from '../../../../../extension-ui/src/hooks/useMetadata';
 import { ChainInfo } from '../../../util/plusTypes';
+import getProposals from '../../../util/getProposals';
 
 interface Props {
   chainName: string;
@@ -39,12 +40,12 @@ export default function Democracy({ chainName, chainInfo, setDemocracyModalOpen,
 
   useEffect(() => {
     // eslint-disable-next-line no-void
-    void getDemocracy(chainName, 'referendums').then(r => {
+    void getReferendums(chainName).then(r => {
       setReferenduns(r);
     });
 
     // eslint-disable-next-line no-void
-    void getDemocracy(chainName, 'proposals').then(r => {
+    void getProposals(chainName).then(r => {
       setProposals(r);
     });
 
