@@ -15,6 +15,7 @@ import { ShortAddress } from '../../../../../components';
 import { PersonsInfo } from '../../../../../util/plusTypes';
 import { amountToHuman } from '../../../../../util/plusUtils';
 import { MAX_VOTES } from '../../../../../util/constants';
+import Identity from '../Identity';
 
 interface Props {
   personsInfo: PersonsInfo;
@@ -32,12 +33,11 @@ export default function VoteMembers({ chain, coin, decimals, membersType, person
   const [candidates, setCandidates] = useState(personsArray);
 
   const handleSelect = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    console.log('(event.target.checked:', event.target.checked);
-    console.log('index:', index);
+    console.log(`${candidates[index].info.accountId} ${event.target.checked?' selected':' deselected'}`);
 
     // check if reached to MAX_VOTES
-    if(event.target.checked && (candidates.filter((c) => c.selected)).length === MAX_VOTES){
-      event.target.checked=false;
+    if (event.target.checked && (candidates.filter((c) => c.selected)).length === MAX_VOTES) {
+      event.target.checked = false;
       return;
     }
     const lastSelectedIndex = candidates.indexOf(candidates.find((p) => false === p.selected));
@@ -62,84 +62,24 @@ export default function VoteMembers({ chain, coin, decimals, membersType, person
       {candidates.map((p, index) => (
         <Paper elevation={2} key={index} sx={{ borderRadius: '10px', margin: '10px 10px 1px', p: '5px 10px 5px' }}>
           <Grid container>
-            <Grid item xs={1}>
-              <Identicon
-                prefix={chain?.ss58Format ?? 42}
-                size={24}
-                theme={chain?.icon || 'polkadot'}
-                value={String(p.info.accountId)}
-              />
+
+            <Grid container item xs={7}>
+              <Identity chain={chain} accountInfo={p.info} />
             </Grid>
-            <Grid container item xs={11} justifyContent='space-between'>
-              <Grid container item xs={6}>
-                {p.info.identity.displayParent &&
-                  <Grid item>
-                    {p.info.identity.displayParent} /
-                  </Grid>
-                }
-                <Grid item sx={p.info.identity.displayParent && { color: grey[500] }}>
-                  {p.info.identity.display} { }
-                </Grid>
 
-                {!(p.info.identity.displayParent || p.info.identity.display) &&
-                  <Grid item>
-                    <ShortAddress address={String(p.info.accountId)} />
-                  </Grid>
-                }
-
-                {p.info.identity.twitter &&
-                  <Grid item>
-                    <Link href={`https://TwitterIcon.com/${p.info.identity.twitter}`}>
-                      <TwitterIcon
-                        color='primary'
-                        sx={{ fontSize: 15 }}
-                      />
-                    </Link>
-                  </Grid>
-                }
-
-                {p.info.identity.email &&
-                  <Grid item>
-                    <Link href={`mailto:${p.info.identity.email}`}>
-                      <EmailIcon
-                        color='secondary'
-                        sx={{ fontSize: 15 }}
-                      />
-                    </Link>
-                  </Grid>
-                }
-
-                {p.info.identity.web &&
-                  <Grid item>
-                    <Link
-                      href={p.info.identity.web}
-                      rel='noreferrer'
-                      target='_blank'
-                    >
-                      <LaunchRoundedIcon
-                        color='primary'
-                        sx={{ fontSize: 15 }}
-                      />
-                    </Link>
-                  </Grid>
-                }
+            {p?.backed &&
+              <Grid item xs={4} sx={{ fontSize: 11, textAlign: 'left' }}>
+                {t('Backed')}{': '} {amountToHuman(p.backed, decimals, 2)} {coin}
               </Grid>
-              {p?.backed &&
-                <Grid item xs={4} sx={{ fontSize: 11, textAlign: 'left' }}>
-                  {t('Backed')}{': '} {amountToHuman(p.backed, decimals, 2)} {coin}
-                </Grid>
-              }
+            }
 
-              <Grid alignItems='center' item xs={1}>
-                <Switch checked={p.selected} onChange={(e) => handleSelect(e, index)} size='small' />
-              </Grid>
+            <Grid alignItems='center' item xs={1}>
+              <Switch checked={p.selected} onChange={(e) => handleSelect(e, index)} size='small' />
             </Grid>
 
           </Grid>
-
         </Paper>))
       }
-
     </>
   );
 }

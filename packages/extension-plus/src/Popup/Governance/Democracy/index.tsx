@@ -17,8 +17,9 @@ import getCurrentBlockNumber from '../../../util/getCurrentBlockNumber';
 import { VOTE_MAP } from '../../../util/constants';
 import VoteReferendum from './VoteReferendum';
 import useMetadata from '../../../../../extension-ui/src/hooks/useMetadata';
-import { ChainInfo } from '../../../util/plusTypes';
+import { ChainInfo, ProposalsInfo } from '../../../util/plusTypes';
 import getProposals from '../../../util/getProposals';
+import Proposals from './Proposals';
 
 interface Props {
   chainName: string;
@@ -31,11 +32,11 @@ export default function Democracy({ chainName, chainInfo, setDemocracyModalOpen,
   const { t } = useTranslation();
   const [tabValue, setTabValue] = useState('referendums');
   const [referendums, setReferenduns] = useState<DeriveReferendumExt[]>();
-  const [proposals, setProposals] = useState<DeriveProposal[]>();
+  const [proposalsInfo, setProposalsInfo] = useState<ProposalsInfo>();
   const [currentBlockNumber, setCurrentBlockNumber] = useState<number>();
   const [showVoteReferendumModal, setShowVoteReferendumModal] = useState<boolean>(false);
   const [vote, setVote] = useState<{ voteType: number, refId: string }>();
-  const chain = useMetadata(chainInfo.genesisHash, true);
+  const chain = useMetadata(chainInfo?.genesisHash, true);// TODO:double check to have genesisHash here
 
 
   useEffect(() => {
@@ -46,7 +47,7 @@ export default function Democracy({ chainName, chainInfo, setDemocracyModalOpen,
 
     // eslint-disable-next-line no-void
     void getProposals(chainName).then(r => {
-      setProposals(r);
+      setProposalsInfo(r);
     });
 
     // eslint-disable-next-line no-void
@@ -70,6 +71,11 @@ export default function Democracy({ chainName, chainInfo, setDemocracyModalOpen,
   const handleVote = useCallback((voteType: number, refId: string) => {
     setShowVoteReferendumModal(true);
     setVote({ refId: refId, voteType: voteType });
+  }, []);
+
+  const handleSecond = useCallback((voteType: number, refId: string) => {
+    // setShowVoteReferendumModal(true);
+    // setVote({ refId: refId, voteType: voteType });
   }, []);
 
   const handleVoteReferendumModalClose = useCallback(() => {
@@ -96,10 +102,11 @@ export default function Democracy({ chainName, chainInfo, setDemocracyModalOpen,
           : ''}
 
         {tabValue === 'proposals'
-          ? <>{proposals
-            ? <Referendums referendums={referendums} chainName={chainName} chainInfo={chainInfo} />
+          ? <Grid item xs={12} sx={{ height: 450, overflowY: 'auto' }}>
+            {proposalsInfo
+            ? <Proposals handleSecond={handleSecond} proposalsInfo={proposalsInfo} chain={chain} chainInfo={chainInfo} currentBlockNumber={currentBlockNumber}/>
             : <Progress title={'Loading proposals ...'} />}
-          </>
+           </Grid>
           : ''}
 
         {showVoteReferendumModal &&

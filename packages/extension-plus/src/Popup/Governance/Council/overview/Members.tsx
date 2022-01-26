@@ -14,6 +14,7 @@ import useTranslation from '../../../../../../extension-ui/src/hooks/useTranslat
 import { ShortAddress } from '../../../../components';
 import { PersonsInfo } from '../../../../util/plusTypes';
 import { amountToHuman } from '../../../../util/plusUtils';
+import Identity from './Identity';
 
 interface Props {
   personsInfo: PersonsInfo;
@@ -34,77 +35,18 @@ export default function Members({ chain, coin, decimals, membersType, personsInf
 
       {personsInfo.infos.length
         ? personsInfo.infos.map((m, index) => (
-          <Paper elevation={2} key={index} sx={{ borderRadius: '10px', margin: '10px 20px 1px', p: '5px 20px 5px' }}>
-            <Grid container>
-              <Grid item xs={1}>
-                <Identicon
-                  prefix={chain?.ss58Format ?? 42}
-                  size={24}
-                  theme={chain?.icon || 'polkadot'}
-                  value={String(m.accountId)}
-                />
+          <Paper elevation={2} key={index} sx={{ borderRadius: '10px', margin: '10px 20px 1px', p: '5px 20px 10px 5px' }}>
+        
+            <Grid container justifyContent='space-between'>
+            
+              <Grid container item xs={8}>
+                <Identity chain={chain} accountInfo={m} />
               </Grid>
-              <Grid container item xs={11} justifyContent='space-between'>
-                <Grid container item xs={6}>
-                  {m.identity.displayParent &&
-                    <Grid item>
-                      {m.identity.displayParent} /
-                    </Grid>
-                  }
-                  <Grid item sx={m.identity.displayParent && { color: grey[500] }}>
-                    {m.identity.display} { }
-                  </Grid>
-
-                  {!(m.identity.displayParent || m.identity.display) &&
-                    <Grid item>
-                      <ShortAddress address={String(m.accountId)} />
-                    </Grid>
-                  }
-
-                  {m.identity.twitter &&
-                    <Grid item>
-                      <Link href={`https://TwitterIcon.com/${m.identity.twitter}`}>
-                        <TwitterIcon
-                          color='primary'
-                          sx={{ fontSize: 15 }}
-                        />
-                      </Link>
-                    </Grid>
-                  }
-
-                  {m.identity.email &&
-                    <Grid item>
-                      <Link href={`mailto:${m.identity.email}`}>
-                        <EmailIcon
-                          color='secondary'
-                          sx={{ fontSize: 15 }}
-                        />
-                      </Link>
-                    </Grid>
-                  }
-
-                  {m.identity.web &&
-                    <Grid item>
-                      <Link
-                        href={m.identity.web}
-                        rel='noreferrer'
-                        target='_blank'
-                      >
-                        <LaunchRoundedIcon
-                          color='primary'
-                          sx={{ fontSize: 15 }}
-                        />
-                      </Link>
-                    </Grid>
-                  }
+              {personsInfo?.backed &&
+                <Grid item xs={4} sx={{ textAlign: 'left' }}>
+                  {t('Backed')}{': '} {Number(amountToHuman(personsInfo.backed[index], decimals, 2)).toLocaleString()} {coin}
                 </Grid>
-                {personsInfo?.backed &&
-                  <Grid item xs={5} sx={{ textAlign: 'left' }}>
-                    {t('Backed')}{': '} {Number(amountToHuman(personsInfo.backed[index], decimals, 2)).toLocaleString()} {coin}
-                  </Grid>
-                }
-              </Grid>
-
+              }
             </Grid>
 
           </Paper>))

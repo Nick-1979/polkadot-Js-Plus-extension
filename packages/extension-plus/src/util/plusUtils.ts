@@ -4,7 +4,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-// eslint-disable-next-line header/header
 import { AccountWithChildren } from '@polkadot/extension-base/background/types';
 import { Chain } from '@polkadot/extension-chains/types';
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
@@ -12,8 +11,12 @@ import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 import { BLOCK_RATE, FLOATING_POINT_DIGIT } from './constants';
 import { AccountsBalanceType, savedMetaData, TransactionDetail } from './plusTypes';
 
-// eslint-disable-next-line header/header
+import type { Text } from '@polkadot/types';
 
+
+interface Meta {
+  docs: Text[];
+}
 export function fixFloatingPoint(_number: number | string, decimalDigit = FLOATING_POINT_DIGIT): string {
   const sNumber = String(_number);
   const dotIndex = sNumber.indexOf('.');
@@ -169,3 +172,34 @@ export function remainingTime(currentBlockNumber: number, end: number): string {
 
   return time;
 }
+
+
+function splitSingle (value: string[], sep: string): string[] {
+  return value.reduce((result: string[], value: string): string[] => {
+    return value.split(sep).reduce((result: string[], value: string) => result.concat(value), result);
+  }, []);
+}
+
+function splitParts (value: string): string[] {
+  return ['[', ']'].reduce((result: string[], sep) => splitSingle(result, sep), [value]);
+}
+
+export function formatMeta (meta?: Meta): string [] {
+  if (!meta || !meta.docs.length) {
+    return null;
+  }
+
+  const strings = meta.docs.map((d) => d.toString().trim());
+  const firstEmpty = strings.findIndex((d) => !d.length);
+  const combined = (
+    firstEmpty === -1
+      ? strings
+      : strings.slice(0, firstEmpty)
+  ).join(' ').replace(/#(<weight>| <weight>).*<\/weight>/, '');
+  const parts = splitParts(combined.replace(/\\/g, '').replace(/`/g, ''));
+
+  return parts;
+}
+
+
+

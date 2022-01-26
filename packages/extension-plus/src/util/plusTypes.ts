@@ -3,7 +3,7 @@
 /* eslint-disable header/header */
 /* eslint-disable camelcase */
 
-import type { DeriveAccountInfo, DeriveElectionsInfo, DeriveStakingQuery, DeriveCollectiveProposal } from '@polkadot/api-derive/types';
+import type { DeriveAccountInfo, DeriveElectionsInfo,DeriveProposal, DeriveStakingQuery, DeriveCollectiveProposal } from '@polkadot/api-derive/types';
 import { ApiPromise } from '@polkadot/api';
 
 export interface TransactionStatus {
@@ -209,4 +209,9 @@ export interface ChainInfo {
   decimals: number;
   url: string;
   genesisHash: string;
+}
+
+export interface ProposalsInfo {
+  proposals: DeriveProposal[];
+  accountsInfo: DeriveAccountInfo[];
 }
