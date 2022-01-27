@@ -1,11 +1,12 @@
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
+/* eslint-disable react/jsx-max-props-per-line */
 
 import type { ThemeProps } from '../../../../extension-ui/src/types';
 
 import { AccountBalance, Groups as GroupsIcon, HowToVote } from '@mui/icons-material';
-import { Avatar, Container, FormControl, Grid, InputLabel, Link, MenuItem, Paper, Select, SelectChangeEvent } from '@mui/material';
+import { Avatar, Container, Grid, Link, Paper, SelectChangeEvent } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -15,13 +16,12 @@ import { cryptoWaitReady } from '@polkadot/util-crypto';
 
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { Header } from '../../../../extension-ui/src/partials';
-import { RELAY_CHAINS } from '../../util/constants';
+import SelectRelay from '../../components/SelectRelay';
+import getChainInfo from '../../util/getChainInfo';
 import getLogo from '../../util/getLogo';
+import { ChainInfo } from '../../util/plusTypes';
 import CouncilIndex from './Council/index';
 import Democracy from './Democracy/index';
-import SelectRelay from '../../components/SelectRelay';
-import { ChainInfo } from '../../util/plusTypes';
-import getChainInfo from '../../util/getChainInfo';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -29,7 +29,7 @@ interface Props extends ThemeProps {
 
 function Governance({ className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-  const [selectedRelaychain, setSelectedRelaychain] = useState<string>('polkadot');
+  const [selectedChain, setSelectedChain] = useState<string>('polkadot');
   const [showDemocracyModal, setDemocracyModalOpen] = useState<boolean>(false);
   const [showCouncilModal, setCouncilModalOpen] = useState<boolean>(false);
   const [chainInfo, setChainInfo] = useState<ChainInfo>();
@@ -43,13 +43,13 @@ function Governance({ className }: Props): React.ReactElement<Props> {
 
   useEffect(() => {
     // eslint-disable-next-line no-void
-    void getChainInfo(selectedRelaychain).then((i) => {
+    void getChainInfo(selectedChain).then((i) => {
       setChainInfo(i);
     });
-  }, [selectedRelaychain]);
+  }, [selectedChain]);
 
   const handleChainChange = (event: SelectChangeEvent) => {
-    setSelectedRelaychain(event.target.value);
+    setSelectedChain(event.target.value);
   };
 
   const handleDemocracyModal = useCallback(() => {
@@ -63,13 +63,16 @@ function Governance({ className }: Props): React.ReactElement<Props> {
   return (
     <>
       <Header
+        showAdd
         showBackArrow
+        showSettings
         smallMargin
         text={t<string>('Governance')}
       />
       <Container>
-        <Grid item xs={12} sx={{ margin: '0px 30px' }}>
-          <SelectRelay selectedBlockchain={selectedRelaychain} handleChainChange={handleChainChange} />
+
+        <Grid item xs={12} sx={{ p: '0px 30px' }}>
+          <SelectRelay handleChainChange={handleChainChange} selectedChain={selectedChain} />
         </Grid>
 
         <Paper elevation={4} onClick={handleDemocracyModal} sx={{ borderRadius: '10px', cursor: 'pointer', margin: '20px 30px 10px', p: '20px 40px' }}>
@@ -118,7 +121,7 @@ function Governance({ className }: Props): React.ReactElement<Props> {
           </Grid>
         </Paper>
         <Link
-          href={`https://${selectedRelaychain}.polkassembly.io`}
+          href={`https://${selectedChain}.polkassembly.io`}
           underline='none'
           rel='noreferrer'
           target='_blank'
@@ -147,7 +150,7 @@ function Governance({ className }: Props): React.ReactElement<Props> {
       {showDemocracyModal &&
         <Democracy
           chainInfo={chainInfo}
-          chainName={selectedRelaychain}
+          chainName={selectedChain}
           setDemocracyModalOpen={setDemocracyModalOpen}
           showDemocracyModal={showDemocracyModal}
         />
@@ -155,7 +158,7 @@ function Governance({ className }: Props): React.ReactElement<Props> {
 
       {showCouncilModal &&
         <CouncilIndex
-          chainName={selectedRelaychain}
+          chainName={selectedChain}
           setCouncilModalOpen={setCouncilModalOpen}
           showCouncilModal={showCouncilModal}
         />

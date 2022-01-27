@@ -43,7 +43,7 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
   const [auction, setAuction] = useState<Auction | null>(null);
   const [activeCrowdloans, setActiveCrowdloans] = useState<Crowdloan[] | undefined>(undefined);
   const [auctionWinners, setAuctionWinners] = useState<Crowdloan[] | undefined>(undefined);
-  const [selectedBlockchain, setSelectedBlockchain] = useState<string>('');
+  const [selectedChain, setSelectedChain] = useState<string>('');
   const [tabValue, setTabValue] = React.useState('auction');
   const [contributeModal, setContributeModalOpen] = useState<boolean>(false);
   const [endpoints, setEndpoints] = useState<LinkOption[]>([]);
@@ -66,7 +66,7 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
 
       console.log('auction: %o', result);
 
-      if (result.blockchain == selectedBlockchain) {
+      if (result.blockchain == selectedChain) {
         setAuction(result);
       }
 
@@ -82,15 +82,15 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
   }, []);
 
   useEffect(() => {
-    if (selectedBlockchain) {
+    if (selectedChain) {
       setAuction(null);
       setContributingTo(null);
-      getCrowdloands(selectedBlockchain);
+      getCrowdloands(selectedChain);
 
       // eslint-disable-next-line no-void
-      void getChainInfo(selectedBlockchain).then((i) => setChainInfo(i));
+      void getChainInfo(selectedChain).then((i) => setChainInfo(i));
 
-      const { genesisHash } = allEndpoints.find((e: LinkOption) => (String(e.text).toLowerCase() === selectedBlockchain.toLowerCase())) as LinkOption;
+      const { genesisHash } = allEndpoints.find((e: LinkOption) => (String(e.text).toLowerCase() === selectedChain.toLowerCase())) as LinkOption;
       const endpoints = allEndpoints.filter((e) => (e.genesisHashRelay === genesisHash));
 
       setEndpoints(endpoints);
@@ -98,7 +98,7 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
       console.log('endpoints: %o', endpoints);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedBlockchain]);
+  }, [selectedChain]);
 
   useEffect(() => {
     setActiveCrowdloans(auction?.crowdloans.filter((c) => c.fund.end > auction.currentBlockNumber && !c.fund.hasLeased));
@@ -106,7 +106,7 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
   }, [auction]);
 
   const handleChainChange = (event: SelectChangeEvent) => {
-    setSelectedBlockchain(event.target.value);
+    setSelectedChain(event.target.value);
   };
 
   const handleContribute = useCallback((crowdloan: Crowdloan): void => {
@@ -166,15 +166,19 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
   return (
     <>
       <Header
+        showAdd
         showBackArrow
+        showSettings
         smallMargin
         text={t<string>('Crowdloan')}
       />
-      <Grid container id='selectRelyChain' sx={{ padding: '5px 35px' }}>
+      <Grid container id='selectRelyChain' sx={{ padding: '5px 35px' }} alignItems='center'>
+       
         <Grid item xs={12}>
-          <SelectRelay selectedBlockchain={selectedBlockchain} handleChainChange={handleChainChange} hasEmpty />
+          <SelectRelay selectedChain={selectedChain} handleChainChange={handleChainChange} hasEmpty />
         </Grid>
-        <Grid item xs={12} sx={{ paddingBottom: '10px' }}>
+
+        <Grid item xs={12} sx={{ paddingTop: '5px' }}>
           <Tabs indicatorColor='secondary' onChange={handleTabChange} textColor='secondary' value={tabValue} variant='fullWidth'>
             <Tab icon={<GavelIcon fontSize='small' />} iconPosition='start' label='Auction' sx={{ fontSize: 11 }} value='auction' />
             <Tab icon={<GroupsIcon fontSize='small' />} iconPosition='start' label='Crowdloans' sx={{ fontSize: 11 }} value='crowdloan' />
@@ -183,8 +187,8 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
         </Grid>
       </Grid>
 
-      {!auction && selectedBlockchain &&
-        <Progress title={t('Loading Auction/Crowdloans of ') + ` ${selectedBlockchain.charAt(0).toUpperCase()}${selectedBlockchain.slice(1)} ...`} />
+      {!auction && selectedChain &&
+        <Progress title={t('Loading Auction/Crowdloans of ') + ` ${selectedChain.charAt(0).toUpperCase()}${selectedChain.slice(1)} ...`} />
       }
 
       {auction && !auction.auctionInfo && tabValue === 'auction' &&

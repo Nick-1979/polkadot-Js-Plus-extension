@@ -2,59 +2,77 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-import { CircularProgress, FormControl, FormHelperText, Grid, InputLabel, Select, SelectChangeEvent } from '@mui/material';
+import { Avatar, CircularProgress, FormControl, FormHelperText, Grid, InputLabel, Select, SelectChangeEvent } from '@mui/material';
 import React from 'react';
 
 import useTranslation from '../../../extension-ui/src/hooks/useTranslation';
 import { RELAY_CHAINS } from '../util/constants';
+import getLogo from '../util/getLogo';
+import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 
 interface Props {
-  selectedBlockchain: string;
+  selectedChain: string;
   handleChainChange: (event: SelectChangeEvent) => void;
   hasEmpty?: boolean
 }
 
-export default function SelectRelay({ selectedBlockchain, handleChainChange, hasEmpty = false }: Props): React.ReactElement<Props> {
+export default function SelectRelay({ handleChainChange, hasEmpty = false, selectedChain }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
 
   return (
-    <FormControl fullWidth>
-      <InputLabel id='select-blockchain'>{t('Relay chain')}</InputLabel>
-      <Select
-        value={selectedBlockchain}
-        label='Select blockchain'
-        onChange={handleChainChange}
-        sx={{ height: 50 }}
-        // defaultOpen={true}
-        native
-      >
-        {hasEmpty &&
-          <option value={''}>
-            {''}
-          </option>
+    <Grid container alignItems='center'>
+      <Grid item xs={1}>
+        {selectedChain
+          ? <Avatar
+            alt={'chain logo'}
+            src={getLogo(selectedChain)}
+            sx={{ height: 32, width: 32 }}
+          />
+          : <HelpOutlineOutlinedIcon sx={{ fontSize: 40, paddingBottom: 1 }} />
         }
-        {RELAY_CHAINS.map((r) =>
-          // <MenuItem key={r.name} value={r.name.toLowerCase()}>
-          //   <Grid container alignItems='center' justifyContent='space-between'>
-          //     <Grid item>
-          //       <Avatar
-          //         alt={'logo'}
-          //         src={getLogo(r.name.toLowerCase())}
-          //         sx={{ height: 24, width: 24 }}
-          //       />
-          //     </Grid>
-          //     <Grid item sx={{ fontSize: 15 }}>
-          //       {r.name}
-          //     </Grid>
-          //   </Grid>
-          // </MenuItem>
+      </Grid>
 
-          <option key={r.name} value={r.name.toLowerCase()}>
-            {r.name.toLowerCase()}
-          </option>
-        )}
-      </Select>
-      {!selectedBlockchain && <FormHelperText>{t('Please select a relay chain')}</FormHelperText>}
-    </FormControl>
+      <Grid item xs={11}>
+        <FormControl fullWidth>
+          <InputLabel id='select-blockchain'>{t('Relay chain')}</InputLabel>
+          <Select
+            value={selectedChain}
+            label='Select blockchain'
+            onChange={handleChainChange}
+            sx={{ height: 50 }}
+            // defaultOpen={true}
+            native
+          >
+            {hasEmpty &&
+              <option value={''}>
+                {''}
+              </option>
+            }
+            {RELAY_CHAINS.map((r) =>
+              // <MenuItem key={r.name} value={r.name.toLowerCase()}>
+              //   <Grid container alignItems='center' justifyContent='space-between'>
+              //     <Grid item>
+              //       <Avatar
+              //         alt={'logo'}
+              //         src={getLogo(r.name.toLowerCase())}
+              //         sx={{ height: 24, width: 24 }}
+              //       />
+              //     </Grid>
+              //     <Grid item sx={{ fontSize: 15 }}>
+              //       {r.name}
+              //     </Grid>
+              //   </Grid>
+              // </MenuItem>
+
+              <option key={r.name} value={r.name.toLowerCase()}>
+                {r.name.toLowerCase()}
+              </option>
+            )}
+          </Select>
+          {!selectedChain && <FormHelperText>{t('Please select a relay chain')}</FormHelperText>}
+        </FormControl>
+      </Grid>
+
+    </Grid>
   );
 }
