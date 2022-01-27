@@ -1,14 +1,16 @@
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
+/* eslint-disable react/jsx-max-props-per-line */
 
-import { Avatar, Button, Divider, Grid, LinearProgress, Link, Paper } from '@mui/material';
+import { Avatar, Button, Divider, Grid, Link, Paper, Tooltip, Zoom } from '@mui/material';
 import React from 'react';
-import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
-import { amountToHuman, formatMeta, remainingTime } from '../../../util/plusUtils';
-import { ChainInfo, ProposalsInfo } from '../../../util/plusTypes';
+
 import { Chain } from '../../../../../extension-chains/src/types';
+import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
 import getLogo from '../../../util/getLogo';
+import { ChainInfo, ProposalsInfo } from '../../../util/plusTypes';
+import { amountToHuman, formatMeta } from '../../../util/plusUtils';
 import Identity from '../Council/overview/Identity';
 
 interface Props {
@@ -16,13 +18,16 @@ interface Props {
   chain: Chain;
   chainInfo: ChainInfo;
   currentBlockNumber: number;
-  handleSecond: (voteType: number, refId: string) => void;
+  handleSecond: (proposalId: string, depositorsLength: number) => void;
 }
 
-export default function Proposals({ chainInfo, chain, currentBlockNumber, handleSecond, proposalsInfo }: Props): React.ReactElement<Props> {
+const secondToolTip = 'Seconding a proposal that indicates your backing for the proposal. Proposals with greater interest moves up the queue for potential next referendums.'
+
+export default function Proposals({ chain, chainInfo, currentBlockNumber, handleSecond, proposalsInfo }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-  const { proposals, accountsInfo } = proposalsInfo;
+  const { accountsInfo, proposals } = proposalsInfo;
   const chainName = chain?.name.replace(' Relay Chain', '');
+
   return (
     <>
       {proposals?.length
@@ -112,13 +117,17 @@ export default function Proposals({ chainInfo, chain, currentBlockNumber, handle
               </Grid>
 
               <Grid item xs={12} sx={{ textAlign: 'center' }}>
-                <Button variant='contained'> {t('Second')}</Button>
+                <Tooltip TransitionComponent={Zoom} arrow placement='top' title={secondToolTip}>
+                  <Button color='warning' onClick={() => handleSecond(String(p?.index), p.seconds.length)} variant='contained'>
+                    {t('Second')}
+                  </Button>
+                </Tooltip>
               </Grid>
             </Paper>)
         })
-        : <Grid xs={12} sx={{ textAlign: 'center', paddingTop: 3 }}>
+        : <Grid xs={12} sx={{ paddingTop: 3, textAlign: 'center' }}>
           {t('No active proposals')}
         </Grid>}
     </>
-  )
+  );
 }

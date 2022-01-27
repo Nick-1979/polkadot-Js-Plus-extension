@@ -20,6 +20,7 @@ import useMetadata from '../../../../../extension-ui/src/hooks/useMetadata';
 import { ChainInfo, ProposalsInfo } from '../../../util/plusTypes';
 import getProposals from '../../../util/getProposals';
 import Proposals from './Proposals';
+import VoteProposal from './VoteProposal';
 
 interface Props {
   chainName: string;
@@ -36,6 +37,10 @@ export default function Democracy({ chainName, chainInfo, setDemocracyModalOpen,
   const [currentBlockNumber, setCurrentBlockNumber] = useState<number>();
   const [showVoteReferendumModal, setShowVoteReferendumModal] = useState<boolean>(false);
   const [vote, setVote] = useState<{ voteType: number, refId: string }>();
+
+  const [showVoteProposalModal, setShowVoteProposalModal] = useState<boolean>(false);
+  const [second, setSecond] = useState<{ proposalId: string, depositorsLength: number }>();
+
   const chain = useMetadata(chainInfo?.genesisHash, true);// TODO:double check to have genesisHash here
 
 
@@ -73,13 +78,17 @@ export default function Democracy({ chainName, chainInfo, setDemocracyModalOpen,
     setVote({ refId: refId, voteType: voteType });
   }, []);
 
-  const handleSecond = useCallback((voteType: number, refId: string) => {
-    // setShowVoteReferendumModal(true);
-    // setVote({ refId: refId, voteType: voteType });
+  const handleSecond = useCallback((proposalId: string, depositorsLength: number) => {
+    setShowVoteProposalModal(true);
+    setSecond({ proposalId: proposalId, depositorsLength: depositorsLength });
   }, []);
 
   const handleVoteReferendumModalClose = useCallback(() => {
     setShowVoteReferendumModal(false);
+  }, []);
+
+  const handleVoteProposalModalClose = useCallback(() => {
+    setShowVoteProposalModal(false);
   }, []);
 
   return (
@@ -104,9 +113,9 @@ export default function Democracy({ chainName, chainInfo, setDemocracyModalOpen,
         {tabValue === 'proposals'
           ? <Grid item xs={12} sx={{ height: 450, overflowY: 'auto' }}>
             {proposalsInfo
-            ? <Proposals handleSecond={handleSecond} proposalsInfo={proposalsInfo} chain={chain} chainInfo={chainInfo} currentBlockNumber={currentBlockNumber}/>
-            : <Progress title={'Loading proposals ...'} />}
-           </Grid>
+              ? <Proposals handleSecond={handleSecond} proposalsInfo={proposalsInfo} chain={chain} chainInfo={chainInfo} currentBlockNumber={currentBlockNumber} />
+              : <Progress title={'Loading proposals ...'} />}
+          </Grid>
           : ''}
 
         {showVoteReferendumModal &&
@@ -117,6 +126,16 @@ export default function Democracy({ chainName, chainInfo, setDemocracyModalOpen,
             showVoteReferendumModal={showVoteReferendumModal}
             vote={vote} />
         }
+
+        {showVoteProposalModal &&
+          <VoteProposal
+            chain={chain}
+            chainInfo={chainInfo}
+            handleVoteProposalModalClose={handleVoteProposalModalClose}
+            showVoteProposalModal={showVoteProposalModal}
+            vote={vote} />
+        }
+
       </Grid>
     </Popup>
   );

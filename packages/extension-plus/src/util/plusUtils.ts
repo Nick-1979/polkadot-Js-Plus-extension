@@ -4,6 +4,8 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
+import type { Text } from '@polkadot/types';
+
 import { AccountWithChildren } from '@polkadot/extension-base/background/types';
 import { Chain } from '@polkadot/extension-chains/types';
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
@@ -11,12 +13,10 @@ import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 import { BLOCK_RATE, FLOATING_POINT_DIGIT } from './constants';
 import { AccountsBalanceType, savedMetaData, TransactionDetail } from './plusTypes';
 
-import type { Text } from '@polkadot/types';
-
-
 interface Meta {
   docs: Text[];
 }
+
 export function fixFloatingPoint(_number: number | string, decimalDigit = FLOATING_POINT_DIGIT): string {
   const sNumber = String(_number);
   const dotIndex = sNumber.indexOf('.');
@@ -146,10 +146,10 @@ export const getWebsiteFavico = (url: string | undefined): string => {
   if (!url) return '';
 
   return 'https://s2.googleusercontent.com/s2/favicons?domain=' + url;
-}
+};
 
 export function remainingTime(currentBlockNumber: number, end: number): string {
-  end = Number(end.toString())
+  end = Number(end.toString());
   let mins = Math.floor((end - currentBlockNumber) * BLOCK_RATE / 60);
 
   if (!mins) return 'finished';
@@ -200,6 +200,3 @@ export function formatMeta (meta?: Meta): string [] {
 
   return parts;
 }
-
-
-
