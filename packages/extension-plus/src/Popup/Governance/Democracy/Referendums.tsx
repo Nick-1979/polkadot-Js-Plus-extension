@@ -35,7 +35,7 @@ export default function Referendums({ chainInfo, chainName, currentBlockNumber, 
           console.log('meta', description)
 
           return (
-            <Paper elevation={4} key={index} sx={{ borderRadius: '10px', margin: '20px 30px 10px', p: '10px 20px' }}>
+            <Paper elevation={8} key={index} sx={{ borderRadius: '10px', margin: '20px 30px 10px', p: '10px 20px' }}>
               <Grid container justifyContent='space-between'>
                 {value ?
                   <Grid item xs={4}>
@@ -101,7 +101,7 @@ export default function Referendums({ chainInfo, chainName, currentBlockNumber, 
               <Grid item xs={12} sx={{ margin: '20px 1px 10px', fontWeight: '600' }}>
                 {description}
               </Grid>
-              
+
               <Grid item xs={12} sx={{ border: '1px dotted', borderRadius: '10px', padding: 1, margin: '20px 1px 20px' }}>
                 {t('Hash')}<br />
                 {r.imageHash.toString()}
@@ -130,26 +130,26 @@ export default function Referendums({ chainInfo, chainName, currentBlockNumber, 
 
               <Grid container justifyContent='space-between' sx={{ paddingTop: 1 }}>
                 <Grid item xs={12}>
-                  <LinearProgress variant='determinate' value={100 * (Number(r.status.tally.ayes) / (Number(r.status.tally.nays) + Number(r.status.tally.ayes)))} />
+                  <LinearProgress color='warning' sx={{ backgroundColor: 'black' }} variant='determinate' value={100 * (Number(r.status.tally.ayes) / (Number(r.status.tally.nays) + Number(r.status.tally.ayes)))} />
                 </Grid>
                 <Grid item>
-                  {Number(amountToHuman(r.status.tally.ayes.toString(), chainInfo.decimals)).toLocaleString()}{chainInfo.coin}
+                  {Number(amountToHuman(r.status.tally.ayes.toString(), chainInfo.decimals)).toLocaleString()}{' '}{chainInfo.coin}
                 </Grid>
                 <Grid item>
-                  {Number(amountToHuman(Number(r.status.tally.nays).toString(), chainInfo.decimals)).toLocaleString()}{chainInfo.coin}
+                  {Number(amountToHuman(Number(r.status.tally.nays).toString(), chainInfo.decimals)).toLocaleString()}{' '}{chainInfo.coin}
                 </Grid>
               </Grid>
 
               <Grid container justifyContent='space-between' sx={{ paddingTop: 2 }}>
                 <Grid item>
-                  <Button onClick={() => handleVote(VOTE_MAP.AYE, String(r?.index))} startIcon={<ThumbUpAltIcon />} variant='contained'> {t('Aye')}</Button>
+                  <Button color='warning' onClick={() => handleVote(VOTE_MAP.AYE, String(r?.index))} startIcon={<ThumbUpAltIcon />} variant='contained'> {t('Aye')}</Button>
                 </Grid>
                 <Grid item>
-                  <Button onClick={() => handleVote(VOTE_MAP.NAY, String(r?.index))} variant='outlined' endIcon={<ThumbDownAltIcon />}> {t('Nay')}</Button>
+                  <Button sx={{ color: 'black', borderColor: 'black' }} onClick={() => handleVote(VOTE_MAP.NAY, String(r?.index))} variant='outlined' endIcon={<ThumbDownAltIcon />}> {t('Nay')}</Button>
                 </Grid>
               </Grid>
 
-            </Paper>)
+            </Paper>);
         })
         : <Grid xs={12} sx={{ textAlign: 'center', paddingTop: 3 }}>
           {t('No active referendum')}
