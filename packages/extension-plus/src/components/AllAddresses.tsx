@@ -58,39 +58,54 @@ export default function AllAddresses({ chain, selectedAddress, setSelectedAddres
   };
 
   return (
-    <Grid container sx={{ padding: '20px 40px 0px' }}>
-      <FormControl fullWidth>
-        <InputLabel id='selec-address'>{t('Account')}</InputLabel>
-        <Select value={selectedAddress}
-          label='Select address'
-          onChange={handleAddressChange}
-          sx={{ height: 50, fontSize: 12 }}
-          native
+    <Grid container sx={{ padding: '20px 40px 0px' }} alignItems='center'>
+      <Grid item xs={1} sx={{ paddingBottom: 2 }}>
+        <Identicon
+          prefix={chain?.ss58Format ?? 42}
+          size={40}
+          theme={chain?.icon || 'polkadot'}
+          value={selectedAddress}
+        />
+      </Grid>
 
-        >
-          {allAddresesOnThisChain?.map((a) => (
-            // <MenuItem key={address} value={address}>
-            //   <Grid container alignItems='center' justifyContent='space-between'>
-            //     <Grid item>
-            //       <Identicon
-            //         size={25}
-            //         theme={'polkadot'}
-            //         value={address}
-            //       />
-            //     </Grid>
-            //     <Grid item sx={{ fontSize: 13 }}>
-            //       {address}
-            //     </Grid>
-            //   </Grid>
-            // </MenuItem>
-            <option key={a.address} value={a.address} style={{ fontSize: 13 }}>
-              {a?.name} {':   '} {a.address}
-            </option>
+      <Grid item xs={11}>
+        <FormControl fullWidth>
+          <InputLabel id='selec-address'>{t('Account')}</InputLabel>
+          <Select
+            label='Select address'
+            native
+            onChange={handleAddressChange}
+            sx={{ fontSize: 12, height: 50 }}
+            value={selectedAddress}
 
-          ))}
-        </Select>
-      </FormControl>
-      <FormHelperText>{text}</FormHelperText>
+          >
+            {allAddresesOnThisChain?.map((a) => (
+              // <MenuItem key={address} value={address}>
+              //   <Grid container alignItems='center' justifyContent='space-between'>
+              //     <Grid item>
+              //       <Identicon
+              //         size={25}
+              //         theme={'polkadot'}
+              //         value={address}
+              //       />
+              //     </Grid>
+              //     <Grid item sx={{ fontSize: 13 }}>
+              //       {address}
+              //     </Grid>
+              //   </Grid>
+              // </MenuItem>
+              <option key={a.address}
+                value={a.address}
+                style={{ fontSize: 13 }}>
+                {a?.name} {':   '} {a.address}
+              </option>
+
+            ))}
+          </Select>
+        </FormControl>
+        <FormHelperText>{text}</FormHelperText>
+      </Grid>
+
     </Grid>
   );
 }
