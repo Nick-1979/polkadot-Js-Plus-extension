@@ -25,35 +25,39 @@ export default function PlusHeader({ action, chain, closeText, icon, title }: Pr
   const { t } = useTranslation();
 
   return (
-    <Grid alignItems='center' container item justifyContent='space-between' sx={{ fontSize: 15, padding: '20px 20px 1px' }}>
-      <Grid item sx={{ paddingBottom: '5px' }} xs={1}>
-        <Avatar
-          alt={'logo'}
-          src={getLogo(chain)}
-          sx={{ height: 30, width: 30 }}
-        />
-      </Grid>
-      <Grid item container justifyContent='center' spacing={1} sx={{ fontWeight: 350 }} xs={10}>
-        {/* <FontAwesomeIcon
+    <>
+      <Grid alignItems='center' container item justifyContent='space-between' sx={{ fontSize: 15, padding: '20px 20px 1px' }}>
+        <Grid item sx={{ paddingBottom: '5px' }} xs={1}>
+          <Avatar
+            alt={'logo'}
+            src={getLogo(chain)}
+            sx={{ height: 30, width: 30 }}
+          />
+        </Grid>
+        <Grid item container justifyContent='center' spacing={1} sx={{ fontWeight: 350 }} xs={10}>
+          {/* <FontAwesomeIcon
           icon={icon}
           size='sm'
         /> */}
-        <Grid item >
-          {icon}
+          <Grid item>
+            {icon}
+          </Grid>
+          <Grid item sx={{ paddingBottom: '7px' }}>
+            {t<string>(title)}
+          </Grid>
         </Grid>
-        <Grid item sx={{ paddingBottom: '7px' }}>
-          {t<string>(title)}
+        <Grid item xs={1}>
+          <ActionText
+            onClick={action}
+            text={t<string>(closeText)}
+          />
         </Grid>
+
       </Grid>
-      <Grid item xs={1}>
-        <ActionText
-          onClick={action}
-          text={t<string>(closeText)}
-        />
-      </Grid>
+      
       <Grid xs={12}>
         <Divider />
       </Grid>
-    </Grid>
+    </>
   );
 }
