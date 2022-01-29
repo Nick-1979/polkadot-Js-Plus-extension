@@ -19,12 +19,13 @@ import { BackButton, Button } from '../../../../extension-ui/src/components';
 import { AccountContext } from '../../../../extension-ui/src/components/contexts';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { updateMeta } from '../../../../extension-ui/src/messaging';
-import {PlusHeader,Popup} from '../../components';
+import { Password, PlusHeader, Popup } from '../../components';
 import getFee from '../../util/getFee';
 import getNetworkInfo from '../../util/getNetwork';
 import { AccountsBalanceType, TransactionDetail, TransactionStatus } from '../../util/plusTypes';
 import { amountToHuman, fixFloatingPoint, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/plusUtils';
 import signAndTransfer from '../../util/signAndTransfer';
+import { PASS_MAP } from '../../util/constants';
 
 interface Props {
   availableBalance: string;
@@ -50,12 +51,6 @@ interface Props {
   coin: string;
   handleTransferModalClose: any;
 }
-
-const PASS_MAP = {
-  EMPTY: 0,
-  INCORRECT: -1,
-  CORRECT: 1
-};
 
 export default function ConfirmTx({
   availableBalance,
@@ -99,8 +94,8 @@ export default function ConfirmTx({
     return updateMeta(accountSubstrateAddress, prepareMetaData(chain, 'history', savedHistory));
   }
 
-  async function handleConfirmTransfer() {
-    // console.log('handleConfirmTransfer is runing ...')
+  async function handleConfirm() {
+    // console.log('handleConfirm is runing ...')
     setTransfering(true);
 
     try {
@@ -253,7 +248,7 @@ export default function ConfirmTx({
 
   return (
     <Popup handleClose={handleConfirmModaClose} showModal={confirmModalOpen}>
-      <PlusHeader action={handleReject} chain={chain} closeText={'Reject'} icon={<ConfirmationNumberOutlinedIcon fontSize='small'/>} title={'Confirm Transfer'} />
+      <PlusHeader action={handleReject} chain={chain} closeText={'Reject'} icon={<ConfirmationNumberOutlinedIcon fontSize='small' />} title={'Confirm Transfer'} />
 
       <Grid container alignItems='center' justifyContent='space-around' sx={{ paddingTop: '10px' }}>
         <Grid item container alignItems='center' justifyContent='flex-end' xs={5}>
@@ -326,49 +321,22 @@ export default function ConfirmTx({
             {total || ' ... '} {' '} {coin}
           </Grid>
         </Grid>
-        <Grid item sx={{ margin: '20px 40px 1px' }} xs={12}>
-          <TextField
-            InputLabelProps={{
-              shrink: true
-            }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position='end'>
-                  <IconButton
-                    onClick={handleClearPassword}
-                  >
-                    {password !== '' ? <Clear /> : ''}
-                  </IconButton>
-                </InputAdornment>
-              ),
-              startAdornment: (
-                <InputAdornment position='start'>
-                  {passwordStatus === PASS_MAP.CORRECT ? <CheckRounded color='success' /> : ''}
-                </InputAdornment>
-              ),
-              style: { fontSize: 16 }
-            }}
-            autoFocus
-            fullWidth
-            error={passwordStatus === PASS_MAP.INCORRECT}
-            helperText={passwordStatus === PASS_MAP.INCORRECT
-              ? t('Password is not correct')
-              : t('Please enter the password of the sender account')}
-            label={t('Password')}
-            onChange={handleSavePassword}
-            // eslint-disable-next-line react/jsx-no-bind
-            onKeyPress={(event) => {
-              if (event.key === 'Enter') { handleConfirmTransfer(); }
-            }}
-            size='medium'
-            color='warning'
-            type='password'
-            value={password}
-            variant='outlined'
-          />
-        </Grid>
       </Grid>
-      <Grid container justifyContent='space-between' sx={{ padding: '30px 40px 10px' }}>
+
+      <Grid item sx={{ margin: '30px 30px 5px' }} xs={12}>
+        <Password
+          autofocus={true}
+          handleClearPassword={handleClearPassword}
+          handleIt={handleConfirm}
+          handleSavePassword={handleSavePassword}
+          // isDisabled={}
+          password={password}
+          passwordStatus={passwordStatus}
+        />
+      </Grid>
+
+      <Grid container justifyContent='space-between' sx={{ padding: '25px 40px 10px' }}>
+
         {txStatus && (txStatus.success !== null)
           ? <Grid item xs={12}>
             <MuiButton fullWidth onClick={handleReject} variant='contained' size='large' color={txStatus.success ? 'success' : 'error'}>
@@ -384,7 +352,7 @@ export default function ConfirmTx({
                 data-button-action=''
                 isBusy={transfering}
                 isDisabled={confirmDisabled}
-                onClick={handleConfirmTransfer}
+                onClick={handleConfirm}
               >
                 {t('Confirm')}
               </Button>
@@ -392,23 +360,6 @@ export default function ConfirmTx({
           </>}
         {txStatus.blockNumber || transactionHash
           ?
-          // <Grid alignItems='center' container item
-          //   sx={{ border: '1px groove silver', borderRadius: '10px', fontSize: 12, fontWeight: 'bold', marginTop: '10px', p: 1 }}>
-          //   <Grid item xs={10} sx={{ textAlign: 'center' }}>
-          //     {txStatus.success || txStatus.success === null
-          //       ? 'The transaction is ' + String(txStatus ? txStatus.text : '')
-          //       : String(txStatus.text)
-          //     }
-          //     {', block number ' + String(txStatus.blockNumber)}
-          //   </Grid>
-          //   <Grid item xs={2} sx={{ textAlign: 'right' }}>
-          //     <IconButton disabled={!transactionHash} size='small' onClick={openTxOnExplorer}>
-          //       <LaunchRounded />
-          //     </IconButton>
-          //   </Grid>
-          // </Grid>
-
-
           <Grid alignItems='center' container justifyContent='center' spacing={1} item sx={{ fontSize: 11 }}>
             <Grid item  >
               {txStatus.success || txStatus.success === null
@@ -423,8 +374,6 @@ export default function ConfirmTx({
               </IconButton>
             </Grid>
           </Grid>
-
-
           : ''
         }
       </Grid>

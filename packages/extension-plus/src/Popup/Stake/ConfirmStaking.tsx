@@ -1,15 +1,14 @@
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
+/* eslint-disable react/jsx-max-props-per-line */
 
 import type { StakingLedger } from '@polkadot/types/interfaces';
-import ConfirmationNumberOutlinedIcon from '@mui/icons-material/ConfirmationNumberOutlined';
 
-import { CheckRounded, Clear } from '@mui/icons-material';
-import { Button as MuiButton, Container, Divider, Grid, IconButton, InputAdornment, Modal, Skeleton, TextField } from '@mui/material';
+import ConfirmationNumberOutlinedIcon from '@mui/icons-material/ConfirmationNumberOutlined';
+import { Grid, Skeleton } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React, { useContext, useEffect, useState } from 'react';
-import ReactDom from 'react-dom';
 
 import { DeriveStakingQuery } from '@polkadot/api-derive/types';
 import { AccountWithChildren } from '@polkadot/extension-base/background/types';
@@ -17,14 +16,15 @@ import { Chain } from '@polkadot/extension-chains/types';
 import { updateMeta } from '@polkadot/extension-ui/messaging';
 import keyring from '@polkadot/ui-keyring';
 
-import { AccountContext, ActionText, BackButton, Button } from '../../../../extension-ui/src/components';
+import { AccountContext } from '../../../../extension-ui/src/components';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
+import { ConfirmButton, Password, PlusHeader, Popup } from '../../components';
+import { PASS_MAP } from '../../util/constants';
 import getChainInfo from '../../util/getNetwork';
 import { AccountsBalanceType, StakingConsts, TransactionDetail, Validators, ValidatorsName } from '../../util/plusTypes';
 import { amountToHuman, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/plusUtils';
 import { bondOrBondExtra, chill, nominate, unbond, withdrawUnbonded } from '../../util/staking';
 import ValidatorsList from './ValidatorsList';
-import { PlusHeader, Popup } from '../../components';
 
 
 interface Props {
@@ -47,16 +47,13 @@ interface Props {
   validatorsToList: DeriveStakingQuery[] | null;
 }
 
-export default function ConfirmStaking({
-  amount, chain, coin, ledger, nominatedValidators, selectedValidators, setConfirmStakingModalOpen,
-  setSelectValidatorsModalOpen, setState, showConfirmStakingModal, staker, stakingConsts, state, validatorsName, validatorsToList }
-  : Props): React.ReactElement<Props> {
+export default function ConfirmStaking({ amount, chain, coin, ledger, nominatedValidators, selectedValidators, setConfirmStakingModalOpen, setSelectValidatorsModalOpen, setState, showConfirmStakingModal, staker, stakingConsts, state, validatorsName, validatorsToList }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { hierarchy } = useContext(AccountContext);
   const [decimals, setDecimals] = useState<number>(1);
   const [confirmingState, setConfirmingState] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [passwordIsCorrect, setPasswordIsCorrect] = useState<number>(0);// 0: no password, -1: password incorrect, 1:password correct
+  const [passwordStatus, setPasswordStatus] = useState<number>(PASS_MAP.EMPTY);
   const [currentlyStaked, setCurrentlyStaked] = useState<bigint>(0n);
   const [totalStakedInHuman, setTotalStakedInHuman] = useState<string>('');
 
@@ -107,7 +104,7 @@ export default function ConfirmStaking({
   }, [ledger]);
 
   const handleClearPassword = (): void => {
-    setPasswordIsCorrect(0);
+    setPasswordStatus(PASS_MAP.EMPTY);
     setPassword('');
   };
 
@@ -171,7 +168,7 @@ export default function ConfirmStaking({
       const signer = keyring.getPair(String(staker.address));
 
       signer.unlock(password);
-      setPasswordIsCorrect(1);
+      setPasswordStatus(PASS_MAP.CORRECT);
       const alreadyBondedAmount = BigInt(String(ledger?.total));
 
       if (['stakeAuto', 'stakeManual', 'stakeKeepNominated'].includes(localState) && amount !== 0n) {
@@ -357,7 +354,7 @@ export default function ConfirmStaking({
       }
     } catch (e) {
       console.log('error:', e);
-      setPasswordIsCorrect(-1);
+      setPasswordStatus(PASS_MAP.INCORRECT);
       setState(localState);
       setConfirmingState('');
     }
@@ -382,7 +379,7 @@ export default function ConfirmStaking({
 
               </Grid> */}
         <Grid item container xs={12} sx={{ backgroundColor: '#f7f7f7', padding: '25px 40px 10px' }}>
-          <Grid item xs={3} sx={{ border: '2px double grey', borderRadius: '5px', fontSize: 15, justifyContent: 'flex-start', padding: '5px 10px 5px', textAlign: 'center', fontVariant: 'small-caps' }}>
+          <Grid item sx={{ border: '2px double grey', borderRadius: '5px', fontSize: 15, justifyContent: 'flex-start', padding: '5px 10px 5px', textAlign: 'center', fontVariant: 'small-caps' }}>
             {stateInHuman(confirmingState || state)}
           </Grid>
           {amount
@@ -443,77 +440,25 @@ export default function ConfirmStaking({
           : <Grid sx={{ margin: '110px' }}>{' '}</Grid>
         }
       </Grid>
-      <Grid item sx={{ margin: '30px 30px 5px' }} xs={12}>
-        <TextField
-          InputLabelProps={{
-            shrink: true
-          }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position='end'>
-                <IconButton
-                  onClick={handleClearPassword}
-                >
-                  {password !== '' ? <Clear /> : ''}
-                </IconButton>
-              </InputAdornment>
-            ),
-            startAdornment: (
-              <InputAdornment position='start'>
-                {passwordIsCorrect === 1 ? <CheckRounded color='success' /> : ''}
-              </InputAdornment>
-            ),
-            style: { fontSize: 16 }
-          }}
-          autoFocus={!['confirming', 'failed', 'success'].includes(confirmingState)}
-          color='warning'
-          disabled={!ledger}
-          error={passwordIsCorrect === -1}
-          fullWidth
-          helperText={passwordIsCorrect === -1 ? t('Password is not correct') : t('Please enter the stake account password')}
-          label={t('Password')}
-          onChange={handleSavePassword}
-          onKeyPress={(event) => {
-            if (event.key === 'Enter') { handleConfirm(); }
-          }}
-          size='medium'
-          type='password'
-          value={password}
-          variant='outlined'
+
+      <Grid item sx={{ margin: '30px 20px 5px' }} xs={12}>
+        <Password
+          autofocus={!['confirming', 'failed', 'success'].includes(confirmingState)}
+          handleClearPassword={handleClearPassword}
+          handleIt={handleConfirm}
+          handleSavePassword={handleSavePassword}
+          isDisabled={!ledger}
+          password={password}
+          passwordStatus={passwordStatus}
         />
-      </Grid>
-      <Grid container item justifyContent='space-between' sx={{ padding: '5px 30px 0px' }} xs={12}>
-        {['success', 'failed'].includes(confirmingState)
-          ? <Grid item xs={12}>
-            <MuiButton fullWidth onClick={handleReject} variant='contained'
-              color={confirmingState === 'success' ? 'success' : 'error'} size='large'>
-              {confirmingState === 'success' ? t('Done') : t('Failed')}
-            </MuiButton>
-          </Grid>
-          : <>
-            <Grid item xs={1}>
-              <BackButton onClick={handleConfirmStakingModalBack} />
-            </Grid>
-            <Grid item xs={11} sx={{ paddingLeft: '10px' }}>
-              <Button
-                data-button-action=''
-                isBusy={confirmingState === 'confirming'}
-                isDisabled={!ledger}
-                onClick={handleConfirm}
-              >
-                {t('Confirm')}
-              </Button>
-            </Grid>
-            {/* <Grid item xs={3} justifyContent='center' sx={{ paddingTop: 2, fontSize: 15 }}>
-                    <div style={state === 'confirming' ? { opacity: '0.4', pointerEvents: 'none' } : {}}>
-                      <ActionText
-                        // className={{'margin': 'auto'}}
-                        onClick={handleReject}
-                        text={t('Reject') }
-                      />
-                    </div>
-                  </Grid> */}
-          </>}
+
+        <ConfirmButton
+          buttonDisableCondition={!ledger}
+          confirmingState={confirmingState}
+          handleBack={handleConfirmStakingModalBack}
+          handleConfirm={handleConfirm}
+          handleReject={handleReject}
+        />
       </Grid>
     </Popup>
 
