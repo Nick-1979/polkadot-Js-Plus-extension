@@ -215,4 +215,5 @@ export interface ChainInfo {
 export interface ProposalsInfo {
   proposals: DeriveProposal[];
   accountsInfo: DeriveAccountInfo[];
+  minimumDeposit?: string;
 }

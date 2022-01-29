@@ -11,9 +11,11 @@ export default async function getProposals(_chain: string): Promise<ProposalsInf
 
   const { api } = await getChainInfo(_chain);
 
+  console.log(' minimumDeposit=', api.consts.democracy.minimumDeposit.toString());
+
   const proposals = await api.derive.democracy.proposals();
   const accountsInfo = await Promise.all(proposals.map((p) => api.derive.accounts.info(p.proposer)));
-  const proposalInfo = { proposals: proposals, accountsInfo: accountsInfo }
+  const proposalInfo = { accountsInfo: accountsInfo, proposals: proposals, minimumDeposit: api.consts.democracy.minimumDeposit.toString() };
 
   console.log('proposalInfo:', JSON.parse(JSON.stringify(proposalInfo)));
 
