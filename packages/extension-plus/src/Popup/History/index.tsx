@@ -127,8 +127,6 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
   useEffect(() => {
     if (!transfersTx?.transactions?.length) return;
 
-    console.log('transfersTx:', transfersTx.transactions)
-
     const historyFromSubscan: TransactionDetail[] = [];
 
     transfersTx.transactions.map((tx: Transfers): void => {
@@ -146,8 +144,6 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
     });
 
     setFetchedHistoriesFromSubscan(historyFromSubscan);
-
-    console.log('historyFromSubscan:', historyFromSubscan);
   }, [transfersTx]);
 
   useEffect(() => {

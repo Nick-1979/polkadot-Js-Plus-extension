@@ -23,7 +23,7 @@ import { AccountContext, SettingsContext } from '../../../../extension-ui/src/co
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { DEFAULT_TYPE } from '../../../../extension-ui/src/util/defaultType';
 import {PlusHeader, Popup} from '../../components';
-import getFee from '../../util/getFee';
+import getFee from '../../util/api/getFee';
 import getLogo from '../../util/getLogo';
 import getNetworkInfo from '../../util/getNetwork';
 import { AccountsBalanceType } from '../../util/plusTypes';

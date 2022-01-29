@@ -14,13 +14,13 @@ export async function signAndSend(
   submittable: SubmittableExtrinsic<'promise', ISubmittableResult>,
   _signer: KeyringPair): Promise<TxInfo> {
   return new Promise((resolve) => {
-
-    console.log(`signing and sending a tx ...`)
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    submittable.signAndSend(_signer, async (result) => {
+    console.log('signing and sending a tx ...');
+    // eslint-disable-next-line no-void
+    void submittable.signAndSend(_signer, async (result) => {
       let txFailed = false;
       let failureText: string;
-      console.log(`submitted a tx ...`)
+
+      console.log('submitted a tx ...');
 
       if (result.dispatchError) {
         if (result.dispatchError.isModule) {

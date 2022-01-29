@@ -217,3 +217,8 @@ export interface ProposalsInfo {
   accountsInfo: DeriveAccountInfo[];
   minimumDeposit?: string;
 }
+
+export interface Conviction{
+  text: string;
+  value: number
+}

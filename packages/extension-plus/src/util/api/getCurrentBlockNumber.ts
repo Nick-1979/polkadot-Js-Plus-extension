@@ -3,11 +3,10 @@
 /* eslint-disable header/header */
 
 import type { Chain } from '@polkadot/extension-chains/types';
-import { AddressOrPair } from '@polkadot/api/types';
-import getChainInfo from './getChainInfo';
 
-export default async function getCurrentBlockNumber(_chain: Chain | String): Promise<number> {
+import getChainInfo from '../getChainInfo';
 
+export default async function getCurrentBlockNumber(_chain: Chain | string): Promise<number> {
   const { api } = await getChainInfo(_chain);
   const currentBlockNumber = await api.rpc.chain.getHeader();
 

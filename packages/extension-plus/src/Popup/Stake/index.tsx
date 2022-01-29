@@ -987,6 +987,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
         <SelectValidators
           chain={chain}
           coin={coin}
+          decimals={decimals}
           ledger={ledger}
           handleEasyStakingModalClose={handleEasyStakingModalClose}
           setSelectValidatorsModalOpen={setSelectValidatorsModalOpen}
@@ -1006,6 +1007,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
         <ConfirmStaking
           amount={getAmountToConfirm()}
           chain={chain}
+          decimals={decimals}
           // handleEasyStakingModalClose={handleEasyStakingModalClose}
           // lastFee={lastFee}
           coin={coin}

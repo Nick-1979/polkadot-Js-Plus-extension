@@ -1,6 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
+/* eslint-disable react/jsx-max-props-per-line */
 
 import { HowToReg as HowToRegIcon } from '@mui/icons-material';
 import { Grid, Skeleton } from '@mui/material';
@@ -9,14 +10,14 @@ import React, { useCallback, useEffect, useState } from 'react';
 import keyring from '@polkadot/ui-keyring';
 
 import { Chain } from '../../../../../../../extension-chains/src/types';
-import { BackButton, Button } from '../../../../../../../extension-ui/src/components';
 import useTranslation from '../../../../../../../extension-ui/src/hooks/useTranslation';
-import { AllAddresses, Password, PlusHeader, Popup, Progress } from '../../../../../components';
+import { AllAddresses, ConfirmButton, Password, PlusHeader, Popup, Progress } from '../../../../../components';
+import broadcast from '../../../../../util/api/broadcast';
 import { PASS_MAP } from '../../../../../util/constants';
+import getChainInfo from '../../../../../util/getChainInfo';
 import getVotingBond from '../../../../../util/getVotingBond';
 import { PersonsInfo } from '../../../../../util/plusTypes';
 import { amountToHuman } from '../../../../../util/plusUtils';
-import voteElection from '../../../../../util/voteElection';
 import VoteMembers from './VoteMembers';
 
 interface Props {
@@ -33,11 +34,11 @@ export default function Vote({ allCouncilInfo, chain, coin, decimals, setShowVot
   const [selectedVoterAddress, setSelectedVoterAddress] = useState<string>('');
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
   const [password, setPassword] = useState<string>('');
-  const [passwordStatus, setPasswordStatus] = useState<number>(PASS_MAP.EMPTY);// 0: no password, -1: password incorrect, 1:password correct
-  const [isVoting, setIsVoting] = useState<boolean>(false);
+  const [passwordStatus, setPasswordStatus] = useState<number>(PASS_MAP.EMPTY);
   const [votingBondBase, setVotingBondBase] = useState<bigint>();
   const [votingBondFactor, setVotingBondFactor] = useState<bigint>();
   const [votingBond, setVotingBond] = useState<bigint>();
+  const [state, setState] = useState<string>('');
 
   useEffect(() => {
     // eslint-disable-next-line no-void
@@ -54,34 +55,42 @@ export default function Vote({ allCouncilInfo, chain, coin, decimals, setShowVot
 
   const handleClose = useCallback((): void => {
     setShowVotesModal(false);
-  }, []);
+  }, [setShowVotesModal]);
 
-  const handleClearPassword = (): void => {
+  const handleClearPassword = useCallback((): void => {
     setPasswordStatus(PASS_MAP.EMPTY);
     setPassword('');
-  };
+  }, []);
 
-  const handleSavePassword = (event: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleSavePassword = useCallback((event: React.ChangeEvent<HTMLInputElement>): void => {
     setPassword(event.target.value);
 
     if (event.target.value === '') { handleClearPassword(); }
-  };
+  }, [handleClearPassword]);
 
   const handleVote = async () => {
     try {
-      setIsVoting(true);
+      setState('confirming');
       const signer = keyring.getPair(selectedVoterAddress);
 
       signer.unlock(password);
       setPasswordStatus(PASS_MAP.CORRECT);
-      const { block, failureText, fee, status, txHash } = await voteElection(chain, selectedCandidates, votingBond, signer);
+
+      const { api } = await getChainInfo(chain);
+      const electionApi = api.tx.phragmenElection ?? api.tx.electionsPhragmen ?? api.tx.elections;
+      const tx = electionApi.vote;
+      const params = [selectedCandidates, votingBond];
+
+      const { block, failureText, fee, status, txHash } = await broadcast(api, tx, params, signer);
+
+      // TODO: can save to history here
 
       console.log('vote failureText', failureText);
-      setIsVoting(false);
+      setState(status);
     } catch (e) {
       console.log('error:', e);
       setPasswordStatus(PASS_MAP.INCORRECT);
-      setIsVoting(false);
+      setState('');
     }
   };
 
@@ -91,57 +100,40 @@ export default function Vote({ allCouncilInfo, chain, coin, decimals, setShowVot
 
       <AllAddresses chain={chain} selectedAddress={selectedVoterAddress} setSelectedAddress={setSelectedVoterAddress} text={t('Select voter account')} />
 
-
-      <Grid item xs={12} sx={{ textAlign: 'right', padding:'0px 40px 10px'}}>
-         {t('Voting bond')}:{' '}
-         {votingBond ?
-          <>
-           {amountToHuman(votingBond.toString(), decimals, 4)}{' '}{coin}
+      <Grid item xs={12} sx={{ padding: '0px 40px 10px', textAlign: 'right' }}>
+        {t('Voting bond')}:{' '}
+        {votingBond
+          ? <>
+            {amountToHuman(votingBond.toString(), decimals, 4)}{' '}{coin}
           </>
-          :<Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }}/>
+          : <Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }} />
         }
       </Grid>
 
       {allCouncilInfo
         ? <Grid container sx={{ padding: '0px 30px' }}>
 
-          <Grid item xs={12} id='scrollArea' sx={{ height: '250px', overflowY: 'auto', paddingBottom:'5px' }}>
-            <VoteMembers chain={chain} coin={coin} decimals={decimals} setSelectedCandidates={setSelectedCandidates} membersType={t('Accounts to vote')} personsInfo={allCouncilInfo} />
+          <Grid item xs={12} id='scrollArea' sx={{ height: '250px', overflowY: 'auto', paddingBottom: '5px' }}>
+            <VoteMembers chain={chain} coin={coin} decimals={decimals} membersType={t('Accounts to vote')} personsInfo={allCouncilInfo} setSelectedCandidates={setSelectedCandidates} />
           </Grid>
 
-          <Password
-            handleClearPassword={handleClearPassword}
-            handleSavePassword={handleSavePassword}
-            handleIt={handleVote}
-            password={password}
-            passwordStatus={passwordStatus} />
+          <Grid container item sx={{ paddingTop: '5px' }} xs={12}>
+            <Password
+              handleClearPassword={handleClearPassword}
+              handleSavePassword={handleSavePassword}
+              handleIt={handleVote}
+              password={password}
+              passwordStatus={passwordStatus}
+            />
 
-          <Grid container item justifyContent='space-between' sx={{ padding: '5px 10px 0px' }} xs={12}>
-            {/* {['success', 'failed'].includes(confirmingState)
-          ? <Grid item xs={12}>
-            <MuiButton fullWidth onClick={handleReject} variant='contained'
-              color={confirmingState === 'success' ? 'success' : 'error'} size='large'>
-              {confirmingState === 'success' ? t('Done') : t('Failed')}
-            </MuiButton>
+            <ConfirmButton
+              handleBack={handleClose}
+              handleConfirm={handleVote}
+              handleReject={handleClose}
+              state={state}
+              text='Vote'
+            />
           </Grid>
-          : <> */}
-            <Grid item xs={1}>
-              <BackButton onClick={handleClose} />
-            </Grid>
-            <Grid item xs={11} sx={{ paddingLeft: '10px' }}>
-              <Button
-                data-button-action=''
-                isBusy={isVoting}
-                isDisabled={!selectedCandidates.length}
-                onClick={handleVote}
-              >
-                {t('Vote')}
-              </Button>
-            </Grid>
-            {/* </>} */}
-          </Grid>
-
-
         </Grid>
         : <Progress title={t('Loading members ...')} />
       }

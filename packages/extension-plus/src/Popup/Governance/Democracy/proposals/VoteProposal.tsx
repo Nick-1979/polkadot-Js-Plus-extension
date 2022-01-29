@@ -8,16 +8,17 @@ import type { DeriveProposal } from '@polkadot/api-derive/types';
 import { ThumbsUpDown as ThumbsUpDownIcon } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
+
 import keyring from '@polkadot/ui-keyring';
 
 import { Chain } from '../../../../../../extension-chains/src/types';
 import useTranslation from '../../../../../../extension-ui/src/hooks/useTranslation';
 import { AllAddresses, ConfirmButton, Password, PlusHeader, Popup } from '../../../../components';
+import broadcast from '../../../../util/api/broadcast';
 import { PASS_MAP } from '../../../../util/constants';
+import getChainInfo from '../../../../util/getChainInfo';
 import { ChainInfo } from '../../../../util/plusTypes';
 import { formatMeta } from '../../../../util/plusUtils';
-import getChainInfo from '../../../../util/getChainInfo';
-import broadcast from '../../../../util/broadcast';
 
 
 interface Props {
@@ -33,7 +34,7 @@ export default function VoteProposal({ chain, chainInfo, handleVoteProposalModal
   const [selectedAddress, setSelectedAddress] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [passwordStatus, setPasswordStatus] = useState<number>(PASS_MAP.EMPTY);
-  const [confirmingState, setConfirmingState] = useState<string>('');
+  const [state, setState] = useState<string>('');
 
   const value = selectedProposal.image?.proposal;
   const meta = value?.registry.findMetaCall(value.callIndex);
@@ -59,12 +60,12 @@ export default function VoteProposal({ chain, chainInfo, handleVoteProposalModal
   }, [handleClearPassword]);
 
   const handleReject = useCallback((): void => {
-    setConfirmingState('');
+    setState('');
     handleVoteProposalModalClose();
   }, [handleVoteProposalModalClose]);
 
   const handleConfirm = useCallback(async (): Promise<void> => {
-    setConfirmingState('confirming');
+    setState('confirming');
 
     try {
       const pair = keyring.getPair(selectedAddress);
@@ -73,19 +74,21 @@ export default function VoteProposal({ chain, chainInfo, handleVoteProposalModal
       setPasswordStatus(PASS_MAP.CORRECT);
 
       const { api } = await getChainInfo(chain);
+      const tx = api.tx.democracy.second;
       const params = api.tx.democracy.second.meta.args.length === 2
         ? [selectedProposal.index, selectedProposal.seconds.length]
         : [selectedProposal.index];
 
-      const tx = api.tx.democracy.second;
+      const { block, failureText, fee, status, txHash } = await broadcast(api, tx, params, pair);
 
-      const { block, failureText, fee, status, txHash } = broadcast(api, tx, params, pair);
+      // TODO: can save to history here
 
-      
+      setState(status);
+
     } catch (e) {
       console.log('error in VoteProposal :', e);
       setPasswordStatus(PASS_MAP.INCORRECT);
-      setConfirmingState('');
+      setState('');
     }
   }, [chain, password, selectedAddress, selectedProposal.index, selectedProposal.seconds.length]);
 
@@ -110,10 +113,10 @@ export default function VoteProposal({ chain, chainInfo, handleVoteProposalModal
         />
 
         <ConfirmButton
-          confirmingState={confirmingState}
           handleBack={handleReject}
           handleConfirm={handleConfirm}
           handleReject={handleReject}
+          state={state}
         />
       </Grid>
 

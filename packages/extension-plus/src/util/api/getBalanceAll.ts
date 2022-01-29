@@ -6,7 +6,7 @@ import type { Chain } from '@polkadot/extension-chains/types';
 
 import { DeriveBalancesAll } from '@polkadot/api-derive/types';
 
-import getChainInfo from './getChainInfo';
+import getChainInfo from '../getChainInfo';
 
 export default async function getBalanceAll(
   _address: string, _chain: Chain | null | undefined): Promise<DeriveBalancesAll> {

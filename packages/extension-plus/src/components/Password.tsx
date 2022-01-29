@@ -23,7 +23,7 @@ export default function Password({ autofocus = false, handleClearPassword, handl
   const { t } = useTranslation();
 
   return (
-    <Grid item sx={{ margin: '20px 10px 5px' }} xs={12}>
+    <Grid item sx={{ m: 1 }} xs={12}>
       <TextField
         InputLabelProps={{
           shrink: true

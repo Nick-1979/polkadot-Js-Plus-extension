@@ -4,19 +4,18 @@
 
 import type { DeriveCouncilVote } from '@polkadot/api-derive/types';
 
-import { CheckRounded, Clear, Preview as PreviewIcon } from '@mui/icons-material';
-import { Button as MuiButton,Container, Grid, IconButton, InputAdornment, TextField } from '@mui/material';
-import { grey } from '@mui/material/colors';
+import { GroupRemove  as GroupRemoveIcon  } from '@mui/icons-material';
+import { Grid } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 
 import keyring from '@polkadot/ui-keyring';
 
 import { Chain } from '../../../../../../../extension-chains/src/types';
-import { BackButton, Button } from '../../../../../../../extension-ui/src/components';
 import useTranslation from '../../../../../../../extension-ui/src/hooks/useTranslation';
-import { AllAddresses, Password, PlusHeader, Popup, Progress } from '../../../../../components';
-import cancelVotes from '../../../../../util/cancelVotes';
+import { AllAddresses, ConfirmButton, Password, PlusHeader, Popup, Progress } from '../../../../../components';
+import broadcast from '../../../../../util/api/broadcast';
 import { PASS_MAP } from '../../../../../util/constants';
+import getChainInfo from '../../../../../util/getChainInfo';
 import getVotes from '../../../../../util/getVotes';
 import { PersonsInfo } from '../../../../../util/plusTypes';
 import { amountToHuman } from '../../../../../util/plusUtils';
@@ -37,12 +36,12 @@ export default function MyVotes({ allCouncilInfo, chain, coin, decimals, setShow
   const [votesInfo, seVotesInfo] = useState<DeriveCouncilVote>();
   const [filteredPersonsInfo, setFilteredPersonsInfo] = useState<PersonsInfo>();
   const [password, setPassword] = useState<string>('');
-  const [passwordStatus, setPasswordStatus] = useState<number>(PASS_MAP.EMPTY);// 0: no password, -1: password incorrect, 1:password correct
+  const [passwordStatus, setPasswordStatus] = useState<number>(PASS_MAP.EMPTY);
   const [state, setState] = useState<string>('');
 
   const handleClose = useCallback((): void => {
     setShowMyVotesModal(false);
-  }, []);
+  }, [setShowMyVotesModal]);
 
   useEffect(() => {
     seVotesInfo(undefined); // reset votes when change address
@@ -60,16 +59,16 @@ export default function MyVotes({ allCouncilInfo, chain, coin, decimals, setShow
     setFilteredPersonsInfo({ infos: allCouncilInfo.infos.filter((p) => votesInfo.votes.includes(p.accountId)) });
   }, [votesInfo, allCouncilInfo]);
 
-  const handleClearPassword = (): void => {
+  const handleClearPassword = useCallback((): void => {
     setPasswordStatus(PASS_MAP.EMPTY);
     setPassword('');
-  };
+  }, []);
 
-  const handleSavePassword = (event: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleSavePassword = useCallback((event: React.ChangeEvent<HTMLInputElement>): void => {
     setPassword(event.target.value);
 
     if (event.target.value === '') { handleClearPassword(); }
-  };
+  }, [handleClearPassword]);
 
   const handleCancelVotes = async () => {
     try {
@@ -78,7 +77,12 @@ export default function MyVotes({ allCouncilInfo, chain, coin, decimals, setShow
 
       signer.unlock(password);
       setPasswordStatus(PASS_MAP.CORRECT);
-      const { block, failureText, fee, status, txHash } = await cancelVotes(chain, signer);
+
+      const { api } = await getChainInfo(chain);
+      const electionApi = api.tx.phragmenElection ?? api.tx.electionsPhragmen ?? api.tx.elections;
+      const tx = electionApi.removeVoter;
+
+      const { block, failureText, fee, status, txHash } = await broadcast(api, tx, [], signer);
 
       // TODO: can save to history here
 
@@ -93,52 +97,40 @@ export default function MyVotes({ allCouncilInfo, chain, coin, decimals, setShow
 
   return (
     <Popup handleClose={handleClose} showModal={showMyVotesModal}>
-      <PlusHeader action={handleClose} chain={chain} closeText={'Close'} icon={<PreviewIcon fontSize='small' />} title={'My Votes'} />
+      <PlusHeader action={handleClose} chain={chain} closeText={'Close'} icon={<GroupRemoveIcon  fontSize='small' />} title={'My Votes'} />
 
       <AllAddresses chain={chain} selectedAddress={selectedAddress} setSelectedAddress={setSelectedAddress} text={t('select account to view votes')} />
 
       {votesInfo && filteredPersonsInfo
         ? <Grid container sx={{ padding: '0px 30px' }}>
-          <Grid item xs={12} sx={{ fontSize: 12, textAlign: 'right', paddingRight: '10px' }}>
+          <Grid item xs={12} sx={{ fontSize: 12, paddingRight: '10px', textAlign: 'right' }}>
             {t('Staked:')} {Number(amountToHuman(votesInfo.stake.toString(), decimals)).toLocaleString()} {' '}{coin}
-
           </Grid>
+
           <Grid item xs={12} id='scrollArea' sx={{ height: '250px', overflowY: 'auto' }}>
             <Members chain={chain} coin={coin} decimals={decimals} membersType={t('Votes')} personsInfo={filteredPersonsInfo} />
           </Grid>
 
-          <Password
-            handleClearPassword={handleClearPassword}
-            handleSavePassword={handleSavePassword}
-            handleIt={handleCancelVotes}
-            password={password}
-            passwordStatus={passwordStatus}
-            isDisabled={!votesInfo?.votes.length} />
+          <Grid container item sx={{ paddingTop: '5px' }} xs={12}>
 
-          <Grid container item justifyContent='space-between' sx={{ padding: '5px 10px 0px' }} xs={12}>
-            {['success', 'failed'].includes(state)
-              ? <Grid item xs={12}>
-                <MuiButton fullWidth onClick={handleClose} variant='contained'
-                  color={state === 'success' ? 'success' : 'error'} size='large'>
-                  {state === 'success' ? t('Done') : t('Failed')}
-                </MuiButton>
-              </Grid>
-              : <>
-                <Grid item xs={1}>
-                  <BackButton onClick={handleClose} />
-                </Grid>
-                <Grid item xs={11} sx={{ paddingLeft: '10px' }}>
-                  <Button
-                    data-button-action=''
-                    isBusy={state === 'confirming'}
-                    isDisabled={!votesInfo?.votes.length}
-                    onClick={handleCancelVotes}
-                  >
-                    {t('Cancel votes')}
-                  </Button>
-                </Grid>
-              </>}
+            <Password
+              handleClearPassword={handleClearPassword}
+              handleSavePassword={handleSavePassword}
+              handleIt={handleCancelVotes}
+              password={password}
+              passwordStatus={passwordStatus}
+              isDisabled={!votesInfo?.votes.length} />
+
+            <ConfirmButton
+              handleBack={handleClose}
+              handleConfirm={handleCancelVotes}
+              handleReject={handleClose}
+              isDisabled={!votesInfo?.votes.length}
+              state={state}
+              text='Cancel votes'
+            />
           </Grid>
+
         </Grid>
         : <Progress title={t('Loading votes ...')} />
       }

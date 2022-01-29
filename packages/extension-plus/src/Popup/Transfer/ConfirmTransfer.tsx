@@ -19,13 +19,13 @@ import { BackButton, Button } from '../../../../extension-ui/src/components';
 import { AccountContext } from '../../../../extension-ui/src/components/contexts';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { updateMeta } from '../../../../extension-ui/src/messaging';
-import { Password, PlusHeader, Popup } from '../../components';
-import getFee from '../../util/getFee';
+import { ConfirmButton, Password, PlusHeader, Popup } from '../../components';
+import getFee from '../../util/api/getFee';
+import { PASS_MAP } from '../../util/constants';
 import getNetworkInfo from '../../util/getNetwork';
 import { AccountsBalanceType, TransactionDetail, TransactionStatus } from '../../util/plusTypes';
 import { amountToHuman, fixFloatingPoint, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/plusUtils';
 import signAndTransfer from '../../util/signAndTransfer';
-import { PASS_MAP } from '../../util/constants';
 
 interface Props {
   availableBalance: string;
@@ -75,10 +75,11 @@ export default function ConfirmTx({
   const [failAlert, setFailAlert] = useState<boolean>(false);
   const [password, setPassword] = useState<string>('');
   const [passwordStatus, setPasswordStatus] = useState<number>(PASS_MAP.EMPTY);
-  const [transfering, setTransfering] = useState<boolean>(false);
+  // const [transfering, setTransfering] = useState<boolean>(false);
   const [txStatus, setTxStatus] = useState<TransactionStatus>({ blockNumber: null, success: null, text: null });
   const [transferAmountInHuman, setTransferAmountInHuman] = useState('');
   const { hierarchy } = useContext(AccountContext);
+  const [state, setState] = useState<string>('');
 
   useEffect(() => {
     setTransferAmountInHuman(amountToHuman(String(transferAmount), decimals));
@@ -96,7 +97,8 @@ export default function ConfirmTx({
 
   async function handleConfirm() {
     // console.log('handleConfirm is runing ...')
-    setTransfering(true);
+    // setTransfering(true);
+    setState('confirming');
 
     try {
       const pair = keyring.getPair(String(sender.address));
@@ -106,7 +108,9 @@ export default function ConfirmTx({
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       const { block, failureText, fee, status, txHash } = await signAndTransfer(pair, String(recepient.address), transferAmount, chain, setTxStatus)
-
+    
+      setState(status);
+    
       const currentTransactionDetail: TransactionDetail = {
         action: 'send',
         amount: amountToHuman(String(transferAmount), decimals),
@@ -123,11 +127,13 @@ export default function ConfirmTx({
       if (chain) { saveHistory(chain, hierarchy, sender.address, currentTransactionDetail); }
 
       setTransactionHash(txHash);
-      setTransfering(false);
+      // setTransfering(false);
+
 
     } catch (e) {
       setPasswordStatus(PASS_MAP.INCORRECT);
-      setTransfering(false);
+      // setTransfering(false);
+      setState('');
     }
   }
 
@@ -186,7 +192,9 @@ export default function ConfirmTx({
 
   function handleConfirmModaClose(): void {
     setConfirmModalOpen(false);
-    setTransfering(false);
+    // setTransfering(false);
+    setState('');
+
   }
 
   function handleReject(): void {
@@ -323,7 +331,7 @@ export default function ConfirmTx({
         </Grid>
       </Grid>
 
-      <Grid item sx={{ margin: '30px 30px 5px' }} xs={12}>
+      <Grid container item sx={{ p: '30px 20px' }} xs={12}>
         <Password
           autofocus={true}
           handleClearPassword={handleClearPassword}
@@ -333,51 +341,14 @@ export default function ConfirmTx({
           password={password}
           passwordStatus={passwordStatus}
         />
+
+        <ConfirmButton
+          state={state}
+          handleBack={handleConfirmModaClose}
+          handleConfirm={handleConfirm}
+          handleReject={handleReject}
+        />
       </Grid>
-
-      <Grid container justifyContent='space-between' sx={{ padding: '25px 40px 10px' }}>
-
-        {txStatus && (txStatus.success !== null)
-          ? <Grid item xs={12}>
-            <MuiButton fullWidth onClick={handleReject} variant='contained' size='large' color={txStatus.success ? 'success' : 'error'}>
-              {txStatus.success ? t('Done') : t('Failed')}
-            </MuiButton>
-          </Grid>
-          : <>
-            <Grid item xs={1}>
-              <BackButton onClick={handleConfirmModaClose} />
-            </Grid>
-            <Grid item xs={11} sx={{ paddingLeft: '10px' }}>
-              <Button
-                data-button-action=''
-                isBusy={transfering}
-                isDisabled={confirmDisabled}
-                onClick={handleConfirm}
-              >
-                {t('Confirm')}
-              </Button>
-            </Grid>
-          </>}
-        {txStatus.blockNumber || transactionHash
-          ?
-          <Grid alignItems='center' container justifyContent='center' spacing={1} item sx={{ fontSize: 11 }}>
-            <Grid item  >
-              {txStatus.success || txStatus.success === null
-                ? 'The transaction is ' + String(txStatus ? txStatus.text : '')
-                : String(txStatus.text)
-              }
-              {', block number ' + String(txStatus.blockNumber)}
-            </Grid>
-            <Grid item  >
-              <IconButton disabled={!transactionHash} size='small' onClick={openTxOnExplorer}>
-                <LaunchRounded sx={{ fontSize: 10 }} />
-              </IconButton>
-            </Grid>
-          </Grid>
-          : ''
-        }
-      </Grid>
-
     </Popup>
   );
 }

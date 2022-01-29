@@ -9,22 +9,23 @@ import { BackButton, Button } from '../../../extension-ui/src/components';
 import useTranslation from '../../../extension-ui/src/hooks/useTranslation';
 
 interface Props {
-  confirmingState: string;
+  state: string;
   handleReject: () => void;
   handleBack: () => void;
-  buttonDisableCondition?: boolean;
+  isDisabled?: boolean;
   handleConfirm: () => Promise<void>;
+  text?: string;
 }
 
-export default function ConfirmButton({ buttonDisableCondition = false, confirmingState, handleBack, handleConfirm, handleReject }: Props): React.ReactElement<Props> {
+export default function ConfirmButton({ handleBack, handleConfirm, handleReject, isDisabled = false, state, text = 'Confirm' }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
 
   return (
-    <Grid container item justifyContent='space-between' sx={{ padding: '5px 10px 0px' }} xs={12}>
-      {['success', 'failed'].includes(confirmingState)
+    <Grid container item justifyContent='space-between' sx={{ m: 1 }} xs={12}>
+      {['success', 'failed'].includes(state)
         ? <Grid item xs={12}>
-          <MuiButton color={confirmingState === 'success' ? 'success' : 'error'} fullWidth onClick={handleReject} size='large' variant='contained'>
-            {confirmingState === 'success' ? t('Done') : t('Failed')}
+          <MuiButton color={state === 'success' ? 'success' : 'error'} fullWidth onClick={handleReject} size='large' variant='contained'>
+            {state === 'success' ? t('Done') : t('Failed')}
           </MuiButton>
         </Grid>
         : <>
@@ -32,8 +33,8 @@ export default function ConfirmButton({ buttonDisableCondition = false, confirmi
             <BackButton onClick={handleBack} />
           </Grid>
           <Grid item sx={{ paddingLeft: '10px' }} xs={11}>
-            <Button data-button-action='' isBusy={confirmingState === 'confirming'} isDisabled={buttonDisableCondition} onClick={handleConfirm}>
-              {t('Confirm')}
+            <Button data-button-action='' isBusy={state === 'confirming'} isDisabled={isDisabled} onClick={handleConfirm}>
+              {t(text)}
             </Button>
           </Grid>
         </>}

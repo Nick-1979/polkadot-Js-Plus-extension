@@ -1,20 +1,17 @@
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
+/* eslint-disable react/jsx-max-props-per-line */
 
-import { Email as EmailIcon, LaunchRounded as LaunchRoundedIcon, Twitter as TwitterIcon } from '@mui/icons-material';
-import { Grid, Link, Paper, Switch } from '@mui/material';
+import { Grid, Paper, Switch } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import React, { useState, useEffect } from 'react';
-
-import Identicon from '@polkadot/react-identicon';
+import React, { useEffect,useState } from 'react';
 
 import { Chain } from '../../../../../../../extension-chains/src/types';
 import useTranslation from '../../../../../../../extension-ui/src/hooks/useTranslation';
-import { ShortAddress } from '../../../../../components';
+import { MAX_VOTES } from '../../../../../util/constants';
 import { PersonsInfo } from '../../../../../util/plusTypes';
 import { amountToHuman } from '../../../../../util/plusUtils';
-import { MAX_VOTES } from '../../../../../util/constants';
 import Identity from '../Identity';
 
 interface Props {
@@ -33,15 +30,13 @@ export default function VoteMembers({ chain, coin, decimals, membersType, person
   const [candidates, setCandidates] = useState(personsArray);
 
   const handleSelect = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    console.log(`${candidates[index].info.accountId} ${event.target.checked?' selected':' deselected'}`);
-
     // check if reached to MAX_VOTES
     if (event.target.checked && (candidates.filter((c) => c.selected)).length === MAX_VOTES) {
       event.target.checked = false;
+
       return;
     }
     const lastSelectedIndex = candidates.indexOf(candidates.find((p) => false === p.selected));
-
     const temp = candidates[index];
     temp.selected = event.target.checked;
     candidates.splice(index, 1);
@@ -64,7 +59,7 @@ export default function VoteMembers({ chain, coin, decimals, membersType, person
           <Grid container>
 
             <Grid container item xs={7}>
-              <Identity chain={chain} accountInfo={p.info} />
+              <Identity accountInfo={p.info} chain={chain} />
             </Grid>
 
             {p?.backed &&

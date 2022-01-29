@@ -1,13 +1,15 @@
-/* eslint-disable camelcase */
+
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 // eslint-disable-next-line header/header
-import { ApiPromise, WsProvider } from '@polkadot/api';
+/* eslint-disable camelcase */
+
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { Chain } from '@polkadot/extension-chains/types';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { ISubmittableResult } from '@polkadot/types/types';
+
 import getChainInfo from './getChainInfo';
 import { TxInfo, ValidatorsFromSubscan } from './plusTypes';
 import { postData } from './postData';

@@ -3,10 +3,10 @@
 /* eslint-disable header/header */
 /* eslint-disable react/jsx-max-props-per-line */
 
-import { AllOut as AllOutIcon, CheckRounded, Clear } from '@mui/icons-material';
-import { Button as MuiButton, Grid, IconButton, InputAdornment, SelectChangeEvent, TextField } from '@mui/material';
+import { AllOut as AllOutIcon } from '@mui/icons-material';
+import { Grid, InputAdornment, TextField } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 
 import { LinkOption } from '@polkadot/apps-config/endpoints/types';
 import { AccountWithChildren } from '@polkadot/extension-base/background/types';
@@ -14,12 +14,12 @@ import { Chain } from '@polkadot/extension-chains/types';
 import { updateMeta } from '@polkadot/extension-ui/messaging';
 import keyring from '@polkadot/ui-keyring';
 
-import { BackButton, Button } from '../../../../extension-ui/src/components';
 import { AccountContext } from '../../../../extension-ui/src/components/contexts';
 import useMetadata from '../../../../extension-ui/src/hooks/useMetadata';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
-import { AllAddresses, PlusHeader, Popup } from '../../components';
-import contribute from '../../util/contribute';
+import { AllAddresses, ConfirmButton, Password, PlusHeader, Popup } from '../../components';
+import broadcast from '../../util/api/broadcast';
+import { PASS_MAP } from '../../util/constants';
 import { Auction, ChainInfo, Crowdloan, TransactionDetail } from '../../util/plusTypes';
 import { amountToHuman, amountToMachine, fixFloatingPoint, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/plusUtils';
 import Fund from './Fund';
@@ -33,24 +33,28 @@ interface Props {
   chainInfo: ChainInfo;
 }
 
-export default function Contribute({ auction,
+export default function Contribute({
+  auction,
   chainInfo,
   contributeModal,
   crowdloan,
   endpoints,
   setContributeModalOpen }: Props): React.ReactElement<Props> {
+
   const { t } = useTranslation();
   const chain = useMetadata(chainInfo.genesisHash, true);
+  const auctionMinContributionInHuman = amountToHuman(auction.minContribution, chainInfo.decimals);
+
   const [password, setPassword] = useState<string>('');
   const [contributionAmountInHuman, setContributionAmountInHuman] = useState<string>('');
-  const [passwordIsCorrect, setPasswordIsCorrect] = useState<number>(0);// 0: no password, -1: password incorrect, 1:password correct
+  const [passwordStatus, setPasswordStatus] = useState<number>(PASS_MAP.EMPTY);
   const [selectedAddress, setSelectedAddress] = useState<string>('');
   const [confirmingState, setConfirmingState] = useState<string>('');
   const { hierarchy } = useContext(AccountContext);
 
-  const handleConfirmModaClose = (): void => {
+  const handleConfirmModaClose = useCallback((): void => {
     setContributeModalOpen(false);
-  }
+  }, [setContributeModalOpen]);
 
   function saveHistory(chain: Chain | null, hierarchy: AccountWithChildren[], address: string, currentTransactionDetail: TransactionDetail, _chainName?: string): Promise<boolean> {
     const accountSubstrateAddress = getSubstrateAddress(address);
@@ -62,17 +66,23 @@ export default function Contribute({ auction,
   }
 
   const handleConfirm = async (): Promise<void> => {
-    setConfirmingState('confirming');
-
     try {
+      setConfirmingState('confirming');
       const signer = keyring.getPair(selectedAddress);
 
       signer.unlock(password);
-      setPasswordIsCorrect(1);
-
+      setPasswordStatus(PASS_MAP.CORRECT);
       const contributingAmountInMachine = amountToMachine(contributionAmountInHuman, chainInfo.decimals);
 
-      const { block, failureText, fee, status, txHash } = await contribute(signer, crowdloan.fund.paraId, contributingAmountInMachine, chain)
+      const api = chainInfo.api;
+      const tx = api.tx.crowdloan.contribute;
+      const params = [crowdloan.fund.paraId, contributingAmountInMachine, null];
+
+      const { block, failureText, fee, status, txHash } = await broadcast(api, tx, params, signer);
+
+      // const { block, failureText, fee, status, txHash } = await contribute(signer, crowdloan.fund.paraId, contributingAmountInMachine, chain);
+
+      setConfirmingState(status);
 
       const history: TransactionDetail = {
         action: 'contribute',
@@ -92,36 +102,32 @@ export default function Contribute({ auction,
       void saveHistory(chain, hierarchy, selectedAddress, history);
     } catch (e) {
       console.log('error:', e);
-      setPasswordIsCorrect(-1);
+      setPasswordStatus(PASS_MAP.INCORRECT);
       setConfirmingState('');
     }
   };
 
-  const handleReject = (): void => {
+  const handleReject = useCallback((): void => {
     setConfirmingState('');
     handleConfirmModaClose();
-  };
+  }, [handleConfirmModaClose]);
 
-  const handleAddressChange = (event: SelectChangeEvent) => {
-    setSelectedAddress(event.target.value);
-  };
-
-  const handleConfirmCrowdloanModalBack = (): void => {
+  const handleBack = useCallback((): void => {
     handleConfirmModaClose();
-  };
+  }, [handleConfirmModaClose]);
 
-  const handleClearPassword = (): void => {
-    setPasswordIsCorrect(0);
+  const handleClearPassword = useCallback((): void => {
+    setPasswordStatus(PASS_MAP.EMPTY);
     setPassword('');
-  };
+  }, []);
 
-  const handleSavePassword = (event: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleSavePassword = useCallback((event: React.ChangeEvent<HTMLInputElement>): void => {
     setPassword(event.target.value);
 
     if (event.target.value === '') { handleClearPassword(); }
-  };
+  }, [handleClearPassword]);
 
-  function handleContributionAmountChange(value: string) {
+  function handleChange(value: string) {
     if (Number(value) < 0) {
       value = String(-Number(value));
     }
@@ -143,13 +149,13 @@ export default function Contribute({ auction,
           color='warning'
           // error={reapeAlert || noFeeAlert || zeroBalanceAlert}
           fullWidth
-          helperText={(t('Minimum contribution: ') + amountToHuman(auction.minContribution, chainInfo.decimals) + ' ' + chainInfo.coin)}
+          helperText={(t('Minimum contribution: ') + auctionMinContributionInHuman + ' ' + chainInfo.coin)}
           label={t('Amount')}
           margin='dense'
           name='contributionAmount'
           // onBlur={(event) => handleTransferAmountOnBlur(event.target.value)}
-          onChange={(event) => handleContributionAmountChange(event.target.value)}
-          placeholder={amountToHuman(auction.minContribution, chainInfo.decimals)}
+          onChange={(event) => handleChange(event.target.value)}
+          placeholder={auctionMinContributionInHuman}
           size='medium'
           type='number'
           value={contributionAmountInHuman}
@@ -165,69 +171,22 @@ export default function Contribute({ auction,
         {chain && <Fund coin={chainInfo.coin} decimals={chainInfo.decimals} crowdloan={crowdloan} endpoints={endpoints} />}
       </Grid>
 
-      <Grid item sx={{ margin: '20px 30px 5px' }} xs={12}>
-        <TextField
-          InputLabelProps={{
-            shrink: true
-          }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position='end'>
-                <IconButton
-                  onClick={handleClearPassword}
-                >
-                  {password !== '' ? <Clear /> : ''}
-                </IconButton>
-              </InputAdornment>
-            ),
-            startAdornment: (
-              <InputAdornment position='start'>
-                {passwordIsCorrect === 1 ? <CheckRounded color='success' /> : ''}
-              </InputAdornment>
-            ),
-            style: { fontSize: 16 }
-          }}
-          // autoFocus={!['confirming', 'failed', 'success'].includes(confirmingState)}
-          color='warning'
-          // disabled={!ledger}
-          error={passwordIsCorrect === -1}
-          fullWidth
-          helperText={passwordIsCorrect === -1 ? t('Password is not correct') : t('Please enter the stake account password')}
-          label={t('Password')}
-          onChange={handleSavePassword}
-          onKeyPress={(event) => {
-            if (event.key === 'Enter') { handleConfirm(); }
-          }}
-          size='medium'
-          type='password'
-          value={password}
-          variant='outlined'
+      <Grid container item sx={{ p: '20px 20px' }} xs={12}>
+        <Password
+          handleClearPassword={handleClearPassword}
+          handleIt={handleConfirm}
+          handleSavePassword={handleSavePassword}
+          password={password}
+          passwordStatus={passwordStatus}
         />
-      </Grid>
 
-      <Grid container item justifyContent='space-between' sx={{ padding: '5px 30px 0px' }} xs={12}>
-        {['success', 'failed'].includes(confirmingState)
-          ? <Grid item xs={12}>
-            <MuiButton fullWidth onClick={handleReject} variant='contained'
-              color={confirmingState === 'success' ? 'success' : 'error'} size='large'>
-              {confirmingState === 'success' ? t('Done') : t('Failed')}
-            </MuiButton>
-          </Grid>
-          : <>
-            <Grid item xs={1}>
-              <BackButton onClick={handleConfirmCrowdloanModalBack} />
-            </Grid>
-            <Grid item xs={11} sx={{ paddingLeft: '10px' }}>
-              <Button
-                data-button-action=''
-                isBusy={confirmingState === 'confirming'}
-                isDisabled={!selectedAddress}
-                onClick={handleConfirm}
-              >
-                {t('Confirm')}
-              </Button>
-            </Grid>
-          </>}
+        <ConfirmButton
+          confirmingState={confirmingState}
+          handleBack={handleBack}
+          handleConfirm={handleConfirm}
+          handleReject={handleBack}
+          isDisabled={Number(contributionAmountInHuman) < Number(auctionMinContributionInHuman)}
+        />
       </Grid>
     </Popup>
   );

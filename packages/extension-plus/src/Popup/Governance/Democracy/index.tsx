@@ -11,14 +11,13 @@ import { DeriveReferendumExt } from '@polkadot/api-derive/types';
 import useMetadata from '../../../../../extension-ui/src/hooks/useMetadata';
 import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
 import { PlusHeader, Popup, Progress } from '../../../components';
-import getCurrentBlockNumber from '../../../util/getCurrentBlockNumber';
+import getCurrentBlockNumber from '../../../util/api/getCurrentBlockNumber';
+import createConvictions from '../../../util/createConvictions';
 import getProposals from '../../../util/getProposals';
 import getReferendums from '../../../util/getReferendums';
-import { ChainInfo, ProposalsInfo } from '../../../util/plusTypes';
+import { ChainInfo, Conviction,ProposalsInfo } from '../../../util/plusTypes';
 import Proposals from './proposals/overview';
-import VoteProposal from './proposals/VoteProposal';
 import Referendums from './referendums/overview';
-import VoteReferendum from './referendums/VoteReferendum';
 
 interface Props {
   chainName: string;
@@ -29,18 +28,19 @@ interface Props {
 
 export default function Democracy({ chainInfo, chainName, setDemocracyModalOpen, showDemocracyModal }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-
   const [tabValue, setTabValue] = useState('referendums');
   const [referendums, setReferenduns] = useState<DeriveReferendumExt[]>();
   const [proposalsInfo, setProposalsInfo] = useState<ProposalsInfo>();
   const [currentBlockNumber, setCurrentBlockNumber] = useState<number>();
-  const [showVoteReferendumModal, setShowVoteReferendumModal] = useState<boolean>(false);
-  const [vote, setVote] = useState<{ voteType: number, refId: string }>();
-  // const [showVoteProposalModal, setShowVoteProposalModal] = useState<boolean>(false);
-  // const [second, setSecond] = useState<{ proposalId: string, depositorsLength: number }>();
-
+  const [convictions, setConvictions] = useState<Conviction[]>();
   const chain = useMetadata(chainInfo?.genesisHash, true);// TODO:double check to have genesisHash here
 
+  useEffect(() => {
+    // eslint-disable-next-line no-void
+    void createConvictions(chain, t).then((c) => {
+      setConvictions(c);
+    });
+  }, [chain, t]);
 
   useEffect(() => {
     // eslint-disable-next-line no-void
@@ -71,23 +71,6 @@ export default function Democracy({ chainInfo, chainName, setDemocracyModalOpen,
     [setDemocracyModalOpen]
   );
 
-  const handleVote = useCallback((voteType: number, refId: string) => {
-    setShowVoteReferendumModal(true);
-    setVote({ refId: refId, voteType: voteType });
-  }, []);
-
-  // const handleSecond = useCallback((proposalId: string, depositorsLength: number) => {
-  //   setShowVoteProposalModal(true);
-  //   setSecond({ depositorsLength: depositorsLength, proposalId: proposalId });
-  // }, []);
-
-  const handleVoteReferendumModalClose = useCallback(() => {
-    setShowVoteReferendumModal(false);
-  }, []);
-
-  // const handleVoteProposalModalClose = useCallback(() => {
-  //   setShowVoteProposalModal(false);
-  // }, []);
 
   return (
     <Popup showModal={showDemocracyModal} handleClose={handleDemocracyModalClose}>
@@ -103,7 +86,7 @@ export default function Democracy({ chainInfo, chainName, setDemocracyModalOpen,
         {tabValue === 'referendums'
           ? <Grid item xs={12} sx={{ height: 450, overflowY: 'auto' }}>
             {referendums
-              ? <Referendums handleVote={handleVote} referendums={referendums} chainName={chainName} chainInfo={chainInfo} currentBlockNumber={currentBlockNumber} />
+              ? <Referendums convictions={convictions} chain={chain} referendums={referendums} chainInfo={chainInfo} currentBlockNumber={currentBlockNumber} />
               : <Progress title={'Loading referendums ...'} />}
           </Grid>
           : ''}
@@ -115,25 +98,6 @@ export default function Democracy({ chainInfo, chainName, setDemocracyModalOpen,
               : <Progress title={'Loading proposals ...'} />}
           </Grid>
           : ''}
-
-        {showVoteReferendumModal &&
-          <VoteReferendum
-            chain={chain}
-            chainInfo={chainInfo}
-            handleVoteReferendumModalClose={handleVoteReferendumModalClose}
-            showVoteReferendumModal={showVoteReferendumModal}
-            vote={vote} />
-        }
-
-        {/* {showVoteProposalModal &&
-          <VoteProposal
-            chain={chain}
-            chainInfo={chainInfo}
-            handleVoteProposalModalClose={handleVoteProposalModalClose}
-            showVoteProposalModal={showVoteProposalModal}
-            vote={vote} />
-        } */}
-
       </Grid>
     </Popup>
   );

@@ -19,7 +19,7 @@ import React, { useEffect, useState } from 'react';
 import { DeriveStakingQuery } from '@polkadot/api-derive/types';
 import { Chain } from '@polkadot/extension-chains/types';
 
-import getNetworkInfo from '../../util/getNetwork';
+import getChainInfo from '../../util/getChainInfo';
 import { StakingConsts, ValidatorsName } from '../../util/plusTypes';
 
 interface Props {
@@ -320,14 +320,13 @@ function EnhancedTable(props: TableRowProps) {
 }
 
 export default function ValidatorsList({ chain, stakingConsts, validatorsInfo, validatorsName }: Props): React.ReactElement<Props> {
-  const [decimal, setDecimal] = useState(1);
+  const [decimal, setDecimals] = useState(1);
 
   useEffect(() => {
-    const { decimals } = getNetworkInfo(chain);
-
-    setDecimal(decimals);
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    // eslint-disable-next-line no-void
+    void getChainInfo(chain).then((r) => {
+      setDecimals(r.decimals);
+    });
   }, []);
 
   return (

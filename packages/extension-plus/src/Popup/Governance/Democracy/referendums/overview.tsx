@@ -1,29 +1,45 @@
+/* eslint-disable react/jsx-max-props-per-line */
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-import { CheckCircleOutline as CheckCircleOutlineIcon, OpenInNew as OpenInNewIcon, RemoveCircleOutline as RemoveCircleOutlineIcon, ThumbDownAlt as ThumbDownAltIcon, ThumbUpAlt as ThumbUpAltIcon } from '@mui/icons-material';
+import { CheckCircleOutline as CheckCircleOutlineIcon, RemoveCircleOutline as RemoveCircleOutlineIcon, ThumbDownAlt as ThumbDownAltIcon, ThumbUpAlt as ThumbUpAltIcon } from '@mui/icons-material';
 import { Avatar, Button, Divider, Grid, LinearProgress, Link, Paper } from '@mui/material';
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { DeriveReferendumExt } from '@polkadot/api-derive/types';
 
+import { Chain } from '../../../../../../extension-chains/src/types';
 import useTranslation from '../../../../../../extension-ui/src/hooks/useTranslation';
 import { VOTE_MAP } from '../../../../util/constants';
-import { amountToHuman, formatMeta, remainingTime } from '../../../../util/plusUtils';
-import { ChainInfo } from '../../../../util/plusTypes';
 import getLogo from '../../../../util/getLogo';
+import { ChainInfo, Conviction } from '../../../../util/plusTypes';
+import { amountToHuman, formatMeta, remainingTime } from '../../../../util/plusUtils';
+import VoteReferendum from './VoteReferendum';
 
 interface Props {
   referendums: DeriveReferendumExt[];
-  chainName: string;
+  chain: Chain;
   chainInfo: ChainInfo;
   currentBlockNumber: number;
-  handleVote: (voteType: number, refId: string) => void;
+  convictions: Conviction[];
 }
 
-export default function Referendums({ chainInfo, chainName, currentBlockNumber, handleVote, referendums }: Props): React.ReactElement<Props> {
+export default function Referendums({ chain, chainInfo, convictions, currentBlockNumber, referendums }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
+  const [showVoteReferendumModal, setShowVoteReferendumModal] = useState<boolean>(false);
+  const [voteInfo, setVoteInfo] = useState<{ voteType: number, refId: string }>();
+
+  const chainName = chain?.name.replace(' Relay Chain', '');
+
+  const handleVote = useCallback((voteType: number, refId: string) => {
+    setShowVoteReferendumModal(true);
+    setVoteInfo({ refId: refId, voteType: voteType });
+  }, []);
+
+  const handleVoteReferendumModalClose = useCallback(() => {
+    setShowVoteReferendumModal(false);
+  }, []);
 
   return (
     <>
@@ -117,7 +133,7 @@ export default function Referendums({ chainInfo, chainName, currentBlockNumber, 
                       <CheckCircleOutlineIcon color='success' sx={{ fontSize: 15 }} />
                       {' '}{t('Passing')}
                     </Grid>
-                    : <Grid item >
+                    : <Grid item>
                       <RemoveCircleOutlineIcon color='secondary' sx={{ fontSize: 15 }} />
                       {' '}{t('Failing')}
                     </Grid>
@@ -154,6 +170,17 @@ export default function Referendums({ chainInfo, chainName, currentBlockNumber, 
         : <Grid xs={12} sx={{ textAlign: 'center', paddingTop: 3 }}>
           {t('No active referendum')}
         </Grid>}
+
+      {showVoteReferendumModal &&
+        <VoteReferendum
+          chain={chain}
+          chainInfo={chainInfo}
+          convictions={convictions}
+          handleVoteReferendumModalClose={handleVoteReferendumModalClose}
+          showVoteReferendumModal={showVoteReferendumModal}
+          voteInfo={voteInfo}
+        />
+      }
     </>
-  )
+  );
 }

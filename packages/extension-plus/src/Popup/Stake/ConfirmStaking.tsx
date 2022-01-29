@@ -8,7 +8,7 @@ import type { StakingLedger } from '@polkadot/types/interfaces';
 import ConfirmationNumberOutlinedIcon from '@mui/icons-material/ConfirmationNumberOutlined';
 import { Grid, Skeleton } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 import { DeriveStakingQuery } from '@polkadot/api-derive/types';
 import { AccountWithChildren } from '@polkadot/extension-base/background/types';
@@ -20,16 +20,15 @@ import { AccountContext } from '../../../../extension-ui/src/components';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { ConfirmButton, Password, PlusHeader, Popup } from '../../components';
 import { PASS_MAP } from '../../util/constants';
-import getChainInfo from '../../util/getNetwork';
+import getChainInfo from '../../util/getChainInfo';
 import { AccountsBalanceType, StakingConsts, TransactionDetail, Validators, ValidatorsName } from '../../util/plusTypes';
 import { amountToHuman, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/plusUtils';
 import { bondOrBondExtra, chill, nominate, unbond, withdrawUnbonded } from '../../util/staking';
 import ValidatorsList from './ValidatorsList';
 
-
 interface Props {
   chain?: Chain | null;
-  // handleEasyStakingModalClose: Dispatch<SetStateAction<boolean>>;
+  decimals: number;
   state: string;
   setState: React.Dispatch<React.SetStateAction<string>>;
   staker: AccountsBalanceType;
@@ -47,10 +46,9 @@ interface Props {
   validatorsToList: DeriveStakingQuery[] | null;
 }
 
-export default function ConfirmStaking({ amount, chain, coin, ledger, nominatedValidators, selectedValidators, setConfirmStakingModalOpen, setSelectValidatorsModalOpen, setState, showConfirmStakingModal, staker, stakingConsts, state, validatorsName, validatorsToList }: Props): React.ReactElement<Props> {
+export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, nominatedValidators, selectedValidators, setConfirmStakingModalOpen, setSelectValidatorsModalOpen, setState, showConfirmStakingModal, staker, stakingConsts, state, validatorsName, validatorsToList }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { hierarchy } = useContext(AccountContext);
-  const [decimals, setDecimals] = useState<number>(1);
   const [confirmingState, setConfirmingState] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [passwordStatus, setPasswordStatus] = useState<number>(PASS_MAP.EMPTY);
@@ -90,42 +88,34 @@ export default function ConfirmStaking({ amount, chain, coin, ledger, nominatedV
   }, [amount, currentlyStaked, decimals, state]);
 
   useEffect(() => {
-    if (!chain) { return; }
-
-    const { decimals } = getChainInfo(chain);
-
-    setDecimals(decimals);
-  }, [chain]);
-
-  useEffect(() => {
     if (!ledger) { return; }
 
     setCurrentlyStaked(BigInt(String(ledger.active)));
   }, [ledger]);
 
-  const handleClearPassword = (): void => {
+  const handleClearPassword = useCallback((): void => {
     setPasswordStatus(PASS_MAP.EMPTY);
     setPassword('');
-  };
+  }, []);
 
-  const handleSavePassword = (event: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleSavePassword = useCallback((event: React.ChangeEvent<HTMLInputElement>): void => {
     setPassword(event.target.value);
 
     if (event.target.value === '') { handleClearPassword(); }
-  };
+  }, [handleClearPassword]);
 
-  const handleConfirmStakingModalClose = (): void => {
+  const handleCloseModal = useCallback((): void => {
     setConfirmStakingModalOpen(false);
-  };
+  }, [setConfirmStakingModalOpen]);
 
-  const handleConfirmStakingModalBack = (): void => {
+  const handleBack = useCallback((): void => {
     if (!['stakeManual', 'changeValidators'].includes(state)) {
       setState('');
       setConfirmingState('');
     }
 
-    handleConfirmStakingModalClose();
-  };
+    handleCloseModal();
+  }, [handleCloseModal, setState, state]);
 
   const stateInHuman = (state: string): string => {
     switch (state) {
@@ -360,17 +350,17 @@ export default function ConfirmStaking({ amount, chain, coin, ledger, nominatedV
     }
   };
 
-  const handleReject = (): void => {
+  const handleReject = useCallback((): void => {
     setState('');
     setConfirmingState('');
     if (setSelectValidatorsModalOpen) setSelectValidatorsModalOpen(false);
 
-    handleConfirmStakingModalClose();
+    handleCloseModal();
     // setReject(true);
-  };
+  }, []);
 
   return (
-    <Popup showModal={showConfirmStakingModal} handleClose={handleConfirmStakingModalClose}>
+    <Popup handleClose={handleCloseModal} showModal={showConfirmStakingModal}>
       <PlusHeader action={handleReject} chain={chain} closeText={'Reject'} icon={<ConfirmationNumberOutlinedIcon fontSize='small' />} title={'Confirm'} />
 
       <Grid alignItems='center' container>
@@ -441,7 +431,7 @@ export default function ConfirmStaking({ amount, chain, coin, ledger, nominatedV
         }
       </Grid>
 
-      <Grid item sx={{ margin: '30px 20px 5px' }} xs={12}>
+      <Grid container item sx={{ p: '20px 20px' }} xs={12}>
         <Password
           autofocus={!['confirming', 'failed', 'success'].includes(confirmingState)}
           handleClearPassword={handleClearPassword}
@@ -453,11 +443,11 @@ export default function ConfirmStaking({ amount, chain, coin, ledger, nominatedV
         />
 
         <ConfirmButton
-          buttonDisableCondition={!ledger}
-          confirmingState={confirmingState}
-          handleBack={handleConfirmStakingModalBack}
+          handleBack={handleBack}
           handleConfirm={handleConfirm}
           handleReject={handleReject}
+          isDisabled={!ledger}
+          state={confirmingState}
         />
       </Grid>
     </Popup>

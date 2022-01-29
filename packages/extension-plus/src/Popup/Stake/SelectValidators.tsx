@@ -4,7 +4,7 @@
 
 import type { AccountId, StakingLedger } from '@polkadot/types/interfaces';
 
-import { ReportProblemOutlined, RecommendOutlined as RecommendOutlinedIcon, Delete as DeleteIcon, FilterList as FilterListIcon } from '@mui/icons-material';
+import { Delete as DeleteIcon, FilterList as FilterListIcon, RecommendOutlined as RecommendOutlinedIcon, ReportProblemOutlined } from '@mui/icons-material';
 import { Box, Checkbox, Container, FormControlLabel, Grid, IconButton, TextField } from '@mui/material';
 import { alpha, styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
@@ -24,14 +24,14 @@ import { DeriveStakingQuery } from '@polkadot/api-derive/types';
 import { Chain } from '../../../../extension-chains/src/types';
 import { NextStepButton } from '../../../../extension-ui/src/components';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
-import {PlusHeader,Popup} from '../../components';
+import { PlusHeader, Popup } from '../../components';
 import { DEFAULT_VALIDATOR_COMMISION_FILTER } from '../../util/constants';
-import getNetworkInfo from '../../util/getNetwork';
 import { AccountsBalanceType, StakingConsts, Validators, ValidatorsName } from '../../util/plusTypes';
 import ConfirmStaking from './ConfirmStaking';
 
 interface Props {
   chain?: Chain | null;
+  decimals: number;
   handleEasyStakingModalClose: Dispatch<SetStateAction<boolean>>;
   staker: AccountsBalanceType;
   showSelectValidatorsModal: boolean;
@@ -40,13 +40,11 @@ interface Props {
   stakingConsts: StakingConsts;
   stakeAmount: bigint;
   validatorsInfo: Validators;
-  // validatorsInfoFromSubscan: AllValidatorsFromSubscan | null;
   validatorsName: ValidatorsName[] | null;
   setState: React.Dispatch<React.SetStateAction<string>>;
   state: string;
   coin: string;
   ledger: StakingLedger | null;
-
 }
 
 interface Data {
@@ -90,11 +88,9 @@ interface EnhancedTableToolbarProps {
 interface EnhancedTableProps {
   numSelected: number;
   onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Data) => void;
-  // onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: string;
   rowCount: number;
-  // validatorsName: ValidatorsName[] | null;
 }
 
 function toShortAddress(_address: string | AccountId): string {
@@ -306,12 +302,11 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
   );
 };
 
-
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.grey[400],
     color: theme.palette.common.white,
-    height: '20px',
+    height: '20px'
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 13,
@@ -399,12 +394,11 @@ function EnhancedTable(props: TableRowProps) {
         <Table stickyHeader>
           <EnhancedTableHead
             numSelected={selected.length}
-            // eslint-disable-next-line react/jsx-no-bind
             onRequestSort={handleRequestSort}
             // onSelectAllClick={handleSelectAllClick}
             order={order}
             orderBy={orderBy}
-            rowCount={rows.length} />
+            rowCount={rows.length}/>
           <TableBody>
             {
               rows.slice().sort(getComparator(order, orderBy))
@@ -485,12 +479,12 @@ function EnhancedTable(props: TableRowProps) {
           </TableBody>
         </Table>
       </TableContainer>
-    </Container >
+    </Container>
   );
 }
 
 export default function SelectValidators({
-  chain, coin, ledger, nominatedValidators, setSelectValidatorsModalOpen,
+  chain, coin, decimals, ledger, nominatedValidators, setSelectValidatorsModalOpen,
   setState, showSelectValidatorsModal, stakeAmount, staker, stakingConsts, state,
   validatorsInfo, validatorsName
 }: Props): React.ReactElement<Props> {
@@ -501,16 +495,12 @@ export default function SelectValidators({
   const [filterHighCommissionsState, setFilterHighCommissions] = useState(true);
   const [filterOverSubscribedsState, setFilterOverSubscribeds] = useState(true);
   const [filterNoNamesState, setFilterNoNames] = useState(false);
-  const [decimal, setDecimal] = useState(1);
   const [selected, setSelected] = React.useState<DeriveStakingQuery[]>([]);
   const [showConfirmStakingModal, setConfirmStakingModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    const { decimals } = getNetworkInfo(chain);
-
-    setDecimal(decimals);
     setValidators(validatorsInfo?.current.concat(validatorsInfo?.waiting));
-  }, []);
+  }, [validatorsInfo]);
 
   useEffect(() => {
     if (!nominatedValidators) return;
@@ -575,13 +565,13 @@ export default function SelectValidators({
 
   return (
     <Popup showModal={showSelectValidatorsModal} handleClose={handleCancel}>
-      <PlusHeader action={handleCancel} chain={chain} closeText={'Cancel'} icon={<RecommendOutlinedIcon fontSize='small'/>} title={'Select Validators'} />
+      <PlusHeader action={handleCancel} chain={chain} closeText={'Cancel'} icon={<RecommendOutlinedIcon fontSize='small' />} title={'Select Validators'} />
 
       <Grid alignItems='center' container>
         <Grid item xs={12} sx={{ textAlign: 'left' }}>
           {validatorsInfo
             ? <EnhancedTable
-              decimals={decimal}
+              decimals={decimals}
               nominatedValidators={nominatedValidators}
               searchedValidators={searchedValidators}
               searching={searching}
@@ -647,9 +637,8 @@ export default function SelectValidators({
               ? <ConfirmStaking
                 amount={state === 'changeValidators' ? 0n : stakeAmount}
                 chain={chain}
-                // handleEasyStakingModalClose={handleEasyStakingModalClose}
-                // lastFee={lastFee}
                 coin={coin}
+                decimals={decimals}
                 ledger={ledger}
                 nominatedValidators={null}
                 selectedValidators={selected}

@@ -4,7 +4,7 @@
 
 import type { Chain } from '@polkadot/extension-chains/types';
 import { AddressOrPair } from '@polkadot/api/types';
-import getChainInfo from './getChainInfo';
+import getChainInfo from '../getChainInfo';
 
 export default async function getFee(
   _senderKeyring: AddressOrPair,
