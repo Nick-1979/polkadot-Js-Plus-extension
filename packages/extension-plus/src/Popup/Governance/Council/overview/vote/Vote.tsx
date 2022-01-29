@@ -12,7 +12,7 @@ import { Chain } from '../../../../../../../extension-chains/src/types';
 import { BackButton, Button } from '../../../../../../../extension-ui/src/components';
 import useTranslation from '../../../../../../../extension-ui/src/hooks/useTranslation';
 import { AllAddresses, Password, PlusHeader, Popup, Progress } from '../../../../../components';
-import { PASSWORD_MAP } from '../../../../../util/constants';
+import { PASS_MAP } from '../../../../../util/constants';
 import getVotingBond from '../../../../../util/getVotingBond';
 import { PersonsInfo } from '../../../../../util/plusTypes';
 import { amountToHuman } from '../../../../../util/plusUtils';
@@ -33,7 +33,7 @@ export default function Vote({ allCouncilInfo, chain, coin, decimals, setShowVot
   const [selectedVoterAddress, setSelectedVoterAddress] = useState<string>('');
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
   const [password, setPassword] = useState<string>('');
-  const [passwordStatus, setPasswordStatus] = useState<number>(PASSWORD_MAP.EMPTY);// 0: no password, -1: password incorrect, 1:password correct
+  const [passwordStatus, setPasswordStatus] = useState<number>(PASS_MAP.EMPTY);// 0: no password, -1: password incorrect, 1:password correct
   const [isVoting, setIsVoting] = useState<boolean>(false);
   const [votingBondBase, setVotingBondBase] = useState<bigint>();
   const [votingBondFactor, setVotingBondFactor] = useState<bigint>();
@@ -57,7 +57,7 @@ export default function Vote({ allCouncilInfo, chain, coin, decimals, setShowVot
   }, []);
 
   const handleClearPassword = (): void => {
-    setPasswordStatus(PASSWORD_MAP.EMPTY);
+    setPasswordStatus(PASS_MAP.EMPTY);
     setPassword('');
   };
 
@@ -73,14 +73,14 @@ export default function Vote({ allCouncilInfo, chain, coin, decimals, setShowVot
       const signer = keyring.getPair(selectedVoterAddress);
 
       signer.unlock(password);
-      setPasswordStatus(PASSWORD_MAP.CORRECT);
+      setPasswordStatus(PASS_MAP.CORRECT);
       const { block, failureText, fee, status, txHash } = await voteElection(chain, selectedCandidates, votingBond, signer);
 
       console.log('vote failureText', failureText);
       setIsVoting(false);
     } catch (e) {
       console.log('error:', e);
-      setPasswordStatus(PASSWORD_MAP.INCORRECT);
+      setPasswordStatus(PASS_MAP.INCORRECT);
       setIsVoting(false);
     }
   };

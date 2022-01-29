@@ -14,6 +14,7 @@ import getLogo from '../../../../util/getLogo';
 import { MotionsInfo } from '../../../../util/plusTypes';
 import { remainingTime } from '../../../../util/plusUtils';
 import { grey } from '@mui/material/colors';
+import Identity from '../overview/Identity';
 
 interface Props {
   motions: MotionsInfo;
@@ -41,7 +42,7 @@ export default function Motions({ coin, decimals, genesisHash, currentBlockNumbe
             <Grid container justifyContent='space-between' sx={{ textAlign: 'center' }}>
               <Grid item>
                 {t('Index')}<br />
-                <b style={{ fontSize: 15}}> {p.votes.index}</b>
+                <b style={{ fontSize: 15 }}> {p.votes.index}</b>
               </Grid>
 
               <Grid item>
@@ -90,28 +91,10 @@ export default function Motions({ coin, decimals, genesisHash, currentBlockNumbe
             </Grid>
 
             {proposalInfo[index]?.proposer &&
-              <>
-                <Grid item sx={{ paddingTop: 2 }}>
-                  {t('Proposer')}
-                </Grid>
-                <Grid container item alignItems='center' spacing={1} justifyContent='flext-start'>
-                  <Grid item>
-                    <Identicon
-                      prefix={chain?.ss58Format ?? 42}
-                      size={24}
-                      theme={chain?.icon || 'polkadot'}
-                      value={String(proposalInfo[index]?.proposer)}
-                    />
-                  </Grid>
-                  <Grid item>
-                    {accountInfo[index].identity.display}<br />
-                    <div style={{ color: grey[500] }}> {proposalInfo[index]?.proposer}</div>
-                  </Grid>
-                </Grid>
-              </>
+              <Identity accountInfo={accountInfo[index]} chain={chain} showAddress title={t('Proposer')} />
             }
-
-          </Paper>))
+          </Paper>
+          ))
         : <Grid xs={12} sx={{ paddingTop: 3, textAlign: 'center' }}>
           {t('No data')}
         </Grid>

@@ -18,81 +18,91 @@ interface Props {
   accountInfo: DeriveAccountInfo;
   chain: Chain;
   showAddress?: boolean;
+  title: string;
 }
 
-export default function Identity({ chain, accountInfo, showAddress = false }: Props): React.ReactElement<Props> {
+export default function Identity({ accountInfo, chain, showAddress = false, title = '' }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
 
   return (
-    <Grid container item xs={12} justifyContent='flex-end'>
-      <Grid item xs={1}>
-        <Identicon
-          prefix={chain?.ss58Format ?? 42}
-          size={24}
-          theme={chain?.icon || 'polkadot'}
-          value={String(accountInfo.accountId)}
-        />
-      </Grid>
-
-      <Grid container item xs={11} justifyContent='flex-start' spacing={1} sx={{ paddingLeft: '5px' }}>
-        {accountInfo.identity.displayParent &&
-          <Grid item>
-            {accountInfo.identity.displayParent} /
-          </Grid>
-        }
-        <Grid item sx={accountInfo.identity.displayParent && { color: grey[500] }}>
-          {accountInfo.identity.display} { }
-        </Grid>
-
-        {!(accountInfo.identity.displayParent || accountInfo.identity.display) &&
-          <Grid item>
-            <ShortAddress address={String(accountInfo.accountId)} />
-          </Grid>
-        }
-
-        {accountInfo.identity.twitter &&
-          <Grid item>
-            <Link href={`https://TwitterIcon.com/${accountInfo.identity.twitter}`}>
-              <TwitterIcon
-                color='primary'
-                sx={{ fontSize: 15 }}
-              />
-            </Link>
-          </Grid>
-        }
-
-        {accountInfo.identity.email &&
-          <Grid item>
-            <Link href={`mailto:${accountInfo.identity.email}`}>
-              <EmailIcon
-                color='secondary'
-                sx={{ fontSize: 15 }}
-              />
-            </Link>
-          </Grid>
-        }
-
-        {accountInfo.identity.web &&
-          <Grid item>
-            <Link
-              href={accountInfo.identity.web}
-              rel='noreferrer'
-              target='_blank'
-            >
-              <LaunchRoundedIcon
-                color='primary'
-                sx={{ fontSize: 15 }}
-              />
-            </Link>
-          </Grid>
-        }
-      </Grid>
-
-      {showAddress &&
-        <Grid item xs={11} sx={{ paddingLeft: '5px', color: grey[500] }}>
-          {String(accountInfo.accountId)}
+    <Grid container>
+      {title &&
+        <Grid item sx={{ paddingBottom: '5px' }}>
+          {title}
         </Grid>
       }
+
+      <Grid container item xs={12} justifyContent='flex-end'>
+        <Grid item xs={1}>
+          <Identicon
+            prefix={chain?.ss58Format ?? 42}
+            size={24}
+            theme={chain?.icon || 'polkadot'}
+            value={String(accountInfo.accountId)}
+          />
+        </Grid>
+
+        <Grid container item xs={11} justifyContent='flex-start' spacing={1} sx={{ paddingLeft: '5px' }}>
+          {accountInfo.identity.displayParent &&
+            <Grid item>
+              {accountInfo.identity.displayParent} /
+            </Grid>
+          }
+          <Grid item sx={accountInfo.identity.displayParent && { color: grey[500] }}>
+            {accountInfo.identity.display} { }
+          </Grid>
+
+          {!(accountInfo.identity.displayParent || accountInfo.identity.display) &&
+            <Grid item>
+              <ShortAddress address={String(accountInfo.accountId)} />
+            </Grid>
+          }
+
+          {accountInfo.identity.twitter &&
+            <Grid item>
+              <Link href={`https://TwitterIcon.com/${accountInfo.identity.twitter}`}>
+                <TwitterIcon
+                  color='primary'
+                  sx={{ fontSize: 15 }}
+                />
+              </Link>
+            </Grid>
+          }
+
+          {accountInfo.identity.email &&
+            <Grid item>
+              <Link href={`mailto:${accountInfo.identity.email}`}>
+                <EmailIcon
+                  color='secondary'
+                  sx={{ fontSize: 15 }}
+                />
+              </Link>
+            </Grid>
+          }
+
+          {accountInfo.identity.web &&
+            <Grid item>
+              <Link
+                href={accountInfo.identity.web}
+                rel='noreferrer'
+                target='_blank'
+              >
+                <LaunchRoundedIcon
+                  color='primary'
+                  sx={{ fontSize: 15 }}
+                />
+              </Link>
+            </Grid>
+          }
+        </Grid>
+
+        {showAddress &&
+          <Grid item xs={11} sx={{ paddingLeft: '5px', color: grey[500] }}>
+            {String(accountInfo.accountId)}
+          </Grid>
+        }
+      </Grid>
     </Grid>
+
   )
 }

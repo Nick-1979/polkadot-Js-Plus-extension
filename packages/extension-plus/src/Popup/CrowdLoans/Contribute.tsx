@@ -1,7 +1,7 @@
-/* eslint-disable react/jsx-max-props-per-line */
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
+/* eslint-disable react/jsx-max-props-per-line */
 
 import { AllOut as AllOutIcon, CheckRounded, Clear } from '@mui/icons-material';
 import { Button as MuiButton, Grid, IconButton, InputAdornment, SelectChangeEvent, TextField } from '@mui/material';

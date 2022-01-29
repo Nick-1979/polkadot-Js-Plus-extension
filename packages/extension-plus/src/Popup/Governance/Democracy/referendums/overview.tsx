@@ -8,11 +8,11 @@ import React from 'react';
 
 import { DeriveReferendumExt } from '@polkadot/api-derive/types';
 
-import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
-import { VOTE_MAP } from '../../../util/constants';
-import { amountToHuman, formatMeta, remainingTime } from '../../../util/plusUtils';
-import { ChainInfo } from '../../../util/plusTypes';
-import getLogo from '../../../util/getLogo';
+import useTranslation from '../../../../../../extension-ui/src/hooks/useTranslation';
+import { VOTE_MAP } from '../../../../util/constants';
+import { amountToHuman, formatMeta, remainingTime } from '../../../../util/plusUtils';
+import { ChainInfo } from '../../../../util/plusTypes';
+import getLogo from '../../../../util/getLogo';
 
 interface Props {
   referendums: DeriveReferendumExt[];
@@ -88,7 +88,7 @@ export default function Referendums({ chainInfo, chainName, currentBlockNumber, 
               </Grid>
               <Grid container justifyContent='space-between' sx={{ fontSize: 11, paddingTop: 1, color: 'red' }}>
                 <Grid item>
-                  {t('End')}{': '}{r.status.end.toString()}
+                  {t('End')}{': #'}{r.status.end.toString()}
                 </Grid>
                 <Grid item>
                   {t('Delay')}{': '}{r.status.delay.toString()}
@@ -98,14 +98,14 @@ export default function Referendums({ chainInfo, chainName, currentBlockNumber, 
                 </Grid>
               </Grid>
 
-              <Grid item xs={12} sx={{ margin: '20px 1px 10px', fontWeight: '600' }}>
+              <Grid item xs={12} sx={{ fontWeight: '600', margin: '20px 1px 10px' }}>
                 {description}
               </Grid>
 
-              <Grid item xs={12} sx={{ border: '1px dotted', borderRadius: '10px', padding: 1, margin: '20px 1px 20px' }}>
+              {/* <Grid item xs={12} sx={{ border: '1px dotted', borderRadius: '10px', padding: 1, margin: '20px 1px 20px' }}>
                 {t('Hash')}<br />
                 {r.imageHash.toString()}
-              </Grid>
+              </Grid> */}
 
               <Grid container justifyContent='space-between' sx={{ paddingTop: 1 }}>
                 <Grid item>

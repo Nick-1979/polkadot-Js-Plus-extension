@@ -2,25 +2,23 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-import { OpenInNew as OpenInNewIcon, BatchPrediction as BatchPredictionIcon, CheckCircleOutline as CheckCircleOutlineIcon, HowToVote as HowToVoteIcon, RemoveCircleOutline as RemoveCircleOutlineIcon, ThumbDownAlt as ThumbDownAltIcon, ThumbUpAlt as ThumbUpAltIcon, WhereToVote as WhereToVoteIcon } from '@mui/icons-material';
-import { Button, Container, Divider, Grid, Link, LinearProgress, Modal, Paper, Tab, Tabs } from '@mui/material';
+import { BatchPrediction as BatchPredictionIcon, HowToVote as HowToVoteIcon, WhereToVote as WhereToVoteIcon } from '@mui/icons-material';
+import { Grid, Tab, Tabs } from '@mui/material';
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
-import ReactDom from 'react-dom';
 
-import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
-import getChainInfo from '../../../util/getChainInfo';
-import getReferendums from '../../../util/getReferendums';
-import Referendums from './Referendums';
-import { PlusHeader, Progress, Popup } from '../../../components';
-import { DeriveReferendumExt, DeriveProposal } from '@polkadot/api-derive/types';
-import getCurrentBlockNumber from '../../../util/getCurrentBlockNumber';
-import { VOTE_MAP } from '../../../util/constants';
-import VoteReferendum from './VoteReferendum';
+import { DeriveReferendumExt } from '@polkadot/api-derive/types';
+
 import useMetadata from '../../../../../extension-ui/src/hooks/useMetadata';
-import { ChainInfo, ProposalsInfo } from '../../../util/plusTypes';
+import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
+import { PlusHeader, Popup, Progress } from '../../../components';
+import getCurrentBlockNumber from '../../../util/getCurrentBlockNumber';
 import getProposals from '../../../util/getProposals';
-import Proposals from './Proposals';
-import VoteProposal from './VoteProposal';
+import getReferendums from '../../../util/getReferendums';
+import { ChainInfo, ProposalsInfo } from '../../../util/plusTypes';
+import Proposals from './proposals/overview';
+import VoteProposal from './proposals/VoteProposal';
+import Referendums from './referendums/overview';
+import VoteReferendum from './referendums/VoteReferendum';
 
 interface Props {
   chainName: string;
@@ -29,17 +27,17 @@ interface Props {
   setDemocracyModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function Democracy({ chainName, chainInfo, setDemocracyModalOpen, showDemocracyModal }: Props): React.ReactElement<Props> {
+export default function Democracy({ chainInfo, chainName, setDemocracyModalOpen, showDemocracyModal }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
+
   const [tabValue, setTabValue] = useState('referendums');
   const [referendums, setReferenduns] = useState<DeriveReferendumExt[]>();
   const [proposalsInfo, setProposalsInfo] = useState<ProposalsInfo>();
   const [currentBlockNumber, setCurrentBlockNumber] = useState<number>();
   const [showVoteReferendumModal, setShowVoteReferendumModal] = useState<boolean>(false);
   const [vote, setVote] = useState<{ voteType: number, refId: string }>();
-
-  const [showVoteProposalModal, setShowVoteProposalModal] = useState<boolean>(false);
-  const [second, setSecond] = useState<{ proposalId: string, depositorsLength: number }>();
+  // const [showVoteProposalModal, setShowVoteProposalModal] = useState<boolean>(false);
+  // const [second, setSecond] = useState<{ proposalId: string, depositorsLength: number }>();
 
   const chain = useMetadata(chainInfo?.genesisHash, true);// TODO:double check to have genesisHash here
 
@@ -78,18 +76,18 @@ export default function Democracy({ chainName, chainInfo, setDemocracyModalOpen,
     setVote({ refId: refId, voteType: voteType });
   }, []);
 
-  const handleSecond = useCallback((proposalId: string, depositorsLength: number) => {
-    setShowVoteProposalModal(true);
-    setSecond({ proposalId: proposalId, depositorsLength: depositorsLength });
-  }, []);
+  // const handleSecond = useCallback((proposalId: string, depositorsLength: number) => {
+  //   setShowVoteProposalModal(true);
+  //   setSecond({ depositorsLength: depositorsLength, proposalId: proposalId });
+  // }, []);
 
   const handleVoteReferendumModalClose = useCallback(() => {
     setShowVoteReferendumModal(false);
   }, []);
 
-  const handleVoteProposalModalClose = useCallback(() => {
-    setShowVoteProposalModal(false);
-  }, []);
+  // const handleVoteProposalModalClose = useCallback(() => {
+  //   setShowVoteProposalModal(false);
+  // }, []);
 
   return (
     <Popup showModal={showDemocracyModal} handleClose={handleDemocracyModalClose}>
@@ -113,7 +111,7 @@ export default function Democracy({ chainName, chainInfo, setDemocracyModalOpen,
         {tabValue === 'proposals'
           ? <Grid item xs={12} sx={{ height: 450, overflowY: 'auto' }}>
             {proposalsInfo
-              ? <Proposals handleSecond={handleSecond} proposalsInfo={proposalsInfo} chain={chain} chainInfo={chainInfo} currentBlockNumber={currentBlockNumber} />
+              ? <Proposals proposalsInfo={proposalsInfo} chain={chain} chainInfo={chainInfo} currentBlockNumber={currentBlockNumber} />
               : <Progress title={'Loading proposals ...'} />}
           </Grid>
           : ''}
@@ -127,14 +125,14 @@ export default function Democracy({ chainName, chainInfo, setDemocracyModalOpen,
             vote={vote} />
         }
 
-        {showVoteProposalModal &&
+        {/* {showVoteProposalModal &&
           <VoteProposal
             chain={chain}
             chainInfo={chainInfo}
             handleVoteProposalModalClose={handleVoteProposalModalClose}
             showVoteProposalModal={showVoteProposalModal}
             vote={vote} />
-        }
+        } */}
 
       </Grid>
     </Popup>

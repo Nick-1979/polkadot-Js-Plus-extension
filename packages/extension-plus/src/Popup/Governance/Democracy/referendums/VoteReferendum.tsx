@@ -5,14 +5,14 @@
 import { Paper, Grid, Link, Divider, LinearProgress, Button } from '@mui/material';
 import { DeriveReferendumExt } from '@polkadot/api-derive/types';
 import { OpenInNew as OpenInNewIcon, CheckCircleOutline as CheckCircleOutlineIcon, ThumbsUpDown as ThumbsUpDownIcon, RemoveCircleOutline as RemoveCircleOutlineIcon, ThumbDownAlt as ThumbDownAltIcon, ThumbUpAlt as ThumbUpAltIcon, WhereToVote as WhereToVoteIcon } from '@mui/icons-material';
-import { amountToHuman, remainingTime } from '../../../util/plusUtils';
-import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
+import { amountToHuman, remainingTime } from '../../../../util/plusUtils';
+import useTranslation from '../../../../../../extension-ui/src/hooks/useTranslation';
 import React, { useEffect, useState } from 'react';
-import { BLOCK_RATE, VOTE_MAP } from '../../../util/constants';
-import { AllAddresses, PlusHeader, Popup } from '../../../components';
-import { Chain } from '../../../../../extension-chains/src/types';
-import { ChainInfo } from '../../../util/plusTypes';
-import getBalanceAll from '../../../util/getBalanceAll';
+import { BLOCK_RATE, VOTE_MAP } from '../../../../util/constants';
+import { AllAddresses, PlusHeader, Popup } from '../../../../components';
+import { Chain } from '../../../../../../extension-chains/src/types';
+import { ChainInfo } from '../../../../util/plusTypes';
+import getBalanceAll from '../../../../util/getBalanceAll';
 
 
 interface Props {
