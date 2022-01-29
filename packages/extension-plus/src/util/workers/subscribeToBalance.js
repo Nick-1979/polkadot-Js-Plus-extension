@@ -16,7 +16,7 @@ async function subscribeToBalance (_address, _chain, _formattedAddress) {
         ...handleAccountBalance(balance)
       };
 
-      const changes = { 
+      const changes = {
         address: _address,
         balanceInfo: result,
         subscribedChain: _chain
