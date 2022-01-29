@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
+import { CheckRounded, Clear } from '@mui/icons-material';
+import { Grid, IconButton, InputAdornment, TextField } from '@mui/material';
 import React from 'react';
 
 import useTranslation from '../../../extension-ui/src/hooks/useTranslation';
-import { Grid, IconButton, InputAdornment, TextField } from '@mui/material';
-import { CheckRounded, Clear } from '@mui/icons-material';
-import { PASSWORD_MAP } from '../util/constants';
+import { PASS_MAP } from '../util/constants';
 
 interface Props {
   handleClearPassword: () => void;
@@ -15,10 +15,11 @@ interface Props {
   passwordStatus: number;
   handleSavePassword: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleIt: () => void;
-  isDisabled?:boolean;
+  isDisabled?: boolean;
+  autofocus?: boolean;
 }
 
-export default function Password({ handleClearPassword, handleIt, handleSavePassword, isDisabled = false, password, passwordStatus }: Props): React.ReactElement<Props> {
+export default function Password({ autofocus = false, handleClearPassword, handleIt, handleSavePassword, isDisabled = false, password, passwordStatus }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
 
   return (
@@ -39,17 +40,17 @@ export default function Password({ handleClearPassword, handleIt, handleSavePass
           ),
           startAdornment: (
             <InputAdornment position='start'>
-              {passwordStatus === PASSWORD_MAP.CORRECT ? <CheckRounded color='success' /> : ''}
+              {passwordStatus === PASS_MAP.CORRECT ? <CheckRounded color='success' /> : ''}
             </InputAdornment>
           ),
           style: { fontSize: 16 }
         }}
-        // autoFocus={!['confirming', 'failed', 'success'].includes(confirmingState)}
+        autoFocus={autofocus}
         color='warning'
         disabled={isDisabled}
-        error={passwordStatus === PASSWORD_MAP.INCORRECT}
+        error={passwordStatus === PASS_MAP.INCORRECT}
         fullWidth
-        helperText={passwordStatus === PASSWORD_MAP.INCORRECT ? t('Password is not correct') : t('Please enter the account password')}
+        helperText={passwordStatus === PASS_MAP.INCORRECT ? t('Password is not correct') : t('Please enter the account password')}
         label={t('Password')}
         onChange={handleSavePassword}
         onKeyPress={(event) => {
