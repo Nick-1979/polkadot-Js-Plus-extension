@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-// eslint-disable-next-line header/header
 export const FLOATING_POINT_DIGIT = 5;
 export const BLOCK_RATE = 6 //sec
 export const DEFAULT_TOKEN_DECIMALS = 12;
@@ -45,14 +44,14 @@ export const DEFAULT_IDENTITY = {
   }
 };
 
-export const PASSWORD_MAP = {
-  INCORRECT: -1,
-  // eslint-disable-next-line sort-keys
-  CORRECT: 0,
-  EMPTY: 1
-};
-
 export const VOTE_MAP = {
   AYE: 1,
   NAY: 0
+};
+
+export const PASS_MAP = {
+  EMPTY: 0,
+  INCORRECT: -1,
+  // eslint-disable-next-line sort-keys
+  CORRECT: 1
 };
