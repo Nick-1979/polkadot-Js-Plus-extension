@@ -4,8 +4,8 @@
 
 import type { ThemeProps } from '../../../extension-ui/src/types';
 
-import { Modal, Container } from '@mui/material';
-import React, { } from 'react';
+import { Container, Modal } from '@mui/material';
+import React from 'react';
 import ReactDom from 'react-dom';
 import styled from 'styled-components';
 
@@ -37,8 +37,13 @@ function Popup({ children, handleClose, id, showModal }: Props): React.ReactElem
         width: '560px'
       }}
       >
-        <Container id={id} disableGutters maxWidth='md'>
+        <Container
+          disableGutters
+          id={id}
+          maxWidth='md'
+        >
           {children}
+
         </Container>
       </div>
     </Modal>
