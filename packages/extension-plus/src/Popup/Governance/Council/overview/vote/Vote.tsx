@@ -11,7 +11,7 @@ import keyring from '@polkadot/ui-keyring';
 
 import { Chain } from '../../../../../../../extension-chains/src/types';
 import useTranslation from '../../../../../../../extension-ui/src/hooks/useTranslation';
-import { AllAddresses, ConfirmButton, Password, PlusHeader, Popup, Progress } from '../../../../../components';
+import { AllAddresses, ConfirmButton, GBalance, Password, PlusHeader, Popup, Progress } from '../../../../../components';
 import broadcast from '../../../../../util/api/broadcast';
 import { PASS_MAP } from '../../../../../util/constants';
 import getChainInfo from '../../../../../util/getChainInfo';
@@ -100,15 +100,7 @@ export default function Vote({ allCouncilInfo, chain, coin, decimals, setShowVot
 
       <AllAddresses chain={chain} selectedAddress={selectedVoterAddress} setSelectedAddress={setSelectedVoterAddress} text={t('Select voter account')} />
 
-      <Grid item xs={12} sx={{ padding: '0px 40px 10px', textAlign: 'right' }}>
-        {t('Voting bond')}:{' '}
-        {votingBond
-          ? <>
-            {amountToHuman(votingBond.toString(), decimals, 4)}{' '}{coin}
-          </>
-          : <Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }} />
-        }
-      </Grid>
+      <GBalance balance={votingBond} title={t('Voting bond')} decimals={decimals} coin={coin} />
 
       {allCouncilInfo
         ? <Grid container sx={{ padding: '0px 30px' }}>

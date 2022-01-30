@@ -4,15 +4,15 @@
 
 import type { DeriveCouncilVote } from '@polkadot/api-derive/types';
 
-import { GroupRemove  as GroupRemoveIcon  } from '@mui/icons-material';
-import { Grid } from '@mui/material';
+import { GroupRemove as GroupRemoveIcon } from '@mui/icons-material';
+import { Container, Grid } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 
 import keyring from '@polkadot/ui-keyring';
 
 import { Chain } from '../../../../../../../extension-chains/src/types';
 import useTranslation from '../../../../../../../extension-ui/src/hooks/useTranslation';
-import { AllAddresses, ConfirmButton, Password, PlusHeader, Popup, Progress } from '../../../../../components';
+import { AllAddresses, ConfirmButton, GBalance, Password, PlusHeader, Popup, Progress } from '../../../../../components';
 import broadcast from '../../../../../util/api/broadcast';
 import { PASS_MAP } from '../../../../../util/constants';
 import getChainInfo from '../../../../../util/getChainInfo';
@@ -97,43 +97,37 @@ export default function MyVotes({ allCouncilInfo, chain, coin, decimals, setShow
 
   return (
     <Popup handleClose={handleClose} showModal={showMyVotesModal}>
-      <PlusHeader action={handleClose} chain={chain} closeText={'Close'} icon={<GroupRemoveIcon  fontSize='small' />} title={'My Votes'} />
+      <PlusHeader action={handleClose} chain={chain} closeText={'Close'} icon={<GroupRemoveIcon fontSize='small' />} title={'My Votes'} />
 
       <AllAddresses chain={chain} selectedAddress={selectedAddress} setSelectedAddress={setSelectedAddress} text={t('select account to view votes')} />
 
-      {votesInfo && filteredPersonsInfo
-        ? <Grid container sx={{ padding: '0px 30px' }}>
-          <Grid item xs={12} sx={{ fontSize: 12, paddingRight: '10px', textAlign: 'right' }}>
-            {t('Staked:')} {Number(amountToHuman(votesInfo.stake.toString(), decimals)).toLocaleString()} {' '}{coin}
-          </Grid>
+      <GBalance balance={votesInfo?.stake} title={t('Staked')} decimals={decimals} coin={coin} />
 
-          <Grid item xs={12} id='scrollArea' sx={{ height: '250px', overflowY: 'auto' }}>
-            <Members chain={chain} coin={coin} decimals={decimals} membersType={t('Votes')} personsInfo={filteredPersonsInfo} />
-          </Grid>
+      <Container id='scrollArea' sx={{ height: '250px', overflowY: 'auto' }}>
+        {votesInfo && filteredPersonsInfo
+          ?<Members chain={chain} coin={coin} decimals={decimals} membersType={t('Votes')} personsInfo={filteredPersonsInfo} />
+          : <Progress title={t('Loading votes ...')} />
+        }
+      </Container>
 
-          <Grid container item sx={{ paddingTop: '5px' }} xs={12}>
+      <Grid container item sx={{ padding: '5px 30px' }} xs={12}>
+        <Password
+          handleClearPassword={handleClearPassword}
+          handleSavePassword={handleSavePassword}
+          handleIt={handleCancelVotes}
+          password={password}
+          passwordStatus={passwordStatus}
+          isDisabled={!votesInfo?.votes.length} />
 
-            <Password
-              handleClearPassword={handleClearPassword}
-              handleSavePassword={handleSavePassword}
-              handleIt={handleCancelVotes}
-              password={password}
-              passwordStatus={passwordStatus}
-              isDisabled={!votesInfo?.votes.length} />
-
-            <ConfirmButton
-              handleBack={handleClose}
-              handleConfirm={handleCancelVotes}
-              handleReject={handleClose}
-              isDisabled={!votesInfo?.votes.length}
-              state={state}
-              text='Cancel votes'
-            />
-          </Grid>
-
-        </Grid>
-        : <Progress title={t('Loading votes ...')} />
-      }
+        <ConfirmButton
+          handleBack={handleClose}
+          handleConfirm={handleCancelVotes}
+          handleReject={handleClose}
+          isDisabled={!votesInfo?.votes.length}
+          state={state}
+          text='Cancel votes'
+        />
+      </Grid>
     </Popup>
   );
 }
