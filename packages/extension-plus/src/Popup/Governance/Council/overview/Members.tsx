@@ -35,22 +35,22 @@ export default function Members({ chain, coin, decimals, membersType, personsInf
 
       {personsInfo.infos.length
         ? personsInfo.infos.map((m, index) => (
-          <Paper elevation={2} key={index} sx={{ borderRadius: '10px', margin: '10px 20px 1px', p: '5px 20px 10px 5px' }}>
-        
-            <Grid container justifyContent='space-between'>
-            
+          <Paper elevation={2} key={index} sx={{ borderRadius: '10px', fontSize: 13, margin: '10px 20px 1px', p: '5px 20px 10px 5px' }}>
+
+            <Grid container alignItems='center' justifyContent='space-between'>
+
               <Grid container item xs={8}>
                 <Identity chain={chain} accountInfo={m} />
               </Grid>
               {personsInfo?.backed &&
-                <Grid item xs={4} sx={{ textAlign: 'left' }}>
+                <Grid item xs={4} sx={{ textAlign: 'left', fontSize: 12 }}>
                   {t('Backed')}{': '} {Number(amountToHuman(personsInfo.backed[index], decimals, 2)).toLocaleString()} {coin}
                 </Grid>
               }
             </Grid>
 
           </Paper>))
-        : <Grid xs={12} sx={{ textAlign: 'center', paddingTop: 2 }}>
+        : <Grid xs={12} sx={{ textAlign: 'center', paddingTop: 2, fontSize: 12 }}>
           {membersType &&
             <>{t('No ')}{membersType.toLowerCase()} {t(' found')}</>
           }

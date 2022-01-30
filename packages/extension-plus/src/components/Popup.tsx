@@ -34,7 +34,8 @@ function Popup({ children, handleClose, id, showModal }: Props): React.ReactElem
         position: 'relative',
         top: '5px',
         transform: `translateX(${(window.innerWidth - 560) / 2}px)`,
-        width: '560px'
+        width: '560px',
+        fontSize: 11
       }}
       >
         <Container

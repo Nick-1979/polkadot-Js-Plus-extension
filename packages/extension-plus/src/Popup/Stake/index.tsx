@@ -671,14 +671,14 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
 
       <Grid alignItems='center' container>
         <Grid alignItems='center' container item justifyContent='center' xs={12}>
-          <Paper elevation={4} sx={{ borderRadius: '10px', margin: '25px 30px 10px', p: 3, fontSize: 11 }}>
+          <Paper elevation={4} sx={{ borderRadius: '10px', margin: '25px 30px 10px', p: 3 }}>
             <Grid container item >
               <Grid item container sx={{ padding: '10px 0px 20px' }} justifyContent='space-between'>
                 <Grid item >
-                  <b> Available: </b> <Box component='span' sx={{ fontWeight: 600 }}> {availableBalance}</Box>
+                  <b> {t('Available')}: </b> <Box component='span' sx={{ fontWeight: 600 }}> {availableBalance}</Box>
                 </Grid>
                 <Grid item >
-                  <b> Staked: </b> {!ledger
+                  <b> {t('Staked')}: </b> {!ledger
                     ? <Skeleton sx={{ display: 'inline-block', fontWeight: '600', width: '60px' }} />
                     : <Box component='span' sx={{ fontWeight: 600 }}>
                       {currentlyStakedInHuman || '0.00'}
@@ -688,13 +688,13 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
               </Grid>
               <Grid item container justifyContent='space-between'>
                 <Grid item >
-                  <b> Reward: </b>{!totalReceivedReward
+                  <b> {t('Reward')}: </b>{!totalReceivedReward
                     ? <Skeleton sx={{ display: 'inline-block', fontWeight: '600', width: '50px' }} />
                     : <Box component='span' sx={{ fontWeight: 600 }}> {totalReceivedReward}</Box>
                   }
                 </Grid>
                 <Grid item >
-                  <b> Redeemable: </b>{redeemable === null
+                  <b>{t('Redeemable')} : </b>{redeemable === null
                     ? <Skeleton sx={{ display: 'inline-block', fontWeight: '600', width: '50px' }} />
                     : <Box component='span' sx={{ fontWeight: 600 }}>
                       {redeemable ? amountToHuman(String(redeemable), decimals) : '0.00'}   {' '}
@@ -707,11 +707,10 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
                   </Tooltip>
                 </Grid>
                 <Grid item >
-                  <b> Unstaking:</b> {!ledger
+                  <b> {t('Unstaking')}:</b> {!ledger
                     ? <Skeleton sx={{ display: 'inline-block', fontWeight: '600', width: '50px' }} />
                     : <Box component='span' sx={{ fontWeight: 600 }}>
                       {unlockingAmount ? amountToHuman(String(unlockingAmount), decimals) : '0.00'}
-                      {' '}
                     </Box>
                   }
                 </Grid>
@@ -721,16 +720,12 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
         </Grid>
         <Grid item xs={12}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs
-              textColor='secondary'
-              indicatorColor='secondary'
-              centered value={tabValue} onChange={handleTabChange}>
+            <Tabs textColor='secondary' indicatorColor='secondary' centered value={tabValue} onChange={handleTabChange}>
               <Tab icon={<AddCircleOutlineOutlined fontSize='small' />} iconPosition='start' label='Stake' sx={{ fontSize: 11 }} />
               <Tab icon={<RemoveCircleOutlineOutlined fontSize='small' />} iconPosition='start' label='Unstake' sx={{ fontSize: 11 }} />
-              <Tab
-                icon={gettingNominatedValidatorsInfoFromBlockchain && !noNominatedValidators
-                  ? <CircularProgress thickness={2} size={12} />
-                  : <CheckOutlined fontSize='small' />}
+              <Tab icon={gettingNominatedValidatorsInfoFromBlockchain && !noNominatedValidators
+                ? <CircularProgress thickness={2} size={12} />
+                : <CheckOutlined fontSize='small' />}
                 iconPosition='start' label='Nominated Validators' sx={{ fontSize: 11 }}
               />
               <Tab
@@ -767,11 +762,8 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
                   <Grid item sx={{ fontSize: 12 }}>
                     {minStakeable &&
                       <>
-                        Min :
-                        <Button
-                          onClick={handleMinStakeClicked}
-                          variant='text'
-                        >
+                        {t('Min')}  :
+                        <Button onClick={handleMinStakeClicked} variant='text'>
                           {`${minStakeable} ${coin}`}
                         </Button>
                       </>
@@ -780,11 +772,8 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
                   <Grid item sx={{ fontSize: 12 }}>
                     {maxStake &&
                       <>
-                        Max :
-                        <Button
-                          onClick={handleMaxStakeClicked}
-                          variant='text'
-                        >
+                        {t('Max')}:
+                        <Button onClick={handleMaxStakeClicked} variant='text'>
                           {`${maxStake} ${coin}`}
                         </Button>
                       </>
@@ -853,8 +842,6 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
                     {nextButtonCaption}
                   </NextStepButton>
                 </Grid>
-
-
               </Grid>
             </Grid>
           </TabPanel>
@@ -887,7 +874,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
                   <Grid item sx={{ fontSize: 12 }}>
                     {Number(ledger?.active)
                       ? <>
-                        Max :
+                        {t('Max')}:
                         <Button
                           onClick={handleMaxUnstakeClicked}
                           variant='text'

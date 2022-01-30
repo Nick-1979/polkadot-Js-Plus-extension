@@ -3,7 +3,7 @@
 /* eslint-disable header/header */
 /* eslint-disable react/jsx-max-props-per-line */
 
-import { GroupRemove  as GroupRemoveIcon,HowToReg as HowToRegIcon } from '@mui/icons-material';
+import { GroupRemove as GroupRemoveIcon, HowToReg as HowToRegIcon } from '@mui/icons-material';
 import { Button, Container, Divider, Grid, Paper } from '@mui/material';
 import React, { useCallback, useState } from 'react';
 
@@ -72,7 +72,7 @@ export default function Overview({ coin, councilInfo, decimals, genesisHash }: P
 
   return (
     <Container disableGutters maxWidth='md'>
-      <Paper elevation={4} sx={{ borderRadius: '10px', margin: '20px 30px 10px', p: '10px 40px' }}>
+      <Paper elevation={4} sx={{ borderRadius: '10px', fontSize: 12, margin: '20px 30px 10px', p: '10px 40px' }}>
         <Grid container justifyContent='space-between' sx={{ textAlign: 'center' }}>
           <Grid item>
             {t('Seats')}
@@ -97,26 +97,12 @@ export default function Overview({ coin, councilInfo, decimals, genesisHash }: P
 
         <Grid container justifyContent='space-between' sx={{ textAlign: 'center' }}>
           <Grid item>
-            <Button
-              color='warning'
-              onClick={handleShowVotes}
-              size='small'
-              startIcon={<HowToRegIcon />}
-              variant='contained'
-            >
-              {' '}
+            <Button color='warning' onClick={handleShowVotes} size='small' startIcon={<HowToRegIcon />} variant='contained'>
               {t('Vote')}
             </Button>
           </Grid>
-		  <Grid item>
-            <Button
-              onClick={handleShowMyVotes}
-              size='small'
-              startIcon={<GroupRemoveIcon />}
-              sx={{ borderColor: 'black', color: 'black' }}
-              variant='outlined'
-            >
-              {' '}
+          <Grid item>
+            <Button onClick={handleShowMyVotes} size='small' startIcon={<GroupRemoveIcon />} sx={{ borderColor: 'black', color: 'black' }} variant='outlined'>
               {t('Cancel votes')}
             </Button>
           </Grid>
@@ -125,27 +111,9 @@ export default function Overview({ coin, councilInfo, decimals, genesisHash }: P
 
       {councilInfo
         ? <Container id='scrollArea' sx={{ height: '300px', overflowY: 'auto' }}>
-          <Members
-            chain={chain}
-            coin={coin}
-            decimals={decimals}
-            membersType={t('Members')}
-            personsInfo={membersInfo}
-          />
-          <Members
-            chain={chain}
-            coin={coin}
-            decimals={decimals}
-            membersType={t('Runners up')}
-            personsInfo={runnersUpInfo}
-          />
-          <Members
-            chain={chain}
-            coin={coin}
-            decimals={decimals}
-            membersType={t('Candidates')}
-            personsInfo={candidatesInfo}
-          />
+          <Members chain={chain} coin={coin} decimals={decimals} membersType={t('Members')} personsInfo={membersInfo} />
+          <Members chain={chain} coin={coin} decimals={decimals} membersType={t('Runners up')} personsInfo={runnersUpInfo} />
+          <Members chain={chain} coin={coin} decimals={decimals} membersType={t('Candidates')} personsInfo={candidatesInfo} />
         </Container>
         :
         <Grid sx={{ paddingTop: 3, textAlign: 'center' }} xs={12}>
@@ -153,27 +121,9 @@ export default function Overview({ coin, councilInfo, decimals, genesisHash }: P
         </Grid>
       }
 
-      {showMyVotesModal && (
-        <MyVotes
-          allCouncilInfo={allCouncilInfo}
-          chain={chain}
-          coin={coin}
-          decimals={decimals}
-          setShowMyVotesModal={setShowMyVotesModal}
-          showMyVotesModal={showMyVotesModal}
-        />
-      )}
+      {showMyVotesModal && <MyVotes allCouncilInfo={allCouncilInfo} chain={chain} coin={coin} decimals={decimals} setShowMyVotesModal={setShowMyVotesModal} showMyVotesModal={showMyVotesModal} />}
 
-      {showVotesModal && (
-        <Votes
-          allCouncilInfo={allCouncilInfo}
-          chain={chain}
-          coin={coin}
-          decimals={decimals}
-          setShowVotesModal={setShowVotesModal}
-          showVotesModal={showVotesModal}
-        />
-      )}
+      {showVotesModal && <Votes allCouncilInfo={allCouncilInfo} chain={chain} coin={coin} decimals={decimals} setShowVotesModal={setShowVotesModal} showVotesModal={showVotesModal} />}
     </Container>
   );
 }

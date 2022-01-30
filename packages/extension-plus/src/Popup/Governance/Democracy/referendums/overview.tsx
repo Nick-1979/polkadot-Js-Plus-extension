@@ -102,7 +102,7 @@ export default function Referendums({ chain, chainInfo, convictions, currentBloc
               <Grid item xs={12} sx={{ color: 'green' }}>
                 {t('Remaining Time')}{': '} {remainingTime(currentBlockNumber, r.status.end)}
               </Grid>
-              <Grid container justifyContent='space-between' sx={{ fontSize: 11, paddingTop: 1, color: 'red' }}>
+              <Grid container justifyContent='space-between' sx={{ paddingTop: 1, color: 'red' }}>
                 <Grid item>
                   {t('End')}{': #'}{r.status.end.toString()}
                 </Grid>
