@@ -36,7 +36,7 @@ export function balanceToHuman(_balance: AccountsBalanceType | null, _type: stri
   const balance = _balance.balanceInfo;
   const x = 10 ** balance.decimals;
 
-  switch (_type) {
+  switch (_type.toLowerCase()) {
     case 'total':
       return fixFloatingPoint(Number(balance.total) / x);
     case 'available':
