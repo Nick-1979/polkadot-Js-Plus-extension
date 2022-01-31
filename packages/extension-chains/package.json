@@ -4,7 +4,7 @@
   "contributors": [],
   "description": "Definitions for all known chains as exposed by the extension.",
   "homepage": "https://github.com/polkadot-js/extension/tree/master/packages/extension-chains#readme",
-  "license": "Apache-2",
+  "license": "Apache-2.0",
   "maintainers": [],
   "name": "@polkadot/extension-chains",
   "repository": {

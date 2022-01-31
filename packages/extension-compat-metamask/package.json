@@ -4,7 +4,7 @@
   "contributors": [],
   "description": "Metamask compatibility layer",
   "homepage": "https://github.com/polkadot-js/extension/tree/master/packages/extension-compat-metamask#readme",
-  "license": "Apache-2",
+  "license": "Apache-2.0",
   "maintainers": [],
   "name": "@polkadot/extension-compat-metamask",
   "repository": {

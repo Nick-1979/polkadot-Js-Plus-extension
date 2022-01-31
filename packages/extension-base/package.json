@@ -4,7 +4,7 @@
   "contributors": [],
   "description": "Functions, classes and other utilities used in @polkadot/extension",
   "homepage": "https://github.com/polkadot-js/extension/tree/master/packages/extension-base#readme",
-  "license": "Apache-2",
+  "license": "Apache-2.0",
   "maintainers": [],
   "name": "@polkadot/extension-base",
   "repository": {

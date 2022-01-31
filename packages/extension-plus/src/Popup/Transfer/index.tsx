@@ -10,7 +10,7 @@ import { ArrowBackIosRounded, CheckRounded as CheckRoundedIcon, Clear as ClearIc
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Alert, Avatar, Box, Button, Divider, Grid, IconButton, InputAdornment, List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader, TextField, Tooltip } from '@mui/material';
-import grey from '@mui/material/colors/grey';
+import {grey} from '@mui/material/colors';
 import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from 'react';
 
 import Identicon from '@polkadot/react-identicon';
