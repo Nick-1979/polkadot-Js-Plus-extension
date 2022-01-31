@@ -18,7 +18,7 @@ import useTranslation from '../../../extension-ui/src/hooks/useTranslation';
 import { prepareMetaData } from '../util/plusUtils';
 import { AccountsBalanceType, BalanceType, savedMetaData } from '../util/plusTypes';
 import { AccountContext } from '../../../extension-ui/src/components/contexts';
-import AddressQRcode from '../Popup/AddressQRcode';
+import AddressQRcode from '../Popup/AddressQRcode/AddressQRcode';
 import EasyStaking from '../Popup/Stake';
 import TransactionHistory from '../Popup/History';
 import TransferFunds from '../Popup/Transfer';
@@ -46,14 +46,12 @@ export interface Props {
   givenType?: KeypairType;
 }
 
-function Plus({ address, chain, formattedAddress, givenType, name,
-}: Props): React.ReactElement<Props> {
+function Plus({ address, chain, formattedAddress, givenType, name }: Props): React.ReactElement<Props> {
   const [balance, setBalance] = useState<AccountsBalanceType | null>(null);
   const { accounts } = useContext(AccountContext);
-  // const settings = useContext(SettingsContext);
   const { t } = useTranslation();
-  const [balanceChangeSubscribed, setBalanceChangeSubscribed] = useState<string>('');
 
+  const [balanceChangeSubscribed, setBalanceChangeSubscribed] = useState<string>('');
   const [transferModalOpen, setTransferModalOpen] = useState(false);
   const [showQRcodeModalOpen, setQRcodeModalOpen] = useState(false);
   const [showTxHistoryModal, setTxHistoryModalOpen] = useState(false);
@@ -187,20 +185,20 @@ function Plus({ address, chain, formattedAddress, givenType, name,
   }, [chain]);
 
   const handleTransferFunds = useCallback((): void => {
-      if (chain) {setTransferModalOpen(true);}
-    },[chain]);
+    if (chain) { setTransferModalOpen(true); }
+  }, [chain]);
 
   const handleShowQRcode = useCallback((): void => {
-      if (chain) { setQRcodeModalOpen(true); }
-    },[chain]  );
+    if (chain) { setQRcodeModalOpen(true); }
+  }, [chain]);
 
   const handleTxHistory = useCallback((): void => {
-      if (chain) {setTxHistoryModalOpen(true);}
-    },[ chain]);
+    if (chain) { setTxHistoryModalOpen(true); }
+  }, [chain]);
 
   const handleStaking = useCallback((): void => {
-      if (chain) { setStakingModalOpen(true);}
-    },[chain]);
+    if (chain) { setStakingModalOpen(true); }
+  }, [chain]);
 
   const handlerefreshBalance = (): void => {
     if (!chain || refreshing) { return; }
@@ -221,6 +219,7 @@ function Plus({ address, chain, formattedAddress, givenType, name,
           <Grid item xs={2} sx={{ paddingLeft: '2px' }}>
             <Link color='inherit' href='#' underline='none'>
               <FontAwesomeIcon
+                id='qrCodeIcon'
                 icon={faQrcode}
                 onClick={handleShowQRcode}
                 size='sm'
@@ -235,8 +234,7 @@ function Plus({ address, chain, formattedAddress, givenType, name,
       <Grid alignItems='center' container>
         <Grid container item justifyContent='center' xs={10}>
           {!chain
-            ? <Grid item xs={12}
-              sx={{ color: grey[700], fontFamily: '"Source Sans Pro", Arial, sans-serif', fontWeight: 600, fontSize: 12, textAlign: 'center', paddingLeft: '20px' }} >
+            ? <Grid id='noChainAlert' item xs={12} sx={{ color: grey[700], fontFamily: '"Source Sans Pro", Arial, sans-serif', fontWeight: 600, fontSize: 12, textAlign: 'center', paddingLeft: '20px' }} >
               {t('Please select a chain to view your balance.')}
             </Grid>
             : <>
@@ -254,7 +252,7 @@ function Plus({ address, chain, formattedAddress, givenType, name,
             <Grid item xs={3}>
               <Link color='inherit' href='#' underline='none'>
                 <FontAwesomeIcon
-                  className='transferIcon'
+                  id='transferIcon'
                   icon={faPaperPlane}
                   onClick={handleTransferFunds}
                   size='sm'
@@ -281,6 +279,7 @@ function Plus({ address, chain, formattedAddress, givenType, name,
             <Grid item xs={3}>
               <Link color='inherit' href='#' underline='none'>
                 <FontAwesomeIcon
+                  id='txHistoryIcon'
                   icon={faTasks}
                   // eslint-disable-next-line react/jsx-no-bind
                   onClick={handleTxHistory}
@@ -293,6 +292,7 @@ function Plus({ address, chain, formattedAddress, givenType, name,
             <Grid item xs={3}>
               <Link color='inherit' href='#' underline='none'>
                 <FontAwesomeIcon
+                  id='stakingIcon'
                   icon={faCoins}
                   // eslint-disable-next-line react/jsx-no-bind
                   onClick={handleStaking}
@@ -303,28 +303,29 @@ function Plus({ address, chain, formattedAddress, givenType, name,
               </Link>
             </Grid>
           </Grid>
-          {
-            balance
-              ? <Grid item id='coinPrice' xs={12} sx={{ color: grey[600], fontSize: 10, textAlign: 'center' }}>
-                {chain && <> {'1 '}{getCoin(balance)}{' = $'}{price}</>}
-              </Grid>
-              : <Grid item id='emptyCoinPrice' xs={12} sx={{ color: grey[400], fontSize: 10, textAlign: 'center' }}>
-                {'1 ---  =  $ --- '}
-              </Grid>
-          }
+          {chain && <>
+            {
+              balance
+                ? <Grid item id='coinPrice' xs={12} sx={{ color: grey[600], fontSize: 10, textAlign: 'center' }}>
+                  {chain && <> {'1 '}{getCoin(balance)}{' = $'}{price}</>}
+                </Grid>
+                : <Grid item id='emptyCoinPrice' xs={12} sx={{ color: grey[400], fontSize: 10, textAlign: 'center' }}>
+                  {'1 ---  =  $ --- '}
+                </Grid>
+            }
+          </>}
         </Grid>
       </Grid>
 
       {
-        transferModalOpen
-          ? <TransferFunds
-            chain={chain}
-            givenType={givenType}
-            sender={sender}
-            setTransferModalOpen={setTransferModalOpen}
-            transferModalOpen={transferModalOpen}
-          />
-          : ''
+        transferModalOpen && sender &&
+        <TransferFunds
+          chain={chain}
+          givenType={givenType}
+          sender={sender}
+          setTransferModalOpen={setTransferModalOpen}
+          transferModalOpen={transferModalOpen}
+        />
       }
       {
         showQRcodeModalOpen
@@ -349,16 +350,15 @@ function Plus({ address, chain, formattedAddress, givenType, name,
           : ''
       }
       {
-        showStakingModal && sender && account
-          ? <EasyStaking
-            account={account}
-            chain={chain}
-            name={name}
-            setStakingModalOpen={setStakingModalOpen}
-            showStakingModal={showStakingModal}
-            staker={sender}
-          />
-          : ''
+        showStakingModal && sender && account &&
+        <EasyStaking
+          account={account}
+          chain={chain}
+          name={name}
+          setStakingModalOpen={setStakingModalOpen}
+          showStakingModal={showStakingModal}
+          staker={sender}
+        />
       }
     </Container >
   );
