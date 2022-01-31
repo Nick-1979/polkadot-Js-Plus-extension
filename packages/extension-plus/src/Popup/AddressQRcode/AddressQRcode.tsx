@@ -10,10 +10,10 @@ import ReactDom from 'react-dom';
 
 import Identicon from '@polkadot/react-identicon';
 
-import useTranslation from '../../../extension-ui/src/hooks/useTranslation';
-import { Chain } from '../../../extension-ui/src/types';
-import { PlusHeader } from '../components';
-import Popup from '../components/Popup';
+import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
+import { Chain } from '../../../../extension-ui/src/types';
+import { PlusHeader } from '../../components';
+import Popup from '../../components/Popup';
 
 interface Props {
   address: string;
@@ -33,7 +33,7 @@ export default function AddressQRcode({ address, chain, name, setQRcodeModalOpen
     <Popup handleClose={handleQRmodalClose} showModal={showQRcodeModalOpen}>
       <PlusHeader action={handleQRmodalClose} chain={chain} closeText={'Close'} icon={<QrCodeScannerIcon fontSize='small' />} title={'Scan with camera'} />
 
-      <Grid item xs={12} sx={{ fontSize: 18, fontWeight: 'fontWeightBold', textAlign: 'center', padding: '40px 1px 20px' }} >
+      <Grid item id='name' xs={12} sx={{ fontSize: 18, fontWeight: 'fontWeightBold', textAlign: 'center', padding: '40px 1px 20px' }} >
         {name || t('unknown')}
       </Grid>
 
@@ -50,7 +50,7 @@ export default function AddressQRcode({ address, chain, name, setQRcodeModalOpen
             value={address}
           />
         </Grid>
-        <Grid item sx={{ fontSize: 14, textAlign: 'center', paddingTop: '25px' }}>
+        <Grid id='address' item sx={{ fontSize: 14, textAlign: 'center', paddingTop: '25px' }}>
           {address}
         </Grid>
       </Grid>
