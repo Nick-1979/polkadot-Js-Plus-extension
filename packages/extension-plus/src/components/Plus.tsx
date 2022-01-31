@@ -186,38 +186,21 @@ function Plus({ address, chain, formattedAddress, givenType, name,
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chain]);
 
-  const handleTransferFunds = useCallback(
-    (): void => {
-      if (!chain) { return; }
+  const handleTransferFunds = useCallback((): void => {
+      if (chain) {setTransferModalOpen(true);}
+    },[chain]);
 
-      setTransferModalOpen(true);
-    },
-    [chain]
-  );
+  const handleShowQRcode = useCallback((): void => {
+      if (chain) { setQRcodeModalOpen(true); }
+    },[chain]  );
 
-  const handleShowQRcode = useCallback(
-    (): void => {
-      console.log('handleShowQRcode is clicked', showQRcodeModalOpen);
-      setQRcodeModalOpen(true);
-    },
-    [showQRcodeModalOpen]
-  );
+  const handleTxHistory = useCallback((): void => {
+      if (chain) {setTxHistoryModalOpen(true);}
+    },[ chain]);
 
-  const handleTxHistory = useCallback(
-    (): void => {
-      setTxHistoryModalOpen(true);
-    },
-    [setTxHistoryModalOpen]
-  );
-
-  const handleStaking = useCallback(
-    (): void => {
-      if (!chain) { return; }
-
-      setStakingModalOpen(true);
-    },
-    [chain]
-  );
+  const handleStaking = useCallback((): void => {
+      if (chain) { setStakingModalOpen(true);}
+    },[chain]);
 
   const handlerefreshBalance = (): void => {
     if (!chain || refreshing) { return; }
