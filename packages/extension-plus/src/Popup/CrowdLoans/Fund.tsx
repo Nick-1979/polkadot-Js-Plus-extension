@@ -93,35 +93,35 @@ export default function Fund({ coin, crowdloan, decimals, endpoints, handleContr
 
           <Grid container item xs={12} justifyContent='space-between' sx={{ marginTop: '5px' }}>
 
-            <Grid sx={{ fontSize: 11, marginLeft: '20px', textAlign: 'left' }}>
-              Parachain Id: {' '} {crowdloan.fund.paraId}
-            </Grid>
-
-            <Grid sx={{ fontSize: 11, textAlign: 'center' }}>
-              <b>{Number(amountToHuman(crowdloan.fund.raised, decimals)).toLocaleString()}</b>
-              /
-              {Number(amountToHuman(crowdloan.fund.cap, decimals)).toLocaleString()}
-              <br />
-              {t('Raised/Cap')}{' '}({coin})
-            </Grid>
-
+            <Grid sx={{ color: crowdloan.fund.hasLeased ? 'green' : '', fontSize: 11, marginLeft: '20px', textAlign: 'left' }}>
+            Parachain Id: {' '} {crowdloan.fund.paraId}
           </Grid>
 
-          {isActive && handleContribute &&
-            <Grid container item justifyContent='center' xs={12}>
-              <Button
-                color='warning'
-                endIcon={<SendTimeExtensionOutlined />}
-                // eslint-disable-next-line react/jsx-no-bind
-                onClick={() => handleContribute(crowdloan)}
-                variant='outlined'
-              >
-                {t('Next')}
-              </Button>
-            </Grid>
-          }
+          <Grid sx={{ fontSize: 11, textAlign: 'center' }}>
+            <b>{Number(amountToHuman(crowdloan.fund.raised, decimals)).toLocaleString()}</b>
+            /
+            {Number(amountToHuman(crowdloan.fund.cap, decimals)).toLocaleString()}
+            <br />
+            {t('Raised/Cap')}{' '}({coin})
+          </Grid>
+
         </Grid>
-      </Paper>
+
+        {isActive && handleContribute &&
+          <Grid container item justifyContent='center' xs={12}>
+            <Button
+              color='warning'
+              endIcon={<SendTimeExtensionOutlined />}
+              // eslint-disable-next-line react/jsx-no-bind
+              onClick={() => handleContribute(crowdloan)}
+              variant='outlined'
+            >
+              {t('Next')}
+            </Button>
+          </Grid>
+        }
     </Grid>
+      </Paper >
+    </Grid >
   );
 }
