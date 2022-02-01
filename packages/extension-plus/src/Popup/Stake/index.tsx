@@ -4,7 +4,7 @@
 
 import type { StakingLedger } from '@polkadot/types/interfaces';
 
-import { AddCircleOutlineOutlined, Brightness7Outlined as Brightness7OutlinedIcon, CheckOutlined, InfoOutlined, Redeem as RedeemIcon, RemoveCircleOutlineOutlined } from '@mui/icons-material';
+import { AddCircleOutlineOutlined, Brightness7Outlined as Brightness7OutlinedIcon, CheckOutlined, InfoOutlined, Redeem as RedeemIcon, RemoveCircleOutlineOutlined, ReportProblemOutlined } from '@mui/icons-material';
 import { Alert, Box, Button, CircularProgress, FormControl, FormControlLabel, FormLabel, Grid, IconButton, InputAdornment, Paper, Radio, RadioGroup, Skeleton, Tab, Tabs, TextField, Tooltip, Typography } from '@mui/material';
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 
@@ -79,10 +79,11 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
   const [nominatedValidators, setNominatedValidatorsInfo] = useState<DeriveStakingQuery[] | null>(null);
   const [validatorSelectionType, setValidatorSelectionType] = useState<string>('Auto');
   const [state, setState] = useState<string>(''); // {'', 'stakeAuto', 'stakeManual', 'changeValidators','confirming', 'failed,'success'}
-  const [tabValue, setTabValue] = React.useState(3);
-  const [unstakeAmountInHuman, setUnstakeAmountInHuman] = React.useState<string | null>(null);
-  const [unstakeAmount, setUnstakeAmount] = React.useState<bigint>(0n);
-  const [unlockingAmount, setUnlockingAmount] = React.useState<bigint>(0n);
+  const [tabValue, setTabValue] = useState(3);
+  const [unstakeAmountInHuman, setUnstakeAmountInHuman] = useState<string | null>(null);
+  const [unstakeAmount, setUnstakeAmount] = useState<bigint>(0n);
+  const [unlockingAmount, setUnlockingAmount] = useState<bigint>(0n);
+  const [hasOversubscribed, setHasOversubscribed] = useState<boolean>(false);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -90,11 +91,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
   };
 
   useEffect(() => {
-    if (!chain) {
-      console.log(' no fetch/subscribe for no chain');
-
-      return;
-    }
+    if (!chain) { return; }
 
     const { ED, coin, decimals, minNominatorBond } = getNetworkInfo(chain);
 
@@ -107,9 +104,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
     let formattedMinNominatorBond = formatBalance(minNominatorBond, { forceUnit: '-', withSi: false }, decimals);
     const [prefix, postfix] = formattedMinNominatorBond.split('.');
 
-    if (Number(postfix) === 0) {
-      formattedMinNominatorBond = prefix;
-    }
+    if (Number(postfix) === 0) { formattedMinNominatorBond = prefix; }
 
     setMinNominatorBondInHuman(formattedMinNominatorBond);
 
@@ -259,13 +254,8 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
     };
   };
 
-
   useEffect(() => {
-    if (!chain) {
-      console.log(' no fetch/subscribe for no chain');
-
-      return;
-    }
+    if (!chain) { return; }
 
     // * get ledger info, including users currently staked, locked, etc
     callGetLedgerWorker();
@@ -460,7 +450,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
     }
   }, [stakeAmountInHuman, availableBalance, t, minStakeable]);
 
-  // TODO: selecting validators automatically, move to confirm page
+  // TODO: selecting validators automatically, may move to confirm page!
   useEffect(() => {
     if (validatorsInfo && stakingConsts) {
       const selectedVAcc = selectBestValidators(validatorsInfo, stakingConsts);
@@ -470,7 +460,12 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
     }
   }, [stakingConsts, validatorsInfo]);
 
-  // TODO: find an algorithm to select validators automatically
+  useEffect(() => {
+    const oversubscribed = nominatedValidators?.find((v) => v.exposure.others.length > stakingConsts?.maxNominatorRewardedPerValidator);
+    setHasOversubscribed(!!oversubscribed);
+  }, [nominatedValidators, stakingConsts]);
+
+  // TODO: find a better algorithm to select validators automatically
   function selectBestValidators(validatorsInfo: Validators, stakingConsts: StakingConsts): DeriveStakingQuery[] {
 
     const allValidators = validatorsInfo.current.concat(validatorsInfo.waiting);
@@ -725,7 +720,11 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
               <Tab icon={<RemoveCircleOutlineOutlined fontSize='small' />} iconPosition='start' label='Unstake' sx={{ fontSize: 11 }} />
               <Tab icon={gettingNominatedValidatorsInfoFromBlockchain && !noNominatedValidators
                 ? <CircularProgress thickness={2} size={12} />
-                : <CheckOutlined fontSize='small' />}
+                : hasOversubscribed
+                  ? <ReportProblemOutlined fontSize='small' color='warning' />
+                  :<CheckOutlined fontSize='small' />
+                }
+              
                 iconPosition='start' label='Nominated Validators' sx={{ fontSize: 11 }}
               />
               <Tab
