@@ -265,7 +265,7 @@ function Plus({ address, chain, formattedAddress, givenType, name }: Props): Rea
             <Grid item container xs={3}>
               <Link color='inherit' href='#' underline='none'>
                 <FontAwesomeIcon
-                  className='refreshIcon'
+                  id='refreshIcon'
                   icon={faSyncAlt}
                   // eslint-disable-next-line react/jsx-no-bind
                   onClick={handlerefreshBalance}
