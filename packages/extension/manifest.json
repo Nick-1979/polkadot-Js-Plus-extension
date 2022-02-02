@@ -5,6 +5,7 @@
   "name": "polkadot{.js} plus extension",
   "short_name": "Plus",
   "manifest_version": 2,
+  "version": "0.1 beta",
   "permissions": ["storage", "tabs"],
   "background": {
     "scripts": ["background.js"],
