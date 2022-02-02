@@ -20,7 +20,7 @@ Currently, the following features are added:
 
 ### beta on Firefox
 
-The beta version of Plus extension for firefox can be downloaded from [here](https://uc6f506f89ad443dee7d94327976.dl.dropboxusercontent.com/cd/0/get/Be_BIa3W11cpIf7A483nK5HTWfZ20sqCQ63b6pl1YLm4ynAeZwiWrQPoqmGbsfcmSL-duTfjqyWikWR8r-7DPGZVD2bd_IwnRWtVlQc2uiHssSih6z5vNE4Mo21-nRKxvXQVAyortJ0pQNoZD4a24yev/file?_download_id=5547717182661989782645071764304569831156199917224172213153522062&_notify_domain=www.dropbox.com&dl=1)
+The beta version of Plus extension for firefox can be downloaded from [here](https://www.dropbox.com/s/fxb7pct4g8vjjhc/plus-0.1.xpi?dl=0)
  - open downloaded file with firefox
 
 
