@@ -50,13 +50,13 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
   const [decimals, setDecimals] = useState(1);
   const [minNominatorBondInHuman, setMinNominatorBondInHuman] = useState<string>('');
   const [minNominatorBond, setMinNominatorBond] = useState<bigint>(0n);
-  const [minStakeable, setMinStakeable] = useState<string>('');
   const [stakingConsts, setStakingConsts] = useState<StakingConsts | null>(null);
   const [gettingStakingConstsFromBlockchain, setgettingStakingConstsFromBlockchain] = useState<boolean>(true);
   const [gettingNominatedValidatorsInfoFromBlockchain, setGettingNominatedValidatorsInfoFromBlockchain] = useState<boolean>(true);
   const [nextButtonCaption, setNextButtonCaption] = useState<string>(t('Next'));
   const [nextToStakeButtonDisabled, setNextToStakeButtonDisabled] = useState(true);
   const [nextToUnStakeButtonDisabled, setNextToUnStakeButtonDisabled] = useState(true);
+  const [minStakeable, setMinStakeable] = useState<string>('0');
   const [maxStake, setMaxStake] = useState<string>('0');
   const [totalReceivedReward, setTotalReceivedReward] = useState<string>();
   const [showConfirmStakingModal, setConfirmStakingModalOpen] = useState<boolean>(false);
@@ -220,11 +220,6 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
 
       console.log('Ledger:', ledger);
       setLedger(ledger);
-      // eslint-disable-next-line padding-line-between-statements
-      if (Number(ledger.active) > 0) {
-        setMinStakeable(String(MIN_EXTRA_BOND));
-      }
-
       getLedgerWorker.terminate(); // stay awake, will be terminated at the end
     };
   };
@@ -418,8 +413,24 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
   }, [nominatedValidatorsId, validatorsInfo, chain, account.address]);
 
   useEffect(() => {
-    setMaxStake(fixFloatingPoint(Number(availableBalance) - 2 * ED));
-  }, [ED, availableBalance]);
+    const maxStakeAmount = fixFloatingPoint(Number(availableBalance) - 2 * ED);
+    let minStakeAmount = MIN_EXTRA_BOND;
+
+    console.log('maxStakeAmount', maxStakeAmount)
+    console.log('MIN_EXTRA_BOND', MIN_EXTRA_BOND)
+    console.log('Number(ledger?.active)', Number(ledger?.active))
+
+    if (Number(maxStakeAmount) >= Number(minNominatorBondInHuman) && !Number(ledger?.active)) {
+      setMaxStake(maxStakeAmount);
+      setMinStakeable(String(minNominatorBondInHuman));
+    } else if (Number(maxStakeAmount) >= Number(MIN_EXTRA_BOND) && !!Number(ledger?.active)) {
+      setMaxStake(maxStakeAmount);
+      setMinStakeable(String(MIN_EXTRA_BOND));
+    } else {
+      setMinStakeable('0');
+      setMaxStake('0');
+    }
+  }, [ED, availableBalance, ledger, minNominatorBondInHuman]);
 
   useEffect(() => {
     if (!Number(availableBalance)) {
@@ -462,18 +473,18 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
 
   useEffect(() => {
     const oversubscribed = nominatedValidators?.find((v) => v.exposure.others.length > stakingConsts?.maxNominatorRewardedPerValidator);
+
     setHasOversubscribed(!!oversubscribed);
   }, [nominatedValidators, stakingConsts]);
 
   // TODO: find a better algorithm to select validators automatically
   function selectBestValidators(validatorsInfo: Validators, stakingConsts: StakingConsts): DeriveStakingQuery[] {
-
     const allValidators = validatorsInfo.current.concat(validatorsInfo.waiting);
     const nonBlockedValidatorsAccountId = allValidators.filter((v) =>
       !v.validatorPrefs.blocked && // filter blocked validators
       (Number(v.validatorPrefs.commission) / (10 ** 7)) < MAX_ACCEPTED_COMMISSION && // filter high commision validators
       v.exposure.others.length < stakingConsts?.maxNominatorRewardedPerValidator // filter oversubscribed
-    )
+    );
     // .map((v) => v.accountId.toString());// TODO: sort it too
 
     return nonBlockedValidatorsAccountId.slice(0, stakingConsts?.maxNominations);
@@ -502,7 +513,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
       setAlert(t(`Staking amount is too low, it must be at least ${minStakeable} ${coin}`));
     }
 
-    if (Number(maxStake) && Number(value) > Number(maxStake) && Number(value) < Number(availableBalance)) {
+    if ( Number(value) > Number(maxStake) && Number(value) < Number(availableBalance)) {
       setAlert(t('Your account will be reaped!'));
     }
 
@@ -510,7 +521,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
     setStakeAmount(amountToMachine(value, decimals));
   }, [availableBalance, coin, decimals, maxStake, minStakeable, t]);
 
-  const handleStakeAmountOnChange = useCallback((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+  const handleStakeAmount = useCallback((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     let value = event.target.value;
 
     if (Number(value) < 0) {
@@ -722,9 +733,9 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
                 ? <CircularProgress thickness={2} size={12} />
                 : hasOversubscribed
                   ? <ReportProblemOutlined fontSize='small' color='warning' />
-                  :<CheckOutlined fontSize='small' />
-                }
-              
+                  : <CheckOutlined fontSize='small' />
+              }
+
                 iconPosition='start' label='Nominated Validators' sx={{ fontSize: 11 }}
               />
               <Tab
@@ -748,7 +759,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
                   label={t('Amount')}
                   name='stakeAmount'
                   // onBlur={(event) => handleStakeAmountOnBlur(event.target.value)}
-                  onChange={handleStakeAmountOnChange}
+                  onChange={handleStakeAmount}
                   placeholder='0.0'
                   // size='small'
                   type='number'
