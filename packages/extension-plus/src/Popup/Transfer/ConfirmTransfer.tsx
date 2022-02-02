@@ -4,9 +4,9 @@
 
 import type { KeypairType } from '@polkadot/util-crypto/types';
 
-import { ArrowForwardRounded, CheckRounded, Clear, InfoTwoTone as InfoTwoToneIcon, LaunchRounded, RefreshRounded } from '@mui/icons-material';
+import { ArrowForwardRounded, RefreshRounded } from '@mui/icons-material';
 import ConfirmationNumberOutlinedIcon from '@mui/icons-material/ConfirmationNumberOutlined';
-import { Alert, Avatar, Box, Button as MuiButton, CircularProgress, Divider, Grid, IconButton, InputAdornment, TextField, Tooltip } from '@mui/material';
+import { Avatar, Box, CircularProgress, Divider, Grid, IconButton } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
@@ -15,7 +15,6 @@ import keyring from '@polkadot/ui-keyring';
 
 import { AccountWithChildren } from '../../../../extension-base/src/background/types';
 import { Chain } from '../../../../extension-chains/src/types';
-import { BackButton, Button } from '../../../../extension-ui/src/components';
 import { AccountContext } from '../../../../extension-ui/src/components/contexts';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { updateMeta } from '../../../../extension-ui/src/messaging';
@@ -52,7 +51,7 @@ interface Props {
   handleTransferModalClose: any;
 }
 
-export default function ConfirmTx({
+export default function ConfirmTx ({
   availableBalance,
   chain,
   coin,
@@ -83,8 +82,7 @@ export default function ConfirmTx({
 
   useEffect(() => {
     setTransferAmountInHuman(amountToHuman(String(transferAmount), decimals));
-    console.log('chain:', chain);
-  }, [chain, transferAmount]);
+  }, [chain, decimals, transferAmount]);
 
   async function saveHistory(chain: Chain, hierarchy: AccountWithChildren[], address: string, currentTransactionDetail: TransactionDetail): Promise<boolean> {
     const accountSubstrateAddress = getSubstrateAddress(address);
@@ -96,8 +94,6 @@ export default function ConfirmTx({
   }
 
   async function handleConfirm() {
-    // console.log('handleConfirm is runing ...')
-    // setTransfering(true);
     setState('confirming');
 
     try {
@@ -107,10 +103,10 @@ export default function ConfirmTx({
       setPasswordStatus(PASS_MAP.CORRECT);
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      const { block, failureText, fee, status, txHash } = await signAndTransfer(pair, String(recepient.address), transferAmount, chain, setTxStatus)
-    
+      const { block, failureText, fee, status, txHash } = await signAndTransfer(pair, String(recepient.address), transferAmount, chain, setTxStatus);
+
       setState(status);
-    
+
       const currentTransactionDetail: TransactionDetail = {
         action: 'send',
         amount: amountToHuman(String(transferAmount), decimals),
@@ -127,12 +123,8 @@ export default function ConfirmTx({
       if (chain) { saveHistory(chain, hierarchy, sender.address, currentTransactionDetail); }
 
       setTransactionHash(txHash);
-      // setTransfering(false);
-
-
     } catch (e) {
       setPasswordStatus(PASS_MAP.INCORRECT);
-      // setTransfering(false);
       setState('');
     }
   }
@@ -294,15 +286,15 @@ export default function ConfirmTx({
               {t('Network Fee')}
             </Grid>
             <Grid item sx={{ fontSize: 13, marginLeft: '5px', textAlign: 'left' }}>
-              <Tooltip placement='right-end' title={t<string>('Network fees are paid to network validators who process transactions on the network. This wallet does not profit from fees. Fees are set by the network and fluctuate based on network traffic and transaction complexity.')} arrow>
-                <InfoTwoToneIcon color='action' fontSize='small' />
-              </Tooltip>
+              {/* <Tooltip placement='right-end' title={t<string>('Network fees are paid to network validators who process transactions on the network. This wallet does not profit from fees. Fees are set by the network and fluctuate based on network traffic and transaction complexity.')} arrow> */}
+                {/* <InfoTwoToneIcon color='action' fontSize='small' /> */}
+              {/* </Tooltip> */}
             </Grid>
             <Grid item sx={{ alignItems: 'center', fontSize: 13, textAlign: 'left' }}>
               <IconButton onClick={refreshNetworkFee} sx={{ top: -7 }}>
-                <Tooltip placement='right-end' title={t<string>('get newtwork fee now')} arrow>
+                {/* <Tooltip placement='right-end' title={t<string>('get newtwork fee now')} arrow> */}
                   <RefreshRounded color='action' fontSize='small' />
-                </Tooltip>
+                {/* </Tooltip> */}
               </IconButton>
             </Grid>
           </Grid>
@@ -321,9 +313,9 @@ export default function ConfirmTx({
             {t('Total')}
           </Grid>
           <Grid item xs={8} sx={{ fontSize: 13, fontWeight: '600', textAlign: 'left' }}>
-            {failAlert
-              ? <Alert severity='warning' sx={{ fontSize: 11 }}>Transaction most likely fail, consider fee!</Alert>
-              : ''}
+            {/* {failAlert
+              ? <Alert severity='warning' sx={{ fontSize: 11 }}>{t('Transaction most likely fail, consider fee')}!</Alert>
+              : ''} */}
           </Grid>
           <Grid item xs={3} sx={{ fontSize: 13, fontWeight: '600', textAlign: 'right' }}>
             {total || ' ... '} {' '} {coin}
