@@ -1,12 +1,13 @@
-/* eslint-disable react/jsx-max-props-per-line */
+
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
+/* eslint-disable react/jsx-max-props-per-line */
 
 import type { ThemeProps } from '../../../../extension-ui/src/types';
 
-import { ExpandMore, Gavel as GavelIcon, Groups as GroupsIcon } from '@mui/icons-material';
-import { Accordion, AccordionDetails, AccordionSummary, Avatar, FormControl, FormHelperText, Grid, InputLabel, MenuItem, Paper, Select, Tab, Tabs, Typography } from '@mui/material';
+import { Gavel as GavelIcon, Groups as GroupsIcon } from '@mui/icons-material';
+import { Avatar, Grid, Paper, Tab, Tabs } from '@mui/material';
 import { deepOrange } from '@mui/material/colors';
 import grey from '@mui/material/colors/grey';
 import { SelectChangeEvent } from '@mui/material/Select';
@@ -22,14 +23,12 @@ import { cryptoWaitReady } from '@polkadot/util-crypto';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { Header } from '../../../../extension-ui/src/partials';
 import { NothingToShow, Progress } from '../../components';
-import { RELAY_CHAINS } from '../../util/constants';
+import SelectRelay from '../../components/SelectRelay';
 import getChainInfo from '../../util/getChainInfo';
-import getLogo from '../../util/getLogo';
 import { Auction, ChainInfo, Crowdloan } from '../../util/plusTypes';
 import Contribute from './Contribute';
-import Fund from './Fund';
-import SelectRelay from '../../components/SelectRelay';
 import CrowdloanList from './CrowdloanList';
+import Fund from './Fund';
 
 interface Props extends ThemeProps {
   className?: string;

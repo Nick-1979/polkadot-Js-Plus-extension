@@ -12,7 +12,7 @@ import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import getLogo from '../../util/getLogo';
 import getNetworkInfo from '../../util/getNetwork';
 import { Crowdloan } from '../../util/plusTypes';
-import { amountToHuman } from '../../util/plusUtils';
+import { amountToHuman, getWebsiteFavico } from '../../util/plusUtils';
 import { Chain } from '../../../../extension-chains/src/types';
 import getChainInfo from '../../util/getChainInfo';
 
@@ -30,6 +30,8 @@ export default function Fund({ coin, crowdloan, decimals, endpoints, handleContr
   const getText = (paraId: string): string | undefined => (endpoints.find((e) => e?.paraId === Number(paraId))?.text as string);
   const getHomePage = (paraId: string): string | undefined => (endpoints.find((e) => e?.paraId === Number(paraId))?.homepage as string);
   const getInfo = (paraId: string): string | undefined => (endpoints.find((e) => e?.paraId === Number(paraId))?.info as string);
+  const display = crowdloan.identity.info.legal || crowdloan.identity.info.display || getText(crowdloan.fund.paraId);
+  const logo = getLogo(getInfo(crowdloan.fund.paraId)) || getWebsiteFavico(crowdloan.identity.info.web || getHomePage(crowdloan.fund.paraId));
 
   return (
     <Grid item sx={{ paddingTop: '10px' }} xs={12}>
@@ -38,13 +40,13 @@ export default function Fund({ coin, crowdloan, decimals, endpoints, handleContr
           <Grid container item justifyContent='flex-start' spacing={1} sx={{ fontSize: 13, fontWeight: 'fontWeightBold' }} xs={6}>
             <Grid item>
               <Avatar
-                src={getLogo(getInfo(crowdloan.fund.paraId))}
+                src={logo}
                 sx={{ height: 24, width: 24 }}
               />
             </Grid>
 
             <Grid item>
-              {crowdloan.identity.info.legal || crowdloan.identity.info.display || getText(crowdloan.fund.paraId)}
+              {display?.slice(0, 15)}
             </Grid>
 
             {(crowdloan.identity.info.web || getHomePage(crowdloan.fund.paraId)) &&
@@ -94,33 +96,33 @@ export default function Fund({ coin, crowdloan, decimals, endpoints, handleContr
           <Grid container item xs={12} justifyContent='space-between' sx={{ marginTop: '5px' }}>
 
             <Grid sx={{ color: crowdloan.fund.hasLeased ? 'green' : '', fontSize: 11, marginLeft: '20px', textAlign: 'left' }}>
-            Parachain Id: {' '} {crowdloan.fund.paraId}
+              Parachain Id: {' '} {crowdloan.fund.paraId}
+            </Grid>
+
+            <Grid sx={{ fontSize: 11, textAlign: 'center' }}>
+              <b>{Number(amountToHuman(crowdloan.fund.raised, decimals)).toLocaleString()}</b>
+              /
+              {Number(amountToHuman(crowdloan.fund.cap, decimals)).toLocaleString()}
+              <br />
+              {t('Raised/Cap')}{' '}({coin})
+            </Grid>
+
           </Grid>
 
-          <Grid sx={{ fontSize: 11, textAlign: 'center' }}>
-            <b>{Number(amountToHuman(crowdloan.fund.raised, decimals)).toLocaleString()}</b>
-            /
-            {Number(amountToHuman(crowdloan.fund.cap, decimals)).toLocaleString()}
-            <br />
-            {t('Raised/Cap')}{' '}({coin})
-          </Grid>
-
+          {isActive && handleContribute &&
+            <Grid container item justifyContent='center' xs={12}>
+              <Button
+                color='warning'
+                endIcon={<SendTimeExtensionOutlined />}
+                // eslint-disable-next-line react/jsx-no-bind
+                onClick={() => handleContribute(crowdloan)}
+                variant='outlined'
+              >
+                {t('Next')}
+              </Button>
+            </Grid>
+          }
         </Grid>
-
-        {isActive && handleContribute &&
-          <Grid container item justifyContent='center' xs={12}>
-            <Button
-              color='warning'
-              endIcon={<SendTimeExtensionOutlined />}
-              // eslint-disable-next-line react/jsx-no-bind
-              onClick={() => handleContribute(crowdloan)}
-              variant='outlined'
-            >
-              {t('Next')}
-            </Button>
-          </Grid>
-        }
-    </Grid>
       </Paper >
     </Grid >
   );
