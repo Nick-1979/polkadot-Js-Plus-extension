@@ -1,6 +1,5 @@
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-/* eslint-disable header/header */
 
 import '@polkadot/extension-mocks/chrome';
 
@@ -50,7 +49,6 @@ const balance: AccountsBalanceType | null = {
 };
 
 describe('Testing Balance component', () => {
-
   test('rendering Balance component for total balance', () => {
     mount(<Balance balance={balance} type='total' price={price} />);
   });
@@ -73,7 +71,6 @@ describe('Testing Balance component', () => {
     expect(wrapper.find('span').at(1).text()).toEqual(`${totalBalanceToHuman} `);
     expect(wrapper.find('span').last().text()).toEqual(balanceInfo.coin);
     expect(wrapper.find('div').last().text()).toEqual(`$  ${parseFloat(String(price * totalBalanceToHuman)).toFixed(2)}`);
-
   });
  
   test('testing account balance for Available balance', () => {
@@ -84,6 +81,5 @@ describe('Testing Balance component', () => {
     expect(wrapper.find('span').at(1).text()).toEqual(`${availableBalanceToHuman} `);
     expect(wrapper.find('span').last().text()).toEqual(balanceInfo.coin);
     expect(wrapper.find('div').last().text()).toEqual(`$  ${parseFloat(String(price * availableBalanceToHuman)).toFixed(2)}`);
-
   });
 });

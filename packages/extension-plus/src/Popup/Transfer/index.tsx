@@ -166,8 +166,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
     const { defaultFee } = getNetworkInfo(chain);
 
     if (Number(transferAmountInHuman) < Number(availableBalance) &&
-      (Number(availableBalance) < Number(transferAmountInHuman) +
-        (ED + Number(amountToHuman(lastFee || defaultFee, decimals)))
+      (Number(availableBalance) < Number(transferAmountInHuman) + (ED + Number(amountToHuman(lastFee || defaultFee, decimals)))
       )) {
       setReapAlert(true);
     } else {

@@ -11,7 +11,7 @@ export default async function getVotes(_chain: Chain, _address: string): Promise
   if (!_chain || !_address) return;
   const { api } = await getChainInfo(_chain);
 
-  _address = '14mSXQeHpF8NT1tMKu87tAbNDNjm7q9qh8hYa7BY2toNUkTo';
+  // _address = '14mSXQeHpF8NT1tMKu87tAbNDNjm7q9qh8hYa7BY2toNUkTo';
 
   const votesOf = await api.derive.council.votesOf(_address);
   console.log('votes: ', votesOf.votes.toString());

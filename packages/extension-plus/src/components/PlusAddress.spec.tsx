@@ -13,6 +13,7 @@ import { configure, mount } from 'enzyme';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 
+import { AccountContext, Address } from '../../../extension-ui/src/components';
 import * as messaging from '../../../extension-ui/src/messaging';
 import * as MetadataCache from '../../../extension-ui/src/MetadataCache';
 import { westendMetadata } from '../../../extension-ui/src/Popup/Signing/metadataMock';
@@ -20,7 +21,6 @@ import { flushAllPromises } from '../../../extension-ui/src/testHelpers';
 import { buildHierarchy } from '../../../extension-ui/src/util/buildHierarchy';
 import { DEFAULT_TYPE } from '../../../extension-ui/src/util/defaultType';
 import getParentNameSuri from '../../../extension-ui/src/util/getParentNameSuri';
-import { AccountContext, Address } from '../../../extension-ui/src/components';
 import { Plus } from './';
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call

@@ -30,7 +30,6 @@ const Props = {
 };
 
 describe('Testing Plus component', () => {
-
   test('rendering Plus while chain is null', () => {
     const wrapper = shallow(<Plus address={Props.address} chain={null} formattedAddress={Props.formattedAddress} givenType={Props.givenType} name={Props.name} />).dive();
 
@@ -40,25 +39,23 @@ describe('Testing Plus component', () => {
 
     expect(wrapper.find('#emptyCoinPrice')).toHaveLength(0);
   });
-  
+
   test('rendering Plus', () => {
     const wrapper = shallow(<Plus address={Props.address} chain={Props.chain} formattedAddress={Props.formattedAddress} givenType={Props.givenType} name={Props.name} />).dive();
-  
+
     expect(wrapper.find(Balance)).toHaveLength(2);
-    
+
     wrapper.find('#qrCodeIcon').simulate('click');
     expect(wrapper.find(AddressQRcode)).toHaveLength(1);
-    
+
     wrapper.find('#transferIcon').simulate('click');
     expect(wrapper.find(TransferFunds)).toHaveLength(1);
-    
+
     wrapper.find('#txHistoryIcon').simulate('click');
     expect(wrapper.find(TransactionHistory)).toHaveLength(1);
-    
+
     wrapper.find('#stakingIcon').simulate('click');
 
     expect(wrapper.find('#emptyCoinPrice')).toHaveLength(1);
   });
-
 });
-
