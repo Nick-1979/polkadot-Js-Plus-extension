@@ -10,14 +10,16 @@ export async function getNominators (_chain, _address) {
     const { api } = await getChainInfo(_chain);
 
     const nominators = await api.query.staking.nominators(_address);
+    console.log('nominators::',nominators)
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const parsedNominators = JSON.parse(JSON.stringify(nominators));
+    if(!parsedNominators) return null;
 
     console.log('#targets', parsedNominators.targets.length);
 
     return parsedNominators.targets;
   } catch (error) {
-    console.log('something went wrong while getting nominators ');
+    console.log('something went wrong while getting nominators ', error);
 
     return null;
   }
