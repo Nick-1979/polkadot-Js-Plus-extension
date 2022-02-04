@@ -65,7 +65,7 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
 
       console.log('auction: %o', result);
 
-      if (result.blockchain == selectedChain) {
+      if (result.blockchain === selectedChain) {
         setAuction(result);
       }
 
@@ -164,13 +164,7 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
 
   return (
     <>
-      <Header
-        showAdd
-        showBackArrow
-        showSettings
-        smallMargin
-        text={t<string>('Crowdloan')}
-      />
+      <Header showAdd showBackArrow showSettings smallMargin text={t<string>('Crowdloan')}/>
       <Grid container id='selectRelyChain' sx={{ padding: '5px 35px' }} alignItems='center'>
        
         <Grid item xs={12}>
@@ -232,7 +226,7 @@ export default styled(Crowdloans)`
         &:: -webkit - scrollbar {
           display: none;
         width:0,
-  }
+       }
         .empty-list {
           text - align: center;
   }

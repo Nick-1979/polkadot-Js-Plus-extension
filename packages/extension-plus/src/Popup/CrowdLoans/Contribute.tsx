@@ -33,14 +33,7 @@ interface Props {
   chainInfo: ChainInfo;
 }
 
-export default function Contribute({
-  auction,
-  chainInfo,
-  contributeModal,
-  crowdloan,
-  endpoints,
-  setContributeModalOpen }: Props): React.ReactElement<Props> {
-
+export default function Contribute({auction, chainInfo, contributeModal, crowdloan, endpoints, setContributeModalOpen }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const chain = useMetadata(chainInfo.genesisHash, true);
   const auctionMinContributionInHuman = amountToHuman(auction.minContribution, chainInfo.decimals);
@@ -139,9 +132,17 @@ export default function Contribute({
     <Popup handleClose={handleConfirmModaClose} showModal={contributeModal}>
       <PlusHeader action={handleReject} chain={chain} closeText={'Reject'} icon={<AllOutIcon fontSize='small' />} title={'Contribute'} />
 
+      {/* <Grid item sx={{ color: grey[600], fontFamily: 'fantasy', fontSize: 16, padding: '10px 50px 5px', textAlign: 'center' }} xs={12}>
+        {t('Crowdloan to contribute')}
+      </Grid> */}
+
+      <Grid item sx={{ padding: '10px 30px 40px' }} xs={12}>
+        {chain && <Fund coin={chainInfo.coin} decimals={chainInfo.decimals} crowdloan={crowdloan} endpoints={endpoints} />}
+      </Grid>
+
       <AllAddresses chain={chain} selectedAddress={selectedAddress} setSelectedAddress={setSelectedAddress} text={t('Select account to contribute')} />
 
-      <Grid item sx={{ padding: '20px 40px 20px' }} xs={12}>
+      <Grid item sx={{ p: '10px 50px 30px 80px' }} xs={12}>
         <TextField
           InputLabelProps={{ shrink: true }}
           InputProps={{ endAdornment: (<InputAdornment position='end'>{chainInfo.coin}</InputAdornment>) }}
@@ -162,16 +163,7 @@ export default function Contribute({
           variant='outlined'
         />
       </Grid>
-
-      <Grid item sx={{ color: grey[600], fontFamily: 'fantasy', fontSize: 16, padding: '1px 50px 5px', textAlign: 'center' }} xs={12}>
-        {t('Crowdloan to contribute')}
-      </Grid>
-
-      <Grid item sx={{ padding: '1px 30px' }} xs={12}>
-        {chain && <Fund coin={chainInfo.coin} decimals={chainInfo.decimals} crowdloan={crowdloan} endpoints={endpoints} />}
-      </Grid>
-
-      <Grid container item sx={{ p: '20px 20px' }} xs={12}>
+      <Grid container item sx={{ p: '10px 20px' }} xs={12}>
         <Password
           handleClearPassword={handleClearPassword}
           handleIt={handleConfirm}

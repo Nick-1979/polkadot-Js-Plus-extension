@@ -87,10 +87,10 @@ export default function Fund({ coin, crowdloan, decimals, endpoints, handleContr
           </Grid>
 
           <Grid sx={{ fontSize: 11, textAlign: 'center' }} xs={3}>
-            Leases: {' '} {String(crowdloan.fund.firstPeriod)} - {String(crowdloan.fund.lastPeriod)}
+            {t('Leases')}{': '} {String(crowdloan.fund.firstPeriod)} - {String(crowdloan.fund.lastPeriod)}
           </Grid>
           <Grid sx={{ fontSize: 11, textAlign: 'right' }} xs={3}>
-            End: {' '} {String(crowdloan.fund.end)}
+            {t('End')}:  # {crowdloan.fund.end}
           </Grid>
 
           <Grid container item xs={12} justifyContent='space-between' sx={{ marginTop: '5px' }}>
