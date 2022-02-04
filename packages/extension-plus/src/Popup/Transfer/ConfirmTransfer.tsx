@@ -4,7 +4,7 @@
 
 import type { KeypairType } from '@polkadot/util-crypto/types';
 
-import { ArrowForwardRounded, RefreshRounded } from '@mui/icons-material';
+import { ArrowForwardRounded, RefreshRounded, InfoTwoTone as InfoTwoToneIcon } from '@mui/icons-material';
 import ConfirmationNumberOutlinedIcon from '@mui/icons-material/ConfirmationNumberOutlined';
 import { Avatar, Box, CircularProgress, Divider, Grid, IconButton } from '@mui/material';
 import { grey } from '@mui/material/colors';
@@ -25,6 +25,7 @@ import getNetworkInfo from '../../util/getNetwork';
 import { AccountsBalanceType, TransactionDetail, TransactionStatus } from '../../util/plusTypes';
 import { amountToHuman, fixFloatingPoint, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/plusUtils';
 import signAndTransfer from '../../util/signAndTransfer';
+import Hint from '../../components/Hint';
 
 interface Props {
   availableBalance: string;
@@ -51,7 +52,7 @@ interface Props {
   handleTransferModalClose: any;
 }
 
-export default function ConfirmTx ({
+export default function ConfirmTx({
   availableBalance,
   chain,
   coin,
@@ -286,16 +287,16 @@ export default function ConfirmTx ({
               {t('Network Fee')}
             </Grid>
             <Grid item sx={{ fontSize: 13, marginLeft: '5px', textAlign: 'left' }}>
-              {/* <Tooltip placement='right-end' title={t<string>('Network fees are paid to network validators who process transactions on the network. This wallet does not profit from fees. Fees are set by the network and fluctuate based on network traffic and transaction complexity.')} arrow> */}
-                {/* <InfoTwoToneIcon color='action' fontSize='small' /> */}
-              {/* </Tooltip> */}
+              <Hint id='networkFee' tip={t<string>('Network fees are paid to network validators who process transactions on the network. This wallet does not profit from fees. Fees are set by the network and fluctuate based on network traffic and transaction complexity.')}>
+                <InfoTwoToneIcon color='action' fontSize='small' />
+              </Hint>
             </Grid>
             <Grid item sx={{ alignItems: 'center', fontSize: 13, textAlign: 'left' }}>
-              <IconButton onClick={refreshNetworkFee} sx={{ top: -7 }}>
-                {/* <Tooltip placement='right-end' title={t<string>('get newtwork fee now')} arrow> */}
+              <Hint id='networkFee' tip={t<string>('get newtwork fee now')}>
+                <IconButton onClick={refreshNetworkFee} sx={{ top: -7 }}>
                   <RefreshRounded color='action' fontSize='small' />
-                {/* </Tooltip> */}
-              </IconButton>
+                </IconButton>
+              </Hint>
             </Grid>
           </Grid>
           <Grid item xs={6} sx={{ fontSize: 13, textAlign: 'right' }}>

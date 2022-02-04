@@ -9,8 +9,8 @@ import type { AccountJson, AccountWithChildren } from '../../../../extension-bas
 import { ArrowBackIosRounded, CheckRounded as CheckRoundedIcon, Clear as ClearIcon } from '@mui/icons-material';
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Alert, Avatar, Box, Button, Divider, Grid, IconButton, InputAdornment, List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader, TextField, Tooltip } from '@mui/material';
-import {grey} from '@mui/material/colors';
+import { Alert, Avatar, Box, Button, Divider, Grid, IconButton, InputAdornment, List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader, TextField } from '@mui/material';
+import { grey } from '@mui/material/colors';
 import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from 'react';
 
 import Identicon from '@polkadot/react-identicon';
@@ -22,7 +22,7 @@ import { NextStepButton } from '../../../../extension-ui/src/components';
 import { AccountContext, SettingsContext } from '../../../../extension-ui/src/components/contexts';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { DEFAULT_TYPE } from '../../../../extension-ui/src/util/defaultType';
-import {PlusHeader, Popup} from '../../components';
+import { PlusHeader, Popup } from '../../components';
 import getFee from '../../util/api/getFee';
 import getLogo from '../../util/getLogo';
 import getNetworkInfo from '../../util/getNetwork';
@@ -30,6 +30,7 @@ import { AccountsBalanceType } from '../../util/plusTypes';
 import { amountToHuman, amountToMachine, balanceToHuman, fixFloatingPoint } from '../../util/plusUtils';
 import isValidAddress from '../../util/validateAddress';
 import ConfirmTx from './ConfirmTransfer';
+import Hint from '../../components/Hint';
 
 interface Props {
   actions?: React.ReactNode;
@@ -379,7 +380,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
 
   return (
     <Popup handleClose={handleTransferModalClose} showModal={transferModalOpen}>
-      <PlusHeader action={handleTransferModalClose} chain={chain} closeText={'Close'} icon={<SendOutlinedIcon fontSize='small' sx={{transform: 'rotate(-45deg)'}}/>} title={'Transfer Funds'} />
+      <PlusHeader action={handleTransferModalClose} chain={chain} closeText={'Close'} icon={<SendOutlinedIcon fontSize='small' sx={{ transform: 'rotate(-45deg)' }} />} title={'Transfer Funds'} />
 
       <Grid
         alignItems='center'
@@ -538,19 +539,10 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
               </Box>
             </Grid>
 
-            <Grid
-              item
-              sx={{ fontSize: '15px', fontWeight: '600', color: grey[800], marginTop: '30px', textAlign: 'left' }}
-              xs={3}
-            >
+            <Grid item sx={{ fontSize: '15px', fontWeight: '600', color: grey[800], marginTop: '30px', textAlign: 'left' }} xs={3}>
               {t('Amount:')}
-
               <Grid item>
-                <Tooltip
-                  arrow
-                  placement='right-end'
-                  title={t<string>('Transfer all amount and deactivate the account.')}
-                >
+                <Hint id='transferAll' tip={t<string>('Transfer all amount and deactivate the account.')}>
                   <LoadingButton
                     color='primary'
                     disabled={safeMaxAmountLoading}
@@ -563,15 +555,11 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
                   >
                     {t('All')}
                   </LoadingButton>
-                </Tooltip>
+                </Hint>
               </Grid>
 
               <Grid item>
-                <Tooltip
-                  arrow
-                  placement='right-end'
-                  title={t<string>('Transfer max amount where the account remains active.')}
-                >
+                <Hint id='safeMax' tip={t<string>('Transfer max amount where the account remains active.')}>
                   <LoadingButton
                     color='primary'
                     disabled={allAmountLoading}
@@ -584,7 +572,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
                   >
                     {t('Safe max')}
                   </LoadingButton>
-                </Tooltip>
+                </Hint>
               </Grid>
 
             </Grid>
