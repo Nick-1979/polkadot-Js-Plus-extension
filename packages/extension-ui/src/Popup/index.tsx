@@ -141,7 +141,7 @@ export default function Popup(): React.ReactElement {
                       <Switch>
                         <Route path='/auth-list'>{wrapWithErrorBoundary(<AuthList />, 'auth-list')}</Route>
 
-                        {/* added by Kami */}
+                        {/* added for plus */}
                         <Route path='/auction-crowdloans'>{wrapWithErrorBoundary(<CrowdLoans />, 'auction-crowdloans')}</Route>
                         <Route path='/governance'>{wrapWithErrorBoundary(<Governance />, 'governance')}</Route>
 
