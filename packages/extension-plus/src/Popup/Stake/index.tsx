@@ -403,16 +403,25 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
   useEffect(() => {
     if (validatorsInfo && nominatedValidatorsId && chain && account.address) {
       // find all information of nominated validators from all validatorsInfo(current and waiting)
-      const nvi = validatorsInfo.current
+      const nominatedValidatorsIds = validatorsInfo.current
         .concat(validatorsInfo.waiting)
         .filter((v: DeriveStakingQuery) => nominatedValidatorsId.includes(String(v.accountId)));
 
-      setNominatedValidatorsInfo(nvi);
+      setNominatedValidatorsInfo(nominatedValidatorsIds);
       setGettingNominatedValidatorsInfoFromBlockchain(false);
+
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      updateMeta(account.address, prepareMetaData(chain, 'nominatedValidators', nvi));
+      updateMeta(account.address, prepareMetaData(chain, 'nominatedValidators', nominatedValidatorsIds));
     }
   }, [nominatedValidatorsId, validatorsInfo, chain, account.address]);
+
+  useEffect(() => {
+    if (noNominatedValidators) {
+      console.log('Clear saved nominatedValidators');
+
+      updateMeta(account.address, prepareMetaData(chain, 'nominatedValidators', []));
+    }
+  }, [account.address, chain, noNominatedValidators]);
 
   useEffect(() => {
     const maxStakeAmount = fixFloatingPoint(Number(availableBalance) - 2 * ED);
@@ -741,7 +750,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
                   ? <CircularProgress size={12} thickness={2} />
                   : hasOversubscribed
                     ? <ReportProblemOutlined color='warning' fontSize='small' />
-                    : !activeValidator
+                    : !activeValidator && nominatedValidators?.length
                       ? <Hint id='noActive' place='top' tip={t('No active validator in this era')}>
                         <ReportOutlinedIcon color='warning' fontSize='small' />
                       </Hint>
@@ -932,7 +941,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
             </Grid>
           </TabPanel>
           <TabPanel index={2} value={tabValue}>
-            {nominatedValidators && stakingConsts
+            {nominatedValidators?.length && stakingConsts && !noNominatedValidators
               ? <Grid container>
                 <Grid item sx={{ paddingBottom: '20px' }} xs={12}>
                   <ValidatorsList
@@ -964,9 +973,22 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
               </Grid>
               : !noNominatedValidators
                 ? <Progress title={'Loading ...'} />
-                : <Grid sx={{ fontSize: 13, marginTop: '60px', textAlign: 'center' }} xs={12}>
-                  {t('You do not nominated any validators yet.')}
+                : <Grid container justifyContent='center'>
+                  <Grid sx={{ fontSize: 13, margin: '60px 10px 20px', textAlign: 'center' }} xs={12}>
+                    {t('No nominated validators found.')}
+                  </Grid>
+                  <Grid item>
+                    <NextStepButton
+                      data-button-action='Set Nominees'
+                      isBusy={validatorsInfo && state === 'changeValidators'}
+                      // isDisabled={nextToStakeButtonDisabled}
+                      onClick={handleSelectValidatorsModaOpen}
+                    >
+                      {t('Set nominees')}
+                    </NextStepButton>
+                  </Grid>
                 </Grid>
+
             }
           </TabPanel>
           <TabPanel index={3} value={tabValue}>
