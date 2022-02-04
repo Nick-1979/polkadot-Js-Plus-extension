@@ -14,7 +14,7 @@ import { Chain } from '@polkadot/extension-chains/types';
 
 import { AccountContext } from '../../../../extension-ui/src/components/contexts';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
-import { NothingToShow, PlusHeader, Popup} from '../../components';
+import { NothingToShow, PlusHeader, Popup } from '../../components';
 import { getTxTransfers } from '../../util/getTransfers';
 import { AccountsBalanceType, TransactionDetail, Transfers } from '../../util/plusTypes';
 import { getTransactionHistoryFromLocalStorage } from '../../util/plusUtils';
@@ -36,6 +36,8 @@ const TAB_MAP = {
   // eslint-disable-next-line sort-keys
   STAKING: '2'
 };
+
+const stakingActions = ['bond', 'unbond', 'bond_extra', 'nominate', 'redeem'];
 
 export default function TransactionHistory({ address, chain, name, setTxHistoryModalOpen, showTxHistoryModal }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
@@ -172,7 +174,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
         history = history.filter((h) => ['send', 'receive'].includes(h.action.toLowerCase()));
         break;
       case (TAB_MAP.STAKING):
-        history = history.filter((h) => ['bond', 'unbond', 'bond_extra', 'nominate', 'redeem'].includes(h.action.toLowerCase()));
+        history = history.filter((h) => stakingActions.includes(h.action.toLowerCase()));
         break;
       default:
         break;
@@ -214,7 +216,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
 
   return (
     <Popup showModal={showTxHistoryModal} handleClose={handleTxHistoryModalClose}>
-      <PlusHeader action={handleTxHistoryModalClose} chain={chain} closeText={'Close'} icon={<HistoryIcon fontSize='small'/>} title={'Transaction History'} />
+      <PlusHeader action={handleTxHistoryModalClose} chain={chain} closeText={'Close'} icon={<HistoryIcon fontSize='small' />} title={'Transaction History'} />
 
       <Grid item xs={12} sx={{ paddingBottom: '10px' }}>
         <Box>
@@ -226,7 +228,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
         </Box>
       </Grid>
 
-      <Container id='scrollArea' sx={{ textAlign:'center', padding: '0px 30px 5px', height: '450px', overflowY: 'auto' }}>
+      <Container id='scrollArea' sx={{ textAlign: 'center', padding: '0px 30px 5px', height: '450px', overflowY: 'auto' }}>
         {tabHistory?.map((h, index) => (
           <Grid container key={index} alignItems='center'>
             <Grid item xs={1}>
@@ -241,13 +243,15 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
                   {h.action}
                 </Grid>
                 <Grid item xs={8} sx={{ fontSize: 13, fontWeight: '600', textAlign: 'right' }}>
-                  {h.amount || 'N/A '} {' '}{coin}
+                  {parseFloat(h.amount).toFixed(2) || 'N/A '} {' '}{coin}
                 </Grid>
               </Grid>
               <Grid item id='secondRow' container xs={12} sx={{ color: 'gray', fontSize: '10px', paddingBottom: '10px', textAlign: 'left' }}>
                 <Grid item xs={3} >
                   {h.action === 'send' && h.to && <>{t('To:')} {' '} {makeAddressShort(h.to)}</>}
                   {h.action === 'receive' && h.from && <>{t('From:')} {' '}{makeAddressShort(h.from)}</>}
+                  {stakingActions.includes(h.action) && h.from && <>{t('From:')} {' '}{makeAddressShort(h.from)}</>}
+
                 </Grid>
 
                 <Grid item xs={6} sx={{ textAlign: 'center' }}>
@@ -258,7 +262,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item xs={1} sx={{ textAlign: 'right'}}>
+            <Grid item xs={1} sx={{ textAlign: 'right' }}>
               <Link href='#'>
                 <FontAwesomeIcon
                   color={grey[500]}
