@@ -6,7 +6,7 @@
 import type { StakingLedger } from '@polkadot/types/interfaces';
 
 import ConfirmationNumberOutlinedIcon from '@mui/icons-material/ConfirmationNumberOutlined';
-import { Grid, Skeleton } from '@mui/material';
+import { Grid, Skeleton, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
@@ -364,10 +364,6 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, 
       <PlusHeader action={handleReject} chain={chain} closeText={'Reject'} icon={<ConfirmationNumberOutlinedIcon fontSize='small' />} title={'Confirm'} />
 
       <Grid alignItems='center' container>
-        {/* <Grid item sx={{ textAlign: 'center', fontSize: 15, fontWeight: 'bold', padding: '20px 20px 20px' }} xs={12}>
-                {stateInHuman(state)}
-
-              </Grid> */}
         <Grid item container xs={12} sx={{ backgroundColor: '#f7f7f7', padding: '25px 40px 10px' }}>
           <Grid item sx={{ border: '2px double grey', borderRadius: '5px', fontSize: 15, justifyContent: 'flex-start', padding: '5px 10px 5px', textAlign: 'center', fontVariant: 'small-caps' }}>
             {stateInHuman(confirmingState || state)}
@@ -427,7 +423,12 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, 
 
             </Grid>
           </>
-          : <Grid sx={{ margin: '110px' }}>{' '}</Grid>
+          : <Grid sx={{ margin: '70px 40px 70px' }}>
+            {['unstake'].includes(state) &&
+              <Typography variant='h6' sx={{ textAlign: 'center' }}>
+                {t('Note: The unstaked amount will be redeemable after {{days}} days ', { replace: { days: stakingConsts.bondingDuration } })}
+              </Typography>
+            }</Grid>
         }
       </Grid>
 
