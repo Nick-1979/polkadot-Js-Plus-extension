@@ -212,8 +212,9 @@ export default React.memo(styled(MenuSettings)(({ theme }: Props) => `
 
   .crowdloans, .governance{ // added for plus
     span {
-      color: red; // ${theme.textColor};
+      color: ${theme.textColor};
       font-size: ${theme.fontSize};
+      font-weight: bold;
       line-height: ${theme.lineHeight};
       text-decoration: none;
       vertical-align: middle;
