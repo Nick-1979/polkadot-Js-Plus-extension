@@ -21,7 +21,7 @@ interface Props {
   validatorsName: ValidatorsName[] | null;
 }
 
-export default function ValidatorsList({ chain, staker, activeValidator, stakingConsts, validatorsInfo, validatorsName }: Props): React.ReactElement<Props> {
+export default function ValidatorsList({ activeValidator, chain, staker, stakingConsts, validatorsInfo, validatorsName }: Props): React.ReactElement<Props> {
   const [decimal, setDecimals] = useState(1);
 
   useEffect(() => {

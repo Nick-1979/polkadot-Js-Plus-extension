@@ -4,7 +4,7 @@
 
 import type { AccountId, StakingLedger } from '@polkadot/types/interfaces';
 
-import { Delete as DeleteIcon, FilterList as FilterListIcon, RecommendOutlined as RecommendOutlinedIcon, ReportProblemOutlined } from '@mui/icons-material';
+import { Delete as DeleteIcon, FilterList as FilterListIcon, MoreHoriz as MoreHorizIcon, RecommendOutlined as RecommendOutlinedIcon, ReportProblemOutlined } from '@mui/icons-material';
 import { Box, Checkbox, Container, FormControlLabel, Grid, IconButton, TextField } from '@mui/material';
 import { alpha, styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
@@ -28,6 +28,7 @@ import { PlusHeader, Popup } from '../../components';
 import { DEFAULT_VALIDATOR_COMMISION_FILTER } from '../../util/constants';
 import { AccountsBalanceType, StakingConsts, Validators, ValidatorsName } from '../../util/plusTypes';
 import ConfirmStaking from './ConfirmStaking';
+import ValidatorInfo from './ValidatorInfo';
 
 interface Props {
   chain?: Chain | null;
@@ -55,6 +56,8 @@ interface Data {
 }
 
 interface TableRowProps {
+  chain: Chain;
+  coin: string;
   validators: DeriveStakingQuery[];
   decimals: number;
   nominatedValidators: DeriveStakingQuery[];
@@ -164,12 +167,12 @@ const headCells: HeadCell[] = [
     label: 'Nominator',
     numeric: true
   }
-  // , {
-  //   id: 'oversubscribed',
-  //   numeric: true,
-  //   disablePadding: false,
-  //   label: 'Oversubscribed'
-  // }
+  , {
+    id: 'moreInfo',
+    numeric: false,
+    disablePadding: false,
+    label: ''
+  }
 ];
 
 function EnhancedTableHead(props: EnhancedTableProps) {
@@ -180,25 +183,16 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   };
 
   return (
-    <TableHead sx={{ height: '15px' }}>
-      <TableRow sx={{ height: '10px' }}>
-        <StyledTableCell padding='checkbox'>
-          {/* <Checkbox
-            checked={rowCount > 0 && numSelected === rowCount}
-            color='primary'
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            inputProps={{
-              'aria-label': 'select all validators'
-            }}
-            onChange={onSelectAllClick}
-          /> */}
-        </StyledTableCell>
+    <TableHead>
+      <TableRow>
+        <StyledTableCell padding='checkbox'></StyledTableCell>
         {headCells.map((headCell) => (
           <StyledTableCell
             align={headCell.numeric ? 'right' : 'left'}
             key={headCell.id}
             // padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false}
+            size='small'
           >
             <TableSortLabel
               active={orderBy === headCell.id}
@@ -306,27 +300,23 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.grey[400],
     color: theme.palette.common.white,
-    height: '20px'
+    height: '10px'
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 13,
-    height: '20px',
-    padding: '0px 10px'
+    height: '1px',
+    padding: '0px 5px'
   }
 }));
 
-function EnhancedTable(props: TableRowProps) {
-  const rows = props.searching ? props.searchedValidators : props.validators;
-  const setSearchedValidators = props.setSearchedValidators;
-  const stakingConsts = props.stakingConsts;
-  const validatorsName = props.validatorsName;
-  const selected = props.selected;
-  const setSelected = props.setSelected;
-  const nominatedValidators = props.nominatedValidators;
+function EnhancedTable({ chain, coin, decimals, nominatedValidators, searchedValidators, searching, selected, setSearchedValidators, setSearching, setSelected, stakingConsts, validators, validatorsName }: TableRowProps) {
+  const rows = searching ? searchedValidators : validators;
 
-  const [order, setOrder] = React.useState<Order>('asc');
-  const [orderBy, setOrderBy] = React.useState<keyof Data>('name');
-  const [emptyRows, setEmptyRows] = React.useState<number>(0);
+  const [order, setOrder] = useState<Order>('asc');
+  const [orderBy, setOrderBy] = useState<keyof Data>('name');
+  const [emptyRows, setEmptyRows] = useState<number>(0);
+  const [showValidatorInfoModal, setShowValidatorInfoModal] = useState<boolean>(false);
+  const [info, setInfo] = useState<DeriveStakingQuery>();
 
   const handleRequestSort = (_event: React.MouseEvent<unknown>, property: keyof Data) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -380,17 +370,23 @@ function EnhancedTable(props: TableRowProps) {
 
   const isInNominatedValidators = (r: DeriveStakingQuery) => nominatedValidators.find((n) => n.accountId === r.accountId);
 
+  const handleMoreInfo = (info: DeriveStakingQuery) => {
+    setShowValidatorInfoModal(true);
+    setInfo(info);
+    console.log('more info', info)
+  }
+
   return (
-    <Container sx={{ overflow: 'hidden', padding: '5px 10px', width: '100%' }}>
+    <Container sx={{ overflowY: 'hidden', padding: '5px 10px', width: '100%' }}>
       <EnhancedTableToolbar
         numSelected={selected.length}
         setSearchedValidators={setSearchedValidators}
-        setSearching={props.setSearching}
+        setSearching={setSearching}
         setSelected={setSelected}
         stakingConsts={stakingConsts}
         validators={rows}
         validatorsName={validatorsName} />
-      <TableContainer sx={{ borderRadius: '5px', maxHeight: 350 }}>
+      <TableContainer sx={{ borderRadius: '5px', maxHeight: 350, overflowY: 'auto', scrollbarWidth: 'none' }}>
         <Table stickyHeader>
           <EnhancedTableHead
             numSelected={selected.length}
@@ -398,11 +394,10 @@ function EnhancedTable(props: TableRowProps) {
             // onSelectAllClick={handleSelectAllClick}
             order={order}
             orderBy={orderBy}
-            rowCount={rows.length}/>
+            rowCount={rows.length} />
           <TableBody>
             {
               rows.slice().sort(getComparator(order, orderBy))
-                // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row);
                   const labelId = `table-checkbox-${index}`;
@@ -413,8 +408,7 @@ function EnhancedTable(props: TableRowProps) {
                       aria-checked={isItemSelected}
                       hover
                       key={index}
-                      // eslint-disable-next-line react/jsx-no-bind
-                      onClick={(event) => handleClick(event, row)}
+                      // onClick={(event) => handleClick(event, row)}
                       role='checkbox'
                       selected={isItemSelected}
                       style={{ backgroundColor: rowBackground, height: 30 }}
@@ -423,19 +417,14 @@ function EnhancedTable(props: TableRowProps) {
                       <StyledTableCell padding='checkbox'>
                         <Checkbox
                           checked={isItemSelected}
+                          onClick={(event) => handleClick(event, row)}
                           color='primary'
-                          inputProps={{
-                            'aria-labelledby': labelId
-                          }}
+                          inputProps={{ 'aria-labelledby': labelId }}
                           size='small'
                         />
                       </StyledTableCell>
-                      <StyledTableCell
-                        component='th'
-                        id={labelId}
-                        padding='none'
-                        scope='row'
-                      >
+
+                      <StyledTableCell component='th' id={labelId} padding='none' scope='row'>
                         <Grid container>
                           <Grid item xs={12}>
                             {getAccountIdOrName(row)}
@@ -445,9 +434,11 @@ function EnhancedTable(props: TableRowProps) {
                           </Grid>
                         </Grid>
                       </StyledTableCell>
+
                       <StyledTableCell align='right'>
                         {Number(row.validatorPrefs.commission) / (10 ** 7)}%
                       </StyledTableCell>
+
                       <StyledTableCell align='right'>
                         <Grid container alignItems='center'>
                           <Grid item xs={6} sx={{ textAlign: 'center' }}>
@@ -464,6 +455,17 @@ function EnhancedTable(props: TableRowProps) {
                           </Grid>
                         </Grid>
                       </StyledTableCell>
+
+                      <StyledTableCell align='center'>
+                        <IconButton
+                          aria-label='more info'
+                          component='span'
+                          onClick={() => handleMoreInfo(row)}
+                        >
+                          <MoreHorizIcon />
+                        </IconButton>
+                      </StyledTableCell>
+
                     </TableRow>
                   );
                 })}
@@ -479,15 +481,23 @@ function EnhancedTable(props: TableRowProps) {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {showValidatorInfoModal && info &&
+        <ValidatorInfo
+          chain={chain}
+          coin={coin}
+          decimals={decimals}
+          info={info}
+          setShowValidatorInfoModal={setShowValidatorInfoModal}
+          showValidatorInfoModal={showValidatorInfoModal}
+          validatorsName={validatorsName}
+        />
+      }
     </Container>
   );
 }
 
-export default function SelectValidators({
-  chain, coin, decimals, ledger, nominatedValidators, setSelectValidatorsModalOpen,
-  setState, showSelectValidatorsModal, stakeAmount, staker, stakingConsts, state,
-  validatorsInfo, validatorsName
-}: Props): React.ReactElement<Props> {
+export default function SelectValidators({ chain, coin, decimals, ledger, nominatedValidators, setSelectValidatorsModalOpen, setState, showSelectValidatorsModal, stakeAmount, staker, stakingConsts, state, validatorsInfo, validatorsName }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const [validators, setValidators] = useState<DeriveStakingQuery[]>([]);
   const [searchedValidators, setSearchedValidators] = useState<DeriveStakingQuery[]>([]);
@@ -495,7 +505,7 @@ export default function SelectValidators({
   const [filterHighCommissionsState, setFilterHighCommissions] = useState(true);
   const [filterOverSubscribedsState, setFilterOverSubscribeds] = useState(true);
   const [filterNoNamesState, setFilterNoNames] = useState(false);
-  const [selected, setSelected] = React.useState<DeriveStakingQuery[]>([]);
+  const [selected, setSelected] = useState<DeriveStakingQuery[]>([]);
   const [showConfirmStakingModal, setConfirmStakingModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -569,8 +579,10 @@ export default function SelectValidators({
 
       <Grid alignItems='center' container>
         <Grid item xs={12} sx={{ textAlign: 'left' }}>
-          {validatorsInfo
-            ? <EnhancedTable
+          {validatorsInfo &&
+            <EnhancedTable
+              chain={chain}
+              coin={coin}
               decimals={decimals}
               nominatedValidators={nominatedValidators}
               searchedValidators={searchedValidators}
@@ -583,14 +595,13 @@ export default function SelectValidators({
               validators={validators}
               validatorsName={validatorsName}
             />
-            : ''}
+          }
         </Grid>
-        <Grid item container justifyContent='center' sx={{ padding: '1px 10px' }} xs={12}>
+        <Grid item container justifyContent='center' sx={{ padding: '10px 10px' }} xs={12}>
           <Grid item sx={{ fontSize: 13, textAlign: 'right' }} xs={4}>
             <FormControlLabel
               control={<Checkbox
                 color='default'
-                // defaultChecked
                 onChange={filterNoNames}
                 size='small'
               />
@@ -622,41 +633,39 @@ export default function SelectValidators({
               label={<Box fontSize={12} sx={{ color: 'red' }}>{t('no oversubscribeds')}</Box>}
             />
           </Grid>
-          <Grid item xs={12} container sx={{ padding: '10px 20px' }}>
-            <Grid item xs={12}>
-              <NextStepButton
-                data-button-action='select validators manually'
-                isDisabled={!selected.length}
-                onClick={handleSelectValidators}
-              >
-                {t('Next')}
-              </NextStepButton>
-            </Grid>
-
-            {selected.length >= 1
-              ? <ConfirmStaking
-                amount={state === 'changeValidators' ? 0n : stakeAmount}
-                chain={chain}
-                coin={coin}
-                decimals={decimals}
-                ledger={ledger}
-                nominatedValidators={null}
-                selectedValidators={selected}
-                setConfirmStakingModalOpen={setConfirmStakingModalOpen}
-                setSelectValidatorsModalOpen={setSelectValidatorsModalOpen}
-                setState={setState}
-                showConfirmStakingModal={showConfirmStakingModal}
-                staker={staker}
-                stakingConsts={stakingConsts}
-                state={state}
-                validatorsInfo={validatorsInfo}
-                validatorsName={validatorsName}
-                validatorsToList={selected}
-              />
-              : 'You need to select at least a validator'}
+          <Grid item xs={12} sx={{ padding: '10px 20px' }}>
+            <NextStepButton
+              data-button-action='select validators manually'
+              isDisabled={!selected.length}
+              onClick={handleSelectValidators}
+            >
+              {t('Next')}
+            </NextStepButton>
           </Grid>
         </Grid>
       </Grid>
+
+      {selected.length >= 1
+        ? <ConfirmStaking
+          amount={state === 'changeValidators' ? 0n : stakeAmount}
+          chain={chain}
+          coin={coin}
+          decimals={decimals}
+          ledger={ledger}
+          nominatedValidators={null}
+          selectedValidators={selected}
+          setConfirmStakingModalOpen={setConfirmStakingModalOpen}
+          setSelectValidatorsModalOpen={setSelectValidatorsModalOpen}
+          setState={setState}
+          showConfirmStakingModal={showConfirmStakingModal}
+          staker={staker}
+          stakingConsts={stakingConsts}
+          state={state}
+          validatorsInfo={validatorsInfo}
+          validatorsName={validatorsName}
+          validatorsToList={selected}
+        />
+        : t('At least one validator should be selected.')}
     </Popup>
   );
 }
