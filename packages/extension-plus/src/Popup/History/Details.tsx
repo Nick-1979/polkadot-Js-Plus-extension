@@ -63,8 +63,8 @@ export default function Details({
         fontSize={14}
       >
         {_address.slice(0, SHORT_ADDRESS_CHARACTERS) +
-          '...' +
-          _address.slice(-1 * SHORT_ADDRESS_CHARACTERS)}
+                    '...' +
+                    _address.slice(-1 * SHORT_ADDRESS_CHARACTERS)}
       </Box>
     );
   }
@@ -93,7 +93,7 @@ export default function Details({
   return (
     <Popup id='scrollArea' showModal={showDetailModal} handleClose={handleDetailsModalClose}>
       <PlusHeader action={handleDetailsModalClose} chain={chain} closeText={'Close'} icon={<DetailsIcon fontSize='small' />} title={'Transaction Detail'} />
-      <Container sx={{p: '0px 20px' }} >
+      <Container sx={{ p: '0px 20px' }} >
         <Grid item xs={12} sx={{ padding: '15px 15px 8px' }}>
           <Paper elevation={3}>
             <Grid item container justifyContent='center' sx={{ fontSize: 11, textAlign: 'center', padding: '30px 10px 20px' }}>
@@ -162,7 +162,7 @@ export default function Details({
                 {t('Block')}
               </Grid>
               <Grid item xs={10} sx={{ textAlign: 'right', paddingBottom: '10px' }}>
-                # {transaction.block || 'N/A'}
+                                # {transaction.block || 'N/A'}
               </Grid>
 
               <Grid item xs={1} sx={{ textAlign: 'left' }}>

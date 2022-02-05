@@ -123,7 +123,7 @@ export default function Fund({ coin, crowdloan, decimals, endpoints, handleContr
             </Grid>
           }
         </Grid>
-      </Paper >
-    </Grid >
+      </Paper>
+    </Grid>
   );
 }
