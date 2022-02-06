@@ -4,7 +4,7 @@
 /* eslint-disable react/jsx-max-props-per-line */
 
 import { Alert, Box, Button as MuiButton, FormControl, FormControlLabel, FormLabel, Grid, InputAdornment, Radio, RadioGroup, TextField } from '@mui/material';
-import React, {  } from 'react';
+import React, { } from 'react';
 
 import { DeriveStakingQuery } from '@polkadot/api-derive/types';
 
@@ -121,7 +121,7 @@ export default function Stake({ alert, coin, handleNextToStake, validatorSelecti
                   sx={{ fontSize: 12 }}
                   value='Manual'
                 />
-                {nominatedValidators &&
+                {nominatedValidators.length > 0 &&
                   <FormControlLabel
                     control={<Radio sx={{ fontSize: 12, '& .MuiSvgIcon-root': { fontSize: 14 } }} />}
                     label={

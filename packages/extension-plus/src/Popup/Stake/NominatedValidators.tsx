@@ -70,7 +70,7 @@ export default function NominatedValidators({ activeValidator, chain, nominatedV
               {t('No nominated validators found.')}
             </Grid>
             <Grid item>
-              {Number(currentlyStakedInHuman) > 0 &&
+              {Number(currentlyStakedInHuman) > stakingConsts.minNominatorBond &&
                 <NextStepButton
                   data-button-action='Set Nominees'
                   isBusy={validatorsInfo && state === 'changeValidators'}
