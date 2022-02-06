@@ -27,8 +27,6 @@ export default function Overview({ coin, councilInfo, decimals, genesisHash }: P
   const [showMyVotesModal, setShowMyVotesModal] = useState<boolean>(false);
   const [showVotesModal, setShowVotesModal] = useState<boolean>(false);
 
-  console.log('councilInfo', councilInfo);
-
   const {
     accountInfos,
     candidateCount,

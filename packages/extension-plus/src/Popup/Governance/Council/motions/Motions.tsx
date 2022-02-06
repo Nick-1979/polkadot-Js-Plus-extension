@@ -32,8 +32,6 @@ export default function Motions({ coin, decimals, genesisHash, currentBlockNumbe
 
   const { accountInfo, proposals, proposalInfo } = pMotions;
 
-  console.log('motions', pMotions);
-
   return (
     <Container disableGutters maxWidth='md'>
       {proposals.length

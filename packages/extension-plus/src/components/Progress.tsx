@@ -11,7 +11,7 @@ interface Props {
   title: string;
 }
 
-export default function Progress({ title }: Props): React.ReactElement<Props> {
+  function Progress({ title }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
 
   return (
@@ -25,3 +25,5 @@ export default function Progress({ title }: Props): React.ReactElement<Props> {
     </Grid>
   );
 }
+
+export default React.memo(Progress)

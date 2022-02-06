@@ -21,7 +21,7 @@ interface Props {
   action: () => void;
 }
 
-export default function PlusHeader({ action, chain, closeText, icon, title }: Props): React.ReactElement<Props> {
+function PlusHeader({ action, chain, closeText, icon, title }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
 
   return (
@@ -54,10 +54,12 @@ export default function PlusHeader({ action, chain, closeText, icon, title }: Pr
         </Grid>
 
       </Grid>
-      
+
       <Grid xs={12}>
         <Divider />
       </Grid>
     </>
   );
 }
+
+export default React.memo(PlusHeader);

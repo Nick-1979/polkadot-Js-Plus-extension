@@ -16,7 +16,7 @@ interface Props {
   hasEmpty?: boolean
 }
 
-export default function SelectRelay({ handleChainChange, hasEmpty = false, selectedChain }: Props): React.ReactElement<Props> {
+ function SelectRelay({ handleChainChange, hasEmpty = false, selectedChain }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
 
   return (
@@ -76,3 +76,5 @@ export default function SelectRelay({ handleChainChange, hasEmpty = false, selec
     </Grid>
   );
 }
+
+export default React.memo(SelectRelay);
