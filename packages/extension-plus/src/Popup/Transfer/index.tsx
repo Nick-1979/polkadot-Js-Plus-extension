@@ -382,27 +382,10 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
     <Popup handleClose={handleTransferModalClose} showModal={transferModalOpen}>
       <PlusHeader action={handleTransferModalClose} chain={chain} closeText={'Close'} icon={<SendOutlinedIcon fontSize='small' sx={{ transform: 'rotate(-45deg)' }} />} title={'Transfer Funds'} />
 
-      <Grid
-        alignItems='center'
-        container
-        justifyContent='center'
-        sx={{ padding: '5px 20px' }}
-      >
+      <Grid alignItems='center' container justifyContent='center' sx={{ padding: '5px 20px' }}>
 
-        <Grid
-          alignItems='center'
-          container
-          id='senderAddress'
-          item
-          justifyContent='flex-start'
-          spacing={1}
-          sx={{ opacity: senderAddressOpacity, padding: '20px 10px 50px' }}
-          xs={12}
-        >
-          <Grid
-            item
-            sx={{ color: grey[800], fontSize: 13, textAlign: 'left' }}
-          >
+        <Grid alignItems='center' container id='senderAddress' item justifyContent='flex-start' spacing={1} sx={{ opacity: senderAddressOpacity, padding: '20px 10px 50px' }} xs={12}>
+          <Grid item sx={{ color: grey[800], fontSize: 13, textAlign: 'left' }}>
             {t('Sender')}:
           </Grid>
           <Grid item>
@@ -413,10 +396,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
               value={sender.address}
             />
           </Grid>
-          <Grid
-            item
-            sx={{ fontSize: 12, textAlign: 'left' }}
-          >
+          <Grid item sx={{ fontSize: 12, textAlign: 'left' }}>
             {sender.name ? `${sender.name} (${sender.address})` : makeAddressShort(String(sender.address))}
           </Grid>
         </Grid>
@@ -488,7 +468,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
       }
 
       {recepientAddressIsValid &&
-        <div id='transferBody'>
+        <div id='transferBody' >
           <Grid
             container
             justifyContent='space-between'
@@ -533,7 +513,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
                     xs={10}
                   >
                     <Grid sx={{ fontSize: '14px', textAlign: 'left' }}>{coin}</Grid>
-                    <Grid sx={{ fontSize: '12px', textAlign: 'left' }}>{t('Available Balance')}: {availableBalance}</Grid>
+                    <Grid id='availableBalance' sx={{ fontSize: '12px', textAlign: 'left' }}>{t('Available Balance')}: {availableBalance}</Grid>
                   </Grid>
                 </Grid>
               </Box>
@@ -541,7 +521,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
 
             <Grid item sx={{ fontSize: '15px', fontWeight: '600', color: grey[800], marginTop: '30px', textAlign: 'left' }} xs={3}>
               {t('Amount:')}
-              <Grid item>
+              <Grid data-testid='allButton' item>
                 <Hint id='transferAll' tip={t<string>('Transfer all amount and deactivate the account.')}>
                   <LoadingButton
                     color='primary'
@@ -558,7 +538,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
                 </Hint>
               </Grid>
 
-              <Grid item>
+              <Grid data-testid='safeMaxButton' item>
                 <Hint id='safeMax' tip={t<string>('Transfer max amount where the account remains active.')}>
                   <LoadingButton
                     color='primary'
@@ -611,7 +591,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
               </Grid>
             </Grid>
           </Grid>
-          <Grid sx={{ padding: '40px 40px 10px' }}>
+          <Grid data-testid='nextButton'  sx={{ padding: '40px 40px 10px' }}>
             <NextStepButton
               data-button-action=''
               // isBusy={}

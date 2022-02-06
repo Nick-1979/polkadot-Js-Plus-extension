@@ -125,17 +125,19 @@ export default function ConfirmTx({
 
       setTransactionHash(txHash);
     } catch (e) {
+      console.error('password issue:', e);
       setPasswordStatus(PASS_MAP.INCORRECT);
       setState('');
     }
   }
 
   useEffect(() => {
-    if (!confirmModalOpen) return;
+    if (!confirmModalOpen || !transferAmount) return;
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
+
     getDefaultFeeAndSetTotal(lastFee);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [confirmModalOpen, lastFee]);
+  }, [confirmModalOpen, lastFee, transferAmount]);
 
   useEffect(() => {
     setFailAlert(Number(total) > Number(availableBalance));
@@ -164,7 +166,6 @@ export default function ConfirmTx({
     setFee(amountToHuman(lastFee, decimals));
 
     const total = (Number(lastFee) + Number(transferAmount)) / (10 ** decimals);
-
     setTotal(fixFloatingPoint(total));
 
     // setConfirmDisabled(false);
@@ -267,7 +268,7 @@ export default function ConfirmTx({
         </Grid>
       </Grid>
 
-      <Grid container alignItems='center' justifyContent='space-around' sx={{ paddingTop: '20px' }}>
+      <Grid data-testid='infoInMiddle' container alignItems='center' justifyContent='space-around' sx={{ paddingTop: '20px' }}>
         <Grid item container xs={12} sx={{ backgroundColor: '#f7f7f7', padding: '25px 40px 25px' }}>
           <Grid item xs={3} sx={{ padding: '5px 10px 5px', borderRadius: '5px', border: '2px double grey', justifyContent: 'flex-start', fontSize: 15, textAlign: 'center', fontVariant: 'small-caps' }}>
             {t('transfer of')}
@@ -318,8 +319,14 @@ export default function ConfirmTx({
               ? <Alert severity='warning' sx={{ fontSize: 11 }}>{t('Transaction most likely fail, consider fee')}!</Alert>
               : ''} */}
           </Grid>
-          <Grid item xs={3} sx={{ fontSize: 13, fontWeight: '600', textAlign: 'right' }}>
-            {total || ' ... '} {' '} {coin}
+
+          <Grid item container justifyContent='flex-end' spacing={1} xs={3} sx={{ fontSize: 13, fontWeight: '600', textAlign: 'right' }}>
+            <Grid item>
+              {total || ' ... '}
+            </Grid>
+            <Grid item>
+              {coin}
+            </Grid>
           </Grid>
         </Grid>
       </Grid>
