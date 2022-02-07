@@ -14,9 +14,9 @@ import Identicon from '@polkadot/react-identicon';
 
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { PlusHeader, Popup, ShortAddress } from '../../components';
+import getLogo from '../../util/getLogo';
 import { ValidatorsName } from '../../util/plusTypes';
 import { amountToHuman } from '../../util/plusUtils';
-import getLogo from '../../util/getLogo';
 
 interface Props {
   chain: Chain;

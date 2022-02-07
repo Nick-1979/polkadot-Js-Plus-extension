@@ -51,7 +51,7 @@ export function balanceToHuman(_balance: AccountsBalanceType | null, _type: stri
 export function amountToHuman(_amount: string | undefined, _decimals: number, decimalDigits?: number): string {
   if (!_amount) return '';
 
-  _amount = String(_amount).replaceAll(',', '');
+  _amount = String(_amount).replace(/,/g, '');
 
   const x = 10 ** _decimals;
 

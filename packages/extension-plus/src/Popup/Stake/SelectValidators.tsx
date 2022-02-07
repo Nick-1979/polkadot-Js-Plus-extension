@@ -76,6 +76,7 @@ interface HeadCell {
   id: keyof Data;
   label: string;
   numeric: boolean;
+  clickable:boolean;
 }
 
 interface EnhancedTableToolbarProps {
@@ -153,25 +154,29 @@ const headCells: HeadCell[] = [
     disablePadding: false,
     id: 'name',
     label: 'Address/Name',
-    numeric: false
+    numeric: false,
+    clickable: true
   },
   {
-    disablePadding: false,
+    disablePadding: true,
     id: 'commission',
     label: 'Commission',
-    numeric: true
+    numeric: true,
+    clickable: true
+  },
+  {
+    disablePadding: true,
+    id: 'nominator',
+    label: 'Nominator',
+    numeric: true,
+    clickable: true
   },
   {
     disablePadding: false,
-    id: 'nominator',
-    label: 'Nominator',
-    numeric: true
-  }
-  , {
     id: 'moreInfo',
+    label: 'More',
     numeric: false,
-    disablePadding: false,
-    label: ''
+    clickable: false 
   }
 ];
 
@@ -190,14 +195,14 @@ function EnhancedTableHead(props: EnhancedTableProps) {
           <StyledTableCell
             align={headCell.numeric ? 'right' : 'left'}
             key={headCell.id}
-            // padding={headCell.disablePadding ? 'none' : 'normal'}
-            sortDirection={orderBy === headCell.id ? order : false}
+            padding={headCell.disablePadding ? 'none' : 'normal'}
             size='small'
+            sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id)}
+              onClick={headCell.clickable && createSortHandler(headCell.id)}
             >
               {headCell.label}
             </TableSortLabel>

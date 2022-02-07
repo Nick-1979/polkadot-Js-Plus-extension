@@ -1,6 +1,6 @@
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-/* eslint-disable header/header */
+
 /* eslint-disable react/jsx-max-props-per-line */
 
 import type { StakingLedger } from '@polkadot/types/interfaces';
@@ -20,7 +20,6 @@ import { AccountContext } from '../../../../extension-ui/src/components';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { ConfirmButton, Password, PlusHeader, Popup } from '../../components';
 import { PASS_MAP } from '../../util/constants';
-import getChainInfo from '../../util/getChainInfo';
 import { AccountsBalanceType, StakingConsts, TransactionDetail, Validators, ValidatorsName } from '../../util/plusTypes';
 import { amountToHuman, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/plusUtils';
 import { bondOrBondExtra, chill, nominate, unbond, withdrawUnbonded } from '../../util/staking';
@@ -268,7 +267,7 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, 
 
       if (localState === 'unstake' && amount > 0n) {
         if (amount === currentlyStaked) {
-          // if you are unstaking all, should chill first
+          // if unstaking all, should chill first
           const { failureText, fee, status, txHash } = await chill(chain, staker.address, signer);
 
           const history: TransactionDetail = {
@@ -364,12 +363,12 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, 
       <PlusHeader action={handleReject} chain={chain} closeText={'Reject'} icon={<ConfirmationNumberOutlinedIcon fontSize='small' />} title={'Confirm'} />
 
       <Grid alignItems='center' container>
-        <Grid item container xs={12} sx={{ backgroundColor: '#f7f7f7', padding: '25px 40px 10px' }}>
+        <Grid container item sx={{ backgroundColor: '#f7f7f7', padding: '25px 40px 10px' }} xs={12}>
           <Grid item sx={{ border: '2px double grey', borderRadius: '5px', fontSize: 15, justifyContent: 'flex-start', padding: '5px 10px 5px', textAlign: 'center', fontVariant: 'small-caps' }}>
             {stateInHuman(confirmingState || state)}
           </Grid>
           {amount
-            ? <Grid item container justifyContent='center' spacing={1} xs={12} sx={{ fontFamily: 'fantasy', fontSize: 18, textAlign: 'center' }}>
+            ? <Grid container item justifyContent='center' spacing={1} sx={{ fontFamily: 'fantasy', fontSize: 18, textAlign: 'center' }} xs={12}>
               <Grid item>
                 {amountToHuman(amount.toString(), decimals)}
               </Grid>
@@ -379,8 +378,8 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, 
             </Grid>
             : ''}
 
-          <Grid item xs={12} container justifyContent='space-between' alignItems='center' sx={{ fontSize: 12, paddingTop: '30px' }} >
-            <Grid item container xs={5} justifyContent='flex-start' spacing={1}>
+          <Grid alignItems='center' container item justifyContent='space-between' sx={{ fontSize: 12, paddingTop: '30px' }} xs={12} >
+            <Grid container item justifyContent='flex-start' spacing={1} xs={5}>
               <Grid item sx={{ fontSize: 12, fontWeight: '600' }}>
                 {t('Currently staked')}{': '}
               </Grid>
@@ -390,7 +389,7 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, 
                   : <>
                     {currentlyStaked ? amountToHuman(currentlyStaked.toString(), decimals) : '0.00'}
                   </>
-                }{coin}
+                }{' '}{coin}
               </Grid>
             </Grid>
             <Grid container item justifyContent='flex-end' spacing={1} xs={5}>
@@ -403,7 +402,7 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, 
                   : <>
                     {totalStakedInHuman}
                   </>
-                }{coin}
+                }{' '}{coin}
               </Grid>
             </Grid>
           </Grid>
@@ -423,10 +422,15 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, 
 
             </Grid>
           </>
-          : <Grid sx={{ margin: '70px 40px 70px' }}>
-            {['unstake'].includes(state) &&
-              <Typography variant='h6' sx={{ textAlign: 'center' }}>
+          : <Grid sx={{ m: '70px 40px 70px', textAlign: 'center' }}>
+            {['unstake'].includes(state)
+              ? <Typography variant='h6'>
                 {t('Note: The unstaked amount will be redeemable after {{days}} days ', { replace: { days: stakingConsts.bondingDuration } })}
+              </Typography>
+              : ['withdrawUnbound'].includes(state) &&
+              <Typography sx={{ m: '5px 0px 5px' }} variant='h6'>
+                {t('The available balance after redeem will be')}{' '}
+                {amountToHuman(String(amount + staker.balanceInfo.available), decimals)}{' '} {coin}
               </Typography>
             }</Grid>
         }

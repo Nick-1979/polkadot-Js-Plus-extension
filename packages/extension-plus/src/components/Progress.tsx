@@ -1,18 +1,14 @@
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-/* eslint-disable header/header */
 
 import { CircularProgress, Grid } from '@mui/material';
 import React from 'react';
-
-import useTranslation from '../../../extension-ui/src/hooks/useTranslation';
 
 interface Props {
   title: string;
 }
 
-  function Progress({ title }: Props): React.ReactElement<Props> {
-  const { t } = useTranslation();
+function Progress({ title }: Props): React.ReactElement<Props> {
 
   return (
     <Grid container direction='column' alignItems='center' justifyContent='center' sx={{ paddingTop: '40px' }} >
@@ -26,4 +22,4 @@ interface Props {
   );
 }
 
-export default React.memo(Progress)
+export default React.memo(Progress);

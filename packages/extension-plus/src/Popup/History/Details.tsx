@@ -96,13 +96,13 @@ export default function Details({
       <Container sx={{ p: '0px 20px' }} >
         <Grid item xs={12} sx={{ padding: '15px 15px 8px' }}>
           <Paper elevation={3}>
-            <Grid item container justifyContent='center' sx={{ fontSize: 11, textAlign: 'center', padding: '30px 10px 20px' }}>
+            <Grid item container justifyContent='center' sx={{ fontSize: 12, textAlign: 'center', padding: '30px 10px 20px' }}>
               <Grid item xs={12} >
                 <FontAwesomeIcon
                   color={getIcon(transaction.action).color}
                   icon={getIcon(transaction.action).icon}
                 />
-                {' '} {transaction.action}
+                {' '} {transaction.action.toUpperCase()}
               </Grid>
               <Grid item xs={12} id='transactionStatus' sx={{ fontSize: 15, fontWeight: 'bold', padding: '10px 1px 10px', color: ['success'].includes(transaction.status.toLowerCase()) ? 'green' : 'red' }}>
                 {['success'].includes(transaction.status.toLowerCase()) ? t('Success') : t('Failed')}

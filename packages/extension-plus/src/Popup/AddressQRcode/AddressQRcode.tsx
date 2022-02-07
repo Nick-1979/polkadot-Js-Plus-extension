@@ -41,7 +41,7 @@ export default function AddressQRcode({ address, chain, name, setQRcodeModalOpen
         <QRCode value={address} size={300} level='H' />
       </Grid>
 
-      <Grid alignItems='center' container justifyContent='center' spacing={1} xs={12} sx={{ padding: '30px 50px' }}>
+      <Grid alignItems='center' container justifyContent='center' spacing={1} sx={{ padding: '30px 50px' }}>
         <Grid item>
           <Identicon
             prefix={chain?.ss58Format ?? 42}

@@ -1,6 +1,5 @@
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-/* eslint-disable header/header */
 
 import { Container, Grid } from '@mui/material';
 import React, { useEffect, useState } from 'react';
@@ -8,6 +7,8 @@ import React, { useEffect, useState } from 'react';
 import { DeriveStakingQuery } from '@polkadot/api-derive/types';
 import { Chain } from '@polkadot/extension-chains/types';
 
+import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
+import { Progress } from '../../components';
 import getChainInfo from '../../util/getChainInfo';
 import { AccountsBalanceType, StakingConsts, ValidatorsName } from '../../util/plusTypes';
 import Table from './VTable';
@@ -22,6 +23,8 @@ interface Props {
 }
 
 export default function ValidatorsList({ activeValidator, chain, staker, stakingConsts, validatorsInfo, validatorsName }: Props): React.ReactElement<Props> {
+  const { t } = useTranslation();
+
   const [decimal, setDecimals] = useState(1);
 
   useEffect(() => {
@@ -36,8 +39,8 @@ export default function ValidatorsList({ activeValidator, chain, staker, staking
       <Grid alignItems='center' container>
         <Grid item xs={12}>
 
-          {validatorsInfo &&
-            <Table
+          {validatorsInfo
+            ? <Table
               activeValidator={activeValidator}
               decimals={decimal}
               staker={staker}
@@ -45,6 +48,7 @@ export default function ValidatorsList({ activeValidator, chain, staker, staking
               validators={validatorsInfo}
               validatorsName={validatorsName}
             />
+            : <Progress title={t('Loading validators....')} />
           }
         </Grid>
       </Grid>
