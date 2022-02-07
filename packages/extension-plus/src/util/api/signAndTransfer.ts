@@ -11,8 +11,8 @@ import { Dispatch, SetStateAction } from 'react';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { KeyringPair } from '@polkadot/keyring/types';
 
-import getChainInfo from './getChainInfo';
-import { TransactionStatus, TxInfo } from './plusTypes';
+import getChainInfo from '../getChainInfo';
+import { TransactionStatus, TxInfo } from '../plusTypes';
 
 export default async function signAndTransfer(
   _senderKeyring: KeyringPair,

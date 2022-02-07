@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-import getChainInfo from './getChainInfo';
-import { CouncilInfo } from './plusTypes';
+import getChainInfo from '../getChainInfo';
+import { CouncilInfo } from '../plusTypes';
 
 export default async function getCouncil(_chain: string): Promise<CouncilInfo> {
   const { api } = await getChainInfo(_chain);

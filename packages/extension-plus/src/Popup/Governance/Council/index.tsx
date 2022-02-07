@@ -10,9 +10,9 @@ import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } fro
 import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
 import { PlusHeader, Popup, Progress } from '../../../components';
 import getChainInfo from '../../../util/getChainInfo';
-import getCouncil from '../../../util/getCouncil';
+import getCouncil from '../../../util/api/getCouncil';
 import getCurrentBlockNumber from '../../../util/api/getCurrentBlockNumber';
-import getMotions from '../../../util/getMotions';
+import getMotions from '../../../util/api/getMotions';
 import { CouncilInfo, MotionsInfo } from '../../../util/plusTypes';
 import Motions from './motions/Motions';
 import Overview from './overview/Overview';

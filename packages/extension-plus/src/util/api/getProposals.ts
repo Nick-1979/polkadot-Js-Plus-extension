@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-import getChainInfo from './getChainInfo';
-import { ProposalsInfo } from './plusTypes';
+import getChainInfo from '../getChainInfo';
+import { ProposalsInfo } from '../plusTypes';
 
 
 

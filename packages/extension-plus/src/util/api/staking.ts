@@ -10,9 +10,9 @@ import { Chain } from '@polkadot/extension-chains/types';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 
-import getChainInfo from './getChainInfo';
-import { TxInfo, ValidatorsFromSubscan } from './plusTypes';
-import { postData } from './postData';
+import getChainInfo from '../getChainInfo';
+import { TxInfo, ValidatorsFromSubscan } from '../plusTypes';
+import { postData } from '../postData';
 import { signAndSend } from './signAndSend';
 
 export async function getAllValidatorsFromSubscan(_chain: Chain): Promise<{ current: ValidatorsFromSubscan[] | null, waiting: ValidatorsFromSubscan[] | null } | null> {
@@ -293,10 +293,7 @@ export async function chill(
   }
 }
 
-export async function withdrawUnbonded(
-  _chain: Chain | null | undefined,
-  _controllerId: string | null,
-  _signer: KeyringPair): Promise<TxInfo> {
+export async function withdrawUnbonded(_chain: Chain | null | undefined,_controllerId: string | null,_signer: KeyringPair): Promise<TxInfo> {
   try {
     console.log('withdrawUnbonded is called!');
 

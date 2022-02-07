@@ -4,8 +4,8 @@
 
 import type { DeriveAccountInfo, DeriveCollectiveProposal } from '@polkadot/api-derive/types';
 
-import getChainInfo from './getChainInfo';
-import { MotionsInfo } from './plusTypes';
+import getChainInfo from '../getChainInfo';
+import { MotionsInfo } from '../plusTypes';
 
 
 export default async function getMotions(_chain: string): Promise<MotionsInfo> {

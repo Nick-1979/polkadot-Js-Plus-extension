@@ -13,8 +13,8 @@ import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation
 import { PlusHeader, Popup, Progress } from '../../../components';
 import getCurrentBlockNumber from '../../../util/api/getCurrentBlockNumber';
 import createConvictions from '../../../util/createConvictions';
-import getProposals from '../../../util/getProposals';
-import getReferendums from '../../../util/getReferendums';
+import getProposals from '../../../util/api/getProposals';
+import getReferendums from '../../../util/api/getReferendums';
 import { ChainInfo, Conviction,ProposalsInfo } from '../../../util/plusTypes';
 import Proposals from './proposals/overview';
 import Referendums from './referendums/overview';

@@ -7,7 +7,7 @@ import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 
-import { TxInfo } from './plusTypes';
+import { TxInfo } from '../plusTypes';
 
 export async function signAndSend(
   api: ApiPromise,

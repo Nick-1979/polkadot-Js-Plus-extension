@@ -7,7 +7,7 @@ import request from 'umi-request';
 
 import { Chain } from '@polkadot/extension-chains/types';
 
-import { TransferRequest } from './plusTypes';
+import { TransferRequest } from '../plusTypes';
  
 export function getTxTransfers(_chain: Chain, address: string, pageNum: number, pageSize: number): Promise<TransferRequest> {
   const network = _chain.name.replace(' Relay Chain', '');

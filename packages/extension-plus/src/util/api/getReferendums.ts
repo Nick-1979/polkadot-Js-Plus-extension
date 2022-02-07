@@ -3,7 +3,7 @@
 /* eslint-disable header/header */
 
 import { DeriveReferendumExt, DeriveProposal } from '@polkadot/api-derive/types';
-import getChainInfo from './getChainInfo';
+import getChainInfo from '../getChainInfo';
 
 export default async function getReferendums(_chain: string): Promise<DeriveReferendumExt[] > {
 

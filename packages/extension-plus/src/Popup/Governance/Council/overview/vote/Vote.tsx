@@ -15,7 +15,7 @@ import { AllAddresses, ConfirmButton, GBalance, Password, PlusHeader, Popup, Pro
 import broadcast from '../../../../../util/api/broadcast';
 import { PASS_MAP } from '../../../../../util/constants';
 import getChainInfo from '../../../../../util/getChainInfo';
-import getVotingBond from '../../../../../util/getVotingBond';
+import getVotingBond from '../../../../../util/api/getVotingBond';
 import { PersonsInfo } from '../../../../../util/plusTypes';
 import { amountToHuman } from '../../../../../util/plusUtils';
 import VoteMembers from './VoteMembers';

@@ -22,7 +22,7 @@ import { ConfirmButton, Password, PlusHeader, Popup } from '../../components';
 import { PASS_MAP } from '../../util/constants';
 import { AccountsBalanceType, StakingConsts, TransactionDetail, Validators, ValidatorsName } from '../../util/plusTypes';
 import { amountToHuman, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/plusUtils';
-import { bondOrBondExtra, chill, nominate, unbond, withdrawUnbonded } from '../../util/staking';
+import { bondOrBondExtra, chill, nominate, unbond, withdrawUnbonded } from '../../util/api/staking';
 import ValidatorsList from './ValidatorsList';
 import getChainInfo from '../../util/getChainInfo';
 import broadcast from '../../util/api/broadcast';
@@ -353,7 +353,7 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, 
         const { block, failureText, fee, status, txHash } = await broadcast(api, chilled, [], signer);
 
         const history: TransactionDetail = {
-          action: 'Stop nominating',
+          action: 'stop_nominating',
           block: block,
           date: Date.now(),
           fee: fee || '',

@@ -25,7 +25,7 @@ import TransferFunds from '../Popup/Transfer';
 import { AccountJson } from '@polkadot/extension-base/background/types';
 import { updateMeta } from '../../../extension-ui/src/messaging';
 import { grey } from '@mui/material/colors';
-import { getPriceInUsd } from '../util/getPrice';
+import { getPriceInUsd } from '../util/api/getPrice';
 import { Balance } from './';
 import { ImageNotSupportedTwoTone } from '@mui/icons-material';
 import { SUPPORTED_CHAINS } from '../util/constants';

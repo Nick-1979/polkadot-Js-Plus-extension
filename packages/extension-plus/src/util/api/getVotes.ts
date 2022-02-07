@@ -4,8 +4,8 @@
 
 import type { DeriveCouncilVote } from '@polkadot/api-derive/types';
 
-import { Chain } from '../../../extension-chains/src/types';
-import getChainInfo from './getChainInfo';
+import { Chain } from '../../../../extension-chains/src/types';
+import getChainInfo from '../getChainInfo';
 
 export default async function getVotes(_chain: Chain, _address: string): Promise<DeriveCouncilVote> {
   if (!_chain || !_address) return;

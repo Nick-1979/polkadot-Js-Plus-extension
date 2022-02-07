@@ -24,7 +24,7 @@ import { PASS_MAP } from '../../util/constants';
 import getNetworkInfo from '../../util/getNetwork';
 import { AccountsBalanceType, TransactionDetail, TransactionStatus } from '../../util/plusTypes';
 import { amountToHuman, fixFloatingPoint, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/plusUtils';
-import signAndTransfer from '../../util/signAndTransfer';
+import signAndTransfer from '../../util/api/signAndTransfer';
 import Hint from '../../components/Hint';
 
 interface Props {

@@ -23,7 +23,7 @@ import { DEFAULT_COIN, MAX_ACCEPTED_COMMISSION, MIN_EXTRA_BOND } from '../../uti
 import getNetworkInfo from '../../util/getNetwork';
 import { AccountsBalanceType, AllValidatorsFromSubscan, savedMetaData, StakingConsts, Validators, ValidatorsName } from '../../util/plusTypes';
 import { amountToHuman, amountToMachine, balanceToHuman, fixFloatingPoint, prepareMetaData } from '../../util/plusUtils';
-import { getAllValidatorsFromSubscan, getStakingReward } from '../../util/staking';
+import { getAllValidatorsFromSubscan, getStakingReward } from '../../util/api/staking';
 import ConfirmStaking from './ConfirmStaking';
 import SelectValidators from './SelectValidators';
 import ValidatorsList from './ValidatorsList';

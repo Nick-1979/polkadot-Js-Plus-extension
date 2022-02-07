@@ -8,7 +8,7 @@ import { ApiPromise } from '@polkadot/api';
 import { KeyringPair } from '@polkadot/keyring/types';
 
 import { TxInfo } from '../plusTypes';
-import { signAndSend } from '../signAndSend';
+import { signAndSend } from './signAndSend';
 
 export default async function broadcast(
   api: ApiPromise,

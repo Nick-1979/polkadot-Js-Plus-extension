@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-import { Chain } from '../../../extension-chains/src/types';
-import getChainInfo from './getChainInfo';
+import { Chain } from '../../../../extension-chains/src/types';
+import getChainInfo from '../getChainInfo';
 
 export default async function getVotingBond(_chain: Chain): Promise<any> {
   const { api } = await getChainInfo(_chain);
