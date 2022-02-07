@@ -286,7 +286,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
             tabValue !== TAB_MAP.STAKING &&
             ((transfersTx?.hasMore)
               ? 'Loading ...'
-              : <Box fontSize={11} sx={{ color: grey[400] }}>
+              : !!tabHistory.length && <Box fontSize={11} sx={{ color: grey[400] }}>
                 {t('No more transactions to load')}
               </Box>
             )

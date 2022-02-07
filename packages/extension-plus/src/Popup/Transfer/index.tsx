@@ -569,7 +569,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
                   fullWidth
                   helperText={reapeAlert
                     ? (t('Account will be reaped, existential deposit:') + String(ED) + ' ' + coin)
-                    : (noFeeAlert ? t('Fee must be considered, use MAX button instead.') : (zeroBalanceAlert ? t('Available balance is zero.') : ''))}
+                    : (noFeeAlert ? t('Fee must be considered, use MAX button instead.') : (zeroBalanceAlert ? t('No available fund to transfer') : ''))}
                   label={t('Transfer Amount')}
                   margin='dense'
                   name='transfeAmount'
