@@ -108,7 +108,6 @@ describe('Testing TransferFund component', () => {
 
     const transferAmount = Number(availableBalance) - 1;
     expect(screen.queryByTestId('infoInMiddle').children.item(0).children.item(1).textContent).toEqual(`${transferAmount}${balanceInfo.coin}`);
-    console.log(`${Number(availableBalance) - 1}${balanceInfo.coin}`)
     expect(screen.queryByTestId('infoInMiddle').children.item(1).children.item(1).textContent).toEqual(fee + 'estimated');
     expect(screen.queryByTestId('infoInMiddle').children.item(3).children.item(0).textContent).toEqual('Total');
     expect(screen.queryByTestId('infoInMiddle').children.item(3).children.item(2).textContent).toEqual(transferAmount + fee + 'WND');

@@ -125,7 +125,7 @@ export default function ConfirmTx({
 
       setTransactionHash(txHash);
     } catch (e) {
-      console.error('password issue:', e);
+      console.log('password issue:', e);
       setPasswordStatus(PASS_MAP.INCORRECT);
       setState('');
     }
