@@ -19,13 +19,13 @@ import keyring from '@polkadot/ui-keyring';
 import { AccountContext } from '../../../../extension-ui/src/components';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { ConfirmButton, Password, PlusHeader, Popup } from '../../components';
-import { PASS_MAP } from '../../util/constants';
+import broadcast from '../../util/api/broadcast';
+import { bondOrBondExtra, chill, nominate, unbond, withdrawUnbonded } from '../../util/api/staking';
+import { PASS_MAP, STATES_NEEDS_MESSAGE } from '../../util/constants';
+import getChainInfo from '../../util/getChainInfo';
 import { AccountsBalanceType, StakingConsts, TransactionDetail, Validators, ValidatorsName } from '../../util/plusTypes';
 import { amountToHuman, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/plusUtils';
-import { bondOrBondExtra, chill, nominate, unbond, withdrawUnbonded } from '../../util/api/staking';
 import ValidatorsList from './ValidatorsList';
-import getChainInfo from '../../util/getChainInfo';
-import broadcast from '../../util/api/broadcast';
 
 interface Props {
   chain?: Chain | null;
@@ -36,6 +36,7 @@ interface Props {
   showConfirmStakingModal: boolean;
   setConfirmStakingModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectValidatorsModalOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+  handleEasyStakingModalClose: () => void;
   stakingConsts: StakingConsts | null;
   amount: bigint;
   validatorsInfo?: Validators | null;
@@ -47,7 +48,7 @@ interface Props {
   validatorsToList: DeriveStakingQuery[] | null;
 }
 
-export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, nominatedValidators, selectedValidators, setConfirmStakingModalOpen, setSelectValidatorsModalOpen, setState, showConfirmStakingModal, staker, stakingConsts, state, validatorsName, validatorsToList }: Props): React.ReactElement<Props> {
+export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, handleEasyStakingModalClose, nominatedValidators, selectedValidators, setConfirmStakingModalOpen, setSelectValidatorsModalOpen, setState, showConfirmStakingModal, staker, stakingConsts, state, validatorsName, validatorsToList }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { hierarchy } = useContext(AccountContext);
   const [confirmingState, setConfirmingState] = useState<string>('');
@@ -371,8 +372,6 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, 
         console.log('withdrawUnbound:', status);
         setConfirmingState(status);
       }
-
-
     } catch (e) {
       console.log('error:', e);
       setPasswordStatus(PASS_MAP.INCORRECT);
@@ -387,8 +386,27 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, 
     if (setSelectValidatorsModalOpen) setSelectValidatorsModalOpen(false);
 
     handleCloseModal();
-    // setReject(true);
-  }, []);
+    handleEasyStakingModalClose();
+  }, [handleCloseModal, handleEasyStakingModalClose, setSelectValidatorsModalOpen, setState]);
+
+  const writeAppropiateMessage = useCallback((state: string): React.ReactNode => {
+    switch (state) {
+      case ('unstake'):
+        return <Typography variant='h6'>
+          {t('Note: The unstaked amount will be redeemable after {{days}} days ', { replace: { days: stakingConsts.bondingDuration } })}
+        </Typography>;
+      case ('withdrawUnbound'):
+        return <Typography sx={{ m: '5px 0px 5px' }} variant='h6'>
+          {t('Available balance after redeem ')}<br />
+          {amountToHuman(String(amount + staker.balanceInfo.available), decimals)}{' '} {coin}
+        </Typography>;
+      case ('stopNominating'):
+        return <Typography sx={{ m: '30px 0px 30px' }} variant='h6'>
+          {t('Declaring no desire to nominate validators')}
+        </Typography>;
+      default:
+    }
+  }, [amount, coin, decimals, staker.balanceInfo.available, stakingConsts.bondingDuration, t]);
 
   return (
     <Popup handleClose={handleCloseModal} showModal={showConfirmStakingModal}>
@@ -441,7 +459,7 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, 
             </Grid>
           </Grid>
         </Grid>
-        {stakingConsts && !['withdrawUnbound', 'unstake'].includes(state)
+        {stakingConsts && !STATES_NEEDS_MESSAGE.includes(state)
           ? <>
             <Grid item sx={{ textAlign: 'center', color: grey[600], fontFamily: 'fantasy', fontSize: 16, p: '15px 50px 5px' }} xs={12}>
               {t('VALIDATORS')}
@@ -456,17 +474,9 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, 
 
             </Grid>
           </>
-          : <Grid sx={{ m: '70px 40px 70px', textAlign: 'center' }}>
-            {['unstake'].includes(state)
-              ? <Typography variant='h6'>
-                {t('Note: The unstaked amount will be redeemable after {{days}} days ', { replace: { days: stakingConsts.bondingDuration } })}
-              </Typography>
-              : ['withdrawUnbound'].includes(state) &&
-              <Typography sx={{ m: '5px 0px 5px' }} variant='h6'>
-                {t('The available balance after redeem will be')}{' '}
-                {amountToHuman(String(amount + staker.balanceInfo.available), decimals)}{' '} {coin}
-              </Typography>
-            }</Grid>
+          : <Grid item xs={12} sx={{ m: '70px 40px 70px', textAlign: 'center' }}>
+            {writeAppropiateMessage(state)}
+          </Grid>
         }
       </Grid>
 

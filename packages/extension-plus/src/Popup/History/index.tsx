@@ -20,7 +20,7 @@ import { AccountsBalanceType, TransactionDetail, Transfers } from '../../util/pl
 import { getTransactionHistoryFromLocalStorage } from '../../util/plusUtils';
 import Details from './Details';
 import { getIcon } from './getIcons';
-import { STAKIN_ACTIONS } from '../../util/constants';
+import { STAKING_ACTIONS } from '../../util/constants';
 import { getTxIcon } from './getTxIcon';
 
 interface Props {
@@ -174,7 +174,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
         history = history.filter((h) => ['send', 'receive'].includes(h.action.toLowerCase()));
         break;
       case (TAB_MAP.STAKING):
-        history = history.filter((h) => STAKIN_ACTIONS.includes(h.action));
+        history = history.filter((h) => STAKING_ACTIONS.includes(h.action));
         break;
       default:
         break;
@@ -247,7 +247,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
                 <Grid item xs={3} >
                   {h.action === 'send' && h.to && <>{t('To:')} {' '} {makeAddressShort(h.to)}</>}
                   {h.action === 'receive' && h.from && <>{t('From:')} {' '}{makeAddressShort(h.from)}</>}
-                  {STAKIN_ACTIONS.includes(h.action) && h.from && <>{t('From:')} {' '}{makeAddressShort(h.from)}</>}
+                  {STAKING_ACTIONS.includes(h.action) && h.from && <>{t('From:')} {' '}{makeAddressShort(h.from)}</>}
 
                 </Grid>
 

@@ -6,7 +6,7 @@
 
 import type { ThemeProps } from '../../../../extension-ui/src/types';
 
-import { Gavel as GavelIcon, Groups as GroupsIcon } from '@mui/icons-material';
+import { Gavel as GavelIcon, Payments as PaymentsIcon } from '@mui/icons-material';
 import { Avatar, Grid, Paper, Tab, Tabs } from '@mui/material';
 import { deepOrange } from '@mui/material/colors';
 import grey from '@mui/material/colors/grey';
@@ -93,8 +93,6 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
       const endpoints = allEndpoints.filter((e) => (e.genesisHashRelay === genesisHash));
 
       setEndpoints(endpoints);
-
-      console.log('endpoints: %o', endpoints);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedChain]);
@@ -171,10 +169,10 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
           <SelectRelay selectedChain={selectedChain} handleChainChange={handleChainChange} hasEmpty />
         </Grid>
 
-        <Grid item xs={12} sx={{ paddingTop: '5px' }}>
+        <Grid item xs={12} >
           <Tabs indicatorColor='secondary' onChange={handleTabChange} textColor='secondary' value={tabValue} variant='fullWidth'>
             <Tab icon={<GavelIcon fontSize='small' />} iconPosition='start' label='Auction' sx={{ fontSize: 11 }} value='auction' />
-            <Tab icon={<GroupsIcon fontSize='small' />} iconPosition='start' label='Crowdloans' sx={{ fontSize: 11 }} value='crowdloan' />
+            <Tab icon={<PaymentsIcon fontSize='small' />} iconPosition='start' label='Crowdloans' sx={{ fontSize: 11 }} value='crowdloan' />
           </Tabs>
 
         </Grid>

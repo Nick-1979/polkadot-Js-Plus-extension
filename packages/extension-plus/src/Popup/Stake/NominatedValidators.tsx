@@ -3,16 +3,18 @@
 /* eslint-disable header/header */
 /* eslint-disable react/jsx-max-props-per-line */
 
-import { Grid, Button as MuiButton } from '@mui/material';
-import React, { } from 'react';
-import { DeriveStakingQuery } from '@polkadot/api-derive/types';
 import { StopCircle as StopCircleIcon, TrackChanges as TrackChangesIcon } from '@mui/icons-material';
-import { Button, NextStepButton } from '../../../../extension-ui/src/components';
-import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
-import { AccountsBalanceType, StakingConsts, ValidatorsName, Validators } from '../../util/plusTypes';
+import { Button as MuiButton,Grid } from '@mui/material';
+import React, { } from 'react';
+
+import { DeriveStakingQuery } from '@polkadot/api-derive/types';
+
 import { Chain } from '../../../../extension-chains/src/types';
-import ValidatorsList from './ValidatorsList';
+import { NextStepButton } from '../../../../extension-ui/src/components';
+import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { Progress } from '../../components';
+import { AccountsBalanceType, StakingConsts, Validators,ValidatorsName } from '../../util/plusTypes';
+import ValidatorsList from './ValidatorsList';
 
 interface Props {
   activeValidator: DeriveStakingQuery;
@@ -29,7 +31,7 @@ interface Props {
   handleStopNominating: () => void;
 }
 
-export default function NominatedValidators({ activeValidator, chain, nominatedValidators, currentlyStakedInHuman, handleSelectValidatorsModaOpen, handleStopNominating, stakingConsts, state, validatorsInfo, staker, validatorsName, noNominatedValidators }: Props): React.ReactElement<Props> {
+export default function NominatedValidators({ activeValidator, chain, currentlyStakedInHuman, handleSelectValidatorsModaOpen, handleStopNominating, noNominatedValidators, nominatedValidators, staker, stakingConsts, state, validatorsInfo, validatorsName }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
 
   return (
@@ -54,22 +56,13 @@ export default function NominatedValidators({ activeValidator, chain, nominatedV
             </Grid>
             <Grid item xs={6} sx={{ textAlign: 'right' }}>
               <MuiButton
-                startIcon={<TrackChangesIcon />}
                 color='warning'
                 onClick={handleSelectValidatorsModaOpen}
                 size='large'
+                startIcon={<TrackChangesIcon />}
                 variant='text'>
                 {t('Change validators')}
               </MuiButton>
-
-              {/* <NextStepButton
-              data-button-action='Change Nominated Validators'
-              isBusy={validatorsInfo && state === 'changeValidators'}
-              // isDisabled={}
-              onClick={handleSelectValidatorsModaOpen}
-            >
-              {t('Change validators').toUpperCase()}
-            </NextStepButton> */}
             </Grid>
           </Grid>
         </Grid>
@@ -80,7 +73,7 @@ export default function NominatedValidators({ activeValidator, chain, nominatedV
               {t('No nominated validators found')}
             </Grid>
             <Grid item>
-              {Number(currentlyStakedInHuman) > stakingConsts.minNominatorBond &&
+              {Number(currentlyStakedInHuman) > stakingConsts?.minNominatorBond &&
                 <NextStepButton
                   data-button-action='Set Nominees'
                   isBusy={validatorsInfo && state === 'changeValidators'}
@@ -92,7 +85,6 @@ export default function NominatedValidators({ activeValidator, chain, nominatedV
               }
             </Grid>
           </Grid>
-
       }
     </>
   );

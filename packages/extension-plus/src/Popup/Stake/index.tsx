@@ -5,32 +5,29 @@
 
 import type { StakingLedger } from '@polkadot/types/interfaces';
 
-import { AddCircleOutlineOutlined, Brightness7Outlined as Brightness7OutlinedIcon, CheckOutlined, InfoOutlined, Redeem as RedeemIcon, RemoveCircleOutlineOutlined, ReportOutlined as ReportOutlinedIcon, ReportProblemOutlined } from '@mui/icons-material';
-import { Alert, Box, Button as MuiButton, CircularProgress, FormControl, FormControlLabel, FormLabel, Grid, IconButton, InputAdornment, Paper, Radio, RadioGroup, Skeleton, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { AddCircleOutlineOutlined, Brightness7Outlined as Brightness7OutlinedIcon, CheckOutlined, InfoOutlined, NotificationsActive as NotificationsActiveIcon, Redeem as RedeemIcon, RemoveCircleOutlineOutlined, ReportOutlined as ReportOutlinedIcon, ReportProblemOutlined } from '@mui/icons-material';
+import { Box, CircularProgress, Grid, IconButton, Paper, Skeleton, Tab, Tabs, Typography } from '@mui/material';
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 
 import { DeriveStakingQuery } from '@polkadot/api-derive/types';
 import { AccountJson } from '@polkadot/extension-base/background/types';
 import { Chain } from '@polkadot/extension-chains/types';
-import { formatBalance } from '@polkadot/util';
 
-import { Button, NextStepButton } from '../../../../extension-ui/src/components';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { updateMeta } from '../../../../extension-ui/src/messaging';
-import { PlusHeader, Popup, Progress } from '../../components';
+import { PlusHeader, Popup } from '../../components';
 import Hint from '../../components/Hint';
+import { getAllValidatorsFromSubscan, getStakingReward } from '../../util/api/staking';
 import { DEFAULT_COIN, MAX_ACCEPTED_COMMISSION, MIN_EXTRA_BOND } from '../../util/constants';
 import getNetworkInfo from '../../util/getNetwork';
 import { AccountsBalanceType, AllValidatorsFromSubscan, savedMetaData, StakingConsts, Validators, ValidatorsName } from '../../util/plusTypes';
 import { amountToHuman, amountToMachine, balanceToHuman, fixFloatingPoint, prepareMetaData } from '../../util/plusUtils';
-import { getAllValidatorsFromSubscan, getStakingReward } from '../../util/api/staking';
 import ConfirmStaking from './ConfirmStaking';
-import SelectValidators from './SelectValidators';
-import ValidatorsList from './ValidatorsList';
-import Stake from './Stake';
-import Unstake from './Unstake';
 import Info from './Info';
 import NominatedValidators from './NominatedValidators';
+import SelectValidators from './SelectValidators';
+import Stake from './Stake';
+import Unstake from './Unstake';
 
 interface Props {
   account: AccountJson,
@@ -55,7 +52,6 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
   const [ED, setED] = useState(0);
   const [decimals, setDecimals] = useState(1);
   const [minNominatorBondInHuman, setMinNominatorBondInHuman] = useState<number>();
-  // const [minNominatorBond, setMinNominatorBond] = useState<bigint>(0n);
   const [stakingConsts, setStakingConsts] = useState<StakingConsts | null>(null);
   const [gettingStakingConstsFromBlockchain, setgettingStakingConstsFromBlockchain] = useState<boolean>(true);
   const [gettingNominatedValidatorsInfoFromBlockchain, setGettingNominatedValidatorsInfoFromBlockchain] = useState<boolean>(true);
@@ -192,15 +188,12 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
 
   useEffect(() => {
     if (!stakingConsts) {
-      console.log('stakingConsts is null !!')
+      console.log('stakingConsts is null !!');
+
       return;
     }
-    console.log('stakingConsts.minNominatorBond', stakingConsts.minNominatorBond)
 
-
-    setMinNominatorBondInHuman(String(stakingConsts.minNominatorBond));
-
-    // setMinNominatorBond(BigInt(stakingConsts.minNominatorBond));
+    setMinNominatorBondInHuman(stakingConsts.minNominatorBond);
 
     setMinStakeable(String(stakingConsts.minNominatorBond));
   }, [stakingConsts]);
@@ -296,7 +289,8 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const targets: string[] = e.data;
 
-      if (!targets) setNoNominatedValidators(true);
+      setNoNominatedValidators(!targets); // show that nominators are fetched and is empty or not      
+
       setNominatedValidatorsId(targets);
       getNominatorsWorker.terminate();
     };
@@ -444,11 +438,6 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
 
   useEffect(() => {
     const maxStakeAmount = fixFloatingPoint(Number(availableBalance) - 2 * ED);
-    const minStakeAmount = MIN_EXTRA_BOND;
-
-    console.log('maxStakeAmount', maxStakeAmount);
-    console.log('MIN_EXTRA_BOND', MIN_EXTRA_BOND);
-    console.log('Number(ledger?.active)', Number(ledger?.active));
 
     if (Number(maxStakeAmount) >= minNominatorBondInHuman && !Number(ledger?.active)) {
       setMaxStake(maxStakeAmount);
@@ -468,12 +457,6 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
     } else {
       setZeroBalanceAlert(false);
     }
-
-    // if (Number(availableBalance) === Number(stakeAmountInHuman) + Number(amountToHuman(lastFee || defaultFee, decimals))) {
-    //   setNoFeeAlert(true);
-    // } else {
-    //   setNoFeeAlert(false);
-    // }
 
     setNextButtonCaption(t('Next'));
     setNextToStakeButtonDisabled(false);
@@ -654,7 +637,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
     if (!state) setState('unstake');
     handleConfirmStakingModaOpen();
   };
-  
+
   const handleSelectValidatorsModaOpen = useCallback((): void => {
     setSelectValidatorsModalOpen(true);
 
@@ -663,28 +646,26 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
 
   const handleStopNominating = useCallback((): void => {
     handleConfirmStakingModaOpen();
-   
+
     if (!state) setState('stopNominating');
   }, [state]);
 
   function TabPanel(props: TabPanelProps) {
     const { children, index, value, ...other } = props;
 
-    return (
-      <div
-        aria-labelledby={`tab-${index}`}
-        hidden={value !== index}
-        id={`tabpanel-${index}`}
-        role='tabpanel'
-        {...other}
-      >
-        {value === index && (
-          <Box sx={{ p: 3 }}>
-            <Typography>{children}</Typography>
-          </Box>
-        )}
-      </div>
-    );
+    return <div
+      aria-labelledby={`tab-${index}`}
+      hidden={value !== index}
+      id={`tabpanel-${index}`}
+      role='tabpanel'
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>;
   }
 
   const handleWithdrowUnbound = () => {
@@ -775,15 +756,19 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
                 icon={gettingNominatedValidatorsInfoFromBlockchain && !noNominatedValidators
                   ? <CircularProgress size={12} thickness={2} />
                   : hasOversubscribed
-                    ? <ReportProblemOutlined color='warning' fontSize='small' />
-                    : !activeValidator && nominatedValidators?.length
-                      ? <Hint id='noActive' place='top' tip={t('No active validator in this era')}>
-                        <ReportOutlinedIcon color='warning' fontSize='small' />
+                    ? <ReportProblemOutlined color='warning' fontSize='small' sx={{ pr: 1 }} />
+                    : Number(currentlyStakedInHuman) && !nominatedValidators?.length
+                      ? <Hint id='noNominees' place='top' tip={t('No validators nominated')}>
+                        <NotificationsActiveIcon color='error' fontSize='small' sx={{ pr: 1 }} />
                       </Hint>
-                      : <CheckOutlined fontSize='small' />
+                      : !activeValidator && nominatedValidators?.length
+                        ? <Hint id='noActive' place='top' tip={t('No active validator in this era')}>
+                          <ReportOutlinedIcon color='warning' fontSize='small' sx={{ pr: 1 }} />
+                        </Hint>
+                        : <CheckOutlined fontSize='small' />
                 }
 
-                iconPosition='start' label='Nominated Validators' sx={{ fontSize: 11 }}
+                iconPosition='start' label='Nominations' sx={{ fontSize: 11 }}
               />
               <Tab
                 icon={gettingStakingConstsFromBlockchain ? <CircularProgress size={12} thickness={2} /> : <InfoOutlined fontSize='small' />}
@@ -795,20 +780,20 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
             <Stake
               alert={alert}
               coin={coin}
-              handleNextToStake={handleNextToStake}
-              validatorSelectionType={validatorSelectionType}
-              nominatedValidators={nominatedValidators}
-              zeroBalanceAlert={zeroBalanceAlert}
-              maxStake={maxStake}
-              nextButtonCaption={nextButtonCaption}
-              nextToStakeButtonDisabled={nextToStakeButtonDisabled}
-              nextToStakeButtonBusy={!ledger && !validatorsInfoIsUpdated && ['KeepNominated', 'Auto'].includes(validatorSelectionType) && state !== ''}
-              handleStakeAmount={handleStakeAmount}
-              handleMinStakeClicked={handleMinStakeClicked}
-              handleValidatorSelectionType={handleValidatorSelectionType}
               handleMaxStakeClicked={handleMaxStakeClicked}
-              stakeAmountInHuman={stakeAmountInHuman}
+              handleMinStakeClicked={handleMinStakeClicked}
+              handleNextToStake={handleNextToStake}
+              handleStakeAmount={handleStakeAmount}
+              handleValidatorSelectionType={handleValidatorSelectionType}
+              maxStake={maxStake}
               minStakeable={minStakeable}
+              nextButtonCaption={nextButtonCaption}
+              nextToStakeButtonBusy={!ledger && !validatorsInfoIsUpdated && ['KeepNominated', 'Auto'].includes(validatorSelectionType) && state !== ''}
+              nextToStakeButtonDisabled={nextToStakeButtonDisabled}
+              nominatedValidators={nominatedValidators}
+              stakeAmountInHuman={stakeAmountInHuman}
+              validatorSelectionType={validatorSelectionType}
+              zeroBalanceAlert={zeroBalanceAlert}
             />
           </TabPanel>
           <TabPanel index={1} value={tabValue}>
@@ -816,13 +801,13 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
               alert={alert}
               coin={coin}
               currentlyStakedInHuman={currentlyStakedInHuman}
-              unstakeAmountInHuman={unstakeAmountInHuman}
-              nextToUnStakeButtonBusy={state === 'unstake'}
-              handleUnstakeAmount={handleUnstakeAmount}
-              handleNextToUnstake={handleNextToUnstake}
-              nextToUnStakeButtonDisabled={nextToUnStakeButtonDisabled}
-              ledger={ledger}
               handleMaxUnstakeClicked={handleMaxUnstakeClicked}
+              handleNextToUnstake={handleNextToUnstake}
+              handleUnstakeAmount={handleUnstakeAmount}
+              ledger={ledger}
+              nextToUnStakeButtonBusy={state === 'unstake'}
+              nextToUnStakeButtonDisabled={nextToUnStakeButtonDisabled}
+              unstakeAmountInHuman={unstakeAmountInHuman}
             />
           </TabPanel>
           <TabPanel index={2} value={tabValue}>
@@ -830,15 +815,15 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
               activeValidator={activeValidator}
               chain={chain}
               currentlyStakedInHuman={currentlyStakedInHuman}
-              nominatedValidators={nominatedValidators}
-              handleStopNominating={handleStopNominating}
               handleSelectValidatorsModaOpen={handleSelectValidatorsModaOpen}
+              handleStopNominating={handleStopNominating}
+              noNominatedValidators={noNominatedValidators}
+              nominatedValidators={nominatedValidators}
+              staker={staker}
               stakingConsts={stakingConsts}
               state={state}
               validatorsInfo={validatorsInfo}
-              staker={staker}
               validatorsName={validatorsName}
-              noNominatedValidators={noNominatedValidators}
             />
           </TabPanel>
           <TabPanel index={3} value={tabValue}>
@@ -871,12 +856,12 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
           validatorsName={validatorsName}
         />
       }
-      {ledger && staker && (selectedValidators || nominatedValidators) && state !== '' &&
+      {((ledger && staker && (selectedValidators || nominatedValidators) && state !== '') || state === 'stopNominating') &&
         <ConfirmStaking
           amount={getAmountToConfirm()}
           chain={chain}
           coin={coin}
-          // handleEasyStakingModalClose={handleEasyStakingModalClose}
+          handleEasyStakingModalClose={handleEasyStakingModalClose}
           // lastFee={lastFee}
           decimals={decimals}
           ledger={ledger}

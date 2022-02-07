@@ -30,8 +30,8 @@
     "start": "yarn watch",
     "test": "polkadot-dev-run-test --detectOpenHandles",
     "test:one": "polkadot-dev-run-test --detectOpenHandles",
-    "watch": "cd packages/extension && yarn polkadot-exec-webpack --config webpack.watch.cjs --mode development --watch",
-    "test:plus": "polkadot-dev-run-test --detectOpenHandles --testPathPattern=packages/extension-plus/src"
+    "test:plus": "polkadot-dev-run-test --detectOpenHandles --testPathPattern=packages/extension-plus/src",
+    "watch": "cd packages/extension && yarn polkadot-exec-webpack --config webpack.watch.cjs --mode development --watch"
   },
   "dependencies": {
     "@emotion/react": "^11.7.1",
