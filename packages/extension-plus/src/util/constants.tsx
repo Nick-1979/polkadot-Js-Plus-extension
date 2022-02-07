@@ -28,6 +28,9 @@ export const RELAY_CHAINS = [
   }
 ];
 
+export const SUPPORTED_CHAINS = ['Polkadot', 'Kusama', 'Westend'];
+
+
 export const DEFAULT_IDENTITY = {
   // 'judgements': [],
   //  'deposit':202580000000,

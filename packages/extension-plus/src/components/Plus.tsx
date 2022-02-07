@@ -27,6 +27,8 @@ import { updateMeta } from '../../../extension-ui/src/messaging';
 import { grey } from '@mui/material/colors';
 import { getPriceInUsd } from '../util/getPrice';
 import { Balance } from './';
+import { ImageNotSupportedTwoTone } from '@mui/icons-material';
+import { SUPPORTED_CHAINS } from '../util/constants';
 
 export interface Props {
   actions?: React.ReactNode;
@@ -197,7 +199,7 @@ function Plus({ address, chain, formattedAddress, givenType, name }: Props): Rea
   }, [chain]);
 
   const handleStaking = useCallback((): void => {
-    if (chain) { setStakingModalOpen(true); }
+    if (chain && supported(chain)) { setStakingModalOpen(true); }
   }, [chain]);
 
   const handlerefreshBalance = (): void => {
@@ -211,6 +213,8 @@ function Plus({ address, chain, formattedAddress, givenType, name }: Props): Rea
   function getCoin(_myBalance: AccountsBalanceType): string {
     return !_myBalance || !_myBalance.balanceInfo ? '' : _myBalance.balanceInfo.coin;
   }
+
+  const supported = (chain: Chain) => SUPPORTED_CHAINS.includes(chain?.name.replace(' Relay Chain', ''))
 
   return (
     <Container disableGutters sx={{ position: 'relative', top: '-10px' }}>
@@ -298,7 +302,7 @@ function Plus({ address, chain, formattedAddress, givenType, name }: Props): Rea
                   onClick={handleStaking}
                   size='sm'
                   title={t('easy staking')}
-                  color={!chain ? grey[300] : grey[600]}
+                  color={!chain || !supported(chain) ? grey[300] : grey[600]}
                 />
               </Link>
             </Grid>
