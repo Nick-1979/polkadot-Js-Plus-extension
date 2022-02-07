@@ -4,7 +4,7 @@
 
 import { faBorderNone, faCheck, faCoins, faLevelDownAlt, faLevelUpAlt, faLink, faMinus, faPlus, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
-export function getIcon (action: string): { color: string, icon: IconDefinition } {
+export function getIcon(action: string): { color: string, icon: IconDefinition } {
   switch (action.toLowerCase()) {
     case ('send'):
       return { color: 'blue', icon: faLevelUpAlt };
@@ -19,6 +19,8 @@ export function getIcon (action: string): { color: string, icon: IconDefinition 
     case ('nominate'):
       return { color: 'deepskyblue', icon: faCheck };
     case ('redeem'):
+      return { color: 'gold', icon: faLevelDownAlt };
+    case ('stop_nominating'):
       return { color: 'gold', icon: faLevelDownAlt };
     case ('link'):
       return { color: 'blue', icon: faLink };

@@ -15,11 +15,13 @@ import { Chain } from '@polkadot/extension-chains/types';
 import { AccountContext } from '../../../../extension-ui/src/components/contexts';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { NothingToShow, PlusHeader, Popup } from '../../components';
-import { getTxTransfers } from '../../util/getTransfers';
+import { getTxTransfers } from '../../util/api/getTransfers';
 import { AccountsBalanceType, TransactionDetail, Transfers } from '../../util/plusTypes';
 import { getTransactionHistoryFromLocalStorage } from '../../util/plusUtils';
 import Details from './Details';
 import { getIcon } from './getIcons';
+import { STAKIN_ACTIONS } from '../../util/constants';
+import { getTxIcon } from './getTxIcon';
 
 interface Props {
   address: AccountsBalanceType;
@@ -36,8 +38,6 @@ const TAB_MAP = {
   // eslint-disable-next-line sort-keys
   STAKING: '2'
 };
-
-const stakingActions = ['bond', 'unbond', 'bond_extra', 'nominate', 'redeem'];
 
 export default function TransactionHistory({ address, chain, name, setTxHistoryModalOpen, showTxHistoryModal }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
@@ -174,7 +174,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
         history = history.filter((h) => ['send', 'receive'].includes(h.action.toLowerCase()));
         break;
       case (TAB_MAP.STAKING):
-        history = history.filter((h) => stakingActions.includes(h.action.toLowerCase()));
+        history = history.filter((h) => STAKIN_ACTIONS.includes(h.action));
         break;
       default:
         break;
@@ -232,10 +232,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
         {tabHistory?.map((h, index) => (
           <Grid container key={index} alignItems='center'>
             <Grid item xs={1}>
-              <FontAwesomeIcon
-                color={getIcon(h.action).color}
-                icon={getIcon(h.action).icon}
-              />
+              {getTxIcon(h.action)}
             </Grid>
             <Grid item container xs={10}>
               <Grid item id='firstRow' container xs={12} sx={{ paddingTop: '10px' }}>
@@ -250,7 +247,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
                 <Grid item xs={3} >
                   {h.action === 'send' && h.to && <>{t('To:')} {' '} {makeAddressShort(h.to)}</>}
                   {h.action === 'receive' && h.from && <>{t('From:')} {' '}{makeAddressShort(h.from)}</>}
-                  {stakingActions.includes(h.action) && h.from && <>{t('From:')} {' '}{makeAddressShort(h.from)}</>}
+                  {STAKIN_ACTIONS.includes(h.action) && h.from && <>{t('From:')} {' '}{makeAddressShort(h.from)}</>}
 
                 </Grid>
 

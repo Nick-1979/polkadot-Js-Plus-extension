@@ -18,6 +18,7 @@ import { SHORT_ADDRESS_CHARACTERS } from '../../util/constants';
 import { TransactionDetail } from '../../util/plusTypes';
 import { amountToHuman } from '../../util/plusUtils';
 import { getIcon } from './getIcons';
+import { getTxIcon } from './getTxIcon';
 
 interface Props {
   chain?: Chain | null;
@@ -63,8 +64,8 @@ export default function Details({
         fontSize={14}
       >
         {_address.slice(0, SHORT_ADDRESS_CHARACTERS) +
-                    '...' +
-                    _address.slice(-1 * SHORT_ADDRESS_CHARACTERS)}
+          '...' +
+          _address.slice(-1 * SHORT_ADDRESS_CHARACTERS)}
       </Box>
     );
   }
@@ -97,14 +98,15 @@ export default function Details({
         <Grid item xs={12} sx={{ padding: '15px 15px 8px' }}>
           <Paper elevation={3}>
             <Grid item container justifyContent='center' sx={{ fontSize: 12, textAlign: 'center', padding: '30px 10px 20px' }}>
-              <Grid item xs={12} >
-                <FontAwesomeIcon
-                  color={getIcon(transaction.action).color}
-                  icon={getIcon(transaction.action).icon}
-                />
-                {' '} {transaction.action.toUpperCase()}
+              <Grid item container xs={12} spacing={1} justifyContent='center'>
+                <Grid item  >
+                  {getTxIcon(transaction.action)}
+                </Grid>
+                <Grid item sx={{ paddingBottom: '10px' }} >
+                  {transaction.action.toUpperCase()}
+                </Grid>
               </Grid>
-              <Grid item xs={12} id='transactionStatus' sx={{ fontSize: 15, fontWeight: 'bold', padding: '10px 1px 10px', color: ['success'].includes(transaction.status.toLowerCase()) ? 'green' : 'red' }}>
+              <Grid item xs={12} id='transactionStatus' sx={{ fontSize: 15, fontWeight: 'bold', padding: '5px 1px 10px', color: ['success'].includes(transaction.status.toLowerCase()) ? 'green' : 'red' }}>
                 {['success'].includes(transaction.status.toLowerCase()) ? t('Success') : t('Failed')}
               </Grid>
               <Grid xs={12} id='failureText' sx={{ color: 'gray' }}>
@@ -162,7 +164,7 @@ export default function Details({
                 {t('Block')}
               </Grid>
               <Grid item xs={10} sx={{ textAlign: 'right', paddingBottom: '10px' }}>
-                                # {transaction.block || 'N/A'}
+                # {transaction.block || 'N/A'}
               </Grid>
 
               <Grid item xs={1} sx={{ textAlign: 'left' }}>
