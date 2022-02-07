@@ -107,7 +107,7 @@ export default function Stake({ alert, coin, handleNextToStake, validatorSelecti
                     <Box fontSize={12}>
                       {t('Auto')}
                       <Box component='span' sx={{ color: 'gray' }}>
-                        {t('best return')}
+                        ({t('best return')})
                       </Box>
                     </Box>}
                   value='Auto'
