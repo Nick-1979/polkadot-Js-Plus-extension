@@ -1,30 +1,60 @@
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-/* eslint-disable header/header */
 
-import { Link as LinkIcon, NotificationsNone as NotificationsNoneIcon, CallReceived as CallReceivedIcon, StopCircle as StopCircleIcon, Redeem as RedeemIcon, Check as CheckIcon, Remove as RemoveIcon, CallMade as CallMadeIcon, Add as AddIcon, AddCircleOutline as AddCircleOutlineIcon } from '@mui/icons-material';
+import { Add as AddIcon, AddCircleOutline as AddCircleOutlineIcon, CallMade as CallMadeIcon, CallReceived as CallReceivedIcon, Check as CheckIcon, Link as LinkIcon, NotificationsNone as NotificationsNoneIcon, Redeem as RedeemIcon, Remove as RemoveIcon, StopCircle as StopCircleIcon } from '@mui/icons-material';
+import React from 'react';
 
 export function getTxIcon(action: string): React.ReactNode {
   switch (action.toLowerCase()) {
     case ('send'):
-      return <CallMadeIcon fontSize='small' color='secondary' />;
+      return <CallMadeIcon
+        color='secondary'
+        fontSize='small'
+      />;
     case ('receive'):
-      return <CallReceivedIcon fontSize='small' color='primary' />;
+      return <CallReceivedIcon
+        color='primary'
+        fontSize='small'
+      />;
     case ('bond'):
-      return <AddIcon fontSize='small' color='success' />;
+      return <AddIcon
+        color='success'
+        fontSize='small'
+      />;
     case ('unbond'):
-      return <RemoveIcon fontSize='small' sx={{ color: 'red' }} />;
+      return <RemoveIcon
+        color='error'
+        fontSize='small'
+      />;
     case ('bond_extra'):
-      return <AddCircleOutlineIcon fontSize='small' />;
+      return <AddCircleOutlineIcon
+        color='action'
+        fontSize='small'
+      />;
     case ('nominate'):
-      return <CheckIcon fontSize='small' sx={{ color: 'green' }} />;
+      return <CheckIcon
+        fontSize='small'
+        sx={{ color: 'green' }}
+      />;
     case ('redeem'):
-      return <RedeemIcon fontSize='small' sx={{ color: 'forestgreen' }} />;
+      return <RedeemIcon
+        color='warning'
+        fontSize='small'
+      />;
     case ('stop_nominating'):
-      return <StopCircleIcon fontSize='small' sx={{ color: 'black' }} />;
+      return <StopCircleIcon
+        fontSize='small'
+        sx={{ color: 'black' }}
+      />;
     case ('link'):
-      return <LinkIcon fontSize='small' sx={{ color: 'blue' }} />;
+      return <LinkIcon
+        fontSize='small'
+        sx={{ color: 'blue' }}
+      />;
     default:
-      return <NotificationsNoneIcon fontSize='small' sx={{ color: 'red' }} />;
+      return <NotificationsNoneIcon
+        fontSize='small'
+        sx={{ color: 'red' }}
+      />;
   }
 }
