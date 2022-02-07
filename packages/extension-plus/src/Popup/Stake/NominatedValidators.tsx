@@ -26,9 +26,10 @@ interface Props {
   validatorsInfo: Validators;
   state: string;
   handleSelectValidatorsModaOpen: () => void;
+  handleStopNominating: () => void;
 }
 
-export default function NominatedValidators({ activeValidator, chain, nominatedValidators, currentlyStakedInHuman, handleSelectValidatorsModaOpen, stakingConsts, state, validatorsInfo, staker, validatorsName, noNominatedValidators }: Props): React.ReactElement<Props> {
+export default function NominatedValidators({ activeValidator, chain, nominatedValidators, currentlyStakedInHuman, handleSelectValidatorsModaOpen, handleStopNominating, stakingConsts, state, validatorsInfo, staker, validatorsName, noNominatedValidators }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
 
   return (
@@ -47,11 +48,11 @@ export default function NominatedValidators({ activeValidator, chain, nominatedV
           </Grid>
           <Grid container item justifyContent='space-between' sx={{ padding: '20px 10px 0px' }} xs={12}>
             <Grid item xs={5}>
-              <MuiButton startIcon={<StopCircleIcon />} sx={{color:'black'}} onClick={() => { }} size='large' variant='text'>
+              <MuiButton startIcon={<StopCircleIcon />} sx={{ color: 'black' }} onClick={handleStopNominating} size='large' variant='text'>
                 {t('Stop nominating')}
               </MuiButton>
             </Grid>
-            <Grid item xs={6} sx={{textAlign: 'right'}}>
+            <Grid item xs={6} sx={{ textAlign: 'right' }}>
               <MuiButton
                 startIcon={<TrackChangesIcon />}
                 color='warning'
@@ -76,7 +77,7 @@ export default function NominatedValidators({ activeValidator, chain, nominatedV
           ? <Progress title={'Loading ...'} />
           : <Grid container justifyContent='center'>
             <Grid sx={{ fontSize: 13, margin: '60px 10px 30px', textAlign: 'center' }} xs={12}>
-              {t('No nominated validators found.')}
+              {t('No nominated validators found')}
             </Grid>
             <Grid item>
               {Number(currentlyStakedInHuman) > stakingConsts.minNominatorBond &&

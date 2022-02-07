@@ -24,6 +24,8 @@ import { AccountsBalanceType, StakingConsts, TransactionDetail, Validators, Vali
 import { amountToHuman, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/plusUtils';
 import { bondOrBondExtra, chill, nominate, unbond, withdrawUnbonded } from '../../util/staking';
 import ValidatorsList from './ValidatorsList';
+import getChainInfo from '../../util/getChainInfo';
+import broadcast from '../../util/api/broadcast';
 
 interface Props {
   chain?: Chain | null;
@@ -121,13 +123,15 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, 
       case ('stakeAuto'):
       case ('stakeManual'):
       case ('stakeKeepNominated'):
-        return 'Staking of'.toUpperCase();
+        return 'STAKING OF';
       case ('changeValidators'):
-        return 'nominating'.toUpperCase();
+        return 'NOMINATING';
       case ('unstake'):
-        return 'unstaking'.toUpperCase();
+        return 'UNSTAKING';
       case ('withdrawUnbound'):
-        return 'redeem'.toUpperCase();
+        return 'REDEEM';
+      case ('stopNominating'):
+        return 'STOP NOMINATING';
       default:
         return state.toUpperCase();
     }
@@ -153,8 +157,9 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, 
 
     try {
       setConfirmingState('confirming');
+      const { api } = await getChainInfo(chain);
 
-      const signer = keyring.getPair(String(staker.address));
+      const signer = keyring.getPair(staker.address);
 
       signer.unlock(password);
       setPasswordStatus(PASS_MAP.CORRECT);
@@ -341,6 +346,33 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, 
         console.log('withdrawUnbound:', status);
         setConfirmingState(status);
       }
+
+      if (localState === 'stopNominating') {
+        const chilled = api.tx.staking.chill;
+
+        const { block, failureText, fee, status, txHash } = await broadcast(api, chilled, [], signer);
+
+        const history: TransactionDetail = {
+          action: 'Stop nominating',
+          block: block,
+          date: Date.now(),
+          fee: fee || '',
+          from: staker.address,
+          hash: txHash || '',
+          status: failureText || status,
+          to: ''
+        };
+
+        if (chain) {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          saveHistory(chain, hierarchy, staker.address, history);
+        }
+
+        console.log('withdrawUnbound:', status);
+        setConfirmingState(status);
+      }
+
+
     } catch (e) {
       console.log('error:', e);
       setPasswordStatus(PASS_MAP.INCORRECT);
@@ -363,12 +395,14 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, 
       <PlusHeader action={handleReject} chain={chain} closeText={'Reject'} icon={<ConfirmationNumberOutlinedIcon fontSize='small' />} title={'Confirm'} />
 
       <Grid alignItems='center' container>
-        <Grid container item sx={{ backgroundColor: '#f7f7f7', padding: '25px 40px 10px' }} xs={12}>
-          <Grid item sx={{ border: '2px double grey', borderRadius: '5px', fontSize: 15, justifyContent: 'flex-start', padding: '5px 10px 5px', textAlign: 'center', fontVariant: 'small-caps' }}>
+        <Grid container item sx={{ backgroundColor: '#f7f7f7', p: '25px 40px 10px' }} xs={12}>
+
+          <Grid item sx={{ border: '2px double grey', borderRadius: '5px', fontSize: 15, justifyContent: 'flex-start', p: '5px 10px 5px', textAlign: 'center', fontVariant: 'small-caps' }}>
             {stateInHuman(confirmingState || state)}
           </Grid>
-          {amount
-            ? <Grid container item justifyContent='center' spacing={1} sx={{ fontFamily: 'fantasy', fontSize: 18, textAlign: 'center' }} xs={12}>
+
+          {!!amount &&
+            <Grid container item justifyContent='center' spacing={1} sx={{ fontFamily: 'fantasy', fontSize: 18, textAlign: 'center' }} xs={12}>
               <Grid item>
                 {amountToHuman(amount.toString(), decimals)}
               </Grid>
@@ -376,7 +410,7 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, 
                 {coin}
               </Grid>
             </Grid>
-            : ''}
+          }
 
           <Grid alignItems='center' container item justifyContent='space-between' sx={{ fontSize: 12, paddingTop: '30px' }} xs={12} >
             <Grid container item justifyContent='flex-start' spacing={1} xs={5}>
@@ -409,10 +443,10 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, 
         </Grid>
         {stakingConsts && !['withdrawUnbound', 'unstake'].includes(state)
           ? <>
-            <Grid item sx={{ textAlign: 'center', color: grey[600], fontFamily: 'fantasy', fontSize: 16, padding: '15px 50px 5px' }} xs={12}>
+            <Grid item sx={{ textAlign: 'center', color: grey[600], fontFamily: 'fantasy', fontSize: 16, p: '15px 50px 5px' }} xs={12}>
               {t('VALIDATORS')}
             </Grid>
-            <Grid item sx={{ fontSize: 14, padding: '1px 20px 0px' }} xs={12}>
+            <Grid item sx={{ fontSize: 14, p: '1px 20px 0px' }} xs={12}>
 
               <ValidatorsList
                 chain={chain}

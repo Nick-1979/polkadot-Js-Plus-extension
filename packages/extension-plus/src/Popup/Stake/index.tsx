@@ -628,12 +628,6 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
     console.log('handleConfirmStakingModaOpen, state:', state);
   }
 
-  const handleSelectValidatorsModaOpen = useCallback((): void => {
-    setSelectValidatorsModalOpen(true);
-
-    if (!state) setState('changeValidators');
-  }, [state]);
-
   const handleNextToStake = (): void => {
     if (Number(stakeAmountInHuman) >= Number(minStakeable)) {
       switch (validatorSelectionType) {
@@ -650,7 +644,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
           if (!state) setState('stakeKeepNominated');
           break;
         default:
-          console.log('unknown validatorSelectionType ');
+          console.log('unknown validatorSelectionType !!');
       }
     }
   };
@@ -660,6 +654,18 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
     if (!state) setState('unstake');
     handleConfirmStakingModaOpen();
   };
+  
+  const handleSelectValidatorsModaOpen = useCallback((): void => {
+    setSelectValidatorsModalOpen(true);
+
+    if (!state) setState('changeValidators');
+  }, [state]);
+
+  const handleStopNominating = useCallback((): void => {
+    handleConfirmStakingModaOpen();
+   
+    if (!state) setState('stopNominating');
+  }, [state]);
 
   function TabPanel(props: TabPanelProps) {
     const { children, index, value, ...other } = props;
@@ -825,6 +831,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
               chain={chain}
               currentlyStakedInHuman={currentlyStakedInHuman}
               nominatedValidators={nominatedValidators}
+              handleStopNominating={handleStopNominating}
               handleSelectValidatorsModaOpen={handleSelectValidatorsModaOpen}
               stakingConsts={stakingConsts}
               state={state}

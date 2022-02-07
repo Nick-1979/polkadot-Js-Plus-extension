@@ -43,7 +43,7 @@ export default function Stake({ alert, coin, handleNextToStake, validatorSelecti
           color='warning'
           error={zeroBalanceAlert}
           fullWidth
-          helperText={zeroBalanceAlert ? t('Available balance is zero.') : ''}
+          helperText={zeroBalanceAlert ? t('No available fund to stake') : ''}
           inputProps={{ step: '.01' }}
           label={t('Amount')}
           name='stakeAmount'
@@ -121,7 +121,7 @@ export default function Stake({ alert, coin, handleNextToStake, validatorSelecti
                   sx={{ fontSize: 12 }}
                   value='Manual'
                 />
-                {nominatedValidators.length > 0 &&
+                {nominatedValidators?.length > 0 &&
                   <FormControlLabel
                     control={<Radio sx={{ fontSize: 12, '& .MuiSvgIcon-root': { fontSize: 14 } }} />}
                     label={
