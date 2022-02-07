@@ -87,7 +87,6 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
     const { ED } = getNetworkInfo(chain);
 
     setED(ED || 0);
-    console.log('chain', chain);
   }, [chain]);
 
   useEffect((): void => {
@@ -146,7 +145,6 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
 
   function handleAddressIsValid(_isValid: boolean, _address: string, _name?: string) {
     setRecepient({ address: _address, chain: null, name: _name });
-    console.log('{ address: _address, chain: null, name: String(_name) },', _name);
     setRecepientAddressIsValid(_isValid);
   }
 
@@ -469,12 +467,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
 
       {recepientAddressIsValid &&
         <div id='transferBody' >
-          <Grid
-            container
-            justifyContent='space-between'
-            sx={{ padding: '30px 30px 20px' }}
-            xs={12}
-          >
+          <Grid container item justifyContent='space-between' sx={{ padding: '30px 30px 20px' }} xs={12}          >
             <Grid
               item
               sx={{ color: grey[800], fontSize: '15px', fontWeight: '600', marginTop: 5, textAlign: 'left' }}
@@ -591,7 +584,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
               </Grid>
             </Grid>
           </Grid>
-          <Grid data-testid='nextButton'  sx={{ padding: '40px 40px 10px' }}>
+          <Grid data-testid='nextButton' sx={{ padding: '40px 40px 10px' }}>
             <NextStepButton
               data-button-action=''
               // isBusy={}
