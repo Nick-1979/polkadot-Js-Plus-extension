@@ -14,7 +14,7 @@ import { Chain } from '@polkadot/extension-chains/types';
 import { updateMeta } from '@polkadot/extension-ui/messaging';
 import keyring from '@polkadot/ui-keyring';
 
-import { AccountContext } from '../../../../extension-ui/src/components/contexts';
+import { AccountContext, ActionContext } from '../../../../extension-ui/src/components/contexts';
 import useMetadata from '../../../../extension-ui/src/hooks/useMetadata';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { AllAddresses, ConfirmButton, Password, PlusHeader, Popup } from '../../components';
@@ -35,6 +35,8 @@ interface Props {
 
 export default function Contribute({auction, chainInfo, contributeModal, crowdloan, endpoints, setContributeModalOpen }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
+  const onAction = useContext(ActionContext);
+
   const chain = useMetadata(chainInfo.genesisHash, true);
   const auctionMinContributionInHuman = amountToHuman(auction.minContribution, chainInfo.decimals);
 
@@ -89,8 +91,6 @@ export default function Contribute({auction, chainInfo, contributeModal, crowdlo
         to: ''
       };
 
-      console.log('history', history);
-
       // eslint-disable-next-line no-void
       void saveHistory(chain, hierarchy, selectedAddress, history);
     } catch (e) {
@@ -103,7 +103,8 @@ export default function Contribute({auction, chainInfo, contributeModal, crowdlo
   const handleReject = useCallback((): void => {
     setConfirmingState('');
     handleConfirmModaClose();
-  }, [handleConfirmModaClose]);
+    onAction('/');
+  }, [handleConfirmModaClose, onAction]);
 
   const handleBack = useCallback((): void => {
     handleConfirmModaClose();
