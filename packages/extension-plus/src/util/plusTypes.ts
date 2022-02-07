@@ -90,7 +90,7 @@ export interface TransactionDetail {
   action: string; // send, bond, bond_extra, unbound, nominate ...
   block?: number;
   from: string;
-  amount: string;
+  amount?: string;
   date: number;
   hash: string;
   fee: string;
