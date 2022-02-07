@@ -6,7 +6,7 @@
 import { Grid, Button as MuiButton } from '@mui/material';
 import React, { } from 'react';
 import { DeriveStakingQuery } from '@polkadot/api-derive/types';
-import {StopCircle as StopCircleIcon} from '@mui/icons-material';
+import { StopCircle as StopCircleIcon, TrackChanges as TrackChangesIcon } from '@mui/icons-material';
 import { Button, NextStepButton } from '../../../../extension-ui/src/components';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { AccountsBalanceType, StakingConsts, ValidatorsName, Validators } from '../../util/plusTypes';
@@ -47,19 +47,28 @@ export default function NominatedValidators({ activeValidator, chain, nominatedV
           </Grid>
           <Grid container item justifyContent='space-between' sx={{ padding: '20px 10px 0px' }} xs={12}>
             <Grid item xs={5}>
-              <MuiButton startIcon={<StopCircleIcon />} color='warning' onClick={() => { }} size='large' variant='text'>
+              <MuiButton startIcon={<StopCircleIcon />} sx={{color:'black'}} onClick={() => { }} size='large' variant='text'>
                 {t('Stop nominating')}
               </MuiButton>
             </Grid>
-            <Grid item xs={6}>
-              <NextStepButton
-                data-button-action='Change Nominated Validators'
-                isBusy={validatorsInfo && state === 'changeValidators'}
-                // isDisabled={}
+            <Grid item xs={6} sx={{textAlign: 'right'}}>
+              <MuiButton
+                startIcon={<TrackChangesIcon />}
+                color='warning'
                 onClick={handleSelectValidatorsModaOpen}
-              >
-                {t('Change validators').toUpperCase()}
-              </NextStepButton>
+                size='large'
+                variant='text'>
+                {t('Change validators')}
+              </MuiButton>
+
+              {/* <NextStepButton
+              data-button-action='Change Nominated Validators'
+              isBusy={validatorsInfo && state === 'changeValidators'}
+              // isDisabled={}
+              onClick={handleSelectValidatorsModaOpen}
+            >
+              {t('Change validators').toUpperCase()}
+            </NextStepButton> */}
             </Grid>
           </Grid>
         </Grid>
