@@ -21,7 +21,7 @@ export default function ConfirmButton({ handleBack, handleConfirm, handleReject,
   const { t } = useTranslation();
 
   return (
-    <Grid container item justifyContent='space-between' sx={{ m: 1 }} xs={12}>
+    <Grid container item data-testid='confirmButton' justifyContent='space-between' sx={{ m: 1 }} xs={12}>
       {['success', 'failed'].includes(state)
         ? <Grid item xs={12}>
           <MuiButton color={state === 'success' ? 'success' : 'error'} fullWidth onClick={handleReject} size='large' variant='contained'>
