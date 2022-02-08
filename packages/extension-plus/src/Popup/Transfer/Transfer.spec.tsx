@@ -1,14 +1,9 @@
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-
-
 /* The following address needs to have some westy to pass the last test */
 /* 5FbSap4BsWfjyRhCchoVdZHkDnmDm3NEgLZ25mesq4aw2WvX */
-/*may need to uncomment line 188 too*/
+/* may need to uncomment a line at the last describe too */
 
 import '@polkadot/extension-mocks/chrome';
 
@@ -17,7 +12,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import keyring from '@polkadot/ui-keyring';
-import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 
 import Extension from '../../../../extension-base/src/background/handlers/Extension';
@@ -77,8 +71,8 @@ describe('Testing TransferFund component while mocked', () => {
     rendered = render(
       <TransferFund
         chain={props.chain}
-        sender={sender}
         givenType={props.givenType}
+        sender={sender}
         transferModalOpen={true}
       />
     );
@@ -146,8 +140,8 @@ describe('Testing transferFund with real account (Note: account must have some f
   let state: State;
   let realSender: AccountsBalanceType | null;
   let secondAddress;
-  let firstSuri = 'seed sock milk update focus rotate barely fade car face mechanic mercy';
-  let secondSuri = 'inspire erosion chalk grant decade photo ribbon custom quality sure exhaust detail';
+  const firstSuri = 'seed sock milk update focus rotate barely fade car face mechanic mercy';
+  const secondSuri = 'inspire erosion chalk grant decade photo ribbon custom quality sure exhaust detail';
   const password = 'passw0rd';
   const type = 'sr25519';
   const westendGenesisHash = '0xe143f23803ac50e8f6f8e62695d1ce9e4e1d68aa36c1cd2cfd15340213f3423e';
@@ -188,7 +182,8 @@ describe('Testing transferFund with real account (Note: account must have some f
   beforeAll(async () => {
    //[firstSuri, secondSuri] = [secondSuri, firstSuri]; //uncommenct this when test fails due to insufficient balance
     extension = await createExtension();
-    let firstAddress = await createAccount(firstSuri);
+    const firstAddress = await createAccount(firstSuri);
+
     secondAddress = await createAccount(secondSuri);
 
     realSender = {
@@ -203,8 +198,8 @@ describe('Testing transferFund with real account (Note: account must have some f
     render(
       <TransferFund
         chain={props.chain}
-        sender={realSender}
         givenType={props.givenType}
+        sender={realSender}
         transferModalOpen={true}
       />
     );

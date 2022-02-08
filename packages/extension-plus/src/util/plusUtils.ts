@@ -5,6 +5,7 @@
 /* eslint-disable header/header */
 
 import type { Text } from '@polkadot/types';
+import type { AccountId } from '@polkadot/types/interfaces';
 
 import { AccountWithChildren } from '@polkadot/extension-base/background/types';
 import { Chain } from '@polkadot/extension-chains/types';
@@ -199,4 +200,10 @@ export function formatMeta (meta?: Meta): string [] {
   const parts = splitParts(combined.replace(/\\/g, '').replace(/`/g, ''));
 
   return parts;
+}
+
+export function toShortAddress(_address: string | AccountId): string {
+  _address = String(_address);
+
+  return `${_address.slice(0, 6)} ...  ${_address.slice(-6)}`;
 }

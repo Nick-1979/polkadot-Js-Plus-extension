@@ -2,16 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-import { Email as EmailIcon, LaunchRounded as LaunchRoundedIcon, Twitter as TwitterIcon } from '@mui/icons-material';
-import { Grid, Link, Paper } from '@mui/material';
+import { Grid, Paper } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React from 'react';
 
-import Identicon from '@polkadot/react-identicon';
 
 import { Chain } from '../../../../../../extension-chains/src/types';
 import useTranslation from '../../../../../../extension-ui/src/hooks/useTranslation';
-import { ShortAddress } from '../../../../components';
 import { PersonsInfo } from '../../../../util/plusTypes';
 import { amountToHuman } from '../../../../util/plusUtils';
 import Identity from './Identity';

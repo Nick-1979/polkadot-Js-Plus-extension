@@ -40,9 +40,9 @@ export default function NominatedValidators({ activeValidator, chain, currentlyS
         ? <Grid container>
           <Grid item sx={{ paddingBottom: '20px' }} xs={12}>
             <ValidatorsList
+              activeValidator={activeValidator}
               chain={chain}
               staker={staker}
-              activeValidator={activeValidator}
               stakingConsts={stakingConsts}
               validatorsInfo={nominatedValidators}
               validatorsName={validatorsName}
@@ -50,7 +50,7 @@ export default function NominatedValidators({ activeValidator, chain, currentlyS
           </Grid>
           <Grid container item justifyContent='space-between' sx={{ padding: '20px 10px 0px' }} xs={12}>
             <Grid item xs={5}>
-              <MuiButton startIcon={<StopCircleIcon />} sx={{ color: 'black' }} onClick={handleStopNominating} size='large' variant='text'>
+              <MuiButton startIcon={<StopCircleIcon />} sx={{ color: 'black' }} onClick={handleStopNominating} size='medium' variant='text'>
                 {t('Stop nominating')}
               </MuiButton>
             </Grid>
@@ -58,7 +58,7 @@ export default function NominatedValidators({ activeValidator, chain, currentlyS
               <MuiButton
                 color='warning'
                 onClick={handleSelectValidatorsModaOpen}
-                size='large'
+                size='medium'
                 startIcon={<TrackChangesIcon />}
                 variant='text'>
                 {t('Change validators')}

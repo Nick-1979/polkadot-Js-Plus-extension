@@ -43,7 +43,7 @@ export default function Info({ coin, decimals, stakingConsts }: Props): React.Re
             {t('Days it takes to receive your funds back after unstaking:  ')}<Box component='span' sx={{ fontWeight: 'bold' }}>  {stakingConsts?.bondingDuration}</Box>  {t('days')}
           </Grid>
           <Grid sx={{ fontSize: 11, paddingBottom: '5px' }} xs={12}>
-            {t('Minimum')} {coin}s {t('that must remain in you account: ')} <Box component='span' sx={{ fontWeight: 'bold' }}> {amountToHuman(String(stakingConsts?.existentialDeposit), decimals)}</Box> {coin}s {t('plus some fees')}
+            {t('Minimum')} {coin}s {t('that must remain in you account: ')} <Box component='span' sx={{ fontWeight: 'bold' }}> {stakingConsts?.existentialDeposit}</Box> {coin}s {t('plus some fees')}
           </Grid>
         </>
         : <Progress title={'Loading information ...'} />

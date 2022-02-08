@@ -15,9 +15,9 @@ interface Props {
   zeroBalanceAlert: boolean,
   handleStakeAmount: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   stakeAmountInHuman: string;
-  minStakeable: string;
+  minStakeable: number;
   coin: string;
-  maxStake: string;
+  maxStake: number;
   handleMinStakeClicked: () => void;
   handleMaxStakeClicked: () => void;
   alert: string;
@@ -30,7 +30,7 @@ interface Props {
   nominatedValidators: DeriveStakingQuery[];
 }
 
-export default function Stake({ alert, coin, handleNextToStake, validatorSelectionType, nominatedValidators, zeroBalanceAlert, maxStake, nextButtonCaption, nextToStakeButtonDisabled, nextToStakeButtonBusy, handleStakeAmount, handleMinStakeClicked, handleValidatorSelectionType, handleMaxStakeClicked, stakeAmountInHuman, minStakeable }: Props): React.ReactElement<Props> {
+export default function Stake({ alert, coin, handleMaxStakeClicked, handleMinStakeClicked, handleNextToStake, handleStakeAmount, handleValidatorSelectionType, maxStake, minStakeable, nextButtonCaption, nextToStakeButtonBusy, nextToStakeButtonDisabled, nominatedValidators, stakeAmountInHuman, validatorSelectionType, zeroBalanceAlert }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
 
   return (
@@ -57,24 +57,16 @@ export default function Stake({ alert, coin, handleNextToStake, validatorSelecti
       {!zeroBalanceAlert &&
         <Grid container item justifyContent='space-between' sx={{ padding: '0px 30px 10px' }} xs={12}>
           <Grid item sx={{ fontSize: 12 }}>
-            {minStakeable &&
-              <>
-                {t('Min')}  :
-                <MuiButton onClick={handleMinStakeClicked} variant='text'>
-                  {`${minStakeable} ${coin}`}
-                </MuiButton>
-              </>
-            }
+            {t('Min')}  :
+            <MuiButton onClick={handleMinStakeClicked} variant='text'>
+              {minStakeable && coin ? `${minStakeable} ${coin}` : ''}
+            </MuiButton>
           </Grid>
           <Grid item sx={{ fontSize: 12 }}>
-            {maxStake &&
-              <>
-                {t('Max')}:
-                <MuiButton onClick={handleMaxStakeClicked} variant='text'>
-                  {`${maxStake} ${coin}`}
-                </MuiButton>
-              </>
-            }
+            {t('Max')}:
+            <MuiButton onClick={handleMaxStakeClicked} variant='text'>
+              {maxStake && coin ? `${maxStake} ${coin}` : ''}
+            </MuiButton>
           </Grid>
         </Grid>
       }

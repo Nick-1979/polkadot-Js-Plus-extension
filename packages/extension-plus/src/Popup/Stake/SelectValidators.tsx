@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
-import type { AccountId, StakingLedger } from '@polkadot/types/interfaces';
+import type { StakingLedger } from '@polkadot/types/interfaces';
 
 import { Delete as DeleteIcon, FilterList as FilterListIcon, MoreHoriz as MoreHorizIcon, RecommendOutlined as RecommendOutlinedIcon, ReportProblemOutlined } from '@mui/icons-material';
 import { Box, Checkbox, Container, FormControlLabel, Grid, IconButton, TextField } from '@mui/material';
@@ -17,7 +17,7 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { DeriveStakingQuery } from '@polkadot/api-derive/types';
 
@@ -27,13 +27,14 @@ import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { PlusHeader, Popup } from '../../components';
 import { DEFAULT_VALIDATOR_COMMISION_FILTER } from '../../util/constants';
 import { AccountsBalanceType, StakingConsts, Validators, ValidatorsName } from '../../util/plusTypes';
+import { toShortAddress } from '../../util/plusUtils';
 import ConfirmStaking from './ConfirmStaking';
 import ValidatorInfo from './ValidatorInfo';
 
 interface Props {
   chain?: Chain | null;
   decimals: number;
-  handleEasyStakingModalClose: Dispatch<SetStateAction<boolean>>;
+  // handleEasyStakingModalClose: () => void;
   staker: AccountsBalanceType;
   showSelectValidatorsModal: boolean;
   nominatedValidators: DeriveStakingQuery[];
@@ -76,7 +77,7 @@ interface HeadCell {
   id: keyof Data;
   label: string;
   numeric: boolean;
-  clickable:boolean;
+  sortable:boolean;
 }
 
 interface EnhancedTableToolbarProps {
@@ -95,12 +96,6 @@ interface EnhancedTableProps {
   order: Order;
   orderBy: string;
   rowCount: number;
-}
-
-function toShortAddress(_address: string | AccountId): string {
-  _address = String(_address);
-
-  return `${_address.slice(0, 6)} ...  ${_address.slice(-6)}`;
 }
 
 function makeFirstLetterOfStringUpperCase(str: string): string {
@@ -155,28 +150,28 @@ const headCells: HeadCell[] = [
     id: 'name',
     label: 'Address/Name',
     numeric: false,
-    clickable: true
+    sortable: true
   },
   {
     disablePadding: true,
     id: 'commission',
     label: 'Commission',
     numeric: true,
-    clickable: true
+    sortable: true
   },
   {
     disablePadding: true,
     id: 'nominator',
     label: 'Nominator',
     numeric: true,
-    clickable: true
+    sortable: true
   },
   {
     disablePadding: false,
     id: 'moreInfo',
     label: 'More',
     numeric: false,
-    clickable: false 
+    sortable: false 
   }
 ];
 
@@ -202,7 +197,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={headCell.clickable && createSortHandler(headCell.id)}
+              onClick={headCell.sortable && createSortHandler(headCell.id)}
             >
               {headCell.label}
             </TableSortLabel>
@@ -378,8 +373,7 @@ function EnhancedTable({ chain, coin, decimals, nominatedValidators, searchedVal
   const handleMoreInfo = (info: DeriveStakingQuery) => {
     setShowValidatorInfoModal(true);
     setInfo(info);
-    console.log('more info', info)
-  }
+  };
 
   return (
     <Container sx={{ overflowY: 'hidden', padding: '5px 10px', width: '100%' }}>

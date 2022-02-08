@@ -39,7 +39,7 @@ interface Props {
   handleEasyStakingModalClose: () => void;
   stakingConsts: StakingConsts | null;
   amount: bigint;
-  validatorsInfo?: Validators | null;
+  // validatorsInfo?: Validators | null;
   ledger: StakingLedger | null;
   nominatedValidators: DeriveStakingQuery[] | null;
   coin: string;
@@ -48,7 +48,7 @@ interface Props {
   validatorsToList: DeriveStakingQuery[] | null;
 }
 
-export default function ConfirmStaking({ amount, chain, coin, decimals, ledger, handleEasyStakingModalClose, nominatedValidators, selectedValidators, setConfirmStakingModalOpen, setSelectValidatorsModalOpen, setState, showConfirmStakingModal, staker, stakingConsts, state, validatorsName, validatorsToList }: Props): React.ReactElement<Props> {
+export default function ConfirmStaking({ amount, chain, coin, decimals, handleEasyStakingModalClose, ledger, nominatedValidators, selectedValidators, setConfirmStakingModalOpen, setSelectValidatorsModalOpen, setState, showConfirmStakingModal, staker, stakingConsts, state, validatorsName, validatorsToList }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { hierarchy } = useContext(AccountContext);
   const [confirmingState, setConfirmingState] = useState<string>('');

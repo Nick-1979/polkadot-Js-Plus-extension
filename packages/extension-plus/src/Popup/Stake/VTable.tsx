@@ -3,9 +3,7 @@
 /* eslint-disable header/header */
 /* eslint-disable react/jsx-max-props-per-line */
 
-import type { AccountId } from '@polkadot/types/interfaces';
-
-import { DirectionsRunOutlined as DirectionsRunOutlinedIcon,ReportProblemOutlined as ReportProblemOutlinedIcon } from '@mui/icons-material';
+import { DirectionsRunOutlined as DirectionsRunOutlinedIcon, MoreHoriz as MoreHorizIcon, ReportProblemOutlined as ReportProblemOutlinedIcon } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
@@ -14,7 +12,6 @@ import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
 import React from 'react';
 
 import { DeriveStakingQuery } from '@polkadot/api-derive/types';
@@ -22,6 +19,7 @@ import { DeriveStakingQuery } from '@polkadot/api-derive/types';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import Hint from '../../components/Hint';
 import { AccountsBalanceType, StakingConsts, ValidatorsName } from '../../util/plusTypes';
+import { toShortAddress } from '../../util/plusUtils';
 
 interface Data {
   name: string;
@@ -33,12 +31,6 @@ interface Data {
   total: string;
   // eslint-disable-next-line camelcase
   // reward_point: number;
-}
-
-function toShortAddress(_address: string | AccountId): string {
-  _address = String(_address);
-
-  return `${_address.slice(0, 6)} ...  ${_address.slice(-6)}`;
 }
 
 function descendingComparator<T>(a: DeriveStakingQuery, b: DeriveStakingQuery, orderBy: keyof T) {
@@ -102,13 +94,13 @@ const headCells: readonly HeadCell[] = [
     id: 'nominator',
     label: '#Nominator',
     numeric: true
+  },
+  {
+    disablePadding: false,
+    id: 'moreInfo',
+    label: 'More',
+    numeric: false,
   }
-  // , {
-  //   id: 'oversubscribed',
-  //   numeric: true,
-  //   disablePadding: false,
-  //   label: 'Oversubscribed'
-  // }
 ];
 
 interface EnhancedTableProps {
@@ -137,13 +129,13 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
-            <TableSortLabel
+            {/* <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
-            >
-              {headCell.label}
-            </TableSortLabel>
+            > */}
+            {headCell.label}
+            {/* </TableSortLabel> */}
           </StyledTableCell>
         ))}
       </TableRow>
@@ -168,13 +160,17 @@ interface TableRowProps {
   stakingConsts: StakingConsts;
   staker?: AccountsBalanceType;
   validatorsName: ValidatorsName[] | null;
+  setInfo: React.Dispatch<React.SetStateAction<DeriveStakingQuery>>;
+  setShowValidatorInfoModal: React.Dispatch<React.SetStateAction<boolean>>;
+
 }
 
-export default function VTable({ activeValidator, staker, stakingConsts, validators, validatorsName }: TableRowProps) {
+export default function VTable({ activeValidator, setInfo, setShowValidatorInfoModal, staker, stakingConsts, validators, validatorsName }: TableRowProps) {
   const { t } = useTranslation();
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('name');
   const [selected, setSelected] = React.useState<readonly string[]>([]);
+
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -217,47 +213,58 @@ export default function VTable({ activeValidator, staker, stakingConsts, validat
     return toShortAddress(id);
   }
 
+  const handleMoreInfo = (info: DeriveStakingQuery) => {
+    setShowValidatorInfoModal(true);
+    setInfo(info);
+  };
+
   return (
     <TableContainer sx={{ borderRadius: '5px', maxHeight: 180 }}>
       <Table size='small' stickyHeader sx={{ width: '100%' }}>
         <EnhancedTableHead numSelected={selected.length} onRequestSort={handleRequestSort} order={order} orderBy={orderBy} rowCount={validators.length} />
         <TableBody>
-          {validators.slice().sort(getComparator(order, orderBy)).map((v, index) => {
-            const isItemSelected = isSelected(v.accountId.toString());
-            const labelId = `table-checkbox-${index}`;
+          {validators.slice()
+            //.sort(getComparator(order, orderBy))
+            .map((v, index) => {
+              const isItemSelected = isSelected(v.accountId.toString());
+              const labelId = `table-checkbox-${index}`;
 
-            return (
-              <TableRow aria-checked={isItemSelected} hover key={index} onClick={(event) => handleClick(event, v.accountId.toString())} selected={isItemSelected} tabIndex={-1}>
-                <StyledTableCell component='th' id={labelId} padding='normal' scope='row'>
-                  {getAccountIdOrName(String(v.accountId))}
-                </StyledTableCell>
+              return (
+                <TableRow aria-checked={isItemSelected} hover key={index} onClick={(event) => handleClick(event, v.accountId.toString())} selected={isItemSelected} tabIndex={-1}>
+                  <StyledTableCell component='th' id={labelId} padding='normal' scope='row'>
+                    {getAccountIdOrName(String(v.accountId))}
+                  </StyledTableCell>
 
-                <StyledTableCell align='right'>{Number(v.validatorPrefs.commission) / (10 ** 7)}%</StyledTableCell>
+                  <StyledTableCell align='right'>{Number(v.validatorPrefs.commission) / (10 ** 7)}%</StyledTableCell>
 
-                <StyledTableCell align='right'>
-                  <Grid container alignItems='center'>
-                    <Grid item xs={6} sx={{ textAlign: 'center' }}>
-                      {v.exposure.others.length > stakingConsts?.maxNominatorRewardedPerValidator &&
-                        <Hint id='oversubscribed' place='left' tip={('Oversubscribed')}>
-                          <ReportProblemOutlinedIcon sx={{ fontSize: '14px' }} color='warning' />
-                        </Hint>
-                      }
+                  <StyledTableCell align='right'>
+                    <Grid container alignItems='center'>
+                      <Grid item xs={6} sx={{ textAlign: 'center' }}>
+                        {v.exposure.others.length > stakingConsts?.maxNominatorRewardedPerValidator &&
+                          <Hint id='oversubscribed' place='left' tip={('Oversubscribed')}>
+                            <ReportProblemOutlinedIcon sx={{ fontSize: '14px' }} color='warning' />
+                          </Hint>
+                        }
 
-                      {v.accountId === activeValidator?.accountId &&
-                        <Hint id='active' place='left' tip={t('Active')}>
-                          <DirectionsRunOutlinedIcon sx={{ fontSize: '14px' }} color='info' />
-                        </Hint>
-                      }
+                        {v.accountId === activeValidator?.accountId &&
+                          <Hint id='active' place='left' tip={t('Active')}>
+                            <DirectionsRunOutlinedIcon sx={{ fontSize: '14px' }} color='info' />
+                          </Hint>
+                        }
+                      </Grid>
+                      <Grid item xs={6} sx={{ textAlign: 'right' }}>
+                        {v.exposure.others.length ? v.exposure.others.length : 'waiting'}
+                      </Grid>
                     </Grid>
-                    <Grid item xs={6} sx={{ textAlign: 'right' }}>
-                      {v.exposure.others.length ? v.exposure.others.length : 'waiting'}
-                    </Grid>
-                  </Grid>
-                </StyledTableCell>
+                  </StyledTableCell>
 
-              </TableRow>
-            );
-          })}
+                  <StyledTableCell align='center'>
+                    <MoreHorizIcon sx={{ fontSize: '12px', cursor: 'pointer' }} onClick={() => handleMoreInfo(v)} />
+                  </StyledTableCell>
+
+                </TableRow>
+              );
+            })}
         </TableBody>
       </Table>
     </TableContainer>
