@@ -30,7 +30,7 @@
     "start": "yarn watch",
     "test": "polkadot-dev-run-test --detectOpenHandles",
     "test:one": "polkadot-dev-run-test --detectOpenHandles",
-    "test:plus": "polkadot-dev-run-test --detectOpenHandles --testPathPattern=packages/extension-plus/src",
+    "test:plus": "polkadot-dev-run-test --detectOpenHandles --testPathPattern=packages/extension-plus/src --silent",
     "watch": "cd packages/extension && yarn polkadot-exec-webpack --config webpack.watch.cjs --mode development --watch"
   },
   "dependencies": {
@@ -39,7 +39,7 @@
     "@mui/icons-material": "^5.2.5",
     "@mui/lab": "^5.0.0-alpha.63",
     "@mui/material": "^5.3.0",
-    "@polkadot/apps-config": "^0.100.1",
+    "@polkadot/apps-config": "^0.105.1",
     "qrcode.react": "^1.0.1",
     "react-tooltip": "^4.2.21",
     "umi-request": "^1.4.0"
