@@ -33,7 +33,7 @@ const SINGLE_PAGE_SIZE = 25;
 const TAB_MAP = {
   ALL: '0',
   STAKING: '2',
-  requestTRANSFERS: '1'
+  TRANSFERS: '1'
 };
 
 export default function TransactionHistory({ address, chain, name, setTxHistoryModalOpen, showTxHistoryModal }: Props): React.ReactElement<Props> {
