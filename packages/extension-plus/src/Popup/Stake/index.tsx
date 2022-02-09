@@ -83,8 +83,8 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
   const [unstakeAmount, setUnstakeAmount] = useState<bigint>(0n);
   const [unlockingAmount, setUnlockingAmount] = useState<bigint>(0n);
   const [hasOversubscribed, setHasOversubscribed] = useState<boolean>(false);
-  const [activeValidator, setActiveValidator] = React.useState<DeriveStakingQuery>();
-
+  const [activeValidator, setActiveValidator] = useState<DeriveStakingQuery>();
+  
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
     setAlert('');
@@ -163,7 +163,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
 
   useEffect(() => {
     if (!chainInfo || !chain || !staker.address) return;
-    
+
     // *** get staking reward
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     getStakingReward(chain, staker.address).then((reward) => {
@@ -373,7 +373,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       updateMeta(account.address, prepareMetaData(chain, 'validatorsName', validatorsNameFromSbuScanTemp));
       console.log('validatorsNameFromSbuScan and local storage:', validatorsNameFromSbuScanTemp);
-    });
+    }).catch(console.error);
   }, [account, chain, staker.address]);
 
   useEffect((): void => {
@@ -838,10 +838,10 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
         <ConfirmStaking
           amount={getAmountToConfirm()}
           chain={chain}
-          coin={chainInfo?.coin}
+          chainInfo={chainInfo}
           handleEasyStakingModalClose={handleEasyStakingModalClose}
           // lastFee={lastFee}
-          decimals={chainInfo?.decimals}
+          // decimals={chainInfo?.decimals}
           ledger={ledger}
           nominatedValidators={nominatedValidators}
           selectedValidators={selectedValidators}

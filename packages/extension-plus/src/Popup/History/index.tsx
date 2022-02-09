@@ -4,8 +4,7 @@
 
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { AllInclusive as AllInclusiveIcon, Brightness7Outlined as Brightness7OutlinedIcon, SwapVert as SwapVertIcon } from '@mui/icons-material';
-import HistoryIcon from '@mui/icons-material/History';
+import { AllInclusive as AllInclusiveIcon, History as HistoryIcon, Brightness7Outlined as Brightness7OutlinedIcon, SwapVert as SwapVertIcon } from '@mui/icons-material';
 import { Box, Container, Divider, Grid, Link, Tab, Tabs } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useReducer, useRef, useState } from 'react';
@@ -19,7 +18,6 @@ import { getTxTransfers } from '../../util/api/getTransfers';
 import { AccountsBalanceType, TransactionDetail, Transfers } from '../../util/plusTypes';
 import { getTransactionHistoryFromLocalStorage } from '../../util/plusUtils';
 import Details from './Details';
-import { getIcon } from './getIcons';
 import { STAKING_ACTIONS } from '../../util/constants';
 import { getTxIcon } from './getTxIcon';
 
@@ -34,9 +32,8 @@ interface Props {
 const SINGLE_PAGE_SIZE = 25;
 const TAB_MAP = {
   ALL: '0',
-  TRANSFERS: '1',
-  // eslint-disable-next-line sort-keys
-  STAKING: '2'
+  STAKING: '2',
+  requestTRANSFERS: '1'
 };
 
 export default function TransactionHistory({ address, chain, name, setTxHistoryModalOpen, showTxHistoryModal }: Props): React.ReactElement<Props> {
@@ -82,6 +79,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
     if (!chain) return;
 
     const res = await getTxTransfers(chain, address.address, pageNum, SINGLE_PAGE_SIZE);
+    console.log('res ', res)
     const { count, transfers } = res.data || {};
     const nextPageNum = pageNum + 1;
 
@@ -185,12 +183,8 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
 
   const handleTxHistoryModalClose = useCallback(
     (): void => {
-      // set all defaults
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       setTxHistoryModalOpen(false);
-    },
-    [setTxHistoryModalOpen]
-  );
+    }, [setTxHistoryModalOpen]);
 
   function makeAddressShort(_address: string): React.ReactElement {
     return (
@@ -228,7 +222,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
         </Box>
       </Grid>
 
-      <Container id='scrollArea' sx={{ textAlign: 'center', padding: '0px 30px 5px', height: '450px', overflowY: 'auto' }}>
+      <Container id='scrollArea' data-testid='scrollArea' sx={{ textAlign: 'center', padding: '0px 30px 5px', height: '450px', overflowY: 'auto' }}>
         {tabHistory?.map((h, index) => (
           <Grid container key={index} alignItems='center'>
             <Grid item xs={1}>
@@ -240,7 +234,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
                   {h.action}
                 </Grid>
                 <Grid item xs={8} sx={{ fontSize: 13, fontWeight: '600', textAlign: 'right' }}>
-                  {parseFloat(h.amount).toFixed(2) || 'N/A '} {' '}{coin}
+                  {h.amount ? parseFloat(h.amount).toFixed(2) : 'N/A '} {' '}{coin}
                 </Grid>
               </Grid>
               <Grid item id='secondRow' container xs={12} sx={{ color: 'gray', fontSize: '10px', paddingBottom: '10px', textAlign: 'left' }}>

@@ -3,7 +3,7 @@
 /* eslint-disable header/header */
 /* eslint-disable react/jsx-max-props-per-line */
 
-import DetailsIcon from '@mui/icons-material/Details';
+import {BubbleChart as BubbleChartIcon}  from '@mui/icons-material';
 import { Avatar, Container, Divider, Grid, Link, Paper } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React, { Dispatch, SetStateAction, useCallback } from 'react';
@@ -34,17 +34,18 @@ export default function ValidatorInfo({ chain, coin, decimals, info, setShowVali
   const chainName = chain?.name.replace(' Relay Chain', '');
   const validatorName = validatorsName.find((v) => v.address === info.accountId.toString());
 
+  console.log('info in ValidatorInfo', info)
+    console.log('showValidatorInfoModal in ValidatorInfo', showValidatorInfoModal)
+
   const handleDetailsModalClose = useCallback(
     (): void => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       setShowValidatorInfoModal(false);
-    },
-    [setShowValidatorInfoModal]
-  );
+    },[setShowValidatorInfoModal]);
 
   return (
     <Popup id='scrollArea' showModal={showValidatorInfoModal} handleClose={handleDetailsModalClose}>
-      <PlusHeader action={handleDetailsModalClose} chain={chain} closeText={'Close'} icon={<DetailsIcon fontSize='small' />} title={'Validator Info'} />
+      <PlusHeader action={handleDetailsModalClose} chain={chain} closeText={'Close'} icon={<BubbleChartIcon  fontSize='small' />} title={'Validator Info'} />
       <Container sx={{ p: '0px 20px' }}>
         <Grid item xs={12} sx={{ p: 1 }}>
           <Paper elevation={3}>

@@ -5,7 +5,7 @@
 import { faCopy } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { LaunchRounded } from '@mui/icons-material';
-import DetailsIcon from '@mui/icons-material/Details';
+import { BubbleChart as BubbleChartIcon } from '@mui/icons-material';
 import { Box, Chip, Container, Divider, Grid, Link, Paper } from '@mui/material';
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
@@ -17,7 +17,6 @@ import { PlusHeader, Popup } from '../../components';
 import { SHORT_ADDRESS_CHARACTERS } from '../../util/constants';
 import { TransactionDetail } from '../../util/plusTypes';
 import { amountToHuman } from '../../util/plusUtils';
-import { getIcon } from './getIcons';
 import { getTxIcon } from './getTxIcon';
 
 interface Props {
@@ -93,8 +92,8 @@ export default function Details({
 
   return (
     <Popup id='scrollArea' showModal={showDetailModal} handleClose={handleDetailsModalClose}>
-      <PlusHeader action={handleDetailsModalClose} chain={chain} closeText={'Close'} icon={<DetailsIcon fontSize='small' />} title={'Transaction Detail'} />
-      <Container sx={{ p: '0px 20px' }} >
+      <PlusHeader action={handleDetailsModalClose} chain={chain} closeText={'Close'} icon={<BubbleChartIcon fontSize='small' />} title={'Transaction Detail'} />
+      <Container data-testid='details' sx={{ p: '0px 20px' }} >
         <Grid item xs={12} sx={{ padding: '15px 15px 8px' }}>
           <Paper elevation={3}>
             <Grid item container justifyContent='center' sx={{ fontSize: 12, textAlign: 'center', padding: '30px 10px 20px' }}>

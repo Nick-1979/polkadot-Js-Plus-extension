@@ -23,13 +23,13 @@ import broadcast from '../../util/api/broadcast';
 import { bondOrBondExtra, chill, nominate, unbond, withdrawUnbonded } from '../../util/api/staking';
 import { PASS_MAP, STATES_NEEDS_MESSAGE } from '../../util/constants';
 import getChainInfo from '../../util/getChainInfo';
-import { AccountsBalanceType, StakingConsts, TransactionDetail, Validators, ValidatorsName } from '../../util/plusTypes';
+import { AccountsBalanceType, ChainInfo, StakingConsts, TransactionDetail, Validators, ValidatorsName } from '../../util/plusTypes';
 import { amountToHuman, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/plusUtils';
 import ValidatorsList from './ValidatorsList';
 
 interface Props {
   chain?: Chain | null;
-  decimals: number;
+  chainInfo: ChainInfo;
   state: string;
   setState: React.Dispatch<React.SetStateAction<string>>;
   staker: AccountsBalanceType;
@@ -39,16 +39,14 @@ interface Props {
   handleEasyStakingModalClose: () => void;
   stakingConsts: StakingConsts | null;
   amount: bigint;
-  // validatorsInfo?: Validators | null;
   ledger: StakingLedger | null;
   nominatedValidators: DeriveStakingQuery[] | null;
-  coin: string;
   validatorsName: ValidatorsName[] | null;
   selectedValidators: DeriveStakingQuery[] | null;
   validatorsToList: DeriveStakingQuery[] | null;
 }
 
-export default function ConfirmStaking({ amount, chain, coin, decimals, handleEasyStakingModalClose, ledger, nominatedValidators, selectedValidators, setConfirmStakingModalOpen, setSelectValidatorsModalOpen, setState, showConfirmStakingModal, staker, stakingConsts, state, validatorsName, validatorsToList }: Props): React.ReactElement<Props> {
+export default function ConfirmStaking({ amount, chain, chainInfo, handleEasyStakingModalClose, ledger, nominatedValidators, selectedValidators, setConfirmStakingModalOpen, setSelectValidatorsModalOpen, setState, showConfirmStakingModal, staker, stakingConsts, state, validatorsName, validatorsToList }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { hierarchy } = useContext(AccountContext);
   const [confirmingState, setConfirmingState] = useState<string>('');
@@ -56,6 +54,10 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, handleEa
   const [passwordStatus, setPasswordStatus] = useState<number>(PASS_MAP.EMPTY);
   const [currentlyStaked, setCurrentlyStaked] = useState<bigint>(0n);
   const [totalStakedInHuman, setTotalStakedInHuman] = useState<string>('');
+  const [estimatedFee, setEstimatedFee] = useState<string>()
+
+  const chilled = chainInfo?.api.tx.staking.chill;
+
 
   async function saveHistory(chain: Chain | null, hierarchy: AccountWithChildren[], address: string, currentTransactionDetail: TransactionDetail): Promise<boolean> {
     const accountSubstrateAddress = getSubstrateAddress(address);
@@ -78,16 +80,21 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, handleEa
       case ('stakeAuto'):
       case ('stakeManual'):
       case ('stakeKeepNominated'):
-        setTotalStakedInHuman(amountToHuman((currentlyStaked + amount).toString(), decimals));
+        setTotalStakedInHuman(amountToHuman((currentlyStaked + amount).toString(), chainInfo?.decimals));
         break;
       case ('unstake'):
-        setTotalStakedInHuman(amountToHuman((currentlyStaked - amount).toString(), decimals));
+        setTotalStakedInHuman(amountToHuman((currentlyStaked - amount).toString(), chainInfo?.decimals));
+        break;
+      case ('stopNominating'):
+        chilled().paymentInfo(staker.address).then((i) => setEstimatedFee(amountToHuman(i?.partialFee.toString(), chainInfo?.decimals)));
+        setTotalStakedInHuman(amountToHuman((currentlyStaked).toString(), chainInfo?.decimals));
         break;
       default:
-        setTotalStakedInHuman(amountToHuman((currentlyStaked).toString(), decimals));
+        setTotalStakedInHuman(amountToHuman((currentlyStaked).toString(), chainInfo?.decimals));
         break;
     }
-  }, [amount, currentlyStaked, decimals, state]);
+
+  }, [amount, currentlyStaked, chainInfo, state]);
 
   useEffect(() => {
     if (!ledger) { return; }
@@ -158,7 +165,7 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, handleEa
 
     try {
       setConfirmingState('confirming');
-      const { api } = await getChainInfo(chain);
+      // const { api } = await getChainInfo(chain);
 
       const signer = keyring.getPair(staker.address);
 
@@ -174,7 +181,7 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, handleEa
 
         const history: TransactionDetail = {
           action: alreadyBondedAmount ? 'bond_extra' : 'bond',
-          amount: amountToHuman(String(amount), decimals),
+          amount: amountToHuman(String(amount), chainInfo?.decimals),
           date: Date.now(),
           block: block,
           fee: fee || '',
@@ -305,7 +312,7 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, handleEa
 
         const history: TransactionDetail = {
           action: 'unbond',
-          amount: amountToHuman(String(amount), decimals),
+          amount: amountToHuman(String(amount), chainInfo?.decimals),
           block: block,
           date: Date.now(),
           fee: fee || '',
@@ -329,7 +336,7 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, handleEa
 
         const history: TransactionDetail = {
           action: 'redeem',
-          amount: amountToHuman(String(amount), decimals),
+          amount: amountToHuman(String(amount), chainInfo?.decimals),
           block: block,
           date: Date.now(),
           fee: fee || '',
@@ -349,9 +356,8 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, handleEa
       }
 
       if (localState === 'stopNominating') {
-        const chilled = api.tx.staking.chill;
 
-        const { block, failureText, fee, status, txHash } = await broadcast(api, chilled, [], signer);
+        const { block, failureText, fee, status, txHash } = await broadcast(chainInfo.api, chilled, [], signer);
 
         const history: TransactionDetail = {
           action: 'stop_nominating',
@@ -398,7 +404,7 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, handleEa
       case ('withdrawUnbound'):
         return <Typography sx={{ m: '5px 0px 5px' }} variant='h6'>
           {t('Available balance after redeem ')}<br />
-          {amountToHuman(String(amount + staker.balanceInfo.available), decimals)}{' '} {coin}
+          {amountToHuman(String(amount + staker.balanceInfo.available), chainInfo?.decimals)}{' '} {chainInfo?.coin}
         </Typography>;
       case ('stopNominating'):
         return <Typography sx={{ m: '30px 0px 30px' }} variant='h6'>
@@ -406,7 +412,7 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, handleEa
         </Typography>;
       default:
     }
-  }, [amount, coin, decimals, staker.balanceInfo.available, stakingConsts.bondingDuration, t]);
+  }, [amount, chainInfo, staker.balanceInfo.available, stakingConsts.bondingDuration, t]);
 
   return (
     <Popup handleClose={handleCloseModal} showModal={showConfirmStakingModal}>
@@ -422,10 +428,10 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, handleEa
           {!!amount &&
             <Grid container item justifyContent='center' spacing={1} sx={{ fontFamily: 'fantasy', fontSize: 18, textAlign: 'center' }} xs={12}>
               <Grid item>
-                {amountToHuman(amount.toString(), decimals)}
+                {amountToHuman(amount.toString(), chainInfo?.decimals)}
               </Grid>
               <Grid item>
-                {coin}
+                {chainInfo?.coin}
               </Grid>
             </Grid>
           }
@@ -439,11 +445,27 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, handleEa
                 {!ledger
                   ? <Skeleton sx={{ display: 'inline-block', fontWeight: '600', width: '60px' }} />
                   : <>
-                    {currentlyStaked ? amountToHuman(currentlyStaked.toString(), decimals) : '0.00'}
+                    {currentlyStaked ? amountToHuman(currentlyStaked.toString(), chainInfo?.decimals) : '0.00'}
                   </>
-                }{' '}{coin}
+                }
+                {/* {' '}{chainInfo?.coin} */}
               </Grid>
             </Grid>
+            {estimatedFee &&
+              <Grid container item justifyContent='center' spacing={1} xs={2}>
+                <Grid item sx={{ fontSize: 12, fontWeight: '600' }}>
+                  {t('Fee')}{': '}
+                </Grid>
+                <Grid item sx={{ fontSize: 12 }}>
+                  {!estimatedFee
+                    ? <Skeleton sx={{ display: 'inline-block', fontWeight: '600', width: '50px' }} />
+                    : <>
+                      {estimatedFee}
+                    </>
+                  }
+                </Grid>
+              </Grid>
+            }
             <Grid container item justifyContent='flex-end' spacing={1} xs={5}>
               <Grid item sx={{ fontSize: 12, fontWeight: '600' }}>
                 {t('Total')}{': '}
@@ -454,7 +476,8 @@ export default function ConfirmStaking({ amount, chain, coin, decimals, handleEa
                   : <>
                     {totalStakedInHuman}
                   </>
-                }{' '}{coin}
+                }
+                {/* {' '}{chainInfo?.coin} */}
               </Grid>
             </Grid>
           </Grid>

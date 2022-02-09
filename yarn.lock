@@ -10917,6 +10917,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"intersection-observer@npm:^0.12.0":
+  version: 0.12.0
+  resolution: "intersection-observer@npm:0.12.0"
+  checksum: 96d2f3ea4995b7b429b79646467c975230cfbe3ede7fb08d0c022cfe6ee0c89dfa98aa4377e8b5f7bee880322eb118e6c0275607a53043f9c50921da8363c1e8
+  languageName: node
+  linkType: hard
+
 "invariant@npm:^2.2.2":
   version: 2.2.4
   resolution: "invariant@npm:2.2.4"
@@ -15840,6 +15847,7 @@ __metadata:
     "@types/jest": ^27.4.0
     babel-plugin-transform-import-meta: ^2.1.0
     i18next-scanner: ^3.1.0
+    intersection-observer: ^0.12.0
     qrcode.react: ^1.0.1
     react-tooltip: ^4.2.21
     sinon-chrome: ^3.0.1

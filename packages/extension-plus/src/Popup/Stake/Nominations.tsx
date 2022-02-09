@@ -31,7 +31,7 @@ interface Props {
   handleStopNominating: () => void;
 }
 
-export default function NominatedValidators({ activeValidator, chain, currentlyStakedInHuman, handleSelectValidatorsModaOpen, handleStopNominating, noNominatedValidators, nominatedValidators, staker, stakingConsts, state, validatorsInfo, validatorsName }: Props): React.ReactElement<Props> {
+export default function Nominations({ activeValidator, chain, currentlyStakedInHuman, handleSelectValidatorsModaOpen, handleStopNominating, noNominatedValidators, nominatedValidators, staker, stakingConsts, state, validatorsInfo, validatorsName }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
 
   return (
