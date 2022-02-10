@@ -4,13 +4,14 @@
 
 import type { KeypairType } from '@polkadot/util-crypto/types';
 
-import { ArrowForwardRounded, RefreshRounded, InfoTwoTone as InfoTwoToneIcon } from '@mui/icons-material';
+import { ArrowForwardRounded, InfoTwoTone as InfoTwoToneIcon, RefreshRounded } from '@mui/icons-material';
 import ConfirmationNumberOutlinedIcon from '@mui/icons-material/ConfirmationNumberOutlined';
 import { Avatar, Box, CircularProgress, Divider, Grid, IconButton } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import Identicon from '@polkadot/react-identicon';
+import { Balance } from '@polkadot/types/interfaces';
 import keyring from '@polkadot/ui-keyring';
 
 import { AccountWithChildren } from '../../../../extension-base/src/background/types';
@@ -19,13 +20,12 @@ import { AccountContext } from '../../../../extension-ui/src/components/contexts
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { updateMeta } from '../../../../extension-ui/src/messaging';
 import { ConfirmButton, Password, PlusHeader, Popup } from '../../components';
+import Hint from '../../components/Hint';
 import getFee from '../../util/api/getFee';
+import signAndTransfer from '../../util/api/signAndTransfer';
 import { PASS_MAP } from '../../util/constants';
-import getNetworkInfo from '../../util/getNetwork';
 import { AccountsBalanceType, TransactionDetail, TransactionStatus } from '../../util/plusTypes';
 import { amountToHuman, fixFloatingPoint, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/plusUtils';
-import signAndTransfer from '../../util/api/signAndTransfer';
-import Hint from '../../components/Hint';
 
 interface Props {
   availableBalance: string;
@@ -42,7 +42,7 @@ interface Props {
   isExternal?: boolean | null;
   isHardware?: boolean | null;
   isHidden?: boolean;
-  lastFee?: string;
+  lastFee?: Balance;
   name?: string | null;
   parentName?: string | null;
   toggleActions?: number;
@@ -52,30 +52,17 @@ interface Props {
   handleTransferModalClose: any;
 }
 
-export default function ConfirmTx({
-  availableBalance,
-  chain,
-  coin,
-  confirmModalOpen,
-  decimals,
-  handleTransferModalClose,
-  lastFee,
-  recepient,
-  sender,
-  setConfirmModalOpen,
-  transferAmount
-}: Props): React.ReactElement<Props> {
+export default function ConfirmTx({ availableBalance, chain, coin, confirmModalOpen, decimals, handleTransferModalClose, lastFee, recepient, sender, setConfirmModalOpen, transferAmount }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const network = chain ? chain.name.replace(' Relay Chain', '') : 'westend';
 
-  const [fee, setFee] = useState<string>();
+  const [newFee, setNewFee] = useState<Balance | null>();
   const [total, setTotal] = useState<string | null>(null);
   const [confirmDisabled, setConfirmDisabled] = useState<boolean>(true);
   const [transactionHash, setTransactionHash] = useState<string>();
   const [failAlert, setFailAlert] = useState<boolean>(false);
   const [password, setPassword] = useState<string>('');
   const [passwordStatus, setPasswordStatus] = useState<number>(PASS_MAP.EMPTY);
-  // const [transfering, setTransfering] = useState<boolean>(false);
   const [txStatus, setTxStatus] = useState<TransactionStatus>({ blockNumber: null, success: null, text: null });
   const [transferAmountInHuman, setTransferAmountInHuman] = useState('');
   const { hierarchy } = useContext(AccountContext);
@@ -132,12 +119,16 @@ export default function ConfirmTx({
   }
 
   useEffect(() => {
-    if (!confirmModalOpen || !transferAmount) return;
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    setNewFee(lastFee);
+  }, [decimals, lastFee]);
 
-    getDefaultFeeAndSetTotal(lastFee);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [confirmModalOpen, lastFee, transferAmount]);
+  useEffect(() => {
+    if (!newFee) return;
+
+    const total = (Number(newFee) + Number(transferAmount)) / (10 ** decimals);
+
+    setTotal(fixFloatingPoint(total));
+  }, [decimals, newFee, transferAmount]);
 
   useEffect(() => {
     setFailAlert(Number(total) > Number(availableBalance));
@@ -156,19 +147,6 @@ export default function ConfirmTx({
           _address.slice(-4)}
       </Box>
     );
-  }
-
-  function getDefaultFeeAndSetTotal(lastFee?: string): void {
-    const { defaultFee } = getNetworkInfo(chain);
-
-    lastFee = lastFee || defaultFee;
-
-    setFee(amountToHuman(lastFee, decimals));
-
-    const total = (Number(lastFee) + Number(transferAmount)) / (10 ** decimals);
-    setTotal(fixFloatingPoint(total));
-
-    // setConfirmDisabled(false);
   }
 
   function handleClearPassword() {
@@ -197,11 +175,8 @@ export default function ConfirmTx({
     handleTransferModalClose();
   }
 
-  const openTxOnExplorer = useCallback(() => window.open('https://' + network + '.subscan.io/extrinsic/' + String(transactionHash), '_blank')
-    , [network, transactionHash]);
-
   const refreshNetworkFee = (): void => {
-    setFee('');
+    setNewFee(null);
     const localConfirmDisabled = confirmDisabled;
 
     setConfirmDisabled(true);
@@ -220,7 +195,7 @@ export default function ConfirmTx({
         const t = transferAmount + BigInt(f);
         const fixedPointTotal = fixFloatingPoint(Number(t) / (10 ** decimals));
 
-        setFee(amountToHuman(f, decimals));
+        setNewFee(f);
         setTotal(fixedPointTotal);
         setConfirmDisabled(localConfirmDisabled);
       });
@@ -301,9 +276,9 @@ export default function ConfirmTx({
             </Grid>
           </Grid>
           <Grid item xs={6} sx={{ fontSize: 13, textAlign: 'right' }}>
-            {fee || <CircularProgress color='inherit' thickness={1} size={20} />}
+            {amountToHuman(newFee?.toString(), decimals) || <CircularProgress color='inherit' thickness={1} size={20} />}
             <Box fontSize={11} sx={{ color: 'gray' }}>
-              {fee ? 'estimated' : 'estimating'}
+              {newFee ? 'estimated' : 'estimating'}
             </Box>
           </Grid>
         </Grid>

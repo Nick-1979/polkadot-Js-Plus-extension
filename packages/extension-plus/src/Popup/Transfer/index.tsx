@@ -14,6 +14,7 @@ import { grey } from '@mui/material/colors';
 import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from 'react';
 
 import Identicon from '@polkadot/react-identicon';
+import { Balance } from '@polkadot/types/interfaces';
 import keyring from '@polkadot/ui-keyring';
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
@@ -23,17 +24,18 @@ import { AccountContext, SettingsContext } from '../../../../extension-ui/src/co
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { DEFAULT_TYPE } from '../../../../extension-ui/src/util/defaultType';
 import { PlusHeader, Popup } from '../../components';
+import Hint from '../../components/Hint';
 import getFee from '../../util/api/getFee';
 import getLogo from '../../util/getLogo';
 import getNetworkInfo from '../../util/getNetwork';
-import { AccountsBalanceType } from '../../util/plusTypes';
+import { AccountsBalanceType, ChainInfo } from '../../util/plusTypes';
 import { amountToHuman, amountToMachine, balanceToHuman, fixFloatingPoint } from '../../util/plusUtils';
 import isValidAddress from '../../util/validateAddress';
 import ConfirmTx from './ConfirmTransfer';
-import Hint from '../../components/Hint';
 
 interface Props {
   actions?: React.ReactNode;
+  chainInfo: ChainInfo;
   sender: AccountsBalanceType;
   transferModalOpen: boolean;
   chain?: Chain | null;
@@ -51,7 +53,7 @@ interface Recoded {
   type: KeypairType;
 }
 
-export default function TransferFunds({ chain, givenType, sender, setTransferModalOpen, transferModalOpen }: Props): React.ReactElement<Props> {
+export default function TransferFunds({ chain, chainInfo, givenType, sender, setTransferModalOpen, transferModalOpen }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { accounts } = useContext(AccountContext);
   const [availableBalance, setAvailableBalance] = useState<string>('');
@@ -59,8 +61,6 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
   const [nextButtonDisabled, setNextButtonDisabled] = useState(true);
   const [transferAmount, setTransferAmount] = useState<bigint>(0n);
   const [transferAmountInHuman, setTransferAmountInHuman] = useState('');
-
-  const [lastFee, setLastFee] = useState<string>();
   const [reapeAlert, setReapAlert] = useState(false);
   const [noFeeAlert, setNoFeeAlert] = useState(false);
   const [zeroBalanceAlert, setZeroBalanceAlert] = useState(false);
@@ -76,6 +76,17 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
   const [safeMaxAmountLoading, setsafeMaxAmountLoading] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);
   const [senderAddressOpacity, setSenderAddressOpacity] = useState<number>(0.2);
+  const [estimatedFee, setEstimatedFee] = useState<Balance>();
+
+  const transfer = chainInfo?.api.tx.balances.transfer;
+
+  useEffect(() => {
+    if (!chainInfo || !transfer) return;
+
+    // eslint-disable-next-line no-void
+    void transfer(sender.address, 1 * 10 ** chainInfo.decimals).paymentInfo(sender.address)
+      .then((i) => setEstimatedFee(i?.partialFee)).catch(console.error);
+  }, [chainInfo, sender.address, transfer]);
 
   useEffect(() => {
     if (recepientAddressIsValid) { setSenderAddressOpacity(0.7); } else setSenderAddressOpacity(0.2);
@@ -162,17 +173,15 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
       setZeroBalanceAlert(false);
     }
 
-    const { defaultFee } = getNetworkInfo(chain);
-
     if (Number(transferAmountInHuman) < Number(availableBalance) &&
-      (Number(availableBalance) < Number(transferAmountInHuman) + (ED + Number(amountToHuman(lastFee || defaultFee, decimals)))
+      (Number(availableBalance) < Number(transferAmountInHuman) + (ED + Number(amountToHuman(estimatedFee?.toString(), decimals)))
       )) {
       setReapAlert(true);
     } else {
       setReapAlert(false);
     }
 
-    if (Number(availableBalance) === Number(transferAmountInHuman) + Number(amountToHuman(lastFee || defaultFee, decimals))) {
+    if (Number(availableBalance) === Number(transferAmountInHuman) + Number(amountToHuman(estimatedFee?.toString(), decimals))) {
       setNoFeeAlert(true);
     } else {
       setNoFeeAlert(false);
@@ -235,16 +244,8 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
       setsafeMaxAmountLoading(true);
     }
 
-    let fee;
+    const fee = estimatedFee || await getFee(pairKey, String(recepient.address), BigInt(sender.balanceInfo.available), chain);
 
-    if (lastFee) {
-      fee = lastFee;
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      fee = await getFee(pairKey, String(recepient.address), BigInt(sender.balanceInfo.available), chain);
-    }
-
-    // .then((fee) => {
     if (!fee) {
       console.log('fee is NULL');
 
@@ -253,8 +254,8 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
 
     const { ED } = getNetworkInfo(chain);
 
-    setLastFee(fee);
-    let subtrahend = BigInt(fee);
+    setEstimatedFee(fee);
+    let subtrahend = BigInt(fee.toString());
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     if (name === 'safeMax') {
@@ -602,7 +603,7 @@ export default function TransferFunds({ chain, givenType, sender, setTransferMod
               confirmModalOpen={confirmModalOpen}
               decimals={decimals}
               handleTransferModalClose={handleTransferModalClose}
-              lastFee={lastFee}
+              lastFee={estimatedFee}
               recepient={recepient}
               sender={sender}
               setConfirmModalOpen={setConfirmModalOpen}

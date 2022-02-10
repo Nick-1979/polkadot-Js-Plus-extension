@@ -4,7 +4,7 @@
 
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { AllInclusive as AllInclusiveIcon, History as HistoryIcon, Brightness7Outlined as Brightness7OutlinedIcon, SwapVert as SwapVertIcon } from '@mui/icons-material';
+import { AllInclusive as AllInclusiveIcon, History as HistoryIcon, SwapVert as SwapVertIcon, TrendingUp as TrendingUpIcon } from '@mui/icons-material';
 import { Box, Container, Divider, Grid, Link, Tab, Tabs } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useReducer, useRef, useState } from 'react';
@@ -15,10 +15,10 @@ import { AccountContext } from '../../../../extension-ui/src/components/contexts
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { NothingToShow, PlusHeader, Popup } from '../../components';
 import { getTxTransfers } from '../../util/api/getTransfers';
+import { STAKING_ACTIONS } from '../../util/constants';
 import { AccountsBalanceType, TransactionDetail, Transfers } from '../../util/plusTypes';
 import { getTransactionHistoryFromLocalStorage } from '../../util/plusUtils';
 import Details from './Details';
-import { STAKING_ACTIONS } from '../../util/constants';
 import { getTxIcon } from './getTxIcon';
 
 interface Props {
@@ -217,7 +217,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
           <Tabs textColor='secondary' indicatorColor='secondary' variant='fullWidth' value={tabValue} onChange={handleTabChange}>
             <Tab icon={<AllInclusiveIcon fontSize='small' />} iconPosition='start' label='All' sx={{ fontSize: 10 }} value={TAB_MAP.ALL} />
             <Tab icon={<SwapVertIcon fontSize='small' />} iconPosition='start' label='Transfers' sx={{ fontSize: 10 }} value={TAB_MAP.TRANSFERS} />
-            <Tab icon={<Brightness7OutlinedIcon fontSize='small' />} iconPosition='start' label='Staking' sx={{ fontSize: 10 }} value={TAB_MAP.STAKING} />
+            <Tab icon={<TrendingUpIcon fontSize='small' />} iconPosition='start' label='Staking' sx={{ fontSize: 10 }} value={TAB_MAP.STAKING} />
           </Tabs>
         </Box>
       </Grid>

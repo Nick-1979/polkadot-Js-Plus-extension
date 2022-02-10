@@ -26,15 +26,14 @@ import { NextStepButton } from '../../../../extension-ui/src/components';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { PlusHeader, Popup } from '../../components';
 import { DEFAULT_VALIDATOR_COMMISION_FILTER } from '../../util/constants';
-import { AccountsBalanceType, StakingConsts, Validators, ValidatorsName } from '../../util/plusTypes';
-import { toShortAddress } from '../../util/plusUtils';
+import { AccountsBalanceType, ChainInfo, StakingConsts, Validators, ValidatorsName } from '../../util/plusTypes';
+import { isEqual, toShortAddress } from '../../util/plusUtils';
 import ConfirmStaking from './ConfirmStaking';
 import ValidatorInfo from './ValidatorInfo';
 
 interface Props {
   chain?: Chain | null;
-  decimals: number;
-  // handleEasyStakingModalClose: () => void;
+  chainInfo: ChainInfo;
   staker: AccountsBalanceType;
   showSelectValidatorsModal: boolean;
   nominatedValidators: DeriveStakingQuery[];
@@ -45,7 +44,6 @@ interface Props {
   validatorsName: ValidatorsName[] | null;
   setState: React.Dispatch<React.SetStateAction<string>>;
   state: string;
-  coin: string;
   ledger: StakingLedger | null;
 }
 
@@ -58,9 +56,8 @@ interface Data {
 
 interface TableRowProps {
   chain: Chain;
-  coin: string;
   validators: DeriveStakingQuery[];
-  decimals: number;
+  chainInfo: ChainInfo;
   nominatedValidators: DeriveStakingQuery[];
   stakingConsts: StakingConsts;
   validatorsName: ValidatorsName[] | null;
@@ -77,7 +74,7 @@ interface HeadCell {
   id: keyof Data;
   label: string;
   numeric: boolean;
-  sortable:boolean;
+  sortable: boolean;
 }
 
 interface EnhancedTableToolbarProps {
@@ -171,7 +168,7 @@ const headCells: HeadCell[] = [
     id: 'moreInfo',
     label: 'More',
     numeric: false,
-    sortable: false 
+    sortable: false
   }
 ];
 
@@ -309,7 +306,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   }
 }));
 
-function EnhancedTable({ chain, coin, decimals, nominatedValidators, searchedValidators, searching, selected, setSearchedValidators, setSearching, setSelected, stakingConsts, validators, validatorsName }: TableRowProps) {
+function EnhancedTable({ chain, chainInfo, nominatedValidators, searchedValidators, searching, selected, setSearchedValidators, setSearching, setSelected, stakingConsts, validators, validatorsName }: TableRowProps) {
   const rows = searching ? searchedValidators : validators;
 
   const [order, setOrder] = useState<Order>('asc');
@@ -484,8 +481,7 @@ function EnhancedTable({ chain, coin, decimals, nominatedValidators, searchedVal
       {showValidatorInfoModal && info &&
         <ValidatorInfo
           chain={chain}
-          coin={coin}
-          decimals={decimals}
+          chainInfo={chainInfo}
           info={info}
           setShowValidatorInfoModal={setShowValidatorInfoModal}
           showValidatorInfoModal={showValidatorInfoModal}
@@ -496,7 +492,7 @@ function EnhancedTable({ chain, coin, decimals, nominatedValidators, searchedVal
   );
 }
 
-export default function SelectValidators({ chain, coin, decimals, ledger, nominatedValidators, setSelectValidatorsModalOpen, setState, showSelectValidatorsModal, stakeAmount, staker, stakingConsts, state, validatorsInfo, validatorsName }: Props): React.ReactElement<Props> {
+export default function SelectValidators({ chain, chainInfo, ledger, nominatedValidators, setSelectValidatorsModalOpen, setState, showSelectValidatorsModal, stakeAmount, staker, stakingConsts, state, validatorsInfo, validatorsName }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const [validators, setValidators] = useState<DeriveStakingQuery[]>([]);
   const [searchedValidators, setSearchedValidators] = useState<DeriveStakingQuery[]>([]);
@@ -511,10 +507,10 @@ export default function SelectValidators({ chain, coin, decimals, ledger, nomina
     setValidators(validatorsInfo?.current.concat(validatorsInfo?.waiting));
   }, [validatorsInfo]);
 
-  useEffect(() => {
-    if (!nominatedValidators) return;
-    setSelected([...nominatedValidators]);// mark all nominated validators as selected at first
-  }, [nominatedValidators]);
+  // useEffect(() => {
+  //   if (!nominatedValidators ) return;
+  //   setSelected([...nominatedValidators]);// mark all nominated validators as selected at first
+  // }, [nominatedValidators]);
 
   useEffect(() => {
     let filteredValidators = validatorsInfo.current.concat(validatorsInfo.waiting);
@@ -581,8 +577,7 @@ export default function SelectValidators({ chain, coin, decimals, ledger, nomina
           {validatorsInfo &&
             <EnhancedTable
               chain={chain}
-              coin={coin}
-              decimals={decimals}
+              chainInfo={chainInfo}
               nominatedValidators={nominatedValidators}
               searchedValidators={searchedValidators}
               searching={searching}
@@ -632,26 +627,26 @@ export default function SelectValidators({ chain, coin, decimals, ledger, nomina
               label={<Box fontSize={12} sx={{ color: 'red' }}>{t('no oversubscribeds')}</Box>}
             />
           </Grid>
-          <Grid item xs={12} sx={{ padding: '10px 20px' }}>
+          <Grid item xs={12} sx={{ padding: '5px 20px' }}>
             <NextStepButton
               data-button-action='select validators manually'
               isDisabled={!selected.length}
               onClick={handleSelectValidators}
             >
-              {t('Next')}
+              {!selected.length ? t('Select validators') : t('Next')}
             </NextStepButton>
           </Grid>
+
         </Grid>
       </Grid>
 
-      {selected.length >= 1
-        ? <ConfirmStaking
+      {selected.length >= 1 && showConfirmStakingModal &&
+        <ConfirmStaking
           amount={state === 'changeValidators' ? 0n : stakeAmount}
           chain={chain}
-          coin={coin}
-          decimals={decimals}
+          chainInfo={chainInfo}
           ledger={ledger}
-          nominatedValidators={null}
+          nominatedValidators={nominatedValidators}
           selectedValidators={selected}
           setConfirmStakingModalOpen={setConfirmStakingModalOpen}
           setSelectValidatorsModalOpen={setSelectValidatorsModalOpen}
@@ -660,11 +655,13 @@ export default function SelectValidators({ chain, coin, decimals, ledger, nomina
           staker={staker}
           stakingConsts={stakingConsts}
           state={state}
-          validatorsInfo={validatorsInfo}
+          // validatorsInfo={validatorsInfo}
           validatorsName={validatorsName}
           validatorsToList={selected}
         />
-        : t('At least one validator should be selected.')}
+
+      }
+
     </Popup>
   );
 }

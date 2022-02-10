@@ -59,13 +59,13 @@ export default function Stake({ alert, coin, handleMaxStakeClicked, handleMinSta
           <Grid item sx={{ fontSize: 12 }}>
             {t('Min')}  :
             <MuiButton onClick={handleMinStakeClicked} variant='text'>
-              {minStakeable && coin ? `${minStakeable} ${coin}` : ''}
+              {coin ? `${minStakeable} ${coin}` : ''}
             </MuiButton>
           </Grid>
           <Grid item sx={{ fontSize: 12 }}>
             {t('Max')}:
             <MuiButton onClick={handleMaxStakeClicked} variant='text'>
-              {maxStake && coin ? `${maxStake} ${coin}` : ''}
+              {coin ? `${maxStake} ${coin}` : ''}
             </MuiButton>
           </Grid>
         </Grid>

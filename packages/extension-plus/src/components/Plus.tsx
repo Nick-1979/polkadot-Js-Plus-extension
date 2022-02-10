@@ -16,7 +16,7 @@ import { Chain } from '@polkadot/extension-chains/types';
 
 import useTranslation from '../../../extension-ui/src/hooks/useTranslation';
 import { prepareMetaData } from '../util/plusUtils';
-import { AccountsBalanceType, BalanceType, savedMetaData } from '../util/plusTypes';
+import { AccountsBalanceType, BalanceType, ChainInfo, savedMetaData } from '../util/plusTypes';
 import { AccountContext } from '../../../extension-ui/src/components/contexts';
 import AddressQRcode from '../Popup/AddressQRcode/AddressQRcode';
 import EasyStaking from '../Popup/Stake';
@@ -29,6 +29,7 @@ import { getPriceInUsd } from '../util/api/getPrice';
 import { Balance } from './';
 import { ImageNotSupportedTwoTone } from '@mui/icons-material';
 import { SUPPORTED_CHAINS } from '../util/constants';
+import getChainInfo from '../util/getChainInfo';
 
 export interface Props {
   actions?: React.ReactNode;
@@ -62,6 +63,7 @@ function Plus({ address, chain, formattedAddress, givenType, name }: Props): Rea
   const [account, setAccount] = useState<AccountJson | null>(null);
   const [sender, setSender] = useState<AccountsBalanceType>({ address: String(address), chain: null, name: String(name) });
   const [price, setPrice] = useState<number>(0);
+  const [chainInfo, setChainInfo] = useState<ChainInfo>();
 
   useEffect((): void => {
     if (!chain) return;
@@ -71,6 +73,9 @@ function Plus({ address, chain, formattedAddress, givenType, name }: Props): Rea
       console.log(`${chain.name.replace(' Relay Chain', '')} price:`, p);
       setPrice(p || 0);
     });
+
+    // eslint-disable-next-line no-void
+    void getChainInfo(chain).then((info) => setChainInfo(info));
   }, [chain]);
 
   function getBalanceFromMetaData(_account: AccountJson, _chain: Chain): AccountsBalanceType | null {
@@ -325,6 +330,7 @@ function Plus({ address, chain, formattedAddress, givenType, name }: Props): Rea
         transferModalOpen && sender &&
         <TransferFunds
           chain={chain}
+          chainInfo={chainInfo}
           givenType={givenType}
           sender={sender}
           setTransferModalOpen={setTransferModalOpen}

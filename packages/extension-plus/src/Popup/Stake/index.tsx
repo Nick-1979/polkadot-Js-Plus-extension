@@ -1,11 +1,11 @@
-/* eslint-disable react/jsx-max-props-per-line */
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable react/jsx-max-props-per-line */
 /* eslint-disable header/header */
 
 import type { StakingLedger } from '@polkadot/types/interfaces';
 
-import { AddCircleOutlineOutlined, Brightness7Outlined as Brightness7OutlinedIcon, CheckOutlined, InfoOutlined, NotificationsActive as NotificationsActiveIcon, Redeem as RedeemIcon, RemoveCircleOutlineOutlined, ReportOutlined as ReportOutlinedIcon, ReportProblemOutlined } from '@mui/icons-material';
+import { AddCircleOutlineOutlined, CheckOutlined, InfoOutlined, NotificationsActive as NotificationsActiveIcon, Redeem as RedeemIcon, RemoveCircleOutlineOutlined, ReportOutlined as ReportOutlinedIcon, ReportProblemOutlined,TrendingUp as TrendingUpIcon  } from '@mui/icons-material';
 import { Box, CircularProgress, Grid, IconButton, Paper, Skeleton, Tab, Tabs, Typography } from '@mui/material';
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 
@@ -20,7 +20,7 @@ import Hint from '../../components/Hint';
 import { getAllValidatorsFromSubscan, getStakingReward } from '../../util/api/staking';
 import { MAX_ACCEPTED_COMMISSION, MIN_EXTRA_BOND } from '../../util/constants';
 import getChainInfo from '../../util/getChainInfo';
-import { AccountsBalanceType, AllValidatorsFromSubscan, ChainInfo, savedMetaData, StakingConsts, Validators, ValidatorsName } from '../../util/plusTypes';
+import { AccountsBalanceType, AllValidatorsFromSubscan, ChainInfo, savedMetaData, StakingConsts, TransactionFee, Validators, ValidatorsName } from '../../util/plusTypes';
 import { amountToHuman, amountToMachine, balanceToHuman, fixFloatingPoint, prepareMetaData } from '../../util/plusUtils';
 import ConfirmStaking from './ConfirmStaking';
 import Info from './Info';
@@ -84,7 +84,8 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
   const [unlockingAmount, setUnlockingAmount] = useState<bigint>(0n);
   const [hasOversubscribed, setHasOversubscribed] = useState<boolean>(false);
   const [activeValidator, setActiveValidator] = useState<DeriveStakingQuery>();
-  
+  const [estimatedFees, setEstimatedFees] = useState<TransactionFee[]>();
+
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
     setAlert('');
@@ -674,7 +675,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
 
   return (
     <Popup handleClose={handleEasyStakingModalClose} showModal={showStakingModal}>
-      <PlusHeader action={handleEasyStakingModalClose} chain={chain} closeText={'Close'} icon={<Brightness7OutlinedIcon fontSize='small' />} title={'Easy Staking'} />
+      <PlusHeader action={handleEasyStakingModalClose} chain={chain} closeText={'Close'} icon={<TrendingUpIcon  fontSize='small' />} title={'Easy Staking'} />
 
       <Grid alignItems='center' container>
         <Grid alignItems='center' container item justifyContent='center' xs={12}>
@@ -817,11 +818,10 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
       {stakingConsts && validatorsInfo &&
         <SelectValidators
           chain={chain}
-          coin={chainInfo?.coin}
-          decimals={chainInfo?.decimals}
+          chainInfo={chainInfo}
           // handleEasyStakingModalClose={handleEasyStakingModalClose}
           ledger={ledger}
-          nominatedValidators={selectedValidators}
+          nominatedValidators={nominatedValidators}//{selectedValidators}
           setSelectValidatorsModalOpen={setSelectValidatorsModalOpen}
           setState={setState}
           showSelectValidatorsModal={showSelectValidatorsModal}
@@ -840,8 +840,6 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
           chain={chain}
           chainInfo={chainInfo}
           handleEasyStakingModalClose={handleEasyStakingModalClose}
-          // lastFee={lastFee}
-          // decimals={chainInfo?.decimals}
           ledger={ledger}
           nominatedValidators={nominatedValidators}
           selectedValidators={selectedValidators}

@@ -3,7 +3,7 @@
 /* eslint-disable header/header */
 /* eslint-disable react/jsx-max-props-per-line */
 
-import {BubbleChart as BubbleChartIcon}  from '@mui/icons-material';
+import { BubbleChart as BubbleChartIcon } from '@mui/icons-material';
 import { Avatar, Container, Divider, Grid, Link, Paper } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React, { Dispatch, SetStateAction, useCallback } from 'react';
@@ -15,37 +15,36 @@ import Identicon from '@polkadot/react-identicon';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { PlusHeader, Popup, ShortAddress } from '../../components';
 import getLogo from '../../util/getLogo';
-import { ValidatorsName } from '../../util/plusTypes';
+import { ChainInfo,ValidatorsName } from '../../util/plusTypes';
 import { amountToHuman } from '../../util/plusUtils';
 
 interface Props {
   chain: Chain;
-  coin: string;
-  decimals: number;
+  chainInfo: ChainInfo;
   showValidatorInfoModal: boolean;
   setShowValidatorInfoModal: Dispatch<SetStateAction<boolean>>;
   info: DeriveStakingQuery;
   validatorsName: ValidatorsName[];
 }
 
-export default function ValidatorInfo({ chain, coin, decimals, info, setShowValidatorInfoModal, showValidatorInfoModal, validatorsName }: Props): React.ReactElement<Props> {
+export default function ValidatorInfo({ chain, chainInfo, info, setShowValidatorInfoModal, showValidatorInfoModal, validatorsName }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
 
   const chainName = chain?.name.replace(' Relay Chain', '');
   const validatorName = validatorsName.find((v) => v.address === info.accountId.toString());
 
   console.log('info in ValidatorInfo', info)
-    console.log('showValidatorInfoModal in ValidatorInfo', showValidatorInfoModal)
+  console.log('showValidatorInfoModal in ValidatorInfo', showValidatorInfoModal)
 
   const handleDetailsModalClose = useCallback(
     (): void => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       setShowValidatorInfoModal(false);
-    },[setShowValidatorInfoModal]);
+    }, [setShowValidatorInfoModal]);
 
   return (
     <Popup id='scrollArea' showModal={showValidatorInfoModal} handleClose={handleDetailsModalClose}>
-      <PlusHeader action={handleDetailsModalClose} chain={chain} closeText={'Close'} icon={<BubbleChartIcon  fontSize='small' />} title={'Validator Info'} />
+      <PlusHeader action={handleDetailsModalClose} chain={chain} closeText={'Close'} icon={<BubbleChartIcon fontSize='small' />} title={'Validator Info'} />
       <Container sx={{ p: '0px 20px' }}>
         <Grid item xs={12} sx={{ p: 1 }}>
           <Paper elevation={3}>
@@ -70,10 +69,10 @@ export default function ValidatorInfo({ chain, coin, decimals, info, setShowVali
                 <Divider />
               </Grid>
               <Grid item xs={6} sx={{ textAlign: 'left', pl: 3 }}>
-                {t('Own')}{': '}{Number(info?.exposure.own).toLocaleString()} {' '}{coin}
+                {t('Own')}{': '}{Number(info?.exposure.own).toLocaleString()} {' '}{chainInfo?.coin}
               </Grid>
               <Grid item xs={6} sx={{ textAlign: 'right', pr: 3 }}>
-                {t('Total')}{': '}{Number(info?.exposure.total).toLocaleString()}{' '}{coin}
+                {t('Total')}{': '}{Number(info?.exposure.total).toLocaleString()}{' '}{chainInfo?.coin}
               </Grid>
               <Grid item xs={11} sx={{ textAlign: 'left', pt: 1, pl: 3 }}>
                 {t('Commission')}{': '}{info?.validatorPrefs.commission / 10 ** 7}%
@@ -119,7 +118,7 @@ export default function ValidatorInfo({ chain, coin, decimals, info, setShowVali
                   <ShortAddress address={who} charsCount={8} />
                 </Grid>
                 <Grid item xs={5} sx={{ textAlign: 'right' }}>
-                  {Number(amountToHuman(value, decimals)).toLocaleString()} {' '}{coin}
+                  {Number(amountToHuman(value, chainInfo?.decimals)).toLocaleString()} {' '}{chainInfo?.coin}
                 </Grid>
               </Grid>
             </Paper>

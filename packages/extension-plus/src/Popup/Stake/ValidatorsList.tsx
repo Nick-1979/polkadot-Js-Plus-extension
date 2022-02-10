@@ -71,8 +71,7 @@ export default function ValidatorsList({ activeValidator, chain, staker, staking
       {showValidatorInfoModal && info &&
         <ValidatorInfo
           chain={chain}
-          coin={chainInfo?.coin}
-          decimals={chainInfo?.decimals}
+          chainInfo={chainInfo}
           info={info}
           setShowValidatorInfoModal={setShowValidatorInfoModal}
           showValidatorInfoModal={showValidatorInfoModal}

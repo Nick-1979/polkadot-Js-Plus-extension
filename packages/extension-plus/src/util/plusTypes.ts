@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 /* eslint-disable camelcase */
-
 import type { DeriveAccountInfo, DeriveCollectiveProposal, DeriveElectionsInfo, DeriveProposal, DeriveStakingQuery } from '@polkadot/api-derive/types';
 
 import { ApiPromise } from '@polkadot/api';
+import { Balance } from '@polkadot/types/interfaces';
 
 export interface TransactionStatus {
   blockNumber: string | null;
@@ -218,7 +218,14 @@ export interface ProposalsInfo {
   minimumDeposit?: string;
 }
 
-export interface Conviction{
+export interface Conviction {
   text: string;
   value: number
+}
+
+type TransactionType = 'chill' | 'bond' | 'unbond' | 'nominate' | 'bondExtra' | 'slashingSpans' | 'withdrawUnbonded';
+
+export interface TransactionFee {
+  transactionType: TransactionType;
+  estimatedFee: Balance;
 }

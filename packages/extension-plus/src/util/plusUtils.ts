@@ -175,17 +175,17 @@ export function remainingTime(currentBlockNumber: number, end: number): string {
 }
 
 
-function splitSingle (value: string[], sep: string): string[] {
+function splitSingle(value: string[], sep: string): string[] {
   return value.reduce((result: string[], value: string): string[] => {
     return value.split(sep).reduce((result: string[], value: string) => result.concat(value), result);
   }, []);
 }
 
-function splitParts (value: string): string[] {
+function splitParts(value: string): string[] {
   return ['[', ']'].reduce((result: string[], sep) => splitSingle(result, sep), [value]);
 }
 
-export function formatMeta (meta?: Meta): string [] {
+export function formatMeta(meta?: Meta): string[] {
   if (!meta || !meta.docs.length) {
     return null;
   }
@@ -206,4 +206,19 @@ export function toShortAddress(_address: string | AccountId): string {
   _address = String(_address);
 
   return `${_address.slice(0, 6)} ...  ${_address.slice(-6)}`;
+}
+
+export const isEqual = (a1: any[] | null, a2: any[] | null): boolean => {
+  if (!a1 && !a2) {
+    return true;
+  }
+
+  if (!(a1 || a2)) {
+    return false;
+  }
+
+  const a1Sorted = a1?.slice().sort();
+  const a2Sorted = a2?.slice().sort();
+
+  return JSON.stringify(a1Sorted) === JSON.stringify(a2Sorted);
 }
