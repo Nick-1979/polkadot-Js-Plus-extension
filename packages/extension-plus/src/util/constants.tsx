@@ -29,7 +29,7 @@ export const RELAY_CHAINS = [
 ];
 
 export const SUPPORTED_CHAINS = ['Polkadot', 'Kusama', 'Westend'];
-export const STAKING_ACTIONS = ['bond', 'unbond', 'bond_extra', 'nominate', 'redeem', 'stop_nominating'];
+export const STAKING_ACTIONS = ['bond', 'unbond', 'bond_extra', 'nominate', 'redeem', 'stop_nominating', 'chill'];
 export const STATES_NEEDS_MESSAGE = ['withdrawUnbound', 'unstake', 'stopNominating'];
 
 export const DEFAULT_IDENTITY = {
