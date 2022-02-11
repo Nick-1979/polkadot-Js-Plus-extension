@@ -1,7 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { Add as AddIcon, AddCircleOutline as AddCircleOutlineIcon, CallMade as CallMadeIcon, CallReceived as CallReceivedIcon, Check as CheckIcon, Link as LinkIcon, NotificationsNone as NotificationsNoneIcon, Redeem as RedeemIcon, Remove as RemoveIcon, StopCircle as StopCircleIcon } from '@mui/icons-material';
+import { AcUnit as AcUnitIcon, Add as AddIcon, AddCircleOutline as AddCircleOutlineIcon, CallMade as CallMadeIcon, CallReceived as CallReceivedIcon, Check as CheckIcon, Link as LinkIcon, NotificationsNone as NotificationsNoneIcon, Redeem as RedeemIcon, Remove as RemoveIcon, StopCircle as StopCircleIcon } from '@mui/icons-material';
 import React from 'react';
 
 export function getTxIcon(action: string): React.ReactNode {
@@ -45,6 +45,11 @@ export function getTxIcon(action: string): React.ReactNode {
       return <StopCircleIcon
         fontSize='small'
         sx={{ color: 'black' }}
+      />;
+    case ('chill'):
+      return <AcUnitIcon
+        fontSize='small'
+        sx={{ color: '#e2e7ba' }}
       />;
     case ('link'):
       return <LinkIcon
