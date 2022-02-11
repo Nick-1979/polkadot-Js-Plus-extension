@@ -26,7 +26,6 @@ import { PASS_MAP, STATES_NEEDS_MESSAGE } from '../../util/constants';
 import { AccountsBalanceType, ChainInfo, StakingConsts, TransactionDetail, ValidatorsName } from '../../util/plusTypes';
 import { amountToHuman, getSubstrateAddress, getTransactionHistoryFromLocalStorage, isEqual, prepareMetaData } from '../../util/plusUtils';
 import ValidatorsList from './ValidatorsList';
-import { ContentCutOutlined } from '@mui/icons-material';
 
 interface Props {
   chain?: Chain | null;
@@ -73,11 +72,13 @@ export default function ConfirmStaking({ amount, chain, chainInfo, handleEasySta
   const redeem = chainInfo?.api.tx.staking.withdrawUnbonded;
   const bonding = currentlyStaked ? bondExtra : bond;
 
-  async function saveHistory(chain: Chain | null, hierarchy: AccountWithChildren[], address: string, currentTransactionDetail: TransactionDetail): Promise<boolean> {
+  async function saveHistory(chain: Chain | null, hierarchy: AccountWithChildren[], address: string, history: TransactionDetail[]): Promise<boolean> {
+    if (!chain || !history.length) return;
+
     const accountSubstrateAddress = getSubstrateAddress(address);
     const savedHistory: TransactionDetail[] = getTransactionHistoryFromLocalStorage(chain, hierarchy, accountSubstrateAddress);
 
-    savedHistory.push(currentTransactionDetail);
+    savedHistory.push(...history);
 
     return updateMeta(accountSubstrateAddress, prepareMetaData(chain, 'history', savedHistory));
   }
@@ -145,13 +146,19 @@ export default function ConfirmStaking({ amount, chain, chainInfo, handleEasySta
         params = [amount];
 
         // eslint-disable-next-line no-void
-        void unbonded(...params).paymentInfo(staker.address).then((i) => setEstimatedFee(i?.partialFee));
+        void unbonded(...params).paymentInfo(staker.address).then((i) => {
+          const fee = i?.partialFee;
+
+          if (amount === currentlyStaked) {
+            // eslint-disable-next-line no-void
+            void chilled().paymentInfo(staker.address).then((j) => setEstimatedFee((fee.add(j?.partialFee) as Balance)));
+          } else { setEstimatedFee(fee); }
+        });
         setTotalStakedInHuman(amountToHuman((currentlyStaked - amount).toString(), chainInfo?.decimals));
         break;
       case ('stopNominating'):
         // eslint-disable-next-line no-void
         void chilled().paymentInfo(staker.address).then((i) => setEstimatedFee(i?.partialFee));
-        // setTotalStakedInHuman(amountToHuman((currentlyStaked).toString(), chainInfo?.decimals));
         break;
       case ('changeValidators'):
         params = [selectedValidatorsAccountId];
@@ -160,15 +167,12 @@ export default function ConfirmStaking({ amount, chain, chainInfo, handleEasySta
         void nominated(...params).paymentInfo(staker.address).then((i) => setEstimatedFee(i?.partialFee));
         break;
       case ('withdrawUnbound'):
-        params = [100];
+        params = [100]; /** a dummy number */
 
         // eslint-disable-next-line no-void
         void redeem(...params).paymentInfo(staker.address).then((i) => setEstimatedFee(i?.partialFee));
-        // setTotalStakedInHuman(amountToHuman((currentlyStaked).toString(), chainInfo?.decimals));
         break;
       default:
-      // setTotalStakedInHuman(amountToHuman((currentlyStaked).toString(), chainInfo?.decimals));
-      // break;
     }
   }, [amount, currentlyStaked, chainInfo, state, confirmingState, staker.address, bonding, bondExtra, unbonded, chilled, selectedValidatorsAccountId, nominatedValidatorsId, nominated, redeem]);
 
@@ -238,52 +242,48 @@ export default function ConfirmStaking({ amount, chain, chainInfo, handleEasySta
 
   const handleConfirm = async (): Promise<void> => {
     const localState = state;
+    const history: TransactionDetail[] = []; /** collect all records to save in the local history at the end */
 
     try {
       setConfirmingState('confirming');
-      // const { api } = await getChainInfo(chain);
 
       const signer = keyring.getPair(staker.address);
 
       signer.unlock(password);
       setPasswordStatus(PASS_MAP.CORRECT);
-      const alreadyBondedAmount = BigInt(String(ledger?.total));
+      const alreadyBondedAmount = BigInt(String(ledger?.total)); // TODO: double check it, it might be ledger?.active but works if unstacked in this era
 
       if (['stakeAuto', 'stakeManual', 'stakeKeepNominated'].includes(localState) && amount !== 0n) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         const { block, failureText, fee, status, txHash } = await bondOrBondExtra(chain, staker.address, signer, amount, alreadyBondedAmount);
 
         console.log('bond Result,', status);
 
-        const history: TransactionDetail = {
+        history.push({
           action: alreadyBondedAmount ? 'bond_extra' : 'bond',
           amount: amountToHuman(String(amount), chainInfo?.decimals),
-          date: Date.now(),
           block: block,
+          date: Date.now(),
           fee: fee || '',
           from: staker.address,
           hash: txHash || '',
           status: failureText || status,
           to: ''
-        };
-
-        if (chain) {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          await saveHistory(chain, hierarchy, staker.address, history);
-        }
+        });
 
         if (status === 'failed' || localState === 'stakeKeepNominated') {
           setConfirmingState(status);
+
+          // eslint-disable-next-line no-void
+          void saveHistory(chain, hierarchy, staker.address, history);
 
           return;
         }
       }
 
       if (['changeValidators', 'stakeAuto', 'stakeManual'].includes(localState)) {
-
-        if (['stakeAuto'].includes(localState)) {
-          if (!selectedValidators) {
-            console.log('! there is no selectedValidators to bond at Stakeauto, so might do bondExtera');
+        if (localState === 'stakeAuto') {
+          if (!selectedValidators) { // TODO: does it realy happen!
+            console.log('! there is no selectedValidators to bond at StakeAuto, so might do bondExtera');
 
             if (alreadyBondedAmount) {
               setConfirmingState('success');
@@ -303,35 +303,9 @@ export default function ConfirmStaking({ amount, chain, chainInfo, handleEasySta
           }
         }
 
-        if (['stakeManual'].includes(localState)) { // TODO: more check!!
-          if (!selectedValidatorsAccountId) {
-            console.log('selectedValidatorsAccountId is empty!!');
-            setConfirmingState('failed');
-
-            return;
-          }
-        }
-
-        if (['changeValidators'].includes(localState)) {
-          if (!selectedValidatorsAccountId) {
-            console.log('! there is no selectedValidatorsAccountId to changeValidators');
-            setConfirmingState('failed');
-
-            return;
-          }
-
-          // if (isEqual(selectedValidatorsAccountId, nominatedValidatorsId)) {
-          //   console.log('the selected and previously nominated validators are the same, no need to renominate');
-
-          //   setConfirmingState('failed');
-
-          //   return;
-          // }
-        }
-
         const { block, failureText, fee, status, txHash } = await nominate(chain, staker.address, signer, selectedValidatorsAccountId);
 
-        const history: TransactionDetail = {
+        history.push({
           action: 'nominate',
           amount: '',
           block: block,
@@ -341,23 +315,17 @@ export default function ConfirmStaking({ amount, chain, chainInfo, handleEasySta
           hash: txHash || '',
           status: failureText || status,
           to: ''
-        };
+        });
 
-        if (chain) {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          saveHistory(chain, hierarchy, staker.address, history);
-        }
-
-        console.log('nominateResult,', status);
         setConfirmingState(status);
       }
 
       if (localState === 'unstake' && amount > 0n) {
         if (amount === currentlyStaked) {
-          // if unstaking all, should chill first
+          /**  if unstaking all, should chill first */
           const { failureText, fee, status, txHash } = await chill(chain, staker.address, signer);
 
-          const history: TransactionDetail = {
+          history.push({
             action: 'chill',
             amount: '',
             date: Date.now(),
@@ -366,25 +334,22 @@ export default function ConfirmStaking({ amount, chain, chainInfo, handleEasySta
             hash: txHash || '',
             status: failureText || status,
             to: ''
-          };
-
-          if (chain) {
-            // eslint-disable-next-line no-void
-            void saveHistory(chain, hierarchy, staker.address, history);
-          }
+          });
 
           if (state === 'failed') {
             console.log('chilling failed:', failureText);
             setConfirmingState(status);
 
+            // eslint-disable-next-line no-void
+            void saveHistory(chain, hierarchy, staker.address, history);
+
             return;
           }
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         const { block, failureText, fee, status, txHash } = await unbond(chain, staker.address, signer, amount);
 
-        const history: TransactionDetail = {
+        history.push({
           action: 'unbond',
           amount: amountToHuman(String(amount), chainInfo?.decimals),
           block: block,
@@ -394,12 +359,7 @@ export default function ConfirmStaking({ amount, chain, chainInfo, handleEasySta
           hash: txHash || '',
           status: failureText || status,
           to: ''
-        };
-
-        if (chain) {
-          // eslint-disable-next-line no-void
-          void saveHistory(chain, hierarchy, staker.address, history);
-        }
+        });
 
         console.log('unbond:', status);
         setConfirmingState(status);
@@ -411,9 +371,7 @@ export default function ConfirmStaking({ amount, chain, chainInfo, handleEasySta
 
         const { block, failureText, fee, status, txHash } = await broadcast(chainInfo.api, redeem, [spanCount || 0], signer);
 
-        // const { block, failureText, fee, status, txHash } = await withdrawUnbonded(chain, staker.address, signer);
-
-        const history: TransactionDetail = {
+        history.push({
           action: 'redeem',
           amount: amountToHuman(String(amount), chainInfo?.decimals),
           block: block,
@@ -423,22 +381,16 @@ export default function ConfirmStaking({ amount, chain, chainInfo, handleEasySta
           hash: txHash || '',
           status: failureText || status,
           to: ''
-        };
-
-        if (chain) {
-          // eslint-disable-next-line no-void
-          void saveHistory(chain, hierarchy, staker.address, history);
-        }
+        });
 
         console.log('withdrawUnbound:', status);
         setConfirmingState(status);
       }
 
       if (localState === 'stopNominating') {
-
         const { block, failureText, fee, status, txHash } = await broadcast(chainInfo.api, chilled, [], signer);
 
-        const history: TransactionDetail = {
+        history.push({
           action: 'stop_nominating',
           block: block,
           date: Date.now(),
@@ -447,16 +399,14 @@ export default function ConfirmStaking({ amount, chain, chainInfo, handleEasySta
           hash: txHash || '',
           status: failureText || status,
           to: ''
-        };
-
-        if (chain) {
-          // eslint-disable-next-line no-void
-          void saveHistory(chain, hierarchy, staker.address, history);
-        }
+        });
 
         console.log('withdrawUnbound:', status);
         setConfirmingState(status);
       }
+
+      // eslint-disable-next-line no-void
+      void saveHistory(chain, hierarchy, staker.address, history);
     } catch (e) {
       console.log('error:', e);
       setPasswordStatus(PASS_MAP.INCORRECT);

@@ -50,23 +50,23 @@ export default function Unstake({ alert, coin, currentlyStakedInHuman, unstakeAm
           variant='outlined'
         />
       </Grid>
-      {ledger?.total &&
-        <Grid container item justifyContent='flex-end' sx={{ padding: '0px 30px 10px' }} xs={12}>
-          <Grid item sx={{ fontSize: 12 }}>
-            {Number(ledger?.active) &&
-              <>
-                {t('Max')}:
-                <MuiButton
-                  onClick={handleMaxUnstakeClicked}
-                  variant='text'
-                >
-                  {`${String(currentlyStakedInHuman)} ${coin}`}
-                </MuiButton>
-              </>
-            }
-          </Grid>
+      {/* {!!ledger?.total && */}
+      <Grid container item justifyContent='flex-end' sx={{ padding: '0px 30px 10px' }} xs={12}>
+        <Grid item sx={{ fontSize: 12 }}>
+          {!!ledger?.active &&
+            <>
+              {t('Max')}:
+              <MuiButton
+                onClick={handleMaxUnstakeClicked}
+                variant='text'
+              >
+                {`${String(currentlyStakedInHuman)} ${coin}`}
+              </MuiButton>
+            </>
+          }
         </Grid>
-      }
+      </Grid>
+      {/* } */}
       <Grid container item sx={{ fontSize: 13, fontWeight: '600', padding: '5px 30px 5px', textAlign: 'center' }} xs={12}>
         {alert
           ? <Grid item xs={12}>
