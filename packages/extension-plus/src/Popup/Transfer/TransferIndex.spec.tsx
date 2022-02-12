@@ -18,8 +18,9 @@ import Extension from '../../../../extension-base/src/background/handlers/Extens
 import State, { AuthUrls } from '../../../../extension-base/src/background/handlers/State';
 import { AccountsStore } from '../../../../extension-base/src/stores';
 import { AccountsBalanceType, BalanceType } from '../../util/plusTypes';
-import { amountToMachine, balanceToHuman } from '../../util/plusUtils';
+import { amountToMachine, balanceToHuman, amountToHuman } from '../../util/plusUtils';
 import TransferFund from './index';
+import getChainInfo from '../../util/getChainInfo';
 
 jest.setTimeout(50000);
 
@@ -52,20 +53,27 @@ const sender: AccountsBalanceType | null = {
   name: 'Amir khan'
 };
 
-const recepientAddress = '5HEbNn6F37c9oW8E9PnnVnZBkCvz8ucjTbAQLi5H1goDqEbA';
+const recepientAddress = '5FbSap4BsWfjyRhCchoVdZHkDnmDm3NEgLZ25mesq4aw2WvX';
 
-const makeShortAddress = (address: string) => {
-  return address.slice(0, 4) + '...' + address.slice(-4);
-};
-
-describe('Testing TransferFund component while mocked', () => {
+describe('Testing TransferFund index', () => {
   const invalidAddress = 'bela bela bela';
   const availableBalance = balanceToHuman(sender, 'available');
 
   let rendered;
-  const transferAmount = 0.1;
+  const transferAmountInHuman = '0.1';
+  const transferAmount = amountToMachine(transferAmountInHuman, decimals);
   const invalidAmount = 1000;
-  const fee = 0.0161;
+  let fee;
+
+
+  beforeAll(async () => {
+    const { api } = await getChainInfo(sender.chain)
+    const transfer = api.tx.balances.transfer;
+
+    // eslint-disable-next-line no-void
+    const { partialFee } = await transfer(sender.address, transferAmount).paymentInfo(sender.address);
+    fee = partialFee.toBigInt();
+  });
 
   beforeEach(() => {
     rendered = render(
@@ -105,43 +113,26 @@ describe('Testing TransferFund component while mocked', () => {
     expect(screen.queryByTestId('nextButton').children.item(0).hasAttribute('disabled')).toBe(true);
   });
 
-  test('Checking component functionality with valid address and valid amount', () => {
+  test('Checking component functionality with valid address and valid amount', async () => {
     fireEvent.change(screen.queryByLabelText('Recipient'), { target: { value: recepientAddress } });
-    fireEvent.change(screen.queryByLabelText('Transfer Amount'), { target: { value: transferAmount } });
+    fireEvent.change(screen.queryByLabelText('Transfer Amount'), { target: { value: transferAmountInHuman } });
     expect(screen.queryByTestId('nextButton').children.item(0).textContent).toEqual('Next');
     expect(screen.queryByTestId('nextButton').children.item(0).hasAttribute('disabled')).toBe(false);
 
     expect(screen.queryByTestId('allButton').children.item(0).textContent).toEqual('All');
     expect(screen.queryByTestId('safeMaxButton').children.item(0).textContent).toEqual('Safe max');
-
     fireEvent.click(screen.queryByTestId('nextButton').children.item(0));
-
-    expect(screen.queryAllByText('transfer of')).toHaveLength(1);
-    expect(screen.queryAllByText(sender.name)).toHaveLength(1);
-    expect(screen.queryAllByText(makeShortAddress(recepientAddress))).toHaveLength(1);
-
-    expect(screen.queryByTestId('infoInMiddle').children.item(0).children.item(1).textContent).toEqual(`${transferAmount}${balanceInfo.coin}`);
-    expect(screen.queryByTestId('infoInMiddle').children.item(1).children.item(1).textContent).toEqual(fee + 'estimated');
-    expect(screen.queryByTestId('infoInMiddle').children.item(3).children.item(0).textContent).toEqual('Total');
-    expect(screen.queryByTestId('infoInMiddle').children.item(3).children.item(2).textContent).toEqual(parseFloat(String(transferAmount + fee)).toFixed(4) + 'WND');
-
-    expect(screen.queryAllByLabelText('Password')).toHaveLength(1);
-    fireEvent.change(screen.queryByLabelText('Password'), { target: { value: '123456' } });
-
-    expect(screen.queryAllByText('Confirm')).toHaveLength(1);
-    fireEvent.click(screen.queryByText('Confirm'));
-    expect(screen.queryAllByText('Password is not correct')).toHaveLength(1);
-    // correct password will be checked while accounts are real
+    expect(screen.queryAllByText('Confirm Transfer')).toHaveLength(1);
   });
 });
 
-describe('Testing transferFund with real account (Note: account must have some fund to transfer)', () => {
+describe('Testing transferFund with real account', () => {
   let extension: Extension;
   let state: State;
   let realSender: AccountsBalanceType | null;
   let secondAddress;
-  const firstSuri = 'seed sock milk update focus rotate barely fade car face mechanic mercy';
-  const secondSuri = 'inspire erosion chalk grant decade photo ribbon custom quality sure exhaust detail';
+  let firstSuri = 'seed sock milk update focus rotate barely fade car face mechanic mercy';
+  let secondSuri = 'inspire erosion chalk grant decade photo ribbon custom quality sure exhaust detail';
   const password = 'passw0rd';
   const type = 'sr25519';
   const westendGenesisHash = '0xe143f23803ac50e8f6f8e62695d1ce9e4e1d68aa36c1cd2cfd15340213f3423e';
@@ -180,7 +171,6 @@ describe('Testing transferFund with real account (Note: account must have some f
   };
 
   beforeAll(async () => {
-   //[firstSuri, secondSuri] = [secondSuri, firstSuri]; //uncommenct this when test fails due to insufficient balance
     extension = await createExtension();
     const firstAddress = await createAccount(firstSuri);
 
@@ -205,26 +195,19 @@ describe('Testing transferFund with real account (Note: account must have some f
     );
   });
 
-  test('transfering balance using All button', async () => {
+  test('checking All button', async () => {
     fireEvent.change(screen.queryByLabelText('Recipient'), { target: { value: secondAddress } });
     expect(screen.queryByTestId('allButton').children.item(0).textContent).toEqual('All');
     fireEvent.click(screen.queryByTestId('allButton').children.item(0).children.item(0));
+
     await waitFor(() => expect(screen.queryByTestId('nextButton').children.item(0).hasAttribute('disabled')).toBe(false), { timeout: 10000 });// wait enough to receive fee from blockchain
 
     fireEvent.click(screen.queryByTestId('nextButton').children.item(0));
-
-    expect(screen.queryAllByLabelText('Password')).toHaveLength(1);
-    fireEvent.change(screen.queryByLabelText('Password'), { target: { value: password } });
-
-    expect(screen.queryAllByTestId('confirmButton')).toHaveLength(1);
-    expect(screen.queryByTestId('confirmButton').textContent).toEqual('Confirm');
-    fireEvent.click(screen.queryByText('Confirm'));
-
-    expect(screen.queryAllByText('Password is not correct')).toHaveLength(0);
-    await waitFor(() => expect(screen.queryByTestId('confirmButton').textContent).toEqual('Done'), { timeout: 30000 }); // wait enough to recive the transaction confirm from blockchain
+    expect(screen.queryAllByText('Confirm Transfer')).toHaveLength(1);
   });
 
-  test('transfering balance using Safe max button', async () => {
+
+  test('checking Safe max button', async () => {
     fireEvent.change(screen.queryByLabelText('Recipient'), { target: { value: secondAddress } });
 
     expect(screen.queryByTestId('safeMaxButton').children.item(0).textContent).toEqual('Safe max');
@@ -232,15 +215,6 @@ describe('Testing transferFund with real account (Note: account must have some f
     await waitFor(() => expect(screen.queryByTestId('nextButton').children.item(0).hasAttribute('disabled')).toBe(false), { timeout: 10000 });
 
     fireEvent.click(screen.queryByTestId('nextButton').children.item(0));
-
-    expect(screen.queryAllByLabelText('Password')).toHaveLength(1);
-    fireEvent.change(screen.queryByLabelText('Password'), { target: { value: password } });
-
-    expect(screen.queryAllByTestId('confirmButton')).toHaveLength(1);
-    expect(screen.queryByTestId('confirmButton').textContent).toEqual('Confirm');
-    fireEvent.click(screen.queryByText('Confirm'));
-
-    expect(screen.queryAllByText('Password is not correct')).toHaveLength(0);
-    await waitFor(() => expect(screen.queryByTestId('confirmButton').textContent).toEqual('Done'), { timeout: 30000 });
+    expect(screen.queryAllByText('Confirm Transfer')).toHaveLength(1);
   });
 });
