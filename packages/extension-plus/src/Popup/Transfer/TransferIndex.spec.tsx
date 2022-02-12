@@ -1,13 +1,9 @@
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/* The following address needs to have some westy to pass the last test */
-/* 5FbSap4BsWfjyRhCchoVdZHkDnmDm3NEgLZ25mesq4aw2WvX */
-/* may need to uncomment a line at the last describe too */
-
 import '@polkadot/extension-mocks/chrome';
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, RenderResult, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -18,9 +14,8 @@ import Extension from '../../../../extension-base/src/background/handlers/Extens
 import State, { AuthUrls } from '../../../../extension-base/src/background/handlers/State';
 import { AccountsStore } from '../../../../extension-base/src/stores';
 import { AccountsBalanceType, BalanceType } from '../../util/plusTypes';
-import { amountToMachine, balanceToHuman, amountToHuman } from '../../util/plusUtils';
+import { amountToMachine, balanceToHuman } from '../../util/plusUtils';
 import TransferFund from './index';
-import getChainInfo from '../../util/getChainInfo';
 
 jest.setTimeout(50000);
 
@@ -59,21 +54,9 @@ describe('Testing TransferFund index', () => {
   const invalidAddress = 'bela bela bela';
   const availableBalance = balanceToHuman(sender, 'available');
 
-  let rendered;
+  let rendered: RenderResult<typeof import('@testing-library/dom/types/queries'), HTMLElement>;
   const transferAmountInHuman = '0.1';
-  const transferAmount = amountToMachine(transferAmountInHuman, decimals);
   const invalidAmount = 1000;
-  let fee;
-
-
-  beforeAll(async () => {
-    const { api } = await getChainInfo(sender.chain)
-    const transfer = api.tx.balances.transfer;
-
-    // eslint-disable-next-line no-void
-    const { partialFee } = await transfer(sender.address, transferAmount).paymentInfo(sender.address);
-    fee = partialFee.toBigInt();
-  });
 
   beforeEach(() => {
     rendered = render(
@@ -113,7 +96,7 @@ describe('Testing TransferFund index', () => {
     expect(screen.queryByTestId('nextButton').children.item(0).hasAttribute('disabled')).toBe(true);
   });
 
-  test('Checking component functionality with valid address and valid amount', async () => {
+  test('Checking component functionality with valid address and valid amount', () => {
     fireEvent.change(screen.queryByLabelText('Recipient'), { target: { value: recepientAddress } });
     fireEvent.change(screen.queryByLabelText('Transfer Amount'), { target: { value: transferAmountInHuman } });
     expect(screen.queryByTestId('nextButton').children.item(0).textContent).toEqual('Next');
@@ -130,9 +113,9 @@ describe('Testing transferFund with real account', () => {
   let extension: Extension;
   let state: State;
   let realSender: AccountsBalanceType | null;
-  let secondAddress;
-  let firstSuri = 'seed sock milk update focus rotate barely fade car face mechanic mercy';
-  let secondSuri = 'inspire erosion chalk grant decade photo ribbon custom quality sure exhaust detail';
+  let secondAddress: string;
+  const firstSuri = 'seed sock milk update focus rotate barely fade car face mechanic mercy';
+  const secondSuri = 'inspire erosion chalk grant decade photo ribbon custom quality sure exhaust detail';
   const password = 'passw0rd';
   const type = 'sr25519';
   const westendGenesisHash = '0xe143f23803ac50e8f6f8e62695d1ce9e4e1d68aa36c1cd2cfd15340213f3423e';
@@ -205,7 +188,6 @@ describe('Testing transferFund with real account', () => {
     fireEvent.click(screen.queryByTestId('nextButton').children.item(0));
     expect(screen.queryAllByText('Confirm Transfer')).toHaveLength(1);
   });
-
 
   test('checking Safe max button', async () => {
     fireEvent.change(screen.queryByLabelText('Recipient'), { target: { value: secondAddress } });

@@ -13,7 +13,7 @@ import Details from './Details';
 const chain = {
   name: 'westend'
 };
-const coin = 'WND'
+const coin = 'WND';
 const decimals = 12;
 
 const transaction = {
