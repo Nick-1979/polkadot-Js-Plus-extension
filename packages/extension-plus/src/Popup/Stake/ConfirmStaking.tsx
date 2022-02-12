@@ -46,6 +46,7 @@ interface Props {
   validatorsToList: DeriveStakingQuery[] | null;
 }
 
+
 export default function ConfirmStaking({ amount, chain, chainInfo, handleEasyStakingModalClose, ledger, nominatedValidators, selectedValidators, setConfirmStakingModalOpen, setSelectValidatorsModalOpen, setState, showConfirmStakingModal, staker, stakingConsts, state, validatorsName, validatorsToList }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { hierarchy } = useContext(AccountContext);
@@ -433,7 +434,10 @@ export default function ConfirmStaking({ amount, chain, chainInfo, handleEasySta
       case ('withdrawUnbound'):
         return <Typography sx={{ m: '5px 0px 5px' }} variant='h6'>
           {t('Available balance after redeem ')}<br />
-          {estimatedFee ? amountToHuman(String(BigInt(amount + staker.balanceInfo.available) - estimatedFee.toBigInt()), chainInfo?.decimals) : ''}{' '} {chainInfo?.coin}
+          {amount
+            ? estimatedFee ? amountToHuman(String(BigInt(amount + staker.balanceInfo.available) - estimatedFee.toBigInt()), chainInfo?.decimals) : ''
+            : estimatedFee ? amountToHuman(String(staker.balanceInfo.available), chainInfo?.decimals) : ''}
+          {' '} {chainInfo?.coin}
         </Typography>;
       case ('stopNominating'):
         return <Typography sx={{ m: '30px 0px 30px' }} variant='h6'>
@@ -506,7 +510,7 @@ export default function ConfirmStaking({ amount, chain, chainInfo, handleEasySta
                 {!ledger
                   ? <Skeleton sx={{ display: 'inline-block', fontWeight: '600', width: '60px' }} />
                   : <>
-                    {totalStakedInHuman}
+                    {totalStakedInHuman !== '0' ? totalStakedInHuman : '0.00'}
                   </>
                 }
                 {/* {' '}{chainInfo?.coin} */}

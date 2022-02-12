@@ -214,6 +214,7 @@ export default function VTable({ activeValidator, setInfo, setShowValidatorInfoM
   }
 
   const handleMoreInfo = (info: DeriveStakingQuery) => {
+    console.log('setting info and modal to true');
     setShowValidatorInfoModal(true);
     setInfo(info);
   };

@@ -11,7 +11,7 @@ import { AccountWithChildren } from '@polkadot/extension-base/background/types';
 import { Chain } from '@polkadot/extension-chains/types';
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
-import { BLOCK_RATE, FLOATING_POINT_DIGIT } from './constants';
+import { BLOCK_RATE, FLOATING_POINT_DIGIT, SHORT_ADDRESS_CHARACTERS } from './constants';
 import { AccountsBalanceType, savedMetaData, TransactionDetail } from './plusTypes';
 
 interface Meta {
@@ -202,10 +202,10 @@ export function formatMeta(meta?: Meta): string[] {
   return parts;
 }
 
-export function toShortAddress(_address: string | AccountId): string {
-  _address = String(_address);
+export function toShortAddress(address: string | AccountId, count = SHORT_ADDRESS_CHARACTERS): string {
+  address = String(address);
 
-  return `${_address.slice(0, 6)} ...  ${_address.slice(-6)}`;
+  return `${address.slice(0, count)}...${address.slice(-1 * count)}`;
 }
 
 export const isEqual = (a1: any[] | null, a2: any[] | null): boolean => {

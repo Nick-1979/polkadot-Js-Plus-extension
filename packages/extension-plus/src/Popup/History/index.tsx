@@ -4,7 +4,7 @@
 
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { AllInclusive as AllInclusiveIcon, History as HistoryIcon, SwapVert as SwapVertIcon, TrendingUp as TrendingUpIcon } from '@mui/icons-material';
+import { AllInclusive as AllInclusiveIcon, ChevronRight as ChevronRightIcon, History as HistoryIcon, SwapVert as SwapVertIcon, TrendingUp as TrendingUpIcon } from '@mui/icons-material';
 import { Box, Container, Divider, Grid, Link, Tab, Tabs } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useReducer, useRef, useState } from 'react';
@@ -213,13 +213,11 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
       <PlusHeader action={handleTxHistoryModalClose} chain={chain} closeText={'Close'} icon={<HistoryIcon fontSize='small' />} title={'Transaction History'} />
 
       <Grid item xs={12} sx={{ paddingBottom: '10px' }}>
-        <Box>
-          <Tabs textColor='secondary' indicatorColor='secondary' variant='fullWidth' value={tabValue} onChange={handleTabChange}>
-            <Tab icon={<AllInclusiveIcon fontSize='small' />} iconPosition='start' label='All' sx={{ fontSize: 10 }} value={TAB_MAP.ALL} />
-            <Tab icon={<SwapVertIcon fontSize='small' />} iconPosition='start' label='Transfers' sx={{ fontSize: 10 }} value={TAB_MAP.TRANSFERS} />
-            <Tab icon={<TrendingUpIcon fontSize='small' />} iconPosition='start' label='Staking' sx={{ fontSize: 10 }} value={TAB_MAP.STAKING} />
-          </Tabs>
-        </Box>
+        <Tabs textColor='secondary' indicatorColor='secondary' variant='fullWidth' value={tabValue} onChange={handleTabChange}>
+          <Tab icon={<AllInclusiveIcon fontSize='small' />} iconPosition='start' label='All' sx={{ fontSize: 10 }} value={TAB_MAP.ALL} />
+          <Tab icon={<SwapVertIcon fontSize='small' />} iconPosition='start' label='Transfers' sx={{ fontSize: 10 }} value={TAB_MAP.TRANSFERS} />
+          <Tab icon={<TrendingUpIcon fontSize='small' />} iconPosition='start' label='Staking' sx={{ fontSize: 10 }} value={TAB_MAP.STAKING} />
+        </Tabs>
       </Grid>
 
       <Container id='scrollArea' data-testid='scrollArea' sx={{ textAlign: 'center', padding: '0px 30px 5px', height: '450px', overflowY: 'auto' }}>
@@ -242,9 +240,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
                   {h.action === 'send' && h.to && <>{t('To:')} {' '} {makeAddressShort(h.to)}</>}
                   {h.action === 'receive' && h.from && <>{t('From:')} {' '}{makeAddressShort(h.from)}</>}
                   {STAKING_ACTIONS.includes(h.action) && h.from && <>{t('From:')} {' '}{makeAddressShort(h.from)}</>}
-
                 </Grid>
-
                 <Grid item xs={6} sx={{ textAlign: 'center' }}>
                   {new Date(h.date).toDateString()}{' '}{new Date(h.date).toLocaleTimeString()}
                 </Grid>
@@ -254,14 +250,7 @@ export default function TransactionHistory({ address, chain, name, setTxHistoryM
               </Grid>
             </Grid>
             <Grid item xs={1} sx={{ textAlign: 'right' }}>
-              <Link href='#'>
-                <FontAwesomeIcon
-                  color={grey[500]}
-                  icon={faAngleRight}
-                  onClick={() => handleShowTxDetail(h)}
-                  size='lg'
-                />
-              </Link>
+                <ChevronRightIcon sx={{ color: grey[500], cursor:'pointer'}} onClick={() => handleShowTxDetail(h)} />
             </Grid>
             <Grid item xs={12}>
               <Divider light />

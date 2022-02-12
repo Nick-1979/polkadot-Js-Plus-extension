@@ -597,11 +597,10 @@ export default function TransferFunds({ chain, chainInfo, givenType, sender, set
           </Grid>
           {recepient
             ? <ConfirmTx
+              chainInfo={chainInfo}
               availableBalance={availableBalance}
               chain={chain}
-              coin={coin}
               confirmModalOpen={confirmModalOpen}
-              decimals={decimals}
               handleTransferModalClose={handleTransferModalClose}
               lastFee={estimatedFee}
               recepient={recepient}

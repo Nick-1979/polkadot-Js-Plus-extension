@@ -24,19 +24,19 @@ import Hint from '../../components/Hint';
 import getFee from '../../util/api/getFee';
 import signAndTransfer from '../../util/api/signAndTransfer';
 import { PASS_MAP } from '../../util/constants';
-import { AccountsBalanceType, TransactionDetail, TransactionStatus } from '../../util/plusTypes';
-import { amountToHuman, fixFloatingPoint, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData } from '../../util/plusUtils';
+import { AccountsBalanceType, ChainInfo, TransactionDetail, TransactionStatus } from '../../util/plusTypes';
+import { amountToHuman, fixFloatingPoint, getSubstrateAddress, getTransactionHistoryFromLocalStorage, prepareMetaData, toShortAddress } from '../../util/plusUtils';
 
 interface Props {
   availableBalance: string;
   actions?: React.ReactNode;
+  chainInfo: ChainInfo;
   sender: AccountsBalanceType;
   recepient: AccountsBalanceType;
   chain?: Chain | null;
   children?: React.ReactNode;
   className?: string;
   confirmModalOpen: boolean;
-  decimals: number;
   setConfirmModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   genesisHash?: string | null;
   isExternal?: boolean | null;
@@ -48,13 +48,11 @@ interface Props {
   toggleActions?: number;
   type?: KeypairType;
   transferAmount: bigint;
-  coin: string;
   handleTransferModalClose: any;
 }
 
-export default function ConfirmTx({ availableBalance, chain, coin, confirmModalOpen, decimals, handleTransferModalClose, lastFee, recepient, sender, setConfirmModalOpen, transferAmount }: Props): React.ReactElement<Props> {
+export default function ConfirmTx({ availableBalance, chain, chainInfo, confirmModalOpen, handleTransferModalClose, lastFee, recepient, sender, setConfirmModalOpen, transferAmount }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-  const network = chain ? chain.name.replace(' Relay Chain', '') : 'westend';
 
   const [newFee, setNewFee] = useState<Balance | null>();
   const [total, setTotal] = useState<string | null>(null);
@@ -68,9 +66,11 @@ export default function ConfirmTx({ availableBalance, chain, coin, confirmModalO
   const { hierarchy } = useContext(AccountContext);
   const [state, setState] = useState<string>('');
 
+  const transfer = chainInfo?.api.tx.balances.transfer;
+
   useEffect(() => {
-    setTransferAmountInHuman(amountToHuman(String(transferAmount), decimals));
-  }, [chain, decimals, transferAmount]);
+    setTransferAmountInHuman(amountToHuman(String(transferAmount), chainInfo?.decimals));
+  }, [chain, chainInfo?.decimals, transferAmount]);
 
   async function saveHistory(chain: Chain, hierarchy: AccountWithChildren[], address: string, currentTransactionDetail: TransactionDetail): Promise<boolean> {
     const accountSubstrateAddress = getSubstrateAddress(address);
@@ -97,7 +97,7 @@ export default function ConfirmTx({ availableBalance, chain, coin, confirmModalO
 
       const currentTransactionDetail: TransactionDetail = {
         action: 'send',
-        amount: amountToHuman(String(transferAmount), decimals),
+        amount: amountToHuman(String(transferAmount), chainInfo?.decimals),
         block: block,
         date: Date.now(),
         fee: fee || '',
@@ -120,15 +120,15 @@ export default function ConfirmTx({ availableBalance, chain, coin, confirmModalO
 
   useEffect(() => {
     setNewFee(lastFee);
-  }, [decimals, lastFee]);
+  }, [lastFee]);
 
   useEffect(() => {
     if (!newFee) return;
 
-    const total = (Number(newFee) + Number(transferAmount)) / (10 ** decimals);
+    const total = (Number(newFee) + Number(transferAmount)) / (10 ** chainInfo?.decimals);
 
     setTotal(fixFloatingPoint(total));
-  }, [decimals, newFee, transferAmount]);
+  }, [chainInfo?.decimals, newFee, transferAmount]);
 
   useEffect(() => {
     setFailAlert(Number(total) > Number(availableBalance));
@@ -142,9 +142,7 @@ export default function ConfirmTx({ availableBalance, chain, coin, confirmModalO
       // fontStyle='oblique'
       // fontWeight='fontWeightBold'
       >
-        {_address.slice(0, 4) +
-          '...' +
-          _address.slice(-4)}
+        {toShortAddress(_address)}
       </Box>
     );
   }
@@ -175,30 +173,24 @@ export default function ConfirmTx({ availableBalance, chain, coin, confirmModalO
     handleTransferModalClose();
   }
 
-  const refreshNetworkFee = (): void => {
+  const refreshNetworkFee = async (): Promise<void> => {
     setNewFee(null);
     const localConfirmDisabled = confirmDisabled;
-
     setConfirmDisabled(true);
 
-    const pairKey = keyring.getPair(String(sender.address));
+    const { partialFee } = await transfer(sender.address, 1 * 10 ** chainInfo?.decimals).paymentInfo(sender.address);
+    if (!partialFee) {
+      console.log('fee is NULL');
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    getFee(pairKey, String(recepient.address), BigInt(transferAmount), chain)
-      .then((f) => {
-        if (!f) {
-          console.log('fee is NULL');
+      return;
+    }
 
-          return;
-        }
+    const t = transferAmount + partialFee.toBigInt();
+    const fixedPointTotal = fixFloatingPoint(Number(t) / (10 ** chainInfo?.decimals));
 
-        const t = transferAmount + BigInt(f);
-        const fixedPointTotal = fixFloatingPoint(Number(t) / (10 ** decimals));
-
-        setNewFee(f);
-        setTotal(fixedPointTotal);
-        setConfirmDisabled(localConfirmDisabled);
-      });
+    setNewFee(partialFee);
+    setTotal(fixedPointTotal);
+    setConfirmDisabled(localConfirmDisabled);
   };
 
   // function disable(flag: boolean) {
@@ -210,7 +202,7 @@ export default function ConfirmTx({ availableBalance, chain, coin, confirmModalO
 
   const addressWithIdenticon = (name: string | null, address: string): React.ReactElement => (
     <>
-      <Grid item xs={4}>
+      <Grid item xs={3}>
         <Identicon
           prefix={chain?.ss58Format ?? 42}
           size={40}
@@ -253,7 +245,7 @@ export default function ConfirmTx({ availableBalance, chain, coin, confirmModalO
               {transferAmountInHuman}
             </Grid>
             <Grid item>
-              {coin}
+              {chainInfo?.coin}
             </Grid>
           </Grid>
         </Grid>
@@ -276,7 +268,7 @@ export default function ConfirmTx({ availableBalance, chain, coin, confirmModalO
             </Grid>
           </Grid>
           <Grid item xs={6} sx={{ fontSize: 13, textAlign: 'right' }}>
-            {amountToHuman(newFee?.toString(), decimals) || <CircularProgress color='inherit' thickness={1} size={20} />}
+            {amountToHuman(newFee?.toString(), chainInfo?.decimals) || <CircularProgress color='inherit' thickness={1} size={18} />}
             <Box fontSize={11} sx={{ color: 'gray' }}>
               {newFee ? 'estimated' : 'estimating'}
             </Box>
@@ -300,7 +292,7 @@ export default function ConfirmTx({ availableBalance, chain, coin, confirmModalO
               {total || ' ... '}
             </Grid>
             <Grid item>
-              {coin}
+              {chainInfo?.coin}
             </Grid>
           </Grid>
         </Grid>

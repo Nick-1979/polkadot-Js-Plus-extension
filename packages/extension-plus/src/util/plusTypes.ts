@@ -57,7 +57,10 @@ export interface ValidatorsName {
   name: string;
 }
 
-export interface savedMetaData { chainName: string; metaData: any }
+export interface savedMetaData {
+  chainName: string;
+  metaData: any
+}
 
 export interface ValidatorsFromSubscan {
   bonded_nominators: string;

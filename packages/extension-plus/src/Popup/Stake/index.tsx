@@ -5,7 +5,7 @@
 
 import type { StakingLedger } from '@polkadot/types/interfaces';
 
-import { AddCircleOutlineOutlined, CheckOutlined, InfoOutlined, NotificationsActive as NotificationsActiveIcon, Redeem as RedeemIcon, RemoveCircleOutlineOutlined, ReportOutlined as ReportOutlinedIcon, ReportProblemOutlined,TrendingUp as TrendingUpIcon  } from '@mui/icons-material';
+import { AddCircleOutlineOutlined, CheckOutlined, InfoOutlined, NotificationsActive as NotificationsActiveIcon, Redeem as RedeemIcon, RemoveCircleOutlineOutlined, ReportOutlined as ReportOutlinedIcon, ReportProblemOutlined, TrendingUp as TrendingUpIcon } from '@mui/icons-material';
 import { Box, CircularProgress, Grid, IconButton, Paper, Skeleton, Tab, Tabs, Typography } from '@mui/material';
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 
@@ -675,7 +675,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
 
   return (
     <Popup handleClose={handleEasyStakingModalClose} showModal={showStakingModal}>
-      <PlusHeader action={handleEasyStakingModalClose} chain={chain} closeText={'Close'} icon={<TrendingUpIcon  fontSize='small' />} title={'Easy Staking'} />
+      <PlusHeader action={handleEasyStakingModalClose} chain={chain} closeText={'Close'} icon={<TrendingUpIcon fontSize='small' />} title={'Easy Staking'} />
 
       <Grid alignItems='center' container>
         <Grid alignItems='center' container item justifyContent='center' xs={12}>
@@ -689,7 +689,7 @@ export default function EasyStaking({ account, chain, setStakingModalOpen, showS
                   <b> {t('Staked')}: </b> {!ledger
                     ? <Skeleton sx={{ display: 'inline-block', fontWeight: '600', width: '60px' }} />
                     : <Box component='span' sx={{ fontWeight: 600 }}>
-                      {currentlyStakedInHuman || '0.00'}
+                      {currentlyStakedInHuman !== '0' ? currentlyStakedInHuman : '0.00'}
                     </Box>
                   }
                 </Grid>

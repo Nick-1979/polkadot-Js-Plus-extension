@@ -227,36 +227,14 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
   };
 
   return (
-    <Toolbar
-      sx={{
-        borderRadius: '5px',
-        pl: { sm: 2 },
-        pr: { sm: 1, xs: 1 },
-        ...(numSelected > 0 && {
-          bgcolor: (theme) =>
-            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity)
-        })
-      }}
-    >
+    <Toolbar sx={{ borderRadius: '5px', pl: { sm: 2 }, pr: { sm: 1, xs: 1 }, ...(numSelected > 0 && { bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity) }) }}>
       {numSelected > 0
-        ? (
-          <Typography
-            color='inherit'
-            component='div'
-            sx={{ fontSize: 15, fontWeight: 'bold', flex: '1 1 100%' }}
-          >
-            {numSelected}/{stakingConsts?.maxNominations} selected
-          </Typography>
-        )
-        : (
-          <Typography
-            component='div'
-            id='tableTitle'
-            sx={{ fontSize: 15, fontWeight: 'bold', flex: '1 1 100%' }}
-          >
-            Select Validators
-          </Typography>
-        )
+        ? <Typography color='inherit' component='div' sx={{ fontSize: 15, fontWeight: 'bold', flex: '1 1 100%' }} >
+          {numSelected}/{stakingConsts?.maxNominations} selected
+        </Typography>
+        : <Typography component='div' id='tableTitle' sx={{ fontSize: 15, fontWeight: 'bold', flex: '1 1 100%' }}>
+          Select Validators
+        </Typography>
       }
       <TextField
         autoComplete='off'
@@ -274,20 +252,18 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
         sx={{ fontSize: 12 }}
       />
       {numSelected > 0
-        ? (
-          <Tooltip title='Delete'>
-            <IconButton onClick={() => setSelected([])}>
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-        )
-        : (
-          <Tooltip title='Filter list'>
-            <IconButton>
-              <FilterListIcon />
-            </IconButton>
-          </Tooltip>
-        )
+        ?
+        <Tooltip title='Delete'>
+          <IconButton onClick={() => setSelected([])}>
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+        :
+        <Tooltip title='Filter list'>
+          <IconButton>
+            <FilterListIcon />
+          </IconButton>
+        </Tooltip>
       }
     </Toolbar>
   );
@@ -404,7 +380,6 @@ function EnhancedTable({ chain, chainInfo, nominatedValidators, searchedValidato
                       aria-checked={isItemSelected}
                       hover
                       key={index}
-                      // onClick={(event) => handleClick(event, row)}
                       role='checkbox'
                       selected={isItemSelected}
                       style={{ backgroundColor: rowBackground, height: 30 }}
