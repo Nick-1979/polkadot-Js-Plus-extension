@@ -15,7 +15,11 @@ import keyring from '@polkadot/ui-keyring';
 import { assert } from '@polkadot/util';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 
-console.log('hello I am background js');
+// Listen for install event, set callback
+self.addEventListener('install', function (event) {
+  // Perform some task
+  console.log('service worker is installed', event);
+});
 
 // setup the notification (same a FF default background, white text)
 withErrorLog(() => chrome.browserAction.setBadgeBackgroundColor({ color: '#d90000' }));
@@ -30,6 +34,7 @@ chrome.runtime.onConnect.addListener((port): void => {
   port.onDisconnect.addListener(() => console.log(`Disconnected from ${port.name}`));
 });
 
+console.log('initializing crypto ...');
 // initial setup
 cryptoWaitReady()
   .then((): void => {
