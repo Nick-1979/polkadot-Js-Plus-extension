@@ -27,6 +27,8 @@ interface Handler {
 
 type Handlers = Record<string, Handler>;
 
+console.log('messaging')
+
 const port = chrome.runtime.connect({ name: PORT_EXTENSION });
 const handlers: Handlers = {};
 
@@ -63,6 +65,7 @@ function sendMessage<TMessageType extends MessageTypes> (message: TMessageType, 
 
     handlers[id] = { reject, resolve, subscriber };
 
+    console.log('sending essage', port);
     port.postMessage({ id, message, request: request || {} });
   });
 }

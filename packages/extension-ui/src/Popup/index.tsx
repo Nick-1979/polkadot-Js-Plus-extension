@@ -38,6 +38,22 @@ import RestoreJson from './RestoreJson';
 import Signing from './Signing';
 import Welcome from './Welcome';
 
+// added for plus
+import { cryptoWaitReady } from '@polkadot/util-crypto';
+import keyring from '@polkadot/ui-keyring';
+import { AccountsStore } from '@polkadot/extension-base/stores';
+import { MESSAGE_ORIGIN_CONTENT, MESSAGE_ORIGIN_PAGE, PORT_CONTENT } from '@polkadot/extension-base/defaults';
+import type { Message } from '@polkadot/extension-base/types';
+import { extractGlobal, xglobal } from '@polkadot/x-global';
+import { createView } from '@polkadot/extension-ui';
+import type { RequestSignatures, TransportRequestMessage } from '@polkadot/extension-base/background/types';
+import { enable, handleResponse, redirectIfPhishing } from '@polkadot/extension-base/page';
+import { injectExtension } from '@polkadot/extension-inject';
+
+// import { packageInfo } from './packageInfo';
+
+export const chrome = extractGlobal('chrome', xglobal.browser);
+
 const startSettings = uiSettings.get();
 
 // Request permission for video, based on access we can hide/show import
@@ -68,6 +84,92 @@ function initAccountContext(accounts: AccountJson[]): AccountsContext {
   };
 }
 
+chrome.runtime.onStartup.addListener(() => {
+
+  function inject() {
+    injectExtension(enable, {
+      name: 'polkadot-js',
+      version: 'packageInfo.version'
+    });
+  }
+
+  // setup a response listener (events created by the loader for extension responses)
+  window.addEventListener('message', ({ data, source }: Message): void => {
+    // only allow messages from our window, by the loader
+    if (source !== window || data.origin !== MESSAGE_ORIGIN_CONTENT) {
+      return;
+    }
+
+    if (data.id) {
+      handleResponse(data as TransportRequestMessage<keyof RequestSignatures>);
+    } else {
+      console.error('Missing id for response.');
+    }
+  });
+
+  redirectIfPhishing().then((gotRedirected) => {
+    if (!gotRedirected) {
+      inject();
+    }
+  }).catch((e) => {
+    console.warn(`Unable to determine if the site is in the phishing list: ${(e as Error).message}`);
+    inject();
+  });
+
+
+
+  createView(Popup);
+
+  // run startup function
+  console.log('hii');
+
+  cryptoWaitReady()
+    .then((): void => {
+      console.log('crypto initialized');
+
+      // load all the keyring data
+      keyring.loadAll({ store: new AccountsStore(), type: 'sr25519' });
+
+      console.log('initialization completed');
+    })
+    .catch((error): void => {
+      console.error('initialization failed', error);
+    });
+
+
+  // connect to the extension
+  const port = chrome.runtime.connect({ name: PORT_CONTENT });
+
+  // send any messages from the extension back to the page
+  port.onMessage.addListener((data): void => {
+    window.postMessage({ ...data, origin: MESSAGE_ORIGIN_CONTENT }, '*');
+  });
+
+  // all messages from the page, pass them to the extension
+  window.addEventListener('message', ({ data, source }: Message): void => {
+    // only allow messages from our window, by the inject
+    if (source !== window || data.origin !== MESSAGE_ORIGIN_PAGE) {
+      return;
+    }
+
+    port.postMessage(data);
+  });
+
+  // inject our data injector
+  const script = document.createElement('script');
+
+  script.src = chrome.extension.getURL('page.js');
+
+  script.onload = (): void => {
+    // remove the injecting tag when loaded
+    if (script.parentNode) {
+      script.parentNode.removeChild(script);
+    }
+  };
+
+  (document.head || document.documentElement).appendChild(script);
+});
+
 export default function Popup(): React.ReactElement {
   const [accounts, setAccounts] = useState<null | AccountJson[]>(null);
   const [accountCtx, setAccountCtx] = useState<AccountsContext>({ accounts: [], hierarchy: [] });
@@ -78,6 +180,8 @@ export default function Popup(): React.ReactElement {
   const [signRequests, setSignRequests] = useState<null | SigningRequest[]>(null);
   const [isWelcomeDone, setWelcomeDone] = useState(false);
   const [settingsCtx, setSettingsCtx] = useState<SettingsStruct>(startSettings);
+
+
 
   const _onAction = useCallback(
     (to?: string): void => {
@@ -130,6 +234,11 @@ export default function Popup(): React.ReactElement {
           ? wrapWithErrorBoundary(<Signing />, 'signing')
           : wrapWithErrorBoundary(<Accounts />, 'accounts')
     : wrapWithErrorBoundary(<Welcome />, 'welcome');
+
+  console.log('accountsaccounts', accounts);
+  console.log('authRequests', authRequests);
+  console.log('metaRequests', metaRequests);
+  console.log('signRequests', signRequests);
 
   return (
     <Loading>{accounts && authRequests && metaRequests && signRequests && (
