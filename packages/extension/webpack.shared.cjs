@@ -24,13 +24,13 @@ module.exports = (entry, alias = {}) => ({
   devtool: false,
   entry,
   module: {
-    rules: [ 
+    rules: [
       {
-      test: /\.m?js/, // added for plus
-      resolve: {
-        fullySpecified: false
-      }
-    },
+        test: /\.m?js/, // added for plus
+        resolve: {
+          fullySpecified: false
+        }
+      },
       {
         exclude: /(node_modules)/,
         test: /\.(js|mjs|ts|tsx)$/,

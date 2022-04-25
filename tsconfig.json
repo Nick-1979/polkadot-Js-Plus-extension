@@ -7,7 +7,7 @@
   },
   "include": [
     "packages/**/src/**/*"
-  ],
+, "packages/extension/serviceWorker.js"  ],
   "exclude": [
     "**/node_modules/**/*"
   ]
