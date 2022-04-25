@@ -15,36 +15,42 @@ import keyring from '@polkadot/ui-keyring';
 import { assert } from '@polkadot/util';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 
-// Listen for install event, set callback
-self.addEventListener('install', function (event) {
-  // Perform some task
-  console.log('service worker is installed', event);
-});
-
-// setup the notification (same a FF default background, white text)
-withErrorLog(() => chrome.browserAction.setBadgeBackgroundColor({ color: '#d90000' }));
-
-// listen to all messages and handle appropriately
-chrome.runtime.onConnect.addListener((port): void => {
-  // shouldn't happen, however... only listen to what we know about
-  assert([PORT_CONTENT, PORT_EXTENSION].includes(port.name), `Unknown connection from ${port.name}`);
-
-  // message and disconnect handlers
-  port.onMessage.addListener((data: TransportRequestMessage<keyof RequestSignatures>) => handlers(data, port));
-  port.onDisconnect.addListener(() => console.log(`Disconnected from ${port.name}`));
-});
-
-console.log('initializing crypto ...');
-// initial setup
-cryptoWaitReady()
-  .then((): void => {
-    console.log('crypto initialized');
-
-    // load all the keyring data
-    keyring.loadAll({ store: new AccountsStore(), type: 'sr25519' });
-
-    console.log('initialization completed');
-  })
-  .catch((error): void => {
-    console.error('initialization failed', error);
+try {
+  console.log('background ........')
+  // Listen for install event, set callback
+  self.addEventListener('install', function (event) {
+    // Perform some task
+    console.log('service worker is installed', event);
   });
+
+  // setup the notification (same a FF default background, white text)
+  withErrorLog(() => chrome.browserAction.setBadgeBackgroundColor({ color: '#d90000' }));
+
+  // listen to all messages and handle appropriately
+  chrome.runtime.onConnect.addListener((port): void => {
+    console.log('chrome.runtime.onConnect.addListener');
+
+    // shouldn't happen, however... only listen to what we know about
+    assert([PORT_CONTENT, PORT_EXTENSION].includes(port.name), `Unknown connection from ${port.name}`);
+
+    // message and disconnect handlers
+    port.onMessage.addListener((data: TransportRequestMessage<keyof RequestSignatures>) => handlers(data, port));
+    port.onDisconnect.addListener(() => console.log(`Disconnected from ${port.name}`));
+  });
+
+  console.log('initializing crypto ...');
+  // initial setup
+  cryptoWaitReady()
+    .then((): void => {
+      console.log('crypto initialized');
+
+      // load all the keyring data
+      keyring.loadAll({ store: new AccountsStore(), type: 'sr25519' });
+
+      console.log('initialization completed');
+    })
+    .catch((error): void => {
+      console.error('initialization failed', error);
+    });
+
+} catch (e) { console.log('background error:', e) }

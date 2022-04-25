@@ -84,91 +84,94 @@ function initAccountContext(accounts: AccountJson[]): AccountsContext {
   };
 }
 
-chrome.runtime.onStartup.addListener(() => {
-
-  function inject() {
-    injectExtension(enable, {
-      name: 'polkadot-js',
-      version: 'packageInfo.version'
-    });
-  }
-
-  // setup a response listener (events created by the loader for extension responses)
-  window.addEventListener('message', ({ data, source }: Message): void => {
-    // only allow messages from our window, by the loader
-    if (source !== window || data.origin !== MESSAGE_ORIGIN_CONTENT) {
-      return;
-    }
-
-    if (data.id) {
-      handleResponse(data as TransportRequestMessage<keyof RequestSignatures>);
-    } else {
-      console.error('Missing id for response.');
-    }
-  });
-
-  redirectIfPhishing().then((gotRedirected) => {
-    if (!gotRedirected) {
-      inject();
-    }
-  }).catch((e) => {
-    console.warn(`Unable to determine if the site is in the phishing list: ${(e as Error).message}`);
-    inject();
-  });
 
 
 
-  createView(Popup);
+// chrome.runtime.onStartup.addListener(() => {
 
-  // run startup function
-  console.log('hii');
+//   function inject() {
+//     injectExtension(enable, {
+//       name: 'polkadot-js',
+//       version: 'packageInfo.version'
+//     });
+//   }
 
-  cryptoWaitReady()
-    .then((): void => {
-      console.log('crypto initialized');
+//   // setup a response listener (events created by the loader for extension responses)
+//   window.addEventListener('message', ({ data, source }: Message): void => {
+//     // only allow messages from our window, by the loader
+//     if (source !== window || data.origin !== MESSAGE_ORIGIN_CONTENT) {
+//       return;
+//     }
 
-      // load all the keyring data
-      keyring.loadAll({ store: new AccountsStore(), type: 'sr25519' });
+//     if (data.id) {
+//       handleResponse(data as TransportRequestMessage<keyof RequestSignatures>);
+//     } else {
+//       console.error('Missing id for response.');
+//     }
+//   });
 
-      console.log('initialization completed');
-    })
-    .catch((error): void => {
-      console.error('initialization failed', error);
-    });
+//   redirectIfPhishing().then((gotRedirected) => {
+//     if (!gotRedirected) {
+//       inject();
+//     }
+//   }).catch((e) => {
+//     console.warn(`Unable to determine if the site is in the phishing list: ${(e as Error).message}`);
+//     inject();
+//   });
 
 
-  // connect to the extension
-  const port = chrome.runtime.connect({ name: PORT_CONTENT });
 
-  // send any messages from the extension back to the page
-  port.onMessage.addListener((data): void => {
-    window.postMessage({ ...data, origin: MESSAGE_ORIGIN_CONTENT }, '*');
-  });
+//   createView(Popup);
 
-  // all messages from the page, pass them to the extension
-  window.addEventListener('message', ({ data, source }: Message): void => {
-    // only allow messages from our window, by the inject
-    if (source !== window || data.origin !== MESSAGE_ORIGIN_PAGE) {
-      return;
-    }
+//   // run startup function
+//   console.log('hii');
 
-    port.postMessage(data);
-  });
+//   cryptoWaitReady()
+//     .then((): void => {
+//       console.log('crypto initialized');
 
-  // inject our data injector
-  const script = document.createElement('script');
+//       // load all the keyring data
+//       keyring.loadAll({ store: new AccountsStore(), type: 'sr25519' });
 
-  script.src = chrome.extension.getURL('page.js');
+//       console.log('initialization completed');
+//     })
+//     .catch((error): void => {
+//       console.error('initialization failed', error);
+//     });
 
-  script.onload = (): void => {
-    // remove the injecting tag when loaded
-    if (script.parentNode) {
-      script.parentNode.removeChild(script);
-    }
-  };
 
-  (document.head || document.documentElement).appendChild(script);
-});
+//   // connect to the extension
+//   const port = chrome.runtime.connect({ name: PORT_CONTENT });
+
+//   // send any messages from the extension back to the page
+//   port.onMessage.addListener((data): void => {
+//     window.postMessage({ ...data, origin: MESSAGE_ORIGIN_CONTENT }, '*');
+//   });
+
+//   // all messages from the page, pass them to the extension
+//   window.addEventListener('message', ({ data, source }: Message): void => {
+//     // only allow messages from our window, by the inject
+//     if (source !== window || data.origin !== MESSAGE_ORIGIN_PAGE) {
+//       return;
+//     }
+
+//     port.postMessage(data);
+//   });
+
+//   // inject our data injector
+//   const script = document.createElement('script');
+
+//   script.src = chrome.runtime.getURL('page.js');
+
+//   script.onload = (): void => {
+//     // remove the injecting tag when loaded
+//     if (script.parentNode) {
+//       script.parentNode.removeChild(script);
+//     }
+//   };
+
+//   (document.head || document.documentElement).appendChild(script);
+// });
 
 export default function Popup(): React.ReactElement {
   const [accounts, setAccounts] = useState<null | AccountJson[]>(null);
