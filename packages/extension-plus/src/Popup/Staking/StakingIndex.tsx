@@ -8,14 +8,13 @@
  *  this component provides access to allstaking stuff,including stake,
  *  unstake, redeem, change validators, staking generak info,etc.
  * */
-
 import type { StakingLedger } from '@polkadot/types/interfaces';
-import { grey } from '@mui/material/colors';
-import { WorkspacesOutlined as WorkspacesOutlinedIcon, CircleOutlined as CircleOutlinedIcon } from '@mui/icons-material';
+
 import { faCoins } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { AddCircleOutlineOutlined, CheckOutlined, InfoOutlined as InfoOutlinedIcon, NotificationImportantOutlined as NotificationImportantOutlinedIcon, NotificationsActive as NotificationsActiveIcon, RemoveCircleOutlineOutlined, ReportOutlined as ReportOutlinedIcon } from '@mui/icons-material';
-import { Badge, Box, CircularProgress, Grid, Paper, Tab, Tabs } from '@mui/material';
+import { AddCircleOutlineOutlined, CheckOutlined, CircleOutlined as CircleOutlinedIcon, Help as HelpIcon, InfoOutlined as InfoOutlinedIcon, NotificationImportantOutlined as NotificationImportantOutlinedIcon, NotificationsActive as NotificationsActiveIcon, RemoveCircleOutlineOutlined, ReportOutlined as ReportOutlinedIcon, WorkspacesOutlined as WorkspacesOutlinedIcon } from '@mui/icons-material';
+import { Badge, Box, CircularProgress, Grid, IconButton, Paper, Tab, Tabs } from '@mui/material';
+import { grey } from '@mui/material/colors';
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { ApiPromise } from '@polkadot/api';
@@ -37,12 +36,12 @@ import ConfirmStaking from './ConfirmStaking';
 import InfoTab from './InfoTab';
 import Nominations from './Nominations';
 import Overview from './Overview';
+import Pools from './Pools';
 import RewardChart from './RewardChart';
 import SelectValidators from './SelectValidators';
 import Stake from './Stake';
 import TabPanel from './TabPanel';
 import Unstake from './Unstake';
-import Pools from './Pools';
 
 interface Props {
   account: AccountJson,
@@ -64,7 +63,7 @@ interface RewardInfo {
 
 const workers: Worker[] = [];
 
-BigInt.prototype.toJSON = function () { return this.toString() };
+BigInt.prototype.toJSON = function () { return this.toString(); };
 
 export default function StakingIndex({ account, api, chain, ledger, redeemable, setStakingModalOpen, showStakingModal, staker }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
@@ -314,6 +313,7 @@ export default function StakingIndex({ account, api, chain, ledger, redeemable, 
       if (rewardsFromSubscan?.length) {
         setRewardSlashes((getRewardsSlashes) => getRewardsSlashes.concat(rewardsFromSubscan));
       }
+
       console.log('rewards from subscan:', r);
     });
   }, [api, chainName, staker.address]);
@@ -624,7 +624,7 @@ export default function StakingIndex({ account, api, chain, ledger, redeemable, 
       <PlusHeader action={handleEasyStakingModalClose} chain={chain} closeText={'Close'} icon={<FontAwesomeIcon icon={faCoins} size='sm' />} title={'Easy Staking'} />
 
       <Grid alignItems='center' container justifyContent='space-around' sx={{ pt: 4 }}>
-        <Paper elevation={4} sx={{ borderRadius: '10px', height: 200, pt: 1, width: '46%', cursor:'pointer' }}>
+        <Paper elevation={4} sx={{ borderRadius: '10px', height: 200, pt: 1, width: '46%', cursor: 'pointer', position: 'relative' }}>
           <Grid container justifyContent='center' sx={{ fontSize: 16, fontWeight: 700 }}>
             <Grid item>
               <p>{t('Solo staking')}</p>
@@ -634,12 +634,15 @@ export default function StakingIndex({ account, api, chain, ledger, redeemable, 
             </Grid>
           </Grid>
 
-          <Grid container justifyContent='center' sx={{ fontSize: 14, fontWeight: 500, px: 2 }} color={grey[500]}>
+          <Grid color={grey[500]} container justifyContent='center' sx={{ fontSize: 14, fontWeight: 500, px: 2 }}>
             {t('Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown')}
           </Grid>
+          <IconButton href='https://wiki.polkadot.network/docs/learn-staking' target={'_blank'} sx={{ position: 'absolute', top: 5, right: 5, zIndex: 10 }}>
+            <HelpIcon />
+          </IconButton>
         </Paper>
 
-        <Paper elevation={4} sx={{ borderRadius: '10px', height: 200, pt: 1, width: '46%', cursor:'pointer' }} onClick={() => setPoolStakingOpen(true)}>
+        <Paper elevation={4} onClick={() => setPoolStakingOpen(true)} sx={{ borderRadius: '10px', height: 200, pt: 1, width: '46%', cursor: 'pointer', position: 'relative' }}>
           <Grid container justifyContent='center' sx={{ fontSize: 16, fontWeight: 700 }}>
             <Grid item>
               <p>{t('Pool staking')}</p>
@@ -649,9 +652,22 @@ export default function StakingIndex({ account, api, chain, ledger, redeemable, 
             </Grid>
           </Grid>
 
-          <Grid container justifyContent='center' sx={{ fontSize: 14, fontWeight: 500, px: 2 }} color={grey[500]}>
-            {t('Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown')}
+          <Grid color={grey[500]} container justifyContent='center' sx={{ fontSize: 14, fontWeight: 500, px: 2 }}>
+            <Grid item xs={12}>
+              {t('Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs.')}
+            </Grid>
+            <Grid color={grey[700]} container justifyContent='space-between' sx={{ p: 2 }} xs={12}>
+              <Grid item>
+                {t('Pools:')}
+              </Grid>
+              <Grid item>
+                {/* createdPools}/{maxpools} */}{'16 /256'}
+              </Grid>
+            </Grid>
           </Grid>
+          <IconButton href='https://wiki.polkadot.network/docs/learn-staking' target={'_blank'} sx={{ position: 'absolute', top: 5, right: 5, zIndex: 10 }}>
+            <HelpIcon />
+          </IconButton>
         </Paper>
       </Grid>
 
