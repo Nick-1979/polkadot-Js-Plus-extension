@@ -3,10 +3,11 @@
 
 import '@polkadot/extension-mocks/chrome';
 
-import { render, screen } from '@testing-library/react';
+import { Matcher, render, screen } from '@testing-library/react';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import { amountToHuman } from '../../util/plusUtils';
 import { makeShortAddr } from '../../util/test/testHelper';
 import Details from './Details';
 
@@ -39,23 +40,25 @@ describe('Testing Details component', () => {
       decimals={decimals}
       showDetailModal={true}
       transaction={transaction}
-    />);
+    />
+  );
 
   test('Checking the existence of elements', () => {
-    expect(screen.queryAllByText('Transaction Detail')).toHaveLength(1);
-
-    const detailAction = screen.queryByTestId('details')?.children.item(0)?.children.item(0)?.children.item(0)?.children.item(0)?.textContent;
-    const detailStatus = screen.queryByTestId('details')?.children.item(0)?.children.item(0)?.children.item(0)?.children.item(1)?.textContent;
-    const detailDate = screen.queryByTestId('details')?.children.item(0)?.children.item(0)?.children.item(0)?.children.item(3)?.textContent;
-    const detailAmount = screen.queryByTestId('details')?.children.item(2)?.children.item(0)?.children.item(0)?.children.item(1)?.textContent;
-    const detailFrom = screen.queryByTestId('details')?.children.item(2)?.children.item(0)?.children.item(0)?.children.item(3)?.children.item(0)?.textContent;
-    const detailTo = screen.queryByTestId('details')?.children.item(2)?.children.item(0)?.children.item(0)?.children.item(5)?.children.item(0)?.textContent;
-
-    expect(detailAction).toEqual(transaction.action.toUpperCase());
-    expect(detailStatus).toEqual((transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)));
-    expect(detailDate).toEqual(`${new Date(transaction.date).toDateString()} ${new Date(transaction.date).toLocaleTimeString()}`);
-    expect(detailAmount).toEqual(`${transaction.amount}  ${coin}`);
-    expect(detailFrom).toEqual(makeShortAddr(transaction.from));
-    expect(detailTo).toEqual(makeShortAddr(transaction.to));
+    expect(screen.queryByText('Transaction Detail')).toBeTruthy();
+    expect(screen.queryByText(transaction.action.toUpperCase())).toBeTruthy();
+    expect(screen.queryByText((transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)))).toBeTruthy();
+    expect(screen.queryByText(`${new Date(transaction.date).toDateString()} ${new Date(transaction.date).toLocaleTimeString()}`)).toBeTruthy();
+    expect(screen.queryByText('Amount')).toBeTruthy();
+    expect(screen.queryByText(`${transaction.amount} ${coin}`)).toBeTruthy();
+    expect(screen.queryByText('From')).toBeTruthy();
+    expect(screen.queryByText(makeShortAddr(transaction.from) as Matcher)).toBeTruthy();
+    expect(screen.queryByText('To')).toBeTruthy();
+    expect(screen.queryByText(makeShortAddr(transaction.to) as Matcher)).toBeTruthy();
+    expect(screen.queryByText('Fees')).toBeTruthy();
+    expect(screen.queryByText(`${amountToHuman(transaction.fee, decimals, 6)} ${coin}`)).toBeTruthy();
+    expect(screen.queryByText('Block')).toBeTruthy();
+    expect(screen.queryByText(`# ${transaction.block}`)).toBeTruthy();
+    expect(screen.queryByText('Hash')).toBeTruthy();
+    expect(screen.queryByText(makeShortAddr(transaction.hash) as Matcher)).toBeTruthy();
   });
 });

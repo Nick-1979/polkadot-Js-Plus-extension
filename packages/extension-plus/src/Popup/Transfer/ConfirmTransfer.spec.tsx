@@ -7,7 +7,7 @@
 
 import '@polkadot/extension-mocks/chrome';
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, Matcher, render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -27,8 +27,8 @@ ReactDOM.createPortal = jest.fn((modal) => modal);
 const props = {
   address: '5HEbNn6F37c9oW8E9PnnVnZBkCvz8ucjTbAQLi5H1goDqEbA',
   chain: {
-    name: 'westend',
-    icon: 'westend'
+    icon: 'westend',
+    name: 'westend'
   },
   formattedAddress: '5HEbNn6F37c9oW8E9PnnVnZBkCvz8ucjTbAQLi5H1goDqEbA',
   givenType: 'ethereum',
@@ -41,7 +41,7 @@ const availableBalanceInHuman = 0.15; // WND
 const balanceInfo: BalanceType = {
   available: amountToMachine(availableBalanceInHuman.toString(), decimals),
   coin: 'WND',
-  decimals: decimals,
+  decimals,
   total: amountToMachine(availableBalanceInHuman.toString(), decimals)
 };
 
@@ -64,13 +64,13 @@ let chainInfo: ChainInfo;
 describe('ConfirmTransfer for Successful Scenario (Note: account must have some fund to transfer)', () => {
   beforeAll(async () => {
     extension = await createExtension();
-    chainInfo = await getChainInfo(props.chain.name);
+    chainInfo = await getChainInfo(props.chain.name) as ChainInfo;
     firstAddress = await createAccount(firstSuri, extension);
     secondAddress = await createAccount(secondSuri, extension);
 
     sender = {
       address: firstAddress,
-      balanceInfo: balanceInfo,
+      balanceInfo,
       chain: 'westend',
       name: 'Amir khan'
     };
@@ -78,24 +78,21 @@ describe('ConfirmTransfer for Successful Scenario (Note: account must have some 
     recepient = {
       address: secondAddress,
       chain: 'westend',
-      name: ''
+      name: 'AmirEF'
     };
 
     availableBalance = balanceToHuman(sender, 'available');
-    const { api } = await getChainInfo(sender.chain);
-    const transfer = api.tx.balances.transfer;
-
-    const { partialFee } = await transfer(sender.address, transferAmount).paymentInfo(sender.address);
-
-    fee = partialFee;
+    await chainInfo.api.tx.balances.transfer(sender.address, transferAmount).paymentInfo(sender.address).then((i) => {
+      fee = i.partialFee;
+    });
   });
 
   beforeEach(() => {
     render(
       <ConfirmTransfer
+        api={chainInfo.api}
         availableBalance={availableBalance}
         chain={props.chain}
-        api={chainInfo.api}
         confirmModalOpen={true}
         lastFee={fee}
         recepient={recepient}
@@ -104,11 +101,16 @@ describe('ConfirmTransfer for Successful Scenario (Note: account must have some 
       />
     );
   });
+  afterEach(() => {
+    cleanup();
+  });
 
   test('Successfull Scenario', async () => {
-    expect(screen.queryAllByText('Confirm Transfer')).toHaveLength(1);
-    expect(screen.queryAllByText(sender.name)).toHaveLength(1);
-    expect(screen.queryAllByText(toShortAddress(recepient.address))).toHaveLength(1);
+    expect(screen.queryByText('Confirm Transfer')).toBeTruthy();
+    expect(screen.queryByText(sender.name as Matcher)).toBeTruthy();
+    expect(screen.queryByText(toShortAddress(sender.address))).toBeTruthy();
+    expect(screen.queryByText(recepient.name as Matcher)).toBeTruthy();
+    expect(screen.queryByText(toShortAddress(recepient.address))).toBeTruthy();
 
     const amountToTransfer = screen.queryByTestId('infoInMiddle')?.children.item(0)?.children.item(1)?.textContent;
 
@@ -122,26 +124,31 @@ describe('ConfirmTransfer for Successful Scenario (Note: account must have some 
 
     expect(screen.queryByTestId('infoInMiddle')?.children.item(3)?.children.item(2)?.textContent).toEqual(parsedTotal + 'WND');
 
-    expect(screen.queryAllByLabelText('Password')).toHaveLength(1);
+    expect(screen.queryByLabelText('Password')).toBeTruthy();
     fireEvent.change(screen.queryByLabelText('Password') as Element, { target: { value: password } });
+    expect(screen.getByRole('button', { hidden: true, name: 'Confirm' })).toBeTruthy();
 
-    expect(screen.queryAllByText('Confirm')).toHaveLength(1);
-    fireEvent.click(screen.queryByText('Confirm') as Element);
+    fireEvent.click(screen.getByRole('button', { hidden: true, name: 'Confirm' }));
 
-    expect(screen.queryAllByText('Password is not correct')).toHaveLength(0);
-    await waitFor(() => expect(screen.queryByTestId('confirmButton')?.textContent).toEqual('Done'), { timeout: 70000 }); // wait enough to recive the transaction confirm from blockchain
+    expect(screen.queryByText('Password is not correct')).toBeFalsy();
+    await waitFor(() => expect(screen.getByRole('button', { hidden: true, name: 'Confirm' })).toBeTruthy(), {
+      onTimeout: () => {
+        throw new Error('Please check your internet connection first\nUncomment line(62) in this test file and run the test again!');
+      },
+      timeout: 70000 // wait enough to recive the transaction confirm from blockchain
+    });
   });
 
   test('ConfirmTransfer when password is wrong', () => {
     const invalidPassword = '123456';
 
-    expect(screen.queryAllByLabelText('Password')).toHaveLength(1);
+    expect(screen.queryByLabelText('Password')).toBeTruthy();
     fireEvent.change(screen.queryByLabelText('Password') as Element, { target: { value: invalidPassword } });
 
-    expect(screen.queryAllByText('Confirm')).toHaveLength(1);
-    fireEvent.click(screen.queryByText('Confirm') as Element);
+    expect(screen.getByRole('button', { hidden: true, name: 'Confirm' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { hidden: true, name: 'Confirm' }));
 
-    expect(screen.queryAllByText('Password is not correct')).toHaveLength(1);
+    expect(screen.queryByText('Password is not correct')).toBeTruthy();
   });
 });
 
@@ -151,7 +158,7 @@ describe('ConfirmTransfer for Failed Scenario', () => {
   beforeAll(async () => {
     sender = {
       address: firstAddress,
-      balanceInfo: balanceInfo,
+      balanceInfo,
       chain: 'westend',
       name: 'Amir khan'
     };
@@ -159,16 +166,13 @@ describe('ConfirmTransfer for Failed Scenario', () => {
     recepient = {
       address: secondAddress,
       chain: 'westend',
-      name: 'recipientName'
+      name: 'AmirEF'
     };
 
     availableBalance = balanceToHuman(sender, 'available');
-    chainInfo = await getChainInfo(sender.chain);
-    const transfer = chainInfo?.api.tx.balances.transfer;
-
-    const { partialFee } = await transfer(sender.address, transferAmount).paymentInfo(sender.address);
-
-    fee = partialFee;
+    await chainInfo.api.tx.balances.transfer(sender.address, transferAmount).paymentInfo(sender.address).then((i) => {
+      fee = i.partialFee;
+    });
   });
 
   test('Failed Scenario', async () => {
@@ -185,12 +189,17 @@ describe('ConfirmTransfer for Failed Scenario', () => {
       />
     );
 
-    expect(screen.queryAllByLabelText('Password')).toHaveLength(1);
-    fireEvent.change(screen.queryByLabelText('Password'), { target: { value: password } });
+    expect(screen.queryByLabelText('Password')).toBeTruthy();
+    fireEvent.change(screen.queryByLabelText('Password') as Element, { target: { value: password } });
 
-    expect(screen.queryAllByText('Confirm')).toHaveLength(1);
-    fireEvent.click(screen.queryByText('Confirm'));
+    expect(screen.getByRole('button', { hidden: true, name: 'Confirm' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { hidden: true, name: 'Confirm' }));
 
-    await waitFor(() => expect(screen.queryByTestId('confirmButton').textContent).toEqual('Failed'), { timeout: 60000 }); // wait enough to recive the transaction confirm from blockchain
+    await waitFor(() => expect(screen.getByRole('button', { hidden: true, name: 'Failed' })), {
+      onTimeout: () => {
+        throw new Error('Please check your internet connection first and run the test again!');
+      },
+      timeout: 60000 // wait enough to recive the transaction confirm from blockchain
+    });
   });
 });

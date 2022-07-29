@@ -37,7 +37,7 @@ import StakingIndex from '../Popup/Staking/StakingIndex';
 import TransferFunds from '../Popup/Transfer';
 import { getPriceInUsd } from '../util/api/getPrice';
 import { SUPPORTED_CHAINS } from '../util/constants';
-import { AccountsBalanceType, BalanceType, Close,Initiation, Rescuer, SavedMetaData  } from '../util/plusTypes';
+import { AccountsBalanceType, BalanceType, Close, Initiation, Rescuer, SavedMetaData } from '../util/plusTypes';
 import { prepareMetaData } from '../util/plusUtils';
 import { getCloses, getInitiations } from '../util/subquery';
 import { Balance } from './';
@@ -162,6 +162,10 @@ function Plus({ address, chain, formattedAddress, givenType, name, t }: Props): 
   }, [api, formattedAddress, chain, endpoint, isRecovering]);
 
   useEffect((): void => {
+    if (!api?.query?.recovery) {
+      return;
+    }
+
     const chainName = chain?.name.replace(' Relay Chain', '');
 
     formattedAddress && chainName && getInitiations(chainName, formattedAddress, 'lost').then((initiations: Initiation[] | null) => {
@@ -526,7 +530,7 @@ function Plus({ address, chain, formattedAddress, givenType, name, t }: Props): 
           rescuer={rescuer}
           setConfigureModalOpen={setCloseRecoveryModalOpen}
           showConfigureModal={showCloseRecoveryModal}
-          
+
         />
       }
     </Container>

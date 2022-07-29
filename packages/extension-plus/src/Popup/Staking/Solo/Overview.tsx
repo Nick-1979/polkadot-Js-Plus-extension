@@ -31,7 +31,7 @@ interface Props {
   handleWithdrowUnbound: () => void;
   handleViewChart: () => void;
   unlockingAmount: bigint;
-  rewardSlashes: any | undefined;
+  rewardsInfo: any | undefined;
 }
 
 interface BalanceProps {
@@ -54,7 +54,7 @@ function Balance({ amount, coin, label }: BalanceProps): React.ReactElement<Bala
   </>);
 }
 
-export default function Overview({ api, availableBalanceInHuman, currentlyStakedInHuman, handleViewChart, handleWithdrowUnbound, ledger, redeemable, rewardSlashes, totalReceivedReward, unlockingAmount }: Props): React.ReactElement<Props> {
+export default function Overview({ api, availableBalanceInHuman, currentlyStakedInHuman, handleViewChart, handleWithdrowUnbound, ledger, redeemable, rewardsInfo, totalReceivedReward, unlockingAmount }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const decimals = api && api.registry.chainDecimals[0];
   const token = api?.registry?.chainTokens[0] ?? '';
@@ -93,7 +93,7 @@ export default function Overview({ api, availableBalanceInHuman, currentlyStaked
                       </Grid>
                       <Grid item>
                         <Tooltip id='rewards' placement='top' title={t('View chart')}>
-                          <BarChartIcon color={rewardSlashes?.length ? 'warning' : 'disabled'} onClick={handleViewChart} sx={{ cursor: 'pointer', fontSize: 15 }} />
+                          <BarChartIcon color={rewardsInfo?.length ? 'warning' : 'disabled'} onClick={handleViewChart} sx={{ cursor: 'pointer', fontSize: 15 }} />
                         </Tooltip>
                       </Grid>
                     </Grid>

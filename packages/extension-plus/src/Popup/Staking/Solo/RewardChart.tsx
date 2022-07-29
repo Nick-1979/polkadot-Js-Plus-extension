@@ -4,7 +4,7 @@
 /* eslint-disable react/jsx-max-props-per-line */
 
 /**
- * @description show reward chart
+ * @description to show rewards chart
  * */
 
 import { BarChart as BarChartIcon } from '@mui/icons-material';
@@ -19,6 +19,7 @@ import { Chain } from '@polkadot/extension-chains/types';
 
 import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
 import { PlusHeader, Popup } from '../../../components';
+import { RewardInfo } from '../../../util/plusTypes';
 import { amountToHuman } from '../../../util/plusUtils';
 
 ChartJS.register(
@@ -50,12 +51,11 @@ interface Props {
   api: ApiPromise;
   setChartModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   showChartModal: boolean;
-  rewardSlashes: any;
+  rewardsInfo: RewardInfo[];
 }
 
-export default function RewardChart({ chain, api, rewardSlashes, setChartModalOpen, showChartModal }: Props): React.ReactElement<Props> {
+export default function RewardChart({ api, chain, rewardsInfo, setChartModalOpen, showChartModal }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-
   const decimals = api && api.registry.chainDecimals[0];
   const token = api && api.registry.chainTokens[0];
 
@@ -63,68 +63,41 @@ export default function RewardChart({ chain, api, rewardSlashes, setChartModalOp
     setChartModalOpen(false);
   }, [setChartModalOpen]);
 
-  // const getDateOfEra()
-  // const getDateOfBlock = async (blockNumber: number) => {
-  //   console.log('blockNumber:', blockNumber)
-  //   // get the blockhash and API instance at this point of the chain
-  //   const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
-  //   const apiAt = await api.at(blockHash);
-
-  //   // retrieve the activeEra
-  //   const activeEraOpt = await apiAt.query.staking.activeEra();
-
-  //   if (activeEraOpt.isSome) {
-  //     console.log('activeEraOpt', activeEraOpt)
-  //     console.log('activeEraOpt.unwrap()', activeEraOpt.unwrap())
-
-  //     const { index, start } = activeEraOpt.unwrap();
-
-  //     console.log(`${index.toString()} started at ${new Date(start.unwrap().toNumber()).toString()}`);
-  //   } else {
-  //     // there has been nothing at this point
-  //     console.log('no activeEra found')
-  //   }
-  // }
-  // getDateOfBlock(rewardSlashes.data.list[0].block_num);
-
-  if (!rewardSlashes?.length) return (<></>);
-
-  const sortedRewards = [...rewardSlashes];
-  sortedRewards.sort((a, b) => a.era - b.era);
-
-  // TODO: needs a refactore
-  // remove duplicate eras
-  const dataset = [];
-
-  for (let i = 0; i < sortedRewards.length - 1; i++) {
-    if (sortedRewards[i].era === sortedRewards[i + 1].era) {
-      dataset.push(sortedRewards[i]?.timeStamp ? sortedRewards[i] : sortedRewards[i + 1]);
-      i++;
-      continue;
-    }
-    dataset.push(sortedRewards[i]);
+  if (!rewardsInfo?.length) {
+    return (<></>);
   }
-
-  // const lastIndex = sortedRewards.length - 1;
-  // if (sortedRewards[lastIndex - 1].era === sortedRewards[lastIndex].era) {
-  //   dataset.push(sortedRewards[lastIndex - 1]?.timeStamp ? sortedRewards[lastIndex - 1] : sortedRewards[lastIndex]);
-  // } else {
-  //   dataset.push(sortedRewards[lastIndex - 1]);
-  // }
-
-  const DescSortedDataset = [...dataset];
-  DescSortedDataset.sort((a, b) => b.era - a.era);
-
-
+  
   const formateDate = (date: number) => {
     const options = { day: 'numeric', month: "short" };
 
     return new Date(date * 1000).toLocaleDateString('en-GB', options);
   };
 
+  const sortedRewards = [...rewardsInfo];
+
+  sortedRewards.sort((a, b) => a.era - b.era);
+
+  // // remove duplicate eras
+  // const dataset = [];
+
+  // for (let i = 0; i < sortedRewards.length - 1; i++) {
+  //   if (sortedRewards[i].era === sortedRewards[i + 1].era) {
+  //     dataset.push(sortedRewards[i]?.timeStamp ? sortedRewards[i] : sortedRewards[i + 1]);
+  //     i++;
+  //     continue;
+  //   }
+
+  //   dataset.push(sortedRewards[i]);
+  // }
+
+  const DescSortedRewards = [...rewardsInfo];
+
+  DescSortedRewards.sort((a, b) => b.era - a.era);
+
   // show the last MAX_REWARDS_INFO_TO_SHOW records
-  const labels = dataset.slice(dataset.length - MAX_REWARDS_INFO_TO_SHOW).map((d) => d.timeStamp ? formateDate(d.timeStamp) : d.era);
-  const y = dataset.slice(dataset.length - MAX_REWARDS_INFO_TO_SHOW).map((d) => amountToHuman(d.reward, decimals));
+  // const labels = dataset.slice(dataset.length - MAX_REWARDS_INFO_TO_SHOW).map((d) => d.timeStamp ? formateDate(d.timeStamp) : d.era);
+  const labels = sortedRewards.map((d) => formateDate(d.timeStamp));
+  const y = sortedRewards.map((d) => amountToHuman(d.amount, decimals));
 
   const data = {
     datasets: [
@@ -141,14 +114,11 @@ export default function RewardChart({ chain, api, rewardSlashes, setChartModalOp
   return (
     <Popup handleClose={handleCloseModal} showModal={showChartModal}>
       <PlusHeader action={handleCloseModal} chain={chain} closeText={'Close'} icon={<BarChartIcon fontSize='small' />} title={'Rewards'} />
-
       <Grid item sx={{ p: '15px 25px 20px' }} xs={12}>
         <Bar data={data} options={options} />
       </Grid>
-
       <Grid container item sx={{ fontSize: 11, height: '220px', overflowY: 'auto', scrollbarWidth: 'none' }} xs={12}>
-
-        <Grid container item justifyContent='space-between' sx={{ fontSize: 11, fontWeight: '600', p: '5px 25px', mx: '10px' }} xs={12}>
+        <Grid container item justifyContent='space-between' sx={{ fontSize: 11, fontWeight: '600', mx: '10px', p: '5px 25px' }} xs={12}>
           <Grid item xs={4}>
             {t('Date')}
           </Grid>
@@ -159,13 +129,11 @@ export default function RewardChart({ chain, api, rewardSlashes, setChartModalOp
             {t('Reward')}
           </Grid>
         </Grid>
-
         <Grid item xs={12}>
           <Divider />
         </Grid>
-
-        {DescSortedDataset.slice(0, MAX_REWARDS_INFO_TO_SHOW).map((d, index: number) =>
-          <Grid container item justifyContent='space-between' key={index} sx={{ bgcolor: index % 2 && grey[200], p: '5px 25px', mx: '10px' }} xs={12}>
+        {DescSortedRewards.slice(0, MAX_REWARDS_INFO_TO_SHOW).map((d, index: number) =>
+          <Grid container item justifyContent='space-between' key={index} sx={{ bgcolor: index % 2 && grey[200], mx: '10px', p: '5px 25px' }} xs={12}>
             <Grid item xs={4}>
               {d.timeStamp ? new Date(d.timeStamp * 1000).toDateString() : d.era}
             </Grid>
@@ -173,7 +141,7 @@ export default function RewardChart({ chain, api, rewardSlashes, setChartModalOp
               {d.era}
             </Grid>
             <Grid item sx={{ textAlign: 'right' }} xs={4}>
-              {amountToHuman(d.reward, decimals, 9)} {` ${token}`}
+              {amountToHuman(d.amount, decimals, 9)} {` ${token}`}
             </Grid>
           </Grid>
         )}

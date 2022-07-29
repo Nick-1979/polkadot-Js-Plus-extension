@@ -177,6 +177,7 @@ interface Identity {
 export interface TransferRequest {
   code: number;
   data: {
+    list: any;
     count: number;
     transfers: Transfers[];
   };
@@ -390,3 +391,41 @@ export interface Initiation {
 }
 
 export type Close = Initiation;
+
+export interface SubQueryRewardInfo {
+  blockNumber: number,
+  timestamp: string,
+  extrinsicHash: string,
+  address: string,
+  reward: {
+    era: number,
+    stash: string,
+    amount: string,
+    eventIdx: number,
+    isReward: boolean,
+    validator: string
+  }
+}
+
+export interface SubscanRewardInfo {
+  era: number,
+  stash: string,
+  account: string,
+  validator_stash: string,
+  amount: string,
+  block_timestamp: number,
+  event_index: string,
+  module_id: string,
+  event_id: string,
+  slash_kton: string,
+  extrinsic_index: string
+}
+
+export interface RewardInfo {
+  era: number;
+  amount: BN;
+  timeStamp: number;
+  event: string;
+  validator: string;
+  stash: string
+}

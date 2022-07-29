@@ -37,8 +37,8 @@ const setState = () => null;
 
 describe('Testing stake tab', () => {
   beforeAll(async () => {
-    chainInfo = await getChainInfo('westend');
-    staker = { balanceInfo: { available: amountToMachine(availableBalance, chainInfo.decimals), decimals: chainInfo.decimals } };
+    chainInfo = await getChainInfo('westend') as ChainInfo;
+    staker = { address: '5FbSap4BsWfjyRhCchoVdZHkDnmDm3NEgLZ25mesq4aw2WvX' ,balanceInfo: { available: amountToMachine(availableBalance, chainInfo.decimals), decimals: chainInfo.decimals } };
   });
 
   test('Checking the existence of components while loading', () => {

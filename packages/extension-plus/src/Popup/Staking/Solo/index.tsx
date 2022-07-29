@@ -10,7 +10,7 @@
  * */
 
 import type { StakingLedger } from '@polkadot/types/interfaces';
-import type { AccountsBalanceType, NominatorInfo, PutInFrontInfo, RebagInfo, SavedMetaData, StakingConsts, Validators } from '../../../util/plusTypes';
+import type { AccountsBalanceType, NominatorInfo, PutInFrontInfo, RebagInfo, RewardInfo, SavedMetaData, StakingConsts, SubQueryRewardInfo, SubscanRewardInfo, Validators } from '../../../util/plusTypes';
 
 import { AddCircleOutlineOutlined, CheckOutlined, CircleOutlined as CircleOutlinedIcon, InfoOutlined as InfoOutlinedIcon, NotificationImportantOutlined as NotificationImportantOutlinedIcon, NotificationsActive as NotificationsActiveIcon, RemoveCircleOutlineOutlined, ReportOutlined as ReportOutlinedIcon } from '@mui/icons-material';
 import { Badge, Box, CircularProgress, Grid, Tab, Tabs, Tooltip } from '@mui/material';
@@ -20,6 +20,7 @@ import { ApiPromise } from '@polkadot/api';
 import { DeriveAccountInfo, DeriveStakingQuery } from '@polkadot/api-derive/types';
 import { AccountJson } from '@polkadot/extension-base/background/types';
 import { Chain } from '@polkadot/extension-chains/types';
+import { BN } from '@polkadot/util';
 
 import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
 import { updateMeta } from '../../../../../extension-ui/src/messaging';
@@ -58,13 +59,6 @@ interface Props {
   validatorsInfoIsUpdated: boolean;
 }
 
-interface RewardInfo {
-  era: number;
-  reward: bigint;
-  timeStamp?: number;
-  event?: string;
-}
-
 const workers: Worker[] = [];
 
 BigInt.prototype.toJSON = function () {
@@ -90,7 +84,7 @@ export default function SoloStaking({ account, api, chain, currentEraIndex, endp
   const [unlockingAmount, setUnlockingAmount] = useState<bigint>(0n);
   const [oversubscribedsCount, setOversubscribedsCount] = useState<number | undefined>();
   const [activeValidator, setActiveValidator] = useState<DeriveStakingQuery>();
-  const [rewardSlashes, setRewardSlashes] = useState<RewardInfo[]>([]);
+  const [rewardsInfo, setRewardsInfo] = useState<RewardInfo[]>([]);
   const [rebagInfo, setRebagInfo] = useState<RebagInfo | undefined>();
   const [putInFrontInfo, setPutInFrontOfInfo] = useState<PutInFrontInfo | undefined>();
   const [redeemable, setRedeemable] = useState<bigint | null>(null);
@@ -209,26 +203,46 @@ export default function SoloStaking({ account, api, chain, currentEraIndex, endp
 
   useEffect((): void => {
     // TODO: to get rewrads info from subquery
-    staker.address && getRewards(chainName, staker.address);
+    staker.address && chainName && getRewards(chainName, staker.address).then((info) => {
+      const rewardsFromSubQuery: RewardInfo[] | undefined = info?.map(
+        (i: SubQueryRewardInfo): RewardInfo => {
+          return {
+            amount: new BN(i.reward.amount),
+            era: i.reward.era,
+            event: i.reward.isReward ? 'Rewarded' : '',
+            stash: i.reward.stash,
+            timeStamp: Number(i.timestamp),
+            validator: i.reward.validator
+          };
+        });
+
+      console.log('rewardsFromSubQuery:', rewardsFromSubQuery);
+
+      if (rewardsFromSubQuery?.length) {
+        return setRewardsInfo(rewardsFromSubQuery);
+      }
+    });
 
     // eslint-disable-next-line no-void
-    staker.address && void getRewardsSlashes(chainName, 0, 10, staker.address).then((r) => {
-      const rewardsFromSubscan = r?.data.list?.map((d): RewardInfo => {
+    staker.address && chainName && void getRewardsSlashes(chainName, 0, 10, staker.address).then((r) => {
+      const rewardsFromSubscan: RewardInfo[] | undefined = r?.data.list?.map((i: SubscanRewardInfo): RewardInfo => {
         return {
-          reward: d.amount,
-          era: d.era,
-          timeStamp: d.block_timestamp,
-          event: d.event_id
+          amount: new BN(i.amount),
+          era: i.era,
+          event: i.event_id,
+          stash: i.stash,
+          timeStamp: i.block_timestamp,
+          validator: i.validator_stash
         };
       });
 
-      if (rewardsFromSubscan?.length) {
-        setRewardSlashes((getRewardsSlashes) => getRewardsSlashes.concat(rewardsFromSubscan));
-      }
+      console.log('rewardsFromSubscan:', rewardsFromSubscan);
 
-      console.log('rewards from subscan:', r);
+      if (rewardsFromSubscan?.length) {
+        return setRewardsInfo(rewardsFromSubscan);
+      }
     });
-  }, [api, chainName, staker.address]);
+  }, [chainName, staker.address]);
 
   useEffect(() => {
     // *** get nominated validators list
@@ -407,12 +421,12 @@ export default function SoloStaking({ account, api, chain, currentEraIndex, endp
   }, [handleConfirmStakingModalOpen, redeemable, state]);
 
   const handleViewChart = useCallback(() => {
-    if (!rewardSlashes) {
+    if (!rewardsInfo) {
       return;
     }
 
     setChartModalOpen(true);
-  }, [setChartModalOpen, rewardSlashes]);
+  }, [setChartModalOpen, rewardsInfo]);
 
   const getAmountToConfirm = useCallback(() => {
     switch (state) {
@@ -468,7 +482,7 @@ export default function SoloStaking({ account, api, chain, currentEraIndex, endp
             handleWithdrowUnbound={handleWithdrowUnbound}
             ledger={ledger}
             redeemable={redeemable}
-            rewardSlashes={rewardSlashes}
+            rewardsInfo={rewardsInfo}
             totalReceivedReward={totalReceivedReward}
             unlockingAmount={unlockingAmount}
           />
@@ -579,11 +593,11 @@ export default function SoloStaking({ account, api, chain, currentEraIndex, endp
           validatorsIdentities={validatorsIdentities}
         />
       }
-      {rewardSlashes && showChartModal && api &&
+      {rewardsInfo && showChartModal && api &&
         <RewardChart
           api={api}
           chain={chain}
-          rewardSlashes={rewardSlashes}
+          rewardsInfo={rewardsInfo}
           setChartModalOpen={setChartModalOpen}
           showChartModal={showChartModal}
         />

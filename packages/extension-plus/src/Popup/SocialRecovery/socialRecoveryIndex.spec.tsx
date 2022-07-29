@@ -22,7 +22,7 @@ import SocialRecoveryIndex from './index';
 jest.setTimeout(240000);
 ReactDOM.createPortal = jest.fn((modal) => modal);
 
-const validAddress = '5FbSap4BsWfjyRhCchoVdZHkDnmDm3NEgLZ25mesq4aw2WvX';
+const validAddress = '5FbSap4BsWfjyRhCchoVdZHkDnmDm3NEgLZ25mesq4aw2WvX'; // Not recoverable account
 const kusamaGenesisHash = chain('kusama').definition.genesisHash;
 let recoveryConsts: RecoveryConsts;
 let chainInfo: ChainInfo;

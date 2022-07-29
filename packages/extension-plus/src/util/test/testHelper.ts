@@ -1204,7 +1204,7 @@ export function makeShortAddr(address: string | undefined) {
 
 export const validatorsName: ValidatorsName[] = [
   { address: '5HTGweepNDc7dCa34YtPn6kF4BLJvaMxbW3i3vzXBGn41Nz3', name: 'AmirEF' },
-  { address: '5Dt2dFSLVwiKtEHC7VrVEiJDiVLRiDbaFRBdh8MBSvwuvDCD', name: 'Adam' },
+  { address: '5FbSap4BsWfjyRhCchoVdZHkDnmDm3NEgLZ25mesq4aw2WvX', name: 'Adam' },
   { address: '5DviS2M1kyyqs1GzMxHAjS3Si49hS3N2Jib9jz4Yx7pJgQHu', name: 'Diego' },
   { address: '5DVDZcaxCDLStUgnqkx67ZrYP9ZQ4hpSiVsHiUmfJh8VTo8S', name: 'Moly' },
   { address: '5GVzG3QJvRc6MEtxaJZnLB3PAhQT8eMgesqgHxYiiQJE4HNv', name: 'Mary' },
