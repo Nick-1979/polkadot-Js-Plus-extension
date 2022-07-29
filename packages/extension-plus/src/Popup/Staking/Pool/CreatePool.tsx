@@ -127,7 +127,8 @@ function CreatePool({ api, chain, nextPoolId, className, setStakeAmount, poolSta
       return;
     }
 
-    const max = new BN(staker.balanceInfo.available.toString()).sub(existentialDeposit.muln(2)).sub(new BN(estimatedMaxFee));
+    // 3ED: one goes to pool rewardId, 2 others remain as my account ED + some fee (FIXME: ED is lowerthan fee in some chains like KUSAMA)
+    const max = new BN(staker.balanceInfo.available.toString()).sub(existentialDeposit.muln(3)).sub(new BN(estimatedMaxFee));
     const min = poolStakingConsts.minCreationBond;
 
     let maxInHuman = Number(amountToHuman(max.toString(), decimals));

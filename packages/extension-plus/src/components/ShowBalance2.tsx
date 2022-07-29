@@ -9,39 +9,39 @@
 import type { Balance } from '@polkadot/types/interfaces';
 import type { BN } from '@polkadot/util';
 import type { ThemeProps } from '../../../extension-ui/src/types';
-import { Grid, Menu, MenuItem, Paper, Skeleton } from '@mui/material';
 
+import { Grid, GridDirection, Menu, MenuItem, Paper, Skeleton } from '@mui/material';
+import { ResponsiveStyleValue } from '@mui/system';
 import React from 'react';
 import styled from 'styled-components';
 
 import { ApiPromise } from '@polkadot/api';
+
 import FormatBalance from './FormatBalance';
 
 export interface Props {
   balance: Balance | BN | bigint | string | number | null | undefined;
   api: ApiPromise | undefined;
   title?: string;
-  direction?: string;
+  direction?: ResponsiveStyleValue<GridDirection> | undefined;
 }
 
-function ShowBalance2({ api, balance, direction = 'row', title }: Props): React.ReactElement<Props> {
-  const amountToHuman = (x: unknown): string | undefined => api && (api.createType('Balance', x)).toHuman();
-
+function ShowBalance2({ api, balance, direction = 'column', title }: Props): React.ReactElement<Props> {
   return (
-    <div data-testid='ShowBalance2'>
+    <Grid alignItems='center' container data-testid='ShowBalance2' direction={direction} justifyContent='space-between'>
       {title && <>
         <Grid item sx={{ fontSize: 12, fontWeight: 500, letterSpacing: '0.8px', lineHeight: '16px' }}>
           {title}
         </Grid>
       </>}
+      <Grid item>
+        {balance !== undefined && api
+          ? <FormatBalance api={api} value={balance} />
+          : <Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }} />
+        }
+      </Grid>
 
-      {balance !== undefined && api
-        ? // <b>{amountToHuman(balance)}</b>
-        <FormatBalance api={api} value={balance} />
-
-        : <Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }} />
-      }
-    </div>
+    </Grid>
   );
 }
 

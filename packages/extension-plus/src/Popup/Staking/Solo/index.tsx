@@ -10,7 +10,6 @@
  * */
 
 import type { StakingLedger } from '@polkadot/types/interfaces';
-import type { AccountId } from '@polkadot/types/interfaces';
 import type { AccountsBalanceType, NominatorInfo, PutInFrontInfo, RebagInfo, SavedMetaData, StakingConsts, Validators } from '../../../util/plusTypes';
 
 import { AddCircleOutlineOutlined, CheckOutlined, CircleOutlined as CircleOutlinedIcon, InfoOutlined as InfoOutlinedIcon, NotificationImportantOutlined as NotificationImportantOutlinedIcon, NotificationsActive as NotificationsActiveIcon, RemoveCircleOutlineOutlined, ReportOutlined as ReportOutlinedIcon } from '@mui/icons-material';
@@ -25,11 +24,11 @@ import { Chain } from '@polkadot/extension-chains/types';
 import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
 import { updateMeta } from '../../../../../extension-ui/src/messaging';
 import { PlusHeader, Popup } from '../../../components';
-import useEndPoint from '../../../hooks/useEndPoint';
 import getRewardsSlashes from '../../../util/api/getRewardsSlashes';
 import { getStakingReward } from '../../../util/api/staking';
 import { MAX_ACCEPTED_COMMISSION } from '../../../util/constants';
 import { amountToHuman, balanceToHuman, prepareMetaData } from '../../../util/plusUtils';
+import { getRewards } from '../../../util/subquery/staking';
 import ConfirmStaking from './ConfirmStaking';
 import InfoTab from './InfoTab';
 import Nominations from './Nominations';
@@ -209,6 +208,9 @@ export default function SoloStaking({ account, api, chain, currentEraIndex, endp
   }, [getRedeemable, endpoint]);
 
   useEffect((): void => {
+    // TODO: to get rewrads info from subquery
+    staker.address && getRewards(chainName, staker.address);
+
     // eslint-disable-next-line no-void
     staker.address && void getRewardsSlashes(chainName, 0, 10, staker.address).then((r) => {
       const rewardsFromSubscan = r?.data.list?.map((d): RewardInfo => {

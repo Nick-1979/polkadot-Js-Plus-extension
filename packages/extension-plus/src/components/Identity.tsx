@@ -18,6 +18,7 @@ import { ShortAddress } from '.';
 interface Props {
   api?: ApiPromise;
   address?: string;
+  name?: string;
   accountInfo?: DeriveAccountInfo;
   chain: Chain;
   iconSize?: number;
@@ -27,7 +28,7 @@ interface Props {
   showSocial?: boolean;
 }
 
-function Identity({ accountInfo, address, api, chain, iconSize = 24, showAddress = false, showSocial = true, title = '', totalStaked = '' }: Props): React.ReactElement<Props> {
+function Identity({ accountInfo, address, api, chain, iconSize = 24, name, showAddress = false, showSocial = true, title = '', totalStaked = '' }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const [info, setInfo] = useState<DeriveAccountInfo | undefined>();
   const [hasSocial, setHasSocial] = useState<boolean | undefined>();
@@ -36,11 +37,17 @@ function Identity({ accountInfo, address, api, chain, iconSize = 24, showAddress
   useEffect(() => {
     if (accountInfo) { return setInfo(accountInfo); }
 
-    api && address && api.derive.accounts.info(address).then((i) => setInfo(i));
-  }, [address, accountInfo, api]);
+    api && address && api.derive.accounts.info(address).then((i) => {
+      if (!i?.identity && name) {
+        i.identity.display = name;
+      }
+
+      setInfo(i);
+    });
+  }, [address, accountInfo, api, name]);
 
   useEffect(() => {
-    setHasSocial(!!(info?.identity.twitter || info?.identity.web || info?.identity.email));
+    setHasSocial(!!(info?.identity?.twitter || info?.identity?.web || info?.identity?.email));
 
     // to check if the account has a judgement to set a verified green check
     setJudgement(info?.identity?.judgements && JSON.stringify(info?.identity?.judgements).match(/reasonable|knownGood/gi));
@@ -50,7 +57,7 @@ function Identity({ accountInfo, address, api, chain, iconSize = 24, showAddress
     <>
       <Grid container>
         {title &&
-          <Grid item sx={{ paddingBottom: '5px' }}>
+          <Grid item sx={{ pb: '5px' }}>
             {title}
           </Grid>
         }
@@ -74,24 +81,24 @@ function Identity({ accountInfo, address, api, chain, iconSize = 24, showAddress
                       : <RemoveCircleRoundedIcon color='disabled' sx={{ fontSize: 15 }} />
                     }
                   </Grid>
-                  {info?.identity.displayParent &&
+                  {info?.identity?.displayParent &&
                     <Grid item sx={{ textOverflow: 'ellipsis' }}>
                       {info?.identity.displayParent} /
                     </Grid>
                   }
-                  {info?.identity.display &&
+                  {info?.identity?.display &&
                     <Grid item sx={info?.identity.displayParent && { color: grey[500], textOverflow: 'ellipsis' }}>
                       {info?.identity.display} { }
                     </Grid>
                   }
-                  {!(info?.identity.displayParent || info?.identity.display) &&
+                  {!(info?.identity?.displayParent || info?.identity?.display) &&
                     <Grid item sx={{ textAlign: 'letf' }}>
                       {info?.accountId && <ShortAddress address={String(info?.accountId)} fontSize={11} />}
                     </Grid>
                   }
                 </Grid>
                 {showSocial && <Grid container id='socials' item justifyContent='flex-start' xs={hasSocial ? 3 : 0}>
-                  {info?.identity.twitter &&
+                  {info?.identity?.twitter &&
                     <Grid item>
                       <Link
                         href={`https://twitter.com/${info?.identity.twitter}`}
@@ -105,7 +112,7 @@ function Identity({ accountInfo, address, api, chain, iconSize = 24, showAddress
                       </Link>
                     </Grid>
                   }
-                  {info?.identity.email &&
+                  {info?.identity?.email &&
                     <Grid item>
                       <Link href={`mailto:${info?.identity.email}`}>
                         <EmailIcon
@@ -115,7 +122,7 @@ function Identity({ accountInfo, address, api, chain, iconSize = 24, showAddress
                       </Link>
                     </Grid>
                   }
-                  {info?.identity.web &&
+                  {info?.identity?.web &&
                     <Grid item>
                       <Link
                         href={info?.identity.web}

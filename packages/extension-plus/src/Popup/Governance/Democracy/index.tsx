@@ -1,6 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
+/* eslint-disable react/jsx-max-props-per-line */
 
 import { BatchPrediction as BatchPredictionIcon, HowToVote as HowToVoteIcon, WhereToVote as WhereToVoteIcon } from '@mui/icons-material';
 import { Grid, Tab, Tabs } from '@mui/material';
@@ -34,7 +35,7 @@ export default function Democracy({ address, chainInfo, setDemocracyModalOpen, s
   const chain = useMetadata(chainInfo?.genesisHash, true);// TODO:double check to have genesisHash here
 
   useEffect(() => {
-    if (!referendums || !chain) return;
+    if (!referendums || !chain) { return; }
     console.log('referendums:', referendums);
 
     // eslint-disable-next-line no-void
@@ -44,7 +45,8 @@ export default function Democracy({ address, chainInfo, setDemocracyModalOpen, s
   }, [chain, t, referendums]);
 
   useEffect(() => {
-    if (!chainInfo?.chainName) return;
+    if (!chainInfo?.chainName) { return; }
+
     // eslint-disable-next-line no-void
     void getReferendums(chainInfo.chainName).then((r) => {
       setReferenduns(r);
@@ -82,11 +84,7 @@ export default function Democracy({ address, chainInfo, setDemocracyModalOpen, s
         title={'Democracy'}
       />
       <Grid container>
-        <Grid
-          item
-          sx={{ margin: '0px 30px' }}
-          xs={12}
-        >
+        <Grid item xs={12} sx={{ borderBottom: 1, borderColor: 'divider', m: '0px 30px' }}  >
           <Tabs
             indicatorColor='secondary'
             onChange={handleTabChange}
@@ -110,7 +108,6 @@ export default function Democracy({ address, chainInfo, setDemocracyModalOpen, s
             />
           </Tabs>
         </Grid>
-
         {tabValue === 'referendums'
           ? <Grid
             item
@@ -130,7 +127,6 @@ export default function Democracy({ address, chainInfo, setDemocracyModalOpen, s
           </Grid>
           : ''
         }
-
         {/* TODO: Proposals needs to be rewrite after menue movement */}
         {tabValue === 'proposals'
           ? <Grid

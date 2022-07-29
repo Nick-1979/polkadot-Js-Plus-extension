@@ -13,9 +13,9 @@ import type { PoolStakingConsts } from '../../../util/plusTypes';
 import { Divider, Grid } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React, { useMemo } from 'react';
-import { BN, BN_ZERO } from '@polkadot/util';
 
 import { ApiPromise } from '@polkadot/api';
+import { BN, BN_ZERO } from '@polkadot/util';
 
 import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
 import { ShowBalance2, ShowValue } from '../../../components';
@@ -28,7 +28,6 @@ interface Props {
 function InfoTab({ api, info }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const token = api && api.registry.chainTokens[0];
-  const existentialDeposit = useMemo(() => api ? new BN(String(api.consts.balances.existentialDeposit)) : BN_ZERO, [api]);
 
   return (
     <Grid container data-testid='info' sx={{ paddingTop: '15px', textAlign: 'center' }}>
@@ -39,70 +38,29 @@ function InfoTab({ api, info }: Props): React.ReactElement<Props> {
         {t('Information you need to know about')}
         <Divider light />
       </Grid>
-
       <Grid container item sx={{ p: '15px 5px' }} xs={12}>
         <Grid container item justifyContent='space-between' sx={{ bgcolor: grey[200], fontSize: 12, paddingBottom: '5px' }} xs={12}>
-          <Grid item>
-            {t('Minimum {{token}}s needed to join a pool', { replace: { token: token } })}:
-          </Grid>
-          <Grid item>
-            <ShowBalance2 api={api} balance={info?.minJoinBond} />
-          </Grid>
+          <ShowBalance2 api={api} balance={info?.minJoinBond} direction='row' title={`${t('Minimum {{token}}s needed to join a pool', { replace: { token: token } })}:`} />
         </Grid>
-
         <Grid container item justifyContent='space-between' sx={{ fontSize: 12, paddingBottom: '5px' }} xs={12}>
-          <Grid item>
-            {t('Minimum {{token}}s needed to create a pool', { replace: { token: token } })}:
-          </Grid>
-          <Grid item>
-            <ShowBalance2 api={api} balance={info?.minCreationBond} />
-          </Grid>
+          <ShowBalance2 api={api} balance={info?.minCreationBond} direction='row' title={`${t('Minimum {{token}}s needed to create a pool', { replace: { token: token } })}:`} />
         </Grid>
-
         <Grid container item justifyContent='space-between' sx={{ bgcolor: grey[200], fontSize: 12, paddingBottom: '5px' }} xs={12}>
-          <Grid item>
-            {t('The number of currenttly existing pools')}:
-          </Grid>
-          <Grid item>
-            <ShowValue value={info?.lastPoolId?.toString()} />
-          </Grid>
+          <ShowValue title={`${t('The number of currenttly existing pools')}:`} value={info?.lastPoolId?.toString()} />
         </Grid>
-
         <Grid container item justifyContent='space-between' sx={{ fontSize: 12, paddingBottom: '5px' }} xs={12}>
-          <Grid item>
-            {t('Maximum possible pools')}:
-          </Grid>
-          <Grid item>
-            <ShowValue value={info?.maxPools === -1 ? t('unlimited') : info?.maxPools} />
-          </Grid>
+          <ShowValue title={`${t('Maximum possible pools')}:`} value={info?.maxPools === -1 ? t('unlimited') : info?.maxPools} />
         </Grid>
-
         <Grid container item justifyContent='space-between' sx={{ bgcolor: grey[200], fontSize: 12, paddingBottom: '5px' }} xs={12}>
-          <Grid item>
-            {t('Maximum possible pool members')}:
-          </Grid>
-          <Grid item>
-            <ShowValue value={info?.maxPoolMembers === -1 ? t('unlimited') : info?.maxPoolMembers} />
-          </Grid>
+          <ShowValue title={`${t('Maximum possible pool members')}:`} value={info?.maxPoolMembers === -1 ? t('unlimited') : info?.maxPoolMembers} />
         </Grid>
-
         {info && info?.maxPoolMembersPerPool !== -1 &&
           <Grid container item justifyContent='space-between' sx={{ fontSize: 12, paddingBottom: '5px' }} xs={12}>
-            <Grid item>
-              {t('Maximum pool members per pool')}:
-            </Grid>
-            <Grid item>
-              <ShowValue value={info?.maxPoolMembersPerPool} />
-            </Grid>
+            <ShowValue title={`${t('Maximum pool members per pool')}:`} value={info?.maxPoolMembersPerPool} />
           </Grid>
         }
         {/* <Grid container item justifyContent='space-between' sx={{ bgcolor: grey[200],fontSize: 12, paddingBottom: '5px' }} xs={12}>
-          <Grid item>
-            {t('Minimum nominator bond')}:
-          </Grid>
-          <Grid item>
-            <ShowBalance2 api={api} balance={info?.minNominatorBond} />
-          </Grid>
+            <ShowBalance2 api={api} balance={info?.minNominatorBond} title={`${t('Minimum nominator bond')}:`}/>
         </Grid> */}
       </Grid>
     </Grid>

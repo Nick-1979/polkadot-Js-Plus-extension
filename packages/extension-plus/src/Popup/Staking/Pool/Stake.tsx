@@ -14,6 +14,7 @@ import { Alert, Avatar, Badge, Button as MuiButton, Grid, InputAdornment, TextFi
 import { grey } from '@mui/material/colors';
 import { styled } from '@mui/material/styles';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import type { Balance } from '@polkadot/types/interfaces';
 
 import { ApiPromise } from '@polkadot/api';
 import { Chain } from '@polkadot/extension-chains/types';
@@ -50,31 +51,39 @@ export default function Stake({ api, chain, currentlyStaked, handleConfirmStakin
   const [zeroBalanceAlert, setZeroBalanceAlert] = useState(false);
   const [nextButtonCaption, setNextButtonCaption] = useState<string>(t('Next'));
   const [nextToStakeButtonDisabled, setNextToStakeButtonDisabled] = useState(true);
-  const [maxStakeable, setMaxStakeable] = useState<BN>(BN_ZERO);
+  const [maxStakeable, setMaxStakeable] = useState<BN|undefined>();
   const [maxStakeableAsNumber, setMaxStakeableAsNumber] = useState<number>(0);
   const [showCreatePoolModal, setCreatePoolModalOpen] = useState<boolean>(false);
   const [showJoinPoolModal, setJoinPoolModalOpen] = useState<boolean>(false);
+  const [estimatedMaxFee, setEstimatedMaxFee] = useState<Balance | undefined>();
 
   const decimals = api && api.registry.chainDecimals[0];
   const token = api ? api.registry.chainTokens[0] : '';
   const existentialDeposit = useMemo(() => api ? new BN(api.consts.balances.existentialDeposit.toString()) : BN_ZERO, [api]);
 
   useEffect(() => {
+    api && staker?.balanceInfo?.available &&
+      api.tx.nominationPools.bondExtra({ FreeBalance: staker.balanceInfo.available }).paymentInfo(staker.address).then((i) => {
+        setEstimatedMaxFee(api.createType('Balance', i?.partialFee));
+      });
+  }, [api, staker]);
+
+  useEffect(() => {
     decimals && setStakeAmount(new BN(String(amountToMachine(stakeAmountInHuman, decimals))));
   }, [decimals, setStakeAmount, stakeAmountInHuman]);
 
   const handleStakeAmountInput = useCallback((value: string): void => {
-    if (!api || !decimals || !staker?.balanceInfo?.available) { return; }
+    if (!api || !decimals || !staker?.balanceInfo?.total) { return; }
 
     setAlert('');
     const valueAsBN = new BN(String(amountToMachine(value, decimals)));
 
-    if (valueAsBN.gt(maxStakeable) && valueAsBN.lt(new BN(String(staker.balanceInfo.available)))) {
+    if (new BN(staker.balanceInfo.total.toString()).sub(valueAsBN).sub(estimatedMaxFee ?? BN_ZERO).lt(existentialDeposit)) {
       setAlert(t('Your account might be reaped!'));
     }
 
     setStakeAmountInHuman(fixFloatingPoint(value));
-  }, [api, decimals, maxStakeable, staker?.balanceInfo?.available, t]);
+  }, [api, decimals, estimatedMaxFee, existentialDeposit, staker, t]);
 
   const handleStakeAmount = useCallback((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     let value = event.target.value;
@@ -113,20 +122,19 @@ export default function Stake({ api, chain, currentlyStaked, handleConfirmStakin
   }, [stakeAmountInHuman, decimals, handleConfirmStakingModalOpen, state, setState]);
 
   useEffect(() => {
-    if (!poolStakingConsts || existentialDeposit === undefined || !staker?.balanceInfo?.available) { return; }
+    if (!poolStakingConsts || existentialDeposit === undefined || !staker?.balanceInfo?.available || !estimatedMaxFee) { return; }
 
-    let max = new BN(String(staker.balanceInfo.available)).sub(existentialDeposit.muln(3)); // 3: one goes to pool rewardId, 2 others remain as my account ED + some fee (FIXME: ED is lowerthan fee in some chains like KUSAMA)
-    // let min = poolStakingConsts.minJoinBond;
+    let max = new BN(String(staker.balanceInfo.available)).sub(existentialDeposit.muln(2)).sub(estimatedMaxFee);
 
     if (max.ltn(0)) {
       max = BN_ZERO;
     }
 
     setMaxStakeable(max);
-  }, [poolStakingConsts, existentialDeposit, staker?.balanceInfo?.available]);
+  }, [poolStakingConsts, existentialDeposit, staker, myPool, estimatedMaxFee]);
 
   useEffect(() => {
-    if (!decimals) { return; }
+    if (!decimals || !maxStakeable) { return; }
 
     const maxStakeableAsNumber = Number(amountToHuman(maxStakeable.toString(), decimals));
 
@@ -266,7 +274,7 @@ export default function Stake({ api, chain, currentlyStaked, handleConfirmStakin
                   <Grid item sx={{ fontSize: 12 }}>
                     {t('Max')}{': ~ '}
                     <MuiButton onClick={handleMaxStakeClicked} variant='text'>
-                      <FormatBalance api={api} value={maxStakeable} />
+                      <ShowBalance2 api={api} balance={maxStakeable} />
                     </MuiButton>
                   </Grid>
                 </Grid>

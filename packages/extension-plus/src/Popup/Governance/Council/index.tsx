@@ -73,7 +73,7 @@ export default function CouncilIndex({ address, chainInfo, setCouncilModalOpen, 
     <Popup handleClose={handleCouncilModalClose} showModal={showCouncilModal}>
       <PlusHeader action={handleCouncilModalClose} chain={chainInfo?.chainName} closeText={'Close'} icon={<GroupsIcon />} title={'Council'} />
       <Grid container>
-        <Grid item sx={{ margin: '0px 30px' }} xs={12}>
+        <Grid item sx={{ borderBottom: 1, borderColor: 'divider', margin: '0px 30px' }} xs={12}>
           <Tabs indicatorColor='secondary' onChange={handleTabChange} textColor='secondary' value={tabValue} variant='fullWidth'>
             <Tab icon={<PeopleIcon fontSize='small' />} iconPosition='start' label='councillors' sx={{ fontSize: 11 }} value='council' />
             <Tab icon={<AutoAwesomeMotionIcon fontSize='small' />} iconPosition='start' label={`Motions (${currentMotionsCount}/${totalMotionsSofar})`} sx={{ fontSize: 11 }} value='motions' />
@@ -85,14 +85,12 @@ export default function CouncilIndex({ address, chainInfo, setCouncilModalOpen, 
             : <Progress title={'Loading members info ...'} />}
           </>
           : ''}
-
         {tabValue === 'motions'
           ? <>{chainInfo && motions
             ? <Motions chainInfo={chainInfo} currentBlockNumber={currentBlockNumber} motions={motions} />
             : <Progress title={'Loading motions ...'} />}
           </>
           : ''}
-
       </Grid>
     </Popup>
   );

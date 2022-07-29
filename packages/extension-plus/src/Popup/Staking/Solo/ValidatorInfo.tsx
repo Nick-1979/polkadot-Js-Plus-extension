@@ -11,7 +11,7 @@
 import { BubbleChart as BubbleChartIcon } from '@mui/icons-material';
 import { Avatar, Container, Divider, Grid, Link, Paper } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import React, { Dispatch, SetStateAction, useCallback } from 'react';
+import React, { Dispatch, SetStateAction, useCallback, useState, useEffect } from 'react';
 
 import { ApiPromise } from '@polkadot/api';
 import { DeriveAccountInfo, DeriveStakingQuery } from '@polkadot/api-derive/types';
@@ -30,17 +30,30 @@ interface Props {
   showValidatorInfoModal: boolean;
   setShowValidatorInfoModal: Dispatch<SetStateAction<boolean>>;
   info: DeriveStakingQuery;
-  validatorsIdentities: DeriveAccountInfo[] | null;
+  validatorsIdentities: DeriveAccountInfo[] | undefined;
   staker?: AccountsBalanceType | string;
 }
 
 export default function ValidatorInfo({ api, chain, info, setShowValidatorInfoModal, showValidatorInfoModal, staker, validatorsIdentities }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-  const accountInfo = validatorsIdentities?.find((v) => v.accountId === info?.accountId);
+  const [accountInfo, setAccountInfo] = useState<DeriveAccountInfo | undefined>();
   const chainName = chain?.name.replace(' Relay Chain', '');
 
   const own = api.createType('Balance', info?.exposure.own || info?.stakingLedger.active);
   const total = api.createType('Balance', info?.exposure.total);
+
+  useEffect(() => {
+    const accountInfo = validatorsIdentities?.find((v) => v.accountId === info?.accountId);
+
+    if (accountInfo) {
+      return setAccountInfo(accountInfo);
+    }
+
+    // eslint-disable-next-line no-void
+    void api.derive.accounts.info(info.accountId).then((info) => {
+      setAccountInfo(info);
+    });
+  }, [api, info, validatorsIdentities]);
 
   const handleDetailsModalClose = useCallback(
     (): void => {

@@ -5,8 +5,7 @@
 
 import type { DeriveAccountInfo, DeriveCollectiveProposal, DeriveElectionsInfo, DeriveProposal, DeriveReferendumExt, DeriveStakingAccount, DeriveStakingQuery } from '@polkadot/api-derive/types';
 import type { StakingLedger } from '@polkadot/types/interfaces';
-import type { PalletNominationPoolsBondedPoolInner, PalletNominationPoolsPoolMember, PalletNominationPoolsRewardPool, PalletStakingNominations } from '@polkadot/types/lookup';
-// import type { Option } from '@polkadot/types';
+import type { PalletNominationPoolsBondedPoolInner, PalletNominationPoolsPoolMember, PalletNominationPoolsRewardPool, PalletRecoveryActiveRecovery } from '@polkadot/types/lookup';
 import type { BN } from '@polkadot/util';
 
 import { ApiPromise } from '@polkadot/api';
@@ -359,3 +358,35 @@ export interface MembersMapEntry {
   accountId: string;
   member: PalletNominationPoolsPoolMember;
 }
+
+export interface RecoveryConsts {
+  configDepositBase: BN;
+  friendDepositFactor: BN;
+  maxFriends: number;
+  recoveryDeposit: BN
+}
+
+export interface Rescuer extends DeriveAccountInfo {
+  option?: {
+    created: BN,
+    deposit: BN,
+    friends: string[]
+  }
+}
+
+export interface Voucher {
+  blockNumber: string;
+  friend: string;
+  id: string;
+  lost: string;
+  rescuer: string;
+}
+
+export interface Initiation {
+  blockNumber: string;
+  id: string;
+  lost: string;
+  rescuer: string;
+}
+
+export type Close = Initiation;

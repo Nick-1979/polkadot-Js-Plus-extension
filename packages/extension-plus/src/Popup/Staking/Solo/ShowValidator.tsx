@@ -11,7 +11,7 @@ import type { AccountId } from '@polkadot/types/interfaces';
 
 import { DirectionsRun as DirectionsRunIcon, MoreVert as MoreVertIcon, ReportProblemOutlined as ReportProblemOutlinedIcon } from '@mui/icons-material';
 import { Grid, Paper, Switch, Tooltip } from '@mui/material';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { ApiPromise } from '@polkadot/api';
 import { DeriveAccountInfo, DeriveStakingQuery } from '@polkadot/api-derive/types';
@@ -32,21 +32,33 @@ interface Props {
   handleMoreInfo: (arg0: DeriveStakingQuery) => void;
   isSelected?: (arg0: DeriveStakingQuery) => boolean;
   isInNominatedValidators?: (arg0: DeriveStakingQuery) => boolean;
-  validatorsIdentities: DeriveAccountInfo[] | null;
+  validatorsIdentities: DeriveAccountInfo[] | undefined;
   activeValidator?: DeriveStakingQuery;
   showSocial?: boolean;
   t: TFunction;
 }
 
 function ShowValidator({ activeValidator, api, chain, handleMoreInfo, handleSwitched, isInNominatedValidators, isSelected, showSocial = true, showSwitch = false, stakingConsts, t, validator, validatorsIdentities }: Props) {
+  const [accountInfo, setAccountInfo] = useState<DeriveAccountInfo | undefined>();
   const isItemSelected = isSelected && isSelected(validator);
   const rowBackground = isInNominatedValidators && (isInNominatedValidators(validator) ? SELECTED_COLOR : '');
-  const getAccountInfo = (id: AccountId): DeriveAccountInfo | undefined => validatorsIdentities?.find((v) => v?.accountId === id);
   const nominatorCount = validator.exposure.others.length;
   const isActive = validator.accountId === activeValidator?.accountId;
   const isOverSubscribed = stakingConsts && validator.exposure.others.length > stakingConsts?.maxNominatorRewardedPerValidator;
-
   const total = String(validator.exposure.total).indexOf('.') === -1 && api.createType('Balance', validator.exposure.total);
+
+  useEffect(() => {
+    const info = validatorsIdentities?.find((v) => v?.accountId === validator?.accountId);
+
+    if (info) {
+      return setAccountInfo(info);
+    }
+
+    // eslint-disable-next-line no-void
+    void api.derive.accounts.info(validator?.accountId).then((info) => {
+      setAccountInfo(info);
+    });
+  }, [api, validator?.accountId, validatorsIdentities]);
 
   return (
     <Paper elevation={2} sx={{ backgroundColor: rowBackground, borderRadius: '10px', mt: '4px', p: '1px 10px 2px 0px' }}>
@@ -55,9 +67,9 @@ function ShowValidator({ activeValidator, api, chain, handleMoreInfo, handleSwit
           <MoreVertIcon fontSize={showSwitch ? 'medium' : 'small'} onClick={() => handleMoreInfo(validator)} sx={{ cursor: 'pointer' }} />
         </Grid>
         <Grid item sx={{ fontSize: 11 }} xs={6}>
-          {validatorsIdentities
+          {validatorsIdentities || accountInfo
             ? <Identity
-              accountInfo={getAccountInfo(validator?.accountId)}
+              accountInfo={accountInfo}
               chain={chain}
               iconSize={showSwitch ? 24 : 20}
               showSocial={showSocial}

@@ -5,7 +5,7 @@
 
 /** 
  * @description
- *  this component shows some general staking informathion including minNominatorBond, maxNominatorRewardedPerValidator, etc.  
+ *  this component shows some general staking informathion including minNominatorBond, maxNominatorRewardedPerValidator, etc.
  * */
 
 import { Divider, Grid } from '@mui/material';
@@ -39,62 +39,24 @@ function InfoTab({ api, currentEraIndex, minNominated, stakingConsts }: Props): 
         {t('Information you need to know about')}
         <Divider light />
       </Grid>
-
       <Grid container item sx={{ px: '5px' }} xs={12}>
-
         <Grid container item justifyContent='space-between' sx={{ fontSize: 12, paddingBottom: '5px' }} xs={12}>
-          <Grid item>
-            {t('Maximum validators you can select: ')}
-          </Grid>
-          <Grid item>
-            <ShowValue value={stakingConsts?.maxNominations} />
-          </Grid>
+          <ShowValue title={t('Maximum validators you can select: ')} value={stakingConsts?.maxNominations} />
         </Grid>
-
         <Grid container item justifyContent='space-between' sx={{ bgcolor: grey[200], fontSize: 12, paddingBottom: '5px' }} xs={12}>
-          <Grid item>
-            {t('Minimum {{symbol}}s to be a staker (threshold): ', { replace: { symbol: token } })}
-          </Grid>
-          <Grid item>
-            <ShowBalance2 api={api} balance={stakingConsts?.minNominatorBond} />
-          </Grid>
+          <ShowBalance2 api={api} balance={stakingConsts?.minNominatorBond} direction='row' title={t('Minimum {{symbol}}s to be a staker (threshold): ', { replace: { symbol: token } })} />
         </Grid>
-
         <Grid container item justifyContent='space-between' sx={{ fontSize: 12, paddingBottom: '5px' }} xs={12}>
-          <Grid item>
-            {t('Minimum {{symbol}}s to recieve rewards today (era: {{eraIndex}})', { replace: { symbol: token, eraIndex: currentEraIndex } })}:
-          </Grid>
-          <Grid item>
-            <ShowBalance2 api={api} balance={minNominated} />
-          </Grid>
+          <ShowBalance2 api={api} balance={minNominated} direction='row' title={t('Minimum {{symbol}}s to recieve rewards today (era: {{eraIndex}}):', { replace: { symbol: token, eraIndex: currentEraIndex } })} />
         </Grid>
-
         <Grid container item justifyContent='space-between' sx={{ bgcolor: grey[200], fontSize: 12, paddingBottom: '5px' }} xs={12}>
-          <Grid item>
-            {t('Maximum nominators of a validator, who may receive rewards: ')}
-          </Grid>
-          <Grid item>
-            <ShowValue value={stakingConsts?.maxNominatorRewardedPerValidator} />
-          </Grid>
+          <ShowValue title={t('Maximum nominators of a validator, who may receive rewards: ')} value={stakingConsts?.maxNominatorRewardedPerValidator} />
         </Grid>
-
         <Grid container item justifyContent='space-between' sx={{ fontSize: 12, paddingBottom: '5px' }} xs={12}>
-          <Grid item>
-            {t('Days it takes to receive your funds back after unstaking:  ')}
-          </Grid>
-          <Grid item>
-            <ShowValue unit={t('days')} value={stakingConsts?.unbondingDuration} />
-          </Grid>
+          <ShowValue title={t('Days it takes to receive your funds back after unstaking:  ')} unit={t('days')} value={stakingConsts?.unbondingDuration} />
         </Grid>
-
         <Grid container item justifyContent='space-between' sx={{ bgcolor: grey[200], fontSize: 12, paddingBottom: '5px' }} xs={12}>
-          <Grid item>
-            {t('Minimum {{symbol}}s that must remain in your account (existential deposit): ', { replace: { symbol: token } })}
-          </Grid>
-          <Grid item>
-            <ShowBalance2 api={api} balance={stakingConsts?.existentialDeposit} />
-            {/* <span>{`s ${t('plus some fees')}`}</span> */}
-          </Grid>
+          <ShowBalance2 api={api} balance={stakingConsts?.existentialDeposit} direction='row' title={t('Minimum {{symbol}}s that must remain in your account (existential deposit): ', { replace: { symbol: token } })} />
         </Grid>
       </Grid>
     </Grid>

@@ -3,22 +3,22 @@
 
 import type { AccountJson } from '@polkadot/extension-base/background/types';
 
-import React, { useCallback, useContext, useMemo, useState, useEffect } from 'react'; // added for plus,useEffect, useContext
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';// added for plus, useContext
 import styled from 'styled-components';
 
 import { canDerive } from '@polkadot/extension-base/utils';
 import { ThemeProps } from '@polkadot/extension-ui/types';
 
 import useEndpoints from '../../../../extension-plus/src/hooks/useEndpoints';// added for plus
-import { CROWDLOANS_CHAINS } from '../../../../extension-plus/src/util/constants';// added for plus
+import { CROWDLOANS_CHAINS, GOVERNANCE_CHAINS, SOCIAL_RECOVERY_CHAINS } from '../../../../extension-plus/src/util/constants';// added for plus
 import { SavedMetaData } from '../../../../extension-plus/src/util/plusTypes';// added for plus
 import { prepareMetaData } from '../../../../extension-plus/src/util/plusUtils';// added for plus
-import { AccountContext, Address, Dropdown, Link, MenuDivider } from '../../components';// added for plus, AccountContext
-
+import { AccountContext, ActionContext, ActionText, Address, Dropdown, Link, MenuDivider, MenuItem, Svg } from '../../components';// added for plus, AccountContext, ActionContext, Svg
 import useGenesisHashOptions from '../../hooks/useGenesisHashOptions';
 import useTranslation from '../../hooks/useTranslation';
 import { editAccount, tieAccount, updateMeta } from '../../messaging';// added for plus, updateMeta
 import { Name } from '../../partials';
+import { faUserShield, faTent, faPeopleRoof } from '@fortawesome/free-solid-svg-icons';// added for plus,
 
 interface Props extends AccountJson {
   className?: string;
@@ -37,7 +37,8 @@ function Account({ address, className, genesisHash, isExternal, isHardware, isHi
   const genesisOptions = useGenesisHashOptions();
   const endpointOptions = useEndpoints(genesisHash); // added for plus
   const { accounts } = useContext(AccountContext);// added for plus
-  const account = accounts.find((account) => account.address === address);// added for plus
+  const account = accounts.find((account) => account.address === address);
+  const onAction = useContext(ActionContext);// added for plus
 
   const [selectedEndpoint, setSelectedEndpoint] = useState<string | undefined | null>(name); // added for plus
 
@@ -86,24 +87,52 @@ function Account({ address, className, genesisHash, isExternal, isHardware, isHi
     [editedName, address, _toggleEdit]
   );
 
+  // added for plus
+  const _goToLink = useCallback(
+    (link: string) => {
+      if (link === 'crowdloans' && !CROWDLOANS_CHAINS.includes(genesisHash)) {
+        return;
+      }
+
+      if (link === 'governance' && !GOVERNANCE_CHAINS.includes(genesisHash)) {
+        return;
+      }
+
+      if (link === 'socialRecovery' && !SOCIAL_RECOVERY_CHAINS.includes(genesisHash)) {
+        return;
+      }
+
+      onAction(`/${link}/${genesisHash}/${address}`);
+    }, [address, genesisHash, onAction]
+  );
+
   const _actions = useMemo(() => (
     <>
       {/* // added for plus */}
-      <Link
-        className='newMenuItem'
-        isDisabled={!CROWDLOANS_CHAINS.includes(genesisHash)}
-        to={`/crowdloans/${genesisHash}/${address}`}
-      >
-        {t<string>('Crowdloan')}
-      </Link>
-      <Link
-        className='newMenuItem'
-        isDisabled={!CROWDLOANS_CHAINS.includes(genesisHash)}
-
-        to={`/governance/${genesisHash}/${address}`}
-      >
-        {t<string>('Governance')}
-      </Link>
+      <MenuItem className='newMenu'>
+        <ActionText
+          className={CROWDLOANS_CHAINS.includes(genesisHash) ? 'newMenu' : 'disabledMenu'}
+          icon={faPeopleRoof}
+          onClick={() => _goToLink('crowdloans')}
+          text={t<string>('Crowdloans')}
+        />
+      </MenuItem>
+      <MenuItem className='newMenu'>
+        <ActionText
+          className={GOVERNANCE_CHAINS.includes(genesisHash) ? 'newMenu' : 'disabledMenu'}
+          icon={faTent}
+          onClick={() => _goToLink('governance')}
+          text={t<string>('Governance')}
+        />
+      </MenuItem>
+      <MenuItem className='newMenu'>
+        <ActionText
+          className={SOCIAL_RECOVERY_CHAINS.includes(genesisHash) ? 'newMenu' : 'disabledMenu'}
+          icon={faUserShield}
+          onClick={() => _goToLink('socialRecovery')}
+          text={t<string>('Social Recovery')}
+        />
+      </MenuItem>
       <MenuDivider />
       <Link
         className='menuItem'
@@ -161,8 +190,8 @@ function Account({ address, className, genesisHash, isExternal, isHardware, isHi
         </>
       )}
     </>
-    // added for plus,'_onChangeEndpoint', 'endpointOptions', and 'selectedEndpoint'
-  ), [_onChangeEndpoint, _onChangeGenesis, _toggleEdit, address, endpointOptions, genesisHash, genesisOptions, isExternal, isHardware, selectedEndpoint, t, type]);
+    // added for plus,'_onChangeEndpoint', 'endpointOptions', and 'selectedEndpoint', _goToSocialRecovery
+  ), [_goToLink, _onChangeEndpoint, _onChangeGenesis, _toggleEdit, address, endpointOptions, genesisHash, genesisOptions, isExternal, isHardware, selectedEndpoint, t, type]);
 
   return (
     <div className={className}>
@@ -229,7 +258,7 @@ export default styled(Account)(({ theme }: ThemeProps) => `
     line-height: 20px;
     margin: 0;
     min-width: 13rem;
-    padding: 4px 16px;
+    padding: 1px 16px;  // added for plus, from 4px 16px to 1px 16px
 
     .genesisSelection {
       margin: 0;
@@ -244,5 +273,41 @@ export default styled(Account)(({ theme }: ThemeProps) => `
     margin: 0;
     min-width: 13rem;
     padding: 4px 16px;
+  }
+  .newMenu {   // added for plus   
+    span {
+      color: ${theme.textColor};
+      font-size: 15px;
+      line-height: ${theme.lineHeight};
+      text-decoration: none;
+      vertical-align: middle;
+      padding-left: 5px;
+    }
+
+    ${Svg} {
+      background: ${theme.textColor};
+      height: 20px;
+      top: 4px;
+      width: 20px;
+      margin: 0px;
+    }
+  }
+  .disabledMenu {   // added for plus   
+    span {
+      color: #a8a0a0;
+      font-size: 15px;
+      line-height: ${theme.lineHeight};
+      text-decoration: none;
+      vertical-align: middle;
+      padding-left: 5px;
+    }
+
+    ${Svg} {
+      background: #a8a0a0;
+      height: 20px;
+      top: 4px;
+      width: 20px;
+      margin: 0px;
+    }
   }
 `);

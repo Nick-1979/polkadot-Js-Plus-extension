@@ -166,5 +166,7 @@
   "Raw data signing is not supported for hardware wallets.": "",
   "Raw data signing is not supported for QR wallets.": "",
   "Crowdloan": "",
-  "Governance": ""
+  "Governance": "",
+  "Social recovery": "",
+  "Crowdloans": ""
 }

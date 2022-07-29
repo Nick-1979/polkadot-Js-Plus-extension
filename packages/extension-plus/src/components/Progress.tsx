@@ -6,16 +6,17 @@ import React from 'react';
 
 interface Props {
   title: string;
+  pt?: number | string;
 }
 
-function Progress ({ title }: Props): React.ReactElement<Props> {
+function Progress({ pt = '50px', title }: Props): React.ReactElement<Props> {
   return (
     <Grid
       alignItems='center'
       container
       direction='column'
       justifyContent='center'
-      sx={{ paddingTop: '50px' }}
+      pt={pt}
     >
       <Grid item>
         <CircularProgress

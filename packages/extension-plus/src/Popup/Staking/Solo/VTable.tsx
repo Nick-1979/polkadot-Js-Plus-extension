@@ -24,13 +24,13 @@ interface Props {
   chain: Chain;
   validators: DeriveStakingQuery[];
   stakingConsts: StakingConsts | undefined;
-  validatorsIdentities: DeriveAccountInfo[] | null;
+  validatorsIdentities: DeriveAccountInfo[] | undefined;
   setInfo: React.Dispatch<React.SetStateAction<DeriveStakingQuery | null>>;
   setShowValidatorInfoModal: React.Dispatch<React.SetStateAction<boolean>>;
   height?: number;
 }
 
-export default function VTable({ activeValidator, api, chain, setInfo, setShowValidatorInfoModal, stakingConsts, validators, validatorsIdentities, height = 180 }: Props) {
+export default function VTable({ activeValidator, api, chain, height = 180, setInfo, setShowValidatorInfoModal, stakingConsts, validators, validatorsIdentities }: Props) {
   const { t } = useTranslation();
 
   const handleMoreInfo = useCallback((info: DeriveStakingQuery) => {

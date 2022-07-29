@@ -14,6 +14,7 @@ export default function useEndpoint(
   accounts: AccountJson[] | AccountJson,
   address: string | null | undefined,
   chain: Chain | null | undefined): string | undefined {
+    
   const endpoint = useMemo(() => {
     if (ENVIREONMENT === 'developement') {
       return DEVELOPEMENT_ENDPOINT;

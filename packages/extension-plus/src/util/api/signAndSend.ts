@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
+import type { AccountId } from '@polkadot/types/interfaces';
+
 import { ApiPromise } from '@polkadot/api';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { KeyringPair } from '@polkadot/keyring/types';
@@ -9,11 +11,11 @@ import { ISubmittableResult } from '@polkadot/types/types';
 
 import { TxInfo } from '../plusTypes';
 
-export async function signAndSend (
+export async function signAndSend(
   api: ApiPromise,
   submittable: SubmittableExtrinsic<'promise', ISubmittableResult>,
   _signer: KeyringPair,
-  senderAddress: string): Promise<TxInfo> {
+  senderAddress: string | AccountId): Promise<TxInfo> {
   return new Promise((resolve) => {
     console.log('signing and sending a tx ...');
     // eslint-disable-next-line no-void
@@ -58,6 +60,9 @@ export async function signAndSend (
           }
         });
       }
+    }).catch((e) => {
+      console.log('catch error', e);
+      resolve({ block: 0, failureText: String(e), fee: '', status: 'failed', txHash: '' });
     });
   });
 }

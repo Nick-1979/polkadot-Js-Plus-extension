@@ -51,16 +51,16 @@ export default function Proposals({ address, chain, chainInfo, proposalsInfo }: 
     <>
       {proposals?.length
         ? proposals.map((p, index) => {
-          const value = p.image?.proposal;
-          const meta = value?.registry.findMetaCall(value.callIndex);
-          const description = formatMeta(meta?.meta);
+          const value = p?.image?.proposal;
+          const meta = value ? value.registry.findMetaCall(value.callIndex) : undefined;
+          const description = meta ? formatMeta(meta?.meta) : undefined;
 
           return (
             <Paper elevation={4} key={index} sx={{ borderRadius: '10px', margin: '20px 30px 10px', p: '10px 20px' }}>
               <Grid container justifyContent='space-between'>
                 {value
                   ? <Grid item sx={{ fontSize: 11 }} xs={4}>
-                    {meta.section}. {meta.method}
+                    {meta?.section}. {meta?.method}
                   </Grid>
                   : <Grid item xs={4}></Grid>
                 }
@@ -103,10 +103,10 @@ export default function Proposals({ address, chain, chainInfo, proposalsInfo }: 
               </Grid>
               <Grid container justifyContent='space-between' sx={{ fontSize: 11, paddingTop: 1, color: 'red' }}>
                 <Grid item>
-                  {t('Locked')}{': '}{Number(amountToHuman(p.balance.toString(), decimals)).toLocaleString()} {' '}{coin}
+                  {t('Locked')}{': '}{p?.balance ? Number(amountToHuman(p.balance.toString(), decimals)).toLocaleString() : '0.00'} {' '}{coin}
                 </Grid>
                 <Grid item>
-                  {t('Deposit')}{': '}{amountToHuman(p.image.balance.toString(), decimals, 6)} {' '}{coin}
+                  {t('Deposit')}{': '}{p?.image ? amountToHuman(p.image.balance.toString(), decimals, 6) : '0.00'} {' '}{coin}
                 </Grid>
                 <Grid item>
                   {t('Seconds')}{': '}{p.seconds.length - 1}

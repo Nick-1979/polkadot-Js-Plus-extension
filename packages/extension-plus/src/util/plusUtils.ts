@@ -185,6 +185,20 @@ export function remainingTime(blocks: number): string {
   return time;
 }
 
+export function remainingTimeCountDown(seconds: number | undefined): string {
+  if (!seconds || seconds <= 0) { return 'finished'; }
+
+  const days = Math.floor(seconds / (60 * 60 * 24));
+  const [hour, min, sec] = new Date(seconds * 1000).toISOString().substring(11, 19).split(':');
+
+  const d = days ? `${days} day ` : '';
+  const h = hour ? `${hour} hour ` : '';
+  const m = min ? `${min} min ` : '';
+  const s = sec ? `${sec} sec` : '';
+
+  return d + h + m + s;
+}
+
 function splitSingle(value: string[], sep: string): string[] {
   return value.reduce((result: string[], value: string): string[] => {
     return value.split(sep).reduce((result: string[], value: string) => result.concat(value), result);

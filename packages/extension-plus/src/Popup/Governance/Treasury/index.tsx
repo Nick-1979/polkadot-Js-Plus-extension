@@ -150,7 +150,7 @@ export default function Treasury({ address, chainInfo, setTreasuryModalOpen, sho
     <Popup handleClose={handleTreasuryModalClose} showModal={showTreasuryModal}>
       <PlusHeader action={handleTreasuryModalClose} chain={chainInfo?.chainName} closeText={'Close'} icon={<AccountBalanceIcon fontSize='small' />} title={'Treasury'} />
       <Grid container>
-        <Grid item sx={{ margin: '0px 30px' }} xs={12}>
+        <Grid item sx={{ borderBottom: 1, borderColor: 'divider', margin: '0px 30px' }} xs={12}>
           <Tabs indicatorColor='secondary' onChange={handleTabChange} textColor='secondary' value={tabValue} variant='fullWidth'>
             <Tab
               icon={<SummarizeOutlinedIcon fontSize='small' />}

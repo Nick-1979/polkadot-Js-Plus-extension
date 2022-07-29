@@ -3,7 +3,9 @@
 /* eslint-disable header/header */
 /* eslint-disable react/jsx-max-props-per-line */
 
-/** render confirm button */
+/** @description
+ * renders confirm button 
+ * */
 
 import { Button as MuiButton, Grid } from '@mui/material';
 import React from 'react';

@@ -148,10 +148,8 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
         smallMargin
         text={`${t<string>('Crowdloans')} ${chainInfo?.chainName ? 'on' : ''} ${chainInfo?.chainName ?? ''}`}
       />
-
       <Grid alignItems='center' container id='selectRelyChain' sx={{ p: '0px 24px' }}>
-
-        <Grid item xs={12}>
+        <Grid item sx={{ borderBottom: 1, borderColor: 'divider' }} xs={12}>
           <Tabs
             indicatorColor='secondary'
             onChange={handleTabChange}
@@ -181,11 +179,9 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
           </Tabs>
         </Grid>
       </Grid>
-
       {!auction &&
         <Progress title={t('Loading Auction/Crowdloans ...')} />
       }
-
       {auction && tabValue === 'auction' && chainInfo &&
         <AuctionTab
           auction={auction}
@@ -194,7 +190,6 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
           myContributions={myContributions}
         />
       }
-
       {auction && tabValue === 'crowdloan' && chainInfo &&
         <CrowdloanTab
           auction={auction}
@@ -204,7 +199,6 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
           myContributions={myContributions}
         />
       }
-
       {auction && tabValue === 'info' && chainInfo &&
         <InfoTab
           auction={auction}
@@ -213,7 +207,6 @@ function Crowdloans({ className }: Props): React.ReactElement<Props> {
           myContributions={myContributions}
         />
       }
-
       {contributeModal && auction && contributingTo && chainInfo &&
         <Contribute
           address={address}

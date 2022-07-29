@@ -3,6 +3,7 @@
 /* eslint-disable header/header */
 
 import type { SubmittableExtrinsic } from '@polkadot/api/types';
+import type { AccountId } from '@polkadot/types/interfaces';
 
 import { ApiPromise } from '@polkadot/api';
 import { KeyringPair } from '@polkadot/keyring/types';
@@ -12,13 +13,13 @@ import { signAndSend } from './signAndSend';
 
 export default async function broadcast(
   api: ApiPromise,
-  tx: ((...args: any[]) => SubmittableExtrinsic<'promise'>) | null,
-  params: unknown[] | (() => unknown[]) | null,
+  tx: ((...args: any[]) => SubmittableExtrinsic<'promise'>),
+  params: unknown[] | (() => unknown[]),
   signer: KeyringPair,
-  senderAddress: string
+  senderAddress: string | AccountId
 ): Promise<Promise<TxInfo>> {
   try {
-    console.log('broadcasting a tx ....');
+    console.log('Broadcasting a tx ....');
 
     const b = tx(...params);
 

@@ -9,32 +9,37 @@
 */
 import type { TFunction } from 'i18next';
 import type { StakingLedger } from '@polkadot/types/interfaces';
+import type { PalletRecoveryActiveRecovery } from '@polkadot/types/lookup';
 import type { KeypairType } from '@polkadot/util-crypto/types';
 import type { ThemeProps } from '../../../extension-ui/src/types';
 
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
-import { faCoins, faQrcode, faSyncAlt, faTasks } from '@fortawesome/free-solid-svg-icons';
+import { faCoins, faQrcode, faShield, faShieldHalved, faSyncAlt, faTasks } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Container, Grid, Link } from '@mui/material';
-import { deepOrange, grey } from '@mui/material/colors';
+import { deepOrange, green, grey, red } from '@mui/material/colors';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { AccountJson } from '@polkadot/extension-base/background/types';
 import { Chain } from '@polkadot/extension-chains/types';
+import { Option } from '@polkadot/types-codec';
+import { BN } from '@polkadot/util';
 
-import { AccountContext } from '../../../extension-ui/src/components/contexts';
+import { AccountContext, ActionContext } from '../../../extension-ui/src/components/contexts';
 import { updateMeta } from '../../../extension-ui/src/messaging';
 import useApi from '../hooks/useApi';
 import useEndPoint from '../hooks/useEndPoint';
 import AddressQRcode from '../Popup/AddressQRcode/AddressQRcode';
 import TransactionHistory from '../Popup/History';
+import Configure from '../Popup/SocialRecovery/Configure';
 import StakingIndex from '../Popup/Staking/StakingIndex';
 import TransferFunds from '../Popup/Transfer';
 import { getPriceInUsd } from '../util/api/getPrice';
 import { SUPPORTED_CHAINS } from '../util/constants';
-import { AccountsBalanceType, BalanceType, SavedMetaData } from '../util/plusTypes';
+import { AccountsBalanceType, BalanceType, Close,Initiation, Rescuer, SavedMetaData  } from '../util/plusTypes';
 import { prepareMetaData } from '../util/plusUtils';
+import { getCloses, getInitiations } from '../util/subquery';
 import { Balance } from './';
 
 interface Props {
@@ -53,11 +58,11 @@ interface Subscription {
 }
 const defaultSubscribtion = { chainName: '', endpoint: '' };
 
-function Plus ({ address, chain, formattedAddress, givenType, name, t }: Props): React.ReactElement<Props> {
+function Plus({ address, chain, formattedAddress, givenType, name, t }: Props): React.ReactElement<Props> {
   const { accounts } = useContext(AccountContext);
   const endpoint = useEndPoint(accounts, address, chain);
   const api = useApi(endpoint);
-
+  const onAction = useContext(ActionContext);
   const supported = (chain: Chain) => SUPPORTED_CHAINS.includes(chain?.name.replace(' Relay Chain', ''));
   const [balance, setBalance] = useState<AccountsBalanceType | null>(null);
   const [balanceChangeSubscribtion, setBalanceChangeSubscribtion] = useState<Subscription>(defaultSubscribtion);
@@ -65,11 +70,15 @@ function Plus ({ address, chain, formattedAddress, givenType, name, t }: Props):
   const [showQRcodeModalOpen, setQRcodeModalOpen] = useState(false);
   const [showTxHistoryModal, setTxHistoryModalOpen] = useState(false);
   const [showStakingModal, setStakingModalOpen] = useState(false);
+  const [showCloseRecoveryModal, setCloseRecoveryModalOpen] = useState<boolean | undefined>();
   const [refreshing, setRefreshing] = useState(false);
   const [account, setAccount] = useState<AccountJson | null>(null);
   const [sender, setSender] = useState<AccountsBalanceType>({ address: String(address), chain: null, name: String(name) });
   const [price, setPrice] = useState<number>(0);
   const [ledger, setLedger] = useState<StakingLedger | null>(null);
+  const [recoverable, setRecoverable] = useState<boolean | undefined>();
+  const [rescuer, setRescuer] = useState<Rescuer | undefined | null>();
+  const [isRecoveringAlert, setIsRecoveringAlert] = useState<boolean | undefined>();
 
   const getLedger = useCallback((): void => {
     if (!endpoint || !address) { return; }
@@ -92,12 +101,39 @@ function Plus ({ address, chain, formattedAddress, givenType, name, t }: Props):
     };
   }, [address, endpoint]);
 
+  const isRecovering = useCallback((address: string, chain: Chain, endpoint: string): void => {
+    if (!endpoint || !address || !chain) { return; }
+
+    const isRecoveringWorker: Worker = new Worker(new URL('../util/workers/isRecovering.js', import.meta.url));
+
+    isRecoveringWorker.postMessage({ address, chain, endpoint });
+
+    isRecoveringWorker.onerror = (err) => {
+      console.log(err);
+    };
+
+    isRecoveringWorker.onmessage = (e) => {
+      const rescuer: Rescuer | undefined = e.data as unknown as Rescuer | undefined;
+
+      if (rescuer?.option) {
+        console.log('rescuer is :', rescuer);
+        rescuer.option.created = new BN(rescuer.option.created);
+        rescuer.option.deposit = new BN(rescuer.option.deposit);
+        setRescuer(rescuer);
+      } else {
+        setRescuer(null);
+      }
+
+      isRecoveringWorker.terminate();
+    };
+  }, []);
+
   const subscribeToBalanceChanges = useCallback((): void => {
     if (!chain || !endpoint || !formattedAddress) { return; }
 
     console.log(`subscribing to:${chain?.name} using:${endpoint}`);
 
-    setBalanceChangeSubscribtion({ chainName: chain?.name, endpoint: endpoint });
+    setBalanceChangeSubscribtion({ chainName: chain?.name, endpoint });
     const subscribeToBalanceChangesWorker: Worker = new Worker(new URL('../util/workers/subscribeToBalance.js', import.meta.url));
 
     subscribeToBalanceChangesWorker.postMessage({ address, endpoint, formattedAddress });
@@ -122,19 +158,82 @@ function Plus ({ address, chain, formattedAddress, givenType, name, t }: Props):
   }, [address, chain, formattedAddress, name, endpoint]);
 
   useEffect((): void => {
+    formattedAddress && chain && endpoint && api?.query?.recovery && isRecovering(formattedAddress, chain, endpoint); //TOLO: filter just supported chain
+  }, [api, formattedAddress, chain, endpoint, isRecovering]);
+
+  useEffect((): void => {
+    const chainName = chain?.name.replace(' Relay Chain', '');
+
+    formattedAddress && chainName && getInitiations(chainName, formattedAddress, 'lost').then((initiations: Initiation[] | null) => {
+      // console.log('initiations:', initiations);
+
+      if (!initiations?.length) {
+        // no initiations set rescuers null
+        return setIsRecoveringAlert(false);
+      }
+
+      // eslint-disable-next-line no-void
+      void getCloses(chainName, formattedAddress).then((closes: Close[] | null) => {
+        // console.log('recovery closes', closes);
+
+        let maybeRescuers = initiations.map((i) => i.rescuer);
+
+        if (closes?.length) {
+          const openInitiation = initiations.filter((i: Initiation) => !closes.find((c: Close) => c.lost === i.lost && c.rescuer === i.rescuer && new BN(i.blockNumber).lt(new BN(c.blockNumber))));
+
+          maybeRescuers = openInitiation?.map((oi) => oi.rescuer);
+        }
+
+        if (maybeRescuers?.length) {
+          setIsRecoveringAlert(true);
+        } else {
+          return setIsRecoveringAlert(false);
+        }
+
+        maybeRescuers?.length && api && api.query.recovery.activeRecoveries(formattedAddress, maybeRescuers[0]).then((activeRecovery: Option<PalletRecoveryActiveRecovery>) => {
+          console.log('activeRecovery utilizing subQuery is :', activeRecovery?.isSome ? activeRecovery.unwrap() : null);
+
+          if (activeRecovery?.isSome) {
+            const unwrapedRescuer = activeRecovery.unwrap();
+
+            setRescuer({
+              accountId: maybeRescuers[0],
+              option: {
+                created: unwrapedRescuer.created,
+                deposit: unwrapedRescuer.deposit,
+                friends: JSON.parse(JSON.stringify(unwrapedRescuer.friends)) as string[]
+              }
+            });
+          } else {
+            setRescuer(null);
+          }
+        });
+      });
+    });
+  }, [api, formattedAddress, chain]);
+
+  useEffect((): void => {
     // eslint-disable-next-line no-void
     chain && void getPriceInUsd(chain).then((p) => { setPrice(p || 0); });
   }, [chain]);
 
   useEffect((): void => {
-    if (!chain) return;
+    // eslint-disable-next-line no-void
+    chain && api && api.query?.recovery && api.query.recovery.recoverable(formattedAddress).then((r) => {
+      r.isSome && setRecoverable(r.unwrap())
+      console.log(`is ${formattedAddress} recoverAble: ${r.isSome && r.unwrap()}`);
+    });
+  }, [api, chain, formattedAddress]);
+
+  useEffect((): void => {
+    if (!chain) { return; }
 
     if (supported(chain) && endpoint) {
       getLedger();
     }
   }, [getLedger, chain, endpoint]);
 
-  function getBalanceFromMetaData (_account: AccountJson, _chain: Chain): AccountsBalanceType | null {
+  function getBalanceFromMetaData(_account: AccountJson, _chain: Chain): AccountsBalanceType | null {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const accLastBalance: SavedMetaData = _account.lastBalance ? JSON.parse(_account.lastBalance) : null;
 
@@ -234,7 +333,17 @@ function Plus ({ address, chain, formattedAddress, givenType, name, t }: Props):
     subscribeToBalanceChanges();
   }, [chain, refreshing, subscribeToBalanceChanges]);
 
-  function getCoin (_myBalance: AccountsBalanceType): string {
+  const handleOpenRecovery = useCallback((): void => {
+    if (!chain || !onAction) { return; }
+
+    onAction(`/socialRecovery/${chain.genesisHash}/${address}`);
+  }, [address, chain, onAction]);
+
+  const handleCloseRecovery = useCallback((): void => {
+    chain && setCloseRecoveryModalOpen(true);
+  }, [chain]);
+
+  function getCoin(_myBalance: AccountsBalanceType): string {
     return !_myBalance || !_myBalance.balanceInfo ? '' : _myBalance.balanceInfo.coin;
   }
 
@@ -260,21 +369,47 @@ function Plus ({ address, chain, formattedAddress, givenType, name, t }: Props):
       <Grid alignItems='center' container>
         <Grid container item justifyContent='center' xs={10}>
           {!chain
-            ? <Grid id='noChainAlert' item sx={{ color: grey[700], fontFamily: '"Source Sans Pro", Arial, sans-serif', fontSize: 12, fontWeight: 600, paddingLeft: '20px', textAlign: 'center' }} xs={12} >
+            ? <Grid id='noChainAlert' item sx={{ color: grey[700], fontFamily: '"Source Sans Pro", Arial, sans-serif', fontWeight: 600, fontSize: 12, textAlign: 'center', paddingLeft: '20px' }} xs={12} >
               {t && t('Please select a chain to view your balance.')}
             </Grid>
-            : <Grid container item sx={{ paddingLeft: '75px', textAlign: 'left' }} xs={12}>
-              <Grid item xs={4}>
-                <Balance balance={balance} price={price} type='total' />
+            : <>
+              <Grid alignItems='flex-start' container item justifyContent='center' sx={{ pl: 1, textAlign: 'center' }} xs={2}>
+                <Grid item sx={{ cursor: 'pointer' }}>
+                  {recoverable && (isRecoveringAlert === false) &&
+                    <FontAwesomeIcon
+                      color={green[600]}
+                      icon={faShield}
+                      id='recoverable'
+                      onClick={handleOpenRecovery}
+                      size='sm'
+                      title={t && t('recoverable')}
+                    />
+                  }
+                  {(isRecoveringAlert || rescuer) &&
+                    <FontAwesomeIcon
+                      beat
+                      color={red[600]}
+                      icon={faShieldHalved}
+                      id='isRecovering'
+                      onClick={handleCloseRecovery}
+                      size='sm'
+                      title={t && t('is recovering')}
+                    />
+                  }
+                </Grid>
               </Grid>
-              <Grid item xs={4}>
-                <Balance balance={balance} price={price} type='available' />
+              <Grid container item sx={{ textAlign: 'left', pl: '5px' }} xs={10}>
+                <Grid item xs={4}>
+                  <Balance balance={balance} price={price} type='total' />
+                </Grid>
+                <Grid item xs={4}>
+                  <Balance balance={balance} price={price} type='available' />
+                </Grid>
+                <Grid item xs={4}>
+                  <Balance balance={balance} price={price} type='reserved' />
+                </Grid>
               </Grid>
-              <Grid item xs={4}>
-                <Balance balance={balance} price={price} type='reserved' />
-              </Grid>
-            </Grid>
-
+            </>
           }
         </Grid>
         <Grid container item xs={2}>
@@ -341,6 +476,7 @@ function Plus ({ address, chain, formattedAddress, givenType, name, t }: Props):
             }
           </>}
         </Grid>
+
       </Grid>
       {transferModalOpen && sender && chain &&
         <TransferFunds
@@ -379,6 +515,18 @@ function Plus ({ address, chain, formattedAddress, givenType, name, t }: Props):
           setStakingModalOpen={setStakingModalOpen}
           showStakingModal={showStakingModal}
           staker={sender}
+        />
+      }
+      {showCloseRecoveryModal && formattedAddress && chain && // TODO: chain should be supported ones
+        <Configure
+          account={{ accountId: formattedAddress }}
+          api={api}
+          chain={chain}
+          recoveryStatus={'closeRecovery'}
+          rescuer={rescuer}
+          setConfigureModalOpen={setCloseRecoveryModalOpen}
+          showConfigureModal={showCloseRecoveryModal}
+          
         />
       }
     </Container>

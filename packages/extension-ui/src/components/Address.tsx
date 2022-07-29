@@ -467,10 +467,11 @@ export default styled(Address)(({ theme }: ThemeProps) => `
     margin-top: -20px;
     right: 28px;
     top: 0;
+    z-index:100;
 
     &.isMoved {
       top: auto;
-      bottom: -29; // added for plus, 0 -> -29
+      bottom: -43; // added for plus, 0 -> -29
     }
   }
 

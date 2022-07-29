@@ -80,7 +80,7 @@ export default function ConfirmStaking({ amount, api, basePool, chain, handlePoo
   const validatorsToList = ['changeValidators', 'setNominees'].includes(state) ? selectedValidators : nominatedValidators;
 
   const unlockingLen = pool?.ledger?.unlocking?.length ?? 0;
-  const maxUnlockingChunks = api.consts.staking.maxUnlockingChunks?.toNumber();
+  const maxUnlockingChunks = api.consts.staking.maxUnlockingChunks?.toNumber() as unknown as number;
 
   /** list of available trasactions */
   const chilled = api.tx.nominationPools.chill;
@@ -134,10 +134,6 @@ export default function ConfirmStaking({ amount, api, basePool, chain, handlePoo
 
         setNote(t('The selected and previously nominated validators are the same, no need to renominate'));
       }
-      // else {
-      //   setConfirmButtonDisabled(false);
-      //   setNote('');
-      // }
     }
   }, [selectedValidatorsAccountId, state, nominatedValidatorsId, t, confirmingState]);
 
@@ -228,13 +224,6 @@ export default function ConfirmStaking({ amount, api, basePool, chain, handlePoo
             // eslint-disable-next-line no-void
             void poolWithdrawUnbonded(...dummyParams).paymentInfo(staker.address).then((j) => setEstimatedFee(api.createType('Balance', fee.add(j?.partialFee))));
           }
-
-          // if (surAmount === currentlyStaked) {
-          //   // eslint-disable-next-line no-void
-          //   void chilled().paymentInfo(staker.address).then((j) => setEstimatedFee(api.createType('Balance', fee.add(j?.partialFee))));
-          // } else {
-          // setEstimatedFee(fee);
-          // }
         });
 
         break;
@@ -305,7 +294,7 @@ export default function ConfirmStaking({ amount, api, basePool, chain, handlePoo
   }, [api, confirmingState, estimatedFee, setFee, setTotalStakedInHumanBasedOnStates]);
 
   useEffect(() => {
-    if (!estimatedFee || estimatedFee?.isEmpty || !availableBalance || !existentialDeposit) {
+    if (!estimatedFee || estimatedFee?.isEmpty || !availableBalance || !staker.balanceInfo?.total || !existentialDeposit) {
       return;
     }
 
@@ -322,18 +311,21 @@ export default function ConfirmStaking({ amount, api, basePool, chain, handlePoo
 
     const fee = new BN(estimatedFee.toString());
 
-    if (availableBalance.sub((partialSubtrahend.add(fee))).lt(existentialDeposit)) {
+    if (new BN(String(staker.balanceInfo.total)).sub((partialSubtrahend.add(fee))).lt(existentialDeposit)) {
       setConfirmButtonDisabled(true);
+
       setConfirmButtonText(t('Account reap issue, consider fee!'));
+    }
+
+    if (availableBalance.sub((partialSubtrahend.add(fee))).ltn(0)) {
+      setConfirmButtonDisabled(true);
+      setConfirmButtonText(t('Not enough balance, consider fee!'));
 
       if (['joinPool', 'createPool', 'bondExtra'].includes(state)) {
         setAmountNeedsAdjust(true);
       }
-    } else {
-      // setConfirmButtonDisabled(false);
-      setConfirmButtonText(t('Confirm'));
     }
-  }, [surAmount, estimatedFee, availableBalance, existentialDeposit, state, t, confirmingState]);
+  }, [surAmount, estimatedFee, availableBalance, staker, existentialDeposit, state, t, confirmingState]);
 
   useEffect(() => {
     setCurrentlyStaked(pool?.member?.points ? new BN(pool?.member?.points) : BN_ZERO);
@@ -501,31 +493,6 @@ export default function ConfirmStaking({ amount, api, basePool, chain, handlePoo
       }
 
       if (localState === 'unstake' && surAmount.gt(BN_ZERO)) {
-        // if (surAmount === currentlyStaked) {
-        //   /**  if unstaking all, should chill first */
-        //   const { failureText, fee, status, txHash } = await broadcast(api, chilled, [], signer, staker.address);
-
-        //   history.push({
-        //     action: 'chill',
-        //     amount: '',
-        //     date: Date.now(),
-        //     fee: fee || '',
-        //     from: staker.address,
-        //     hash: txHash || '',
-        //     status: failureText || status,
-        //     to: ''
-        //   });
-
-        //   if (state === 'failed') {
-        //     console.log('chilling failed:', failureText);
-        //     setConfirmingState(status);
-
-        //     // eslint-disable-next-line no-void
-        //     void saveHistory(chain, hierarchy, staker.address, history);
-
-        //     return;
-        //   }
-        // }
         const params = [staker?.address, surAmount];
 
         if (unlockingLen < maxUnlockingChunks) {
@@ -656,7 +623,7 @@ export default function ConfirmStaking({ amount, api, basePool, chain, handlePoo
       setState(localState);
       setConfirmingState('');
     }
-  }, [api, basePool, bondExtra, chain, claim, decimals, hierarchy, joined, maxUnlockingChunks, nominated, nominatedValidatorsId, password, pool, poolId, poolSetState, poolWithdrawUnbonded, redeem, selectedValidatorsAccountId, setState, staker.address, state, surAmount, unbonded, unlockingLen]);
+  }, [api, basePool, bondExtra, chain, chilled, claim, decimals, hierarchy, joined, maxUnlockingChunks, nominated, nominatedValidatorsId, password, pool, poolId, poolSetState, poolWithdrawUnbonded, redeem, selectedValidatorsAccountId, setState, staker.address, state, surAmount, unbonded, unlockingLen]);
 
   const handleReject = useCallback((): void => {
     setState('');

@@ -30,7 +30,7 @@
     "start": "yarn watch",
     "test": "polkadot-dev-run-test --detectOpenHandles",
     "test:one": "polkadot-dev-run-test --detectOpenHandles",
-    "test:plus": "polkadot-dev-run-test --detectOpenHandles --testPathPattern=packages/extension-plus/src/Popup/Staking/Pool --silent",
+    "test:plus": "polkadot-dev-run-test --detectOpenHandles --testPathPattern=packages/extension-plus/src/Popup/SocialRecovery --silent",
     "watch": "cd packages/extension && yarn polkadot-exec-webpack --config webpack.watch.cjs --mode development --watch"
   },
   "dependencies": {

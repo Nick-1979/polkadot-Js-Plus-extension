@@ -42,17 +42,17 @@ export interface AccountJson extends KeyringPair$Meta {
   type?: KeypairType;
   whenCreated?: number;
 
-    // added for plus
-    lastBalance?: string;
-    txHistory?: string;
-    stakingConsts?: string;
-    poolStakingConsts?: string;
-    nominatedValidators?: string;
-    poolNominatedValidators?: string;
-    validatorsInfo?: string;
-    validatorsIdentities?: string;
-    endpoint: string;
-    plusVersion: string;
+  // added for plus
+  lastBalance?: string;
+  txHistory?: string;
+  stakingConsts?: string;
+  poolStakingConsts?: string;
+  nominatedValidators?: string;
+  poolNominatedValidators?: string;
+  validatorsInfo?: string;
+  validatorsIdentities?: string;
+  endpoint: string;
+  plusVersion: string;
 }
 
 export type AccountWithChildren = AccountJson & {
@@ -93,7 +93,7 @@ export interface RequestSignatures {
   'pri(accounts.edit)': [RequestAccountEdit, boolean];
 
   'pri(accounts.updateMeta)': [RequestUpdateMeta, boolean]; // added for plus
- 
+
   'pri(accounts.export)': [RequestAccountExport, ResponseAccountExport];
   'pri(accounts.batchExport)': [RequestAccountBatchExport, ResponseAccountsExport]
   'pri(accounts.forget)': [RequestAccountForget, boolean];
@@ -350,10 +350,10 @@ interface TransportResponseMessageNoSub<TMessageType extends MessageTypesWithNoS
 
 export type TransportResponseMessage<TMessageType extends MessageTypes> =
   TMessageType extends MessageTypesWithNoSubscriptions
-    ? TransportResponseMessageNoSub<TMessageType>
-    : TMessageType extends MessageTypesWithSubscriptions
-      ? TransportResponseMessageSub<TMessageType>
-      : never;
+  ? TransportResponseMessageNoSub<TMessageType>
+  : TMessageType extends MessageTypesWithSubscriptions
+  ? TransportResponseMessageSub<TMessageType>
+  : never;
 
 export interface ResponseSigning {
   id: string;
@@ -397,7 +397,7 @@ export type MessageTypesWithNoSubscriptions = Exclude<MessageTypes, keyof Subscr
 export interface RequestSign {
   readonly payload: SignerPayloadJSON | SignerPayloadRaw;
 
-  sign (registry: TypeRegistry, pair: KeyringPair): { signature: HexString };
+  sign(registry: TypeRegistry, pair: KeyringPair): { signature: HexString };
 }
 
 export interface RequestJsonRestore {
