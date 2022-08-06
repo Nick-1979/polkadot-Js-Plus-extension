@@ -429,3 +429,8 @@ export interface RewardInfo {
   validator: string;
   stash: string
 }
+
+export interface AlertType {
+  text: string;
+  severity: 'error' | 'warning' | 'info' | 'success'
+}

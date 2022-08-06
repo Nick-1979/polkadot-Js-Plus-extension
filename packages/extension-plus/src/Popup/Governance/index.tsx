@@ -75,9 +75,7 @@ function Governance({ className }: Props): React.ReactElement<Props> {
         smallMargin
         text={`${t<string>('Governance')} ${chainInfo?.chainName ? 'on' : ''} ${chainInfo?.chainName ?? ''}`}
       />
-
       <Container data-testid='governance'>
-
         <Paper elevation={4} onClick={handleDemocracyModal} sx={{ borderRadius: '10px', cursor: 'pointer', margin: '20px 30px 10px', p: '20px 40px' }}>
           <Grid container>
             <Grid item xs={4}>
@@ -149,7 +147,6 @@ function Governance({ className }: Props): React.ReactElement<Props> {
           </Paper>
         </Link>
       </Container>
-
       {showDemocracyModal &&
         <Democracy
           address={address}
@@ -158,7 +155,6 @@ function Governance({ className }: Props): React.ReactElement<Props> {
           showDemocracyModal={showDemocracyModal}
         />
       }
-
       {showCouncilModal &&
         <CouncilIndex
           address={address}
@@ -167,7 +163,6 @@ function Governance({ className }: Props): React.ReactElement<Props> {
           showCouncilModal={showCouncilModal}
         />
       }
-
       {showTreasuryModal &&
         <Treasury
           address={address}

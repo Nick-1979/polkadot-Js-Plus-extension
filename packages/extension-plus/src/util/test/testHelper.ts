@@ -1205,12 +1205,12 @@ export function makeShortAddr(address: string | undefined) {
 export const validatorsName: ValidatorsName[] = [
   { address: '5HTGweepNDc7dCa34YtPn6kF4BLJvaMxbW3i3vzXBGn41Nz3', name: 'AmirEF' },
   { address: '5FbSap4BsWfjyRhCchoVdZHkDnmDm3NEgLZ25mesq4aw2WvX', name: 'Adam' },
-  { address: '5DviS2M1kyyqs1GzMxHAjS3Si49hS3N2Jib9jz4Yx7pJgQHu', name: 'Diego' },
-  { address: '5DVDZcaxCDLStUgnqkx67ZrYP9ZQ4hpSiVsHiUmfJh8VTo8S', name: 'Moly' },
+  { address: '5EfEfh3pW9GaquFvpBpeeVwQJCGUS7CuVpSMXXXked3Xi6hp', name: 'Diego' },
+  { address: '5G6TeiXHZJFV3DtPABJ22thuLguSEPJgH7FkqcRPrn88mFKh', name: 'Moly' },
   { address: '5GVzG3QJvRc6MEtxaJZnLB3PAhQT8eMgesqgHxYiiQJE4HNv', name: 'Mary' },
   { address: '5CPDNHdbZMNNeHLq7t9Cc434CM1fBL6tkaifiCG3kaQ8KHv8', name: 'NewYork Times' },
-  { address: '5CFPcUJgYgWryPaV1aYjSbTpbTLu42V32Ytw1L9rfoMAsfGh', name: 'Amir' },
   { address: '5C864nyotaG4cNoR3YBUqnPVnnvqF1NN1s9t9CuAebyQkQGF', name: 'Olivia' },
+  { address: '5HEbNn6F37c9oW8E9PnnVnZBkCvz8ucjTbAQLi5H1goDqEbA', name: 'Amir' },
   { address: '5GYaYNVq6e855t5hVCyk4Wuqssaf6ADTrvdPZ3QXyHvFXTip', name: 'Emma' },
   { address: '5Ek5JCnrRsyUGYNRaEvkufG1i1EUxEE9cytuWBBjA9oNZVsf', name: 'Mia' }
 ];
@@ -1341,25 +1341,25 @@ export const SettingsStruct = { prefix: 0 };
 export const chain = (name = 'Polkadot'): Chain => {
   return {
     definition: {
-      chain: name.toLowerCase() === 'polkadot' ? 'Polkadot Relay Chain' : 'Kusama Relay Chain',
-      genesisHash: name.toLowerCase() === 'polkadot' ? '0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3':'0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe',
-      icon: 'polkadot',
-      ss58Format: name.toLowerCase() === 'polkadot' ? 0 : 2,
+      chain: name.toLowerCase() === 'polkadot' ? 'Polkadot Relay Chain' : name.toLowerCase() === 'kusama' ? 'Kusama Relay Chain' : 'Westend',
+      genesisHash: name.toLowerCase() === 'polkadot' ? '0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3' : name.toLowerCase() === 'kusama' ? '0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe' : westendGenesisHash,
+      icon: name.toLowerCase() === 'polkadot' ? 'polkadot' : name.toLowerCase() === 'kusama' ? 'kusama' : 'westend',
+      ss58Format: name.toLowerCase() === 'polkadot' ? 0 : name.toLowerCase() === 'kusama' ? 2 : 42,
       specVersion: 0,
       tokenDecimals: 15,
-      tokenSymbol: name.toLowerCase() === 'polkadot' ? 'Dot' : 'Ksm',
+      tokenSymbol: name.toLowerCase() === 'polkadot' ? 'Dot' : name.toLowerCase() === 'kusama' ? 'Ksm' : 'Wnd',
       types: {}
     },
-    genesisHash: '0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3',
+    genesisHash: name.toLowerCase() === 'polkadot' ? '0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3' : name.toLowerCase() === 'kusama' ? '0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe' : westendGenesisHash,
     hasMetadata: false,
     icon: 'polkadot',
     isUnknown: false,
-    name: name.toLowerCase() === 'polkadot' ? 'polkadot' : 'kusama',
+    name: name.toLowerCase() === 'polkadot' ? 'polkadot' : name.toLowerCase() === 'kusama' ? 'kusama' : 'westend',
     registry: {},
     specVersion: 0,
-    ss58Format: name.toLowerCase() === 'polkadot' ? 0 : 2,
+    ss58Format: name.toLowerCase() === 'polkadot' ? 0 : name.toLowerCase() === 'kusama' ? 2 : 42,
     tokenDecimals: 15,
-    tokenSymbol: name.toLowerCase() === 'polkadot' ? 'Dot' : 'Ksm'
+    tokenSymbol: name.toLowerCase() === 'polkadot' ? 'Dot' : name.toLowerCase() === 'kusama' ? 'Ksm' : 'Wnd'
   };
 };
 

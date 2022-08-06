@@ -21,9 +21,9 @@ async function getStackingConsts(endpoint) {
     const minNominatorBond = await apiAt.query.staking.minNominatorBond();
 
     return {
-      existentialDeposit: BigInt(existentialDeposit), // FIXME, sometimes make issue while reading from local storge
-      maxNominations: maxNominations,
-      maxNominatorRewardedPerValidator: maxNominatorRewardedPerValidator,
+      existentialDeposit: BigInt(existentialDeposit),
+      maxNominations,
+      maxNominatorRewardedPerValidator,
       minNominatorBond: BigInt(minNominatorBond),
       unbondingDuration: bondingDuration * sessionsPerEra * epochDurationInHours / 24 // unboundingDuration in days
     };
@@ -37,9 +37,9 @@ async function getStackingConsts(endpoint) {
 onmessage = (e) => {
   const { endpoint } = e.data;
 
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  getStackingConsts(endpoint).then((consts) => {
-    console.log(`StackingConsts in worker using:${endpoint}: %o`, consts);
-    postMessage(consts);
-  });
+  getStackingConsts(endpoint)
+    .then((consts) => {
+      console.log(`StackingConsts in worker using:${endpoint}: %o`, consts);
+      postMessage(consts);
+    }).catch(console.error);
 };

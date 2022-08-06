@@ -2,32 +2,30 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 /* eslint-disable react/jsx-max-props-per-line */
-/* eslint-disable simple-import-sort/imports */
 
 /**
  * @description
- * this component renders make recoverable tab in social recovery
+ * this component renders a page to select between rescuing a lost account as a rescuer or as a friend
  * */
 
+import type { ApiPromise } from '@polkadot/api';
 import type { DeriveAccountInfo } from '@polkadot/api-derive/types';
 
-import { Avatar, Badge, Button, Grid, Paper } from '@mui/material';
+import { AdminPanelSettingsOutlined as AdminPanelSettingsOutlinedIcon, HealthAndSafetyOutlined as HealthAndSafetyOutlinedIcon, Support as SupportIcon } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
-
-import React, { useCallback, useState, useEffect } from 'react';
-import { BookmarkAddedOutlined as BookmarkAddedOutlinedIcon, HealthAndSafetyOutlined as HealthAndSafetyOutlinedIcon, Support as SupportIcon, AdminPanelSettingsOutlined as AdminPanelSettingsOutlinedIcon } from '@mui/icons-material';
+import { Avatar, Badge, Button, Grid, Paper } from '@mui/material';
+import { green, grey } from '@mui/material/colors';
 import { styled } from '@mui/material/styles';
-import { getInitiations } from '../../util/subquery/recovery';
-
-import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
-import { Initiation, nameAddress, RecoveryConsts } from '../../util/plusTypes';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { Chain } from '@polkadot/extension-chains/types';
-import { grey, green, blue } from '@mui/material/colors';
-import AsResuer from './AsRescuer';
+
+import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
+import { PlusHeader, Popup } from '../../components';
+import { Initiation, nameAddress, RecoveryConsts } from '../../util/plusTypes';
+import { getInitiations } from '../../util/subquery/recovery';
 import AsFriend from './AsFriend';
-import type { ApiPromise } from '@polkadot/api';
-import { Hint, PlusHeader, Popup } from '../../components';
+import AsResuer from './AsRescuer';
 
 interface Props {
   api: ApiPromise | undefined;
@@ -79,9 +77,6 @@ function Rescue({ account, accountsInfo, addresesOnThisChain, api, chain, recove
 
   const StyledBadge = styled(Badge)(({ theme }) => ({
     '& .MuiBadge-badge': {
-      // backgroundColor: '#ffffff',
-      // color: '#fc2105',
-      // boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
       '&::after': {
         position: 'absolute',
         top: 0,
@@ -89,21 +84,9 @@ function Rescue({ account, accountsInfo, addresesOnThisChain, api, chain, recove
         width: '100%',
         height: '100%',
         borderRadius: '50%',
-        // animation: 'ripple 1.2s infinite ease-in-out',
         border: '1px solid currentColor',
-        // content: '""'
-      },
-    },
-    // '@keyframes ripple': {
-    //   '0%': {
-    //     transform: 'scale(.8)',
-    //     opacity: 1
-    //   },
-    //   '100%': {
-    //     transform: 'scale(2.4)',
-    //     opacity: 0
-    //   }
-    // }
+      }
+    }
   }));
 
   const RescuerSelection = () => (
@@ -122,7 +105,7 @@ function Rescue({ account, accountsInfo, addresesOnThisChain, api, chain, recove
         </Grid>
         <Grid container justifyContent='center' sx={{ fontSize: 14, fontWeight: 500, lineHeight: '25px', p: '15px' }}>
           <Paper sx={{ borderRadius: '10px', color: grey[500], height: 160, p: '15px 10px', width: '90%' }}>
-            {t('You can initiate the recovery. If recovery conditions are met, the lost account\'s balances can be withdrawn.')}
+            {t('You can initiate the recovery of a lost account. When conditions are met, the lost account\'s balances can be withdrawn.')}
             <Grid container justifyContent='center' sx={{ pt: 3 }}>
               <LoadingButton
                 color='warning'
@@ -151,7 +134,7 @@ function Rescue({ account, accountsInfo, addresesOnThisChain, api, chain, recove
         </Grid>
         <Grid container justifyContent='center' sx={{ fontSize: 14, fontWeight: 500, lineHeight: '25px', p: '15px' }}>
           <Paper sx={{ borderRadius: '10px', color: grey[500], height: 160, p: '15px 10px', width: '90%' }}>
-            {t('An account, who has been set as a friend of a lost account, can vouch for recovering the lost account by a rescuer.')}
+            {t('If you are set as a friend account of a lost account, you can vouch the recovery of the lost account by a rescuer.')}
             <Grid container justifyContent='center' sx={{ pt: 3 }}>
               <Button
                 onClick={handleFriend}

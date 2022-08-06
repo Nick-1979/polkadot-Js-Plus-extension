@@ -56,7 +56,7 @@ function InfoTab({ api, currentEraIndex, minNominated, stakingConsts }: Props): 
           <ShowValue title={t('Days it takes to receive your funds back after unstaking:  ')} unit={t('days')} value={stakingConsts?.unbondingDuration} />
         </Grid>
         <Grid container item justifyContent='space-between' sx={{ bgcolor: grey[200], fontSize: 12, paddingBottom: '5px' }} xs={12}>
-          <ShowBalance2 api={api} balance={stakingConsts?.existentialDeposit} direction='row' title={t('Minimum {{symbol}}s that must remain in your account (existential deposit): ', { replace: { symbol: token } })} />
+          <ShowBalance2 api={api} balance={stakingConsts?.existentialDeposit} direction='row' title={t('Minimum {{symbol}}s that must remain in your account (ED): ', { replace: { symbol: token } })} />
         </Grid>
       </Grid>
     </Grid>

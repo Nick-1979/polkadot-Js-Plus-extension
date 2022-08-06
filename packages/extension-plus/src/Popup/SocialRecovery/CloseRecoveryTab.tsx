@@ -1,4 +1,3 @@
-/* eslint-disable simple-import-sort/imports */
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
@@ -6,27 +5,25 @@
 
 /**
  * @description
- * this component opens Close recovery for a named lost account
+ * this component opens Close recovery for a lost account
  * */
 
+import type { ApiPromise } from '@polkadot/api';
 import type { DeriveAccountInfo } from '@polkadot/api-derive/types';
-
 import type { ThemeProps } from '../../../../extension-ui/src/types';
 
-import { HealthAndSafety as HealthAndSafetyIcon } from '@mui/icons-material';
-import { Typography, Grid } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
+import { grey } from '@mui/material/colors';
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
-import { Identity, PlusHeader, Popup, ShowBalance2, ShowValue } from '../../components';
-import type { ApiPromise } from '@polkadot/api';
-
-import { Rescuer } from '../../util/plusTypes';
-import { Button } from '@polkadot/extension-ui/components';
-import Confirm from './Confirm';
 import { Chain } from '@polkadot/extension-chains/types';
-import { grey } from '@mui/material/colors';
+import { NextStepButton } from '@polkadot/extension-ui/components';
+
+import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
+import { Identity, ShowBalance2, ShowValue } from '../../components';
+import { Rescuer } from '../../util/plusTypes';
+import Confirm from './Confirm';
 
 interface Props extends ThemeProps {
   api: ApiPromise | undefined;
@@ -43,7 +40,7 @@ function CloseRecovery({ account, api, chain, rescuer }: Props): React.ReactElem
   const [date, setDate] = useState<Date | undefined>();
 
   useEffect((): void => {
-    api && rescuer && api.rpc.chain.getHeader().then((h) => {
+    api && rescuer?.option?.created && api.rpc.chain.getHeader().then((h) => {
       const currentBlockNumber = h.number.toNumber();
       const now = Date.now();
       const initiateRecoveryBlock = rescuer.option.created.toNumber();
@@ -72,7 +69,7 @@ function CloseRecovery({ account, api, chain, rescuer }: Props): React.ReactElem
           </Typography>
         </Grid>
         <Grid alignItems='center' container item justifyContent='center' sx={{ bgcolor: 'white', border: '1px solid', borderColor: grey[600], borderRadius: 5, fontSize: 12, height: '200px', overflowY: 'auto', px: '30px' }} xs={12}>
-          <Identity address={rescuer.accountId} api={api} chain={chain} showAddress />
+          <Identity accountInfo={rescuer} api={api} chain={chain} showAddress />
           <ShowBalance2 api={api} balance={rescuer.option.deposit} direction='row' title={`${t('Deposited')}:`} />
           <ShowValue title='Initiation time' value={date?.toString()} />
         </Grid>
@@ -82,16 +79,16 @@ function CloseRecovery({ account, api, chain, rescuer }: Props): React.ReactElem
           </Typography>
         </Grid>
         <Grid item pt='20px' xs={12}>
-          <Button
+          <NextStepButton
             data-button-action=''
             isDisabled={!api}
             onClick={handleNextToCloseRecovery}
           >
             {t<string>('Next')}
-          </Button>
+          </NextStepButton>
         </Grid>
       </Grid>
-      {showConfirmModal && api && chain && state && 
+      {showConfirmModal && api && chain && state &&
         <Confirm
           account={account}
           api={api}

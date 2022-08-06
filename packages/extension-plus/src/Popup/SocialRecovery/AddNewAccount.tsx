@@ -1,4 +1,3 @@
-/* eslint-disable simple-import-sort/imports */
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
@@ -11,21 +10,21 @@
  * */
 
 import type { DeriveAccountInfo } from '@polkadot/api-derive/types';
-import type { ThemeProps } from '../../../../extension-ui/src/types';
 import type { Chain } from '@polkadot/extension-chains/types';
+import type { ThemeProps } from '../../../../extension-ui/src/types';
 
-import { Grid, Button as MuiButton, TextField, Autocomplete } from '@mui/material';
+import { NavigateBefore as NavigateBeforeIcon, NavigateNext as NavigateNextIcon, NoAccounts as NoAccountsIcon } from '@mui/icons-material';
+import { Autocomplete, Button as MuiButton, Grid, TextField } from '@mui/material';
+import { grey } from '@mui/material/colors';
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { NavigateNext as NavigateNextIcon, NavigateBefore as NavigateBeforeIcon, NoAccounts as NoAccountsIcon } from '@mui/icons-material';
 
 import Identicon from '@polkadot/react-identicon';
 
-import isValidAddress from '../../util/validateAddress';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { Progress } from '../../components';
 import { nameAddress } from '../../util/plusTypes';
-import { grey } from '@mui/material/colors';
+import isValidAddress from '../../util/validateAddress';
 
 interface Props extends ThemeProps {
   account: DeriveAccountInfo | undefined;
@@ -83,6 +82,18 @@ function AddNewAccount({ account, accountsInfo, addresesOnThisChain, chain, help
 
     setFilteredAccountsInfo(null);
   }, [accountsInfo, text]);
+
+  useEffect(() => {
+    if (account && !account?.identity) {
+      const accountLocalInfo = addresesOnThisChain?.find((i) => i.address === String(account.accountId));
+
+      setAccount((account) => {
+        account.nickname = accountLocalInfo?.name;
+
+        return account;
+      });
+    }
+  }, [ account?.accountId, addresesOnThisChain, setAccount]);
 
   useEffect(() => {
     handleSearchIdentity();
@@ -238,7 +249,7 @@ function AddNewAccount({ account, accountsInfo, addresesOnThisChain, chain, help
                 sx={{ textTransform: 'none' }}
                 variant='contained'
               >
-                {t<string>('Confirm your lost account')}
+                {t<string>('Confirm the account address')}
               </MuiButton>
             </Grid>
           }

@@ -379,7 +379,7 @@ function Plus({ address, chain, formattedAddress, givenType, name, t }: Props): 
             : <>
               <Grid alignItems='flex-start' container item justifyContent='center' sx={{ pl: 1, textAlign: 'center' }} xs={2}>
                 <Grid item sx={{ cursor: 'pointer' }}>
-                  {recoverable && (isRecoveringAlert === false) &&
+                  {recoverable && isRecoveringAlert === false && rescuer === null &&
                     <FontAwesomeIcon
                       color={green[600]}
                       icon={faShield}

@@ -28,7 +28,9 @@ export async function getVouchers(chainName: string, lost: string | AccountId, r
   return res.data.recoveryVoucheds.nodes as Voucher[];
 }
 
-export async function getInitiations(chainName: string, account: string | AccountId, accountType: { 'rescuer', 'lost' }, last = false): Promise<Initiation | Initiation[] | null> {
+type AccountType = 'rescuer' | 'lost';
+
+export async function getInitiations(chainName: string, account: string | AccountId, accountType: AccountType, last = false): Promise<Initiation | Initiation[] | null> {
   if (!chainName || !account) {
     console.error('no chain name or account is defined in getInitiations');
 

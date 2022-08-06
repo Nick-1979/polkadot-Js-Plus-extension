@@ -1,4 +1,3 @@
-/* eslint-disable simple-import-sort/imports */
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
@@ -12,19 +11,20 @@
 import type { DeriveAccountInfo } from '@polkadot/api-derive/types';
 import type { ThemeProps } from '../../../../extension-ui/src/types';
 
-import { AddCircleRounded as AddCircleRoundedIcon, NoAccounts as NoAccountsIcon, NavigateNext as NavigateNextIcon, NavigateBefore as NavigateBeforeIcon } from '@mui/icons-material';
-import { Typography, Autocomplete, Grid, TextField } from '@mui/material';
+import { AddCircleRounded as AddCircleRoundedIcon, NavigateBefore as NavigateBeforeIcon,NavigateNext as NavigateNextIcon, NoAccounts as NoAccountsIcon } from '@mui/icons-material';
+import { Autocomplete, Grid, TextField,Typography } from '@mui/material';
+import { grey } from '@mui/material/colors';
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
+
+import { Chain } from '@polkadot/extension-chains/types';
+import { Button } from '@polkadot/extension-ui/components';
 import Identicon from '@polkadot/react-identicon';
-import isValidAddress from '../../util/validateAddress';
+
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { PlusHeader, Popup, Progress } from '../../components';
-import { Chain } from '@polkadot/extension-chains/types';
-
 import { nameAddress } from '../../util/plusTypes';
-import { Button } from '@polkadot/extension-ui/components';
-import { grey } from '@mui/material/colors';
+import isValidAddress from '../../util/validateAddress';
 
 interface Props extends ThemeProps {
   account: DeriveAccountInfo;

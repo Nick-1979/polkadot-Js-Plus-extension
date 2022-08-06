@@ -66,7 +66,7 @@ export default function Nominations({ activeValidator, api, chain, handleRebag, 
             />
           </Grid>
           <Grid container item justifyContent='space-between' pt='5px' xs={12}>
-            <Grid item xs={5}>
+            <Grid item>
               <MuiButton
                 onClick={handleStopNominating}
                 size='medium'
@@ -77,8 +77,8 @@ export default function Nominations({ activeValidator, api, chain, handleRebag, 
                 {t('Stop nominating')}
               </MuiButton>
             </Grid>
-            <Grid item sx={{ textAlign: 'center' }} xs={3}>
-              <Tooltip placement='top' title={'rebag or putInFrontOf if needed'}>
+            <Grid item>
+              <Tooltip id='tuneUp' placement='left' title={t('rebag or putInFrontOf if needed')}>
                 <MuiButton
                   color='primary'
                   disabled={!tuneUpButtonEnable}
@@ -92,17 +92,19 @@ export default function Nominations({ activeValidator, api, chain, handleRebag, 
                 </MuiButton>
               </Tooltip>
             </Grid>
-            <Grid item sx={{ textAlign: 'right' }} xs={4}>
-              <MuiButton
-                color='warning'
-                onClick={() => handleSelectValidatorsModalOpen()}
-                size='medium'
-                startIcon={<TrackChangesIcon />}
-                sx={{ textTransform: 'none' }}
-                variant='text'
-              >
-                {t('Change validators')}
-              </MuiButton>
+            <Grid item>
+              <span>
+                <MuiButton
+                  color='warning'
+                  onClick={() => handleSelectValidatorsModalOpen()}
+                  size='medium'
+                  startIcon={<TrackChangesIcon />}
+                  sx={{ textTransform: 'none' }}
+                  variant='text'
+                >
+                  {t('Change validators')}
+                </MuiButton>
+              </span>
             </Grid>
           </Grid>
         </Grid>

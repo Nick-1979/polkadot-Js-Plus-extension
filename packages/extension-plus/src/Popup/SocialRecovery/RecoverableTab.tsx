@@ -29,7 +29,7 @@ import Confirm from './Confirm';
 
 interface Props {
   account: DeriveAccountInfo;
-  chain: Chain | null;
+  chain: Chain;
   recoveryInfo: PalletRecoveryRecoveryConfig | null;
   recoveryConsts: RecoveryConsts | undefined;
   accountsInfo: DeriveAccountInfo[] | undefined;
@@ -80,19 +80,37 @@ function MakeRecoverableTab({ account, accountsInfo, addresesOnThisChain, api, c
     setRecoveryThreshold(recoveryInfo.threshold.toNumber());
     const recoveryDelayInDays = recoveryInfo.delayPeriod.toNumber() / (24 * 60 * 10);
 
-    setRecoveryDelay(recoveryDelayInDays.toFixed(4));
-    const onChainFriends = recoveryInfo.friends.map((f): DeriveAccountInfo => {
+    setRecoveryDelay(Number(recoveryDelayInDays.toFixed(4)));
+    const onChainFriendsAccountInfo = recoveryInfo.friends.map((f): DeriveAccountInfo => {
       const accountInfo = accountsInfo?.find((a) => a?.accountId?.toString() === f.toString());
 
       return accountInfo ?? { accountId: f, identity: undefined } as unknown as DeriveAccountInfo;
     });
 
-    setFriends(onChainFriends);
+    setFriends(onChainFriendsAccountInfo);
   }, [recoveryInfo, accountsInfo]);
 
   useEffect(() => {
     recoveryConsts?.friendDepositFactor && recoveryConsts?.configDepositBase && friends?.length && setDeposit(recoveryConsts.configDepositBase.add(recoveryConsts.friendDepositFactor.muln(friends.length)));
   }, [friends, recoveryConsts?.configDepositBase, recoveryConsts?.friendDepositFactor]);
+
+  useEffect(() => {
+    const friendsWithLocalNamesIfNeeded = friends?.map((f) => {
+      if (f?.identity) {
+        return f;
+      }
+
+      const maybeLocalFriend = addresesOnThisChain?.find((l) => l.address === String(f.accountId));
+
+      if (maybeLocalFriend) {
+        f.nickname = maybeLocalFriend.name;
+      }
+
+      return f;
+    });
+
+    friendsWithLocalNamesIfNeeded?.lenght && setFriends([...friendsWithLocalNamesIfNeeded]);
+  }, [addresesOnThisChain, friends?.length]);
 
   return (
     <>
@@ -115,7 +133,7 @@ function MakeRecoverableTab({ account, accountsInfo, addresesOnThisChain, api, c
           </Grid>
           <Grid item>
             {!recoveryInfo &&
-              <Hint id='addFriend' place='left' tip={t('add a friend')}>
+              <Hint id='addFriend' place='right' tip={t('add a friend')}>
                 <IconButton
                   aria-label='addFriend'
                   color='warning'
@@ -237,7 +255,7 @@ function MakeRecoverableTab({ account, accountsInfo, addresesOnThisChain, api, c
         />
       }
       {
-        showConfirmModal && api && chain && state && recoveryConsts &&
+        showConfirmModal && api && state && recoveryConsts &&
         <Confirm
           account={account}
           api={api}

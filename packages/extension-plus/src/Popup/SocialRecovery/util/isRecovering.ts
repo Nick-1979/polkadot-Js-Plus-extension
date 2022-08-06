@@ -1,10 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { PalletRecoveryActiveRecovery } from '@polkadot/types/lookup';
-
 import { Chain } from '@polkadot/extension-chains/types';
-import { Option } from '@polkadot/types-codec';
 
 import { Close, Initiation } from '../../../util/plusTypes';
 import { getCloses, getInitiations } from '../../../util/subquery';

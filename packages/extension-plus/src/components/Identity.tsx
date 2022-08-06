@@ -1,6 +1,8 @@
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+/* eslint-disable react/jsx-max-props-per-line */
+
 import type { ApiPromise } from '@polkadot/api';
 import type { DeriveAccountInfo } from '@polkadot/api-derive/types';
 
@@ -12,7 +14,6 @@ import React, { useEffect, useState } from 'react';
 import Identicon from '@polkadot/react-identicon';
 
 import { Chain } from '../../../extension-chains/src/types';
-import useTranslation from '../../../extension-ui/src/hooks/useTranslation';
 import { ShortAddress } from '.';
 
 interface Props {
@@ -29,13 +30,14 @@ interface Props {
 }
 
 function Identity({ accountInfo, address, api, chain, iconSize = 24, name, showAddress = false, showSocial = true, title = '', totalStaked = '' }: Props): React.ReactElement<Props> {
-  const { t } = useTranslation();
   const [info, setInfo] = useState<DeriveAccountInfo | undefined>();
   const [hasSocial, setHasSocial] = useState<boolean | undefined>();
   const [judgement, setJudgement] = useState<string | undefined>();
 
   useEffect(() => {
-    if (accountInfo) { return setInfo(accountInfo); }
+    if (accountInfo) {
+      return setInfo(accountInfo);
+    }
 
     api && address && api.derive.accounts.info(address).then((i) => {
       if (!i?.identity && name) {
@@ -86,12 +88,12 @@ function Identity({ accountInfo, address, api, chain, iconSize = 24, name, showA
                       {info?.identity.displayParent} /
                     </Grid>
                   }
-                  {info?.identity?.display &&
-                    <Grid item sx={info?.identity.displayParent && { color: grey[500], textOverflow: 'ellipsis' }}>
-                      {info?.identity.display} { }
+                  {(info?.identity?.display || info?.nickname) &&
+                    <Grid item sx={info?.identity?.displayParent && { color: grey[500], textOverflow: 'ellipsis' }}>
+                      {info?.identity?.display ?? info?.nickname} { }
                     </Grid>
                   }
-                  {!(info?.identity?.displayParent || info?.identity?.display) &&
+                  {!(info?.identity?.displayParent || info?.identity?.display || info?.nickname) &&
                     <Grid item sx={{ textAlign: 'letf' }}>
                       {info?.accountId && <ShortAddress address={String(info?.accountId)} fontSize={11} />}
                     </Grid>

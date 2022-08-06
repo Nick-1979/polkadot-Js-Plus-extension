@@ -184,7 +184,7 @@ describe('Testing RecoverableTab component', () => {
         ).asFragment().textContent;
       };
 
-      const recoveryDelayInDays = (recoveryInfo.delayPeriod.toNumber() / (24 * 60 * 10)).toFixed(4);
+      const recoveryDelayInDays = (recoveryInfo.delayPeriod.toNumber() / (24 * 60 * 10)).toString();
 
       expect(queryByText('Remove recovery')).toBeTruthy();
       expect(queryByText(`Your recovery friends (${recoveryInfo.friends.length})`)).toBeTruthy();
@@ -192,7 +192,10 @@ describe('Testing RecoverableTab component', () => {
       expect(queryByTestId('ShowBalance2')?.textContent).toEqual(ShowValue(recoveryConsts.configDepositBase.add(recoveryConsts.friendDepositFactor.muln(recoveryInfo.friends.length)), 'Deposit:'));
 
       for (const friend of recoveryInfo.friends) {
-        expect(queryByText(makeShortAddr(friend.toString()) as Matcher)).toBeTruthy();
+        const hasId = accountWithId.find((account) => account.accountId?.toString() === friend.toString());
+
+        hasId && expect(queryByText(hasId.identity.display as Matcher)).toBeTruthy();
+        !hasId && expect(queryByText(makeShortAddr(friend.toString()) as Matcher)).toBeTruthy();
         expect(queryByText(friend.toString())).toBeTruthy();
       }
 
@@ -205,6 +208,7 @@ describe('Testing RecoverableTab component', () => {
       expect(getByRole('button', { hidden: true, name: 'Next to remove recovery' })).toBeTruthy();
       expect(getByRole('button', { hidden: true, name: 'Next to remove recovery' }).hasAttribute('disabled')).toBe(false);
     });
+
     test('When some props have not set yet', () => {
       const { getByRole, queryByRole, queryByTestId, queryByText } = render(
         <RecoverableTab
@@ -228,7 +232,7 @@ describe('Testing RecoverableTab component', () => {
         ).asFragment().textContent;
       };
 
-      const recoveryDelayInDays = (recoveryInfo.delayPeriod.toNumber() / (24 * 60 * 10)).toFixed(4);
+      const recoveryDelayInDays = (recoveryInfo.delayPeriod.toNumber() / (24 * 60 * 10)).toString();
 
       expect(queryByText('Remove recovery')).toBeTruthy();
       expect(queryByText(`Your recovery friends (${recoveryInfo.friends.length})`)).toBeTruthy();
@@ -236,7 +240,10 @@ describe('Testing RecoverableTab component', () => {
       expect(queryByTestId('ShowBalance2')?.textContent).toEqual(ShowValue(undefined, 'Deposit:'));
 
       for (const friend of recoveryInfo.friends) {
-        expect(queryByText(makeShortAddr(friend.toString()) as Matcher)).toBeTruthy();
+        const hasId = accountWithId.find((account) => account.accountId?.toString() === friend.toString());
+
+        hasId && expect(queryByText(hasId.identity.display as Matcher)).toBeTruthy();
+        !hasId && expect(queryByText(makeShortAddr(friend.toString()) as Matcher)).toBeTruthy();
         expect(queryByText(friend.toString())).toBeTruthy();
       }
 

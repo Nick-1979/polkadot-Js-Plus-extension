@@ -27,7 +27,7 @@ import { updateMeta } from '../../../../../extension-ui/src/messaging';
 import { PlusHeader, Popup } from '../../../components';
 import getRewardsSlashes from '../../../util/api/getRewardsSlashes';
 import { getStakingReward } from '../../../util/api/staking';
-import { MAX_ACCEPTED_COMMISSION } from '../../../util/constants';
+import { MAX_ACCEPTED_COMMISSION, MAX_REWARDS_TO_SHOW } from '../../../util/constants';
 import { amountToHuman, balanceToHuman, prepareMetaData } from '../../../util/plusUtils';
 import { getRewards } from '../../../util/subquery/staking';
 import ConfirmStaking from './ConfirmStaking';
@@ -224,8 +224,9 @@ export default function SoloStaking({ account, api, chain, currentEraIndex, endp
     });
 
     // eslint-disable-next-line no-void
-    staker.address && chainName && void getRewardsSlashes(chainName, 0, 10, staker.address).then((r) => {
-      const rewardsFromSubscan: RewardInfo[] | undefined = r?.data.list?.map((i: SubscanRewardInfo): RewardInfo => {
+    staker.address && chainName && void getRewardsSlashes(chainName, 0, MAX_REWARDS_TO_SHOW, staker.address).then((r) => {
+      const list = r?.data.list as SubscanRewardInfo[];
+      const rewardsFromSubscan: RewardInfo[] | undefined = list?.map((i: SubscanRewardInfo): RewardInfo => {
         return {
           amount: new BN(i.amount),
           era: i.era,
@@ -233,7 +234,7 @@ export default function SoloStaking({ account, api, chain, currentEraIndex, endp
           stash: i.stash,
           timeStamp: i.block_timestamp,
           validator: i.validator_stash
-        };
+        } as RewardInfo;
       });
 
       console.log('rewardsFromSubscan:', rewardsFromSubscan);

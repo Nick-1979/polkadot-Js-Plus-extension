@@ -27,6 +27,7 @@ export const TRANSACTION_HISTROY_DEFAULT_ROWS = 6;
 export const MAX_ACCEPTED_COMMISSION = 20;
 export const SHORT_ADDRESS_CHARACTERS = 6;
 export const MAX_VOTES = 16;
+export const MAX_REWARDS_TO_SHOW = 20;
 export const RELAY_CHAINS = [
   {
     name: 'Polkadot',

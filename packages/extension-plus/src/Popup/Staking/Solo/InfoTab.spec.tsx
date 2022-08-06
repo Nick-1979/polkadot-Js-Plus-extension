@@ -50,6 +50,6 @@ describe('Testing Info component', () => {
     expect(queryByTestId('info')?.children.item(2)?.children.item(2)?.textContent).toEqual(`Minimum {{symbol}}s to recieve rewards today (era: {{eraIndex}}):${toHuman(api, nominatorInfoFalse.minNominated)}`);
     expect(queryByTestId('info')?.children.item(2)?.children.item(3)?.textContent).toEqual(`Maximum nominators of a validator, who may receive rewards: ${stakingConsts.maxNominatorRewardedPerValidator} `);
     expect(queryByTestId('info')?.children.item(2)?.children.item(4)?.textContent).toEqual(`Days it takes to receive your funds back after unstaking:  ${stakingConsts.unbondingDuration} days`);
-    expect(queryByTestId('info')?.children.item(2)?.children.item(5)?.textContent).toEqual(`Minimum {{symbol}}s that must remain in your account (existential deposit): ${ED}`);
+    expect(queryByTestId('info')?.children.item(2)?.children.item(5)?.textContent).toEqual(`Minimum {{symbol}}s that must remain in your account (ED): ${ED}`);
   });
 });

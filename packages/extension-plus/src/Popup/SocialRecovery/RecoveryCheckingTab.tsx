@@ -1,7 +1,5 @@
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-/* eslint-disable header/header */
-/* eslint-disable react/jsx-max-props-per-line */
 
 /**
  * @description
@@ -52,8 +50,19 @@ function RecoveryCheckingTab({ recoveryInfo, rescuer, setStatus }: Props): React
   }, [rescuer, recoveryInfo, t, setStatus]);
 
   return (
-    <Grid alignItems='center' container item justifyContent='center' sx={{ bgcolor: 'white', borderColor: grey[800], borderRadius: 5, fontSize: 12, height: '300px', overflowY: 'auto', p: '30px', mt: 5 }} xs={12}>
-      <Grid item py='30px' xs={12}>
+    <Grid
+      alignItems='center'
+      container
+      item
+      justifyContent='center'
+      sx={{ bgcolor: grey[50], borderColor: grey[800], borderRadius: 5, fontSize: 12, height: '400px', mt: 5, overflowY: 'auto', p: '30px' }}
+      xs={12}
+    >
+      <Grid
+        item
+        py='30px'
+        xs={12}
+      >
         <Progress title={processTitle} />
       </Grid>
     </Grid>

@@ -16,8 +16,9 @@ import CloseRecovery from './CloseRecoveryTab';
 
 jest.setTimeout(90000);
 let chainInfo: ChainInfo;
+const rescuerAcc = accountWithId[1].accountId;
 const rescuer: Rescuer = {
-  accountId: accountWithId[1].accountId,
+  accountId: rescuerAcc,
   option: {
     created: new BN('11907021'),
     deposit: new BN('5000000000000'),
@@ -60,13 +61,13 @@ describe('Testing CloseRecoveryTab component', () => {
 
     expect(queryByText('Close recovery')).toBeTruthy();
     expect(queryByText('The following account has initiated a recovery process for your account:')).toBeTruthy();
-    await waitFor(() => expect(queryByText(makeShortAddr(accountWithId[1].accountId as unknown as string) as Matcher)).toBeTruthy(), {
+    await waitFor(() => expect(queryByText(makeShortAddr(rescuerAcc as unknown as string) as Matcher)).toBeTruthy(), {
       onTimeout: () => {
         throw new Error('Slow connection detected!\nRun the test again.');
       },
       timeout: 30000
     });
-    expect(queryByText(accountWithId[1].accountId as unknown as Matcher)).toBeTruthy();
+    expect(queryByText(rescuerAcc as unknown as Matcher)).toBeTruthy();
     expect(queryByTestId('ShowBalance2')?.textContent).toEqual(ShowValue(recoveryConsts.recoveryDeposit, 'Deposited:'));
     expect(queryByText('Initiation time')).toBeTruthy();
     expect(queryByText("If it isn't you, close the recovery process, which will automatically transfer it's deposit to your account")).toBeTruthy();
@@ -74,7 +75,7 @@ describe('Testing CloseRecoveryTab component', () => {
     expect(getByRole('button', { hidden: true, name: 'Next' }).hasAttribute('disabled')).toBe(false);
   });
 
-  test('When api prop is undefined', async () => {
+  test('When api prop is undefined', () => {
     const { getByRole, queryByTestId, queryByText } = render(
       <CloseRecovery
         account={accountWithId[0]}
@@ -96,8 +97,8 @@ describe('Testing CloseRecoveryTab component', () => {
 
     expect(queryByText('Close recovery')).toBeTruthy();
     expect(queryByText('The following account has initiated a recovery process for your account:')).toBeTruthy();
-    expect(queryByText(makeShortAddr(accountWithId[1].accountId as unknown as string) as Matcher)).toBeFalsy();
-    expect(queryByText(accountWithId[1].accountId as unknown as Matcher)).toBeFalsy();
+    expect(queryByText(makeShortAddr(rescuerAcc as unknown as string) as Matcher)).toBeTruthy();
+    expect(queryByText(rescuerAcc as unknown as Matcher)).toBeTruthy();
     expect(queryByTestId('ShowBalance2')?.textContent).toEqual(ShowValue(recoveryConsts.recoveryDeposit, 'Deposited:'));
     expect(queryByText('Initiation time')).toBeTruthy();
     expect(queryByText("If it isn't you, close the recovery process, which will automatically transfer it's deposit to your account")).toBeTruthy();

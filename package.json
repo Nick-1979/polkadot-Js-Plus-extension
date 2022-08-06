@@ -39,7 +39,7 @@
     "@mui/icons-material": "^5.8.3",
     "@mui/lab": "^5.0.0-alpha.85",
     "@mui/material": "^5.8.3",
-    "@polkadot/apps-config": "^0.116.1",
+    "@polkadot/apps-config": "^0.118.1",
     "babel-plugin-transform-import-meta": "^2.1.1",
     "chart.js": "^3.8.0",
     "memoize-one": "^6.0.0",

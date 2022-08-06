@@ -1,4 +1,3 @@
-/* eslint-disable simple-import-sort/imports */
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
@@ -10,24 +9,24 @@
  * */
 
 import type { DeriveAccountInfo } from '@polkadot/api-derive/types';
-import type { ThemeProps } from '../../../../extension-ui/src/types';
 import type { PalletRecoveryRecoveryConfig } from '@polkadot/types/lookup';
+import type { ThemeProps } from '../../../../extension-ui/src/types';
 
-import { PolicyOutlined as PolicyOutlinedIcon, GppMaybeOutlined as GppMaybeOutlinedIcon, AddModeratorOutlined as AddModeratorOutlinedIcon, VerifiedUserOutlined as VerifiedUserOutlinedIcon, InfoOutlined as InfoOutlinedIcon, Security as SecurityIcon } from '@mui/icons-material';
+import { AddModeratorOutlined as AddModeratorOutlinedIcon, GppMaybeOutlined as GppMaybeOutlinedIcon, InfoOutlined as InfoOutlinedIcon, PolicyOutlined as PolicyOutlinedIcon, Security as SecurityIcon,VerifiedUserOutlined as VerifiedUserOutlinedIcon } from '@mui/icons-material';
 import { Grid, Tab, Tabs } from '@mui/material';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
-import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
+import { ApiPromise } from '@polkadot/api';
+import { Chain } from '@polkadot/extension-chains/types';
 
+import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
+import { PlusHeader, Popup } from '../../components';
 import { nameAddress, RecoveryConsts, Rescuer } from '../../util/plusTypes';
+import CloseRecoveryTab from './CloseRecoveryTab';
 import InfoTab from './InfoTab';
 import RecoverableTab from './RecoverableTab';
-import { Chain } from '@polkadot/extension-chains/types';
-import CloseRecoveryTab from './CloseRecoveryTab';
 import RecoveryChecking from './RecoveryCheckingTab';
-import { ApiPromise } from '@polkadot/api';
-import { PlusHeader, Popup } from '../../components';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -35,7 +34,7 @@ interface Props extends ThemeProps {
   accountsInfo?: DeriveAccountInfo[] | undefined;
   addresesOnThisChain?: nameAddress[];
   api: ApiPromise | undefined;
-  chain: Chain | null;
+  chain: Chain;
   recoveryConsts?: RecoveryConsts | undefined;
   recoveryInfo?: PalletRecoveryRecoveryConfig | null | undefined;
   rescuer: Rescuer | null | undefined;
@@ -95,7 +94,7 @@ function Configure({ account, accountsInfo, addresesOnThisChain, api, chain, cla
             recoveryInfo={recoveryInfo}
           />
         }
-        {tabValue === 'configuration' && status && status === 'closeRecovery' && rescuer && chain && account &&
+        {tabValue === 'configuration' && status && status === 'closeRecovery' && rescuer && account &&
           <CloseRecoveryTab
             account={account}
             api={api}

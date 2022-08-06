@@ -22,7 +22,6 @@ import getCouncilMembersInfo from '../../../../util/api/getCouncilMembersInfo';
 import { SELECTED_COLOR } from '../../../../util/constants';
 import getLogo from '../../../../util/getLogo';
 import { ChainInfo, Tip } from '../../../../util/plusTypes';
-import { toHuman } from '../../../../util/plusUtils';
 import ProposeTip from './ProposeTip';
 
 interface Props {
@@ -42,8 +41,13 @@ export default function Overview({ address, chain, chainInfo, tips }: Props): Re
 
   const { api } = chainInfo;
 
-  const handleProposeTip = useCallback(() => { setShowProposeTipModal(true); }, []);
-  const handleProposeTipModalClose = useCallback(() => { setShowProposeTipModal(false); }, []);
+  const handleProposeTip = useCallback(() => {
+    setShowProposeTipModal(true);
+  }, []);
+  
+  const handleProposeTipModalClose = useCallback(() => {
+    setShowProposeTipModal(false);
+  }, []);
 
   const handleAccordionChange = useCallback((panel: number) => (event: React.SyntheticEvent, isExpanded: boolean) => {
     setExpanded(isExpanded ? panel : -1);
@@ -51,12 +55,16 @@ export default function Overview({ address, chain, chainInfo, tips }: Props): Re
 
   // eslint-disable-next-line no-void
   void React.useMemo(async () => {
-    if (!tips) return;
+    if (!tips) {
+      return;
+    }
 
     const wrappedTips: Option<PalletTipsOpenTip>[] = await Promise.all(tips.map((tip) => api.query.tips.tips(tip.hash)));
     const councilMembersInfo: DeriveAccountInfo[] = await getCouncilMembersInfo(chainName);
 
-    if (!councilMembersInfo.length) return;
+    if (!councilMembersInfo.length) {
+      return;
+    }
 
     const unWrappedTips = wrappedTips?.map((t) => t.isSome && t.unwrap());
 

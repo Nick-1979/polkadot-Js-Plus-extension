@@ -13,9 +13,9 @@ import type { PalletRecoveryRecoveryConfig } from '@polkadot/types/lookup';
 import type { ThemeProps } from '../../../../extension-ui/src/types';
 
 import { Security as SecurityIcon, Support as SupportIcon } from '@mui/icons-material';
-import { Button, Divider, Grid, Paper } from '@mui/material';
+import { Alert, Button, Divider, Grid, Paper } from '@mui/material';
 import { blue, grey } from '@mui/material/colors';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import styled from 'styled-components';
 
@@ -31,6 +31,7 @@ import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { Header } from '../../../../extension-ui/src/partials';
 import useApi from '../../hooks/useApi';
 import useEndpoint from '../../hooks/useEndPoint';
+import { SOCIAL_RECOVERY_CHAINS } from '../../util/constants';
 import { AddressState, nameAddress, RecoveryConsts, Rescuer } from '../../util/plusTypes';
 import Configure from './Configure';
 import Rscue from './Rescue';
@@ -44,10 +45,7 @@ function SocialRecovery({ className }: Props): React.ReactElement<Props> {
   const settings = useContext(SettingsContext);
   const { accounts } = useContext(AccountContext);
   const { address, genesisHash } = useParams<AddressState>();
-
-  const chain = useMetadata(genesisHash, true);
-  const endpoint = useEndpoint(accounts, address, chain);
-  const api = useApi(endpoint);
+  const [acceptedGenesisHashes, setAcceptedGenesisHashes] = useState<string>();
 
   const [accountsInfo, setAcountsInfo] = useState<DeriveAccountInfo[]>();
   const [account, setAccount] = useState<DeriveAccountInfo | undefined>();
@@ -58,6 +56,26 @@ function SocialRecovery({ className }: Props): React.ReactElement<Props> {
   const [showConfigureModal, setConfigureModalOpen] = useState<boolean | undefined>();
   const [showRescueModal, setRescueModalOpen] = useState<boolean | undefined>();
   const [recoveryFirstSel, setRecoveryFirstSel] = useState<string | undefined>();
+  const [wrongChainAlert, setWrongChainAlert] = useState<boolean>(false);
+
+  useMemo(() => {
+    if (SOCIAL_RECOVERY_CHAINS.includes(genesisHash)) {
+      setAcceptedGenesisHashes(genesisHash);
+      setWrongChainAlert(false);
+    } else {
+      setConfigureModalOpen(false);
+
+      setRescueModalOpen(false);
+
+      setAcceptedGenesisHashes(undefined);
+
+      setWrongChainAlert(true);
+    }
+  }, [genesisHash]);
+
+  const chain = useMetadata(acceptedGenesisHashes, true);
+  const endpoint = useEndpoint(accounts, address, chain);
+  const api = useApi(endpoint);
 
   useEffect(() => {
     // eslint-disable-next-line no-void
@@ -73,7 +91,7 @@ function SocialRecovery({ className }: Props): React.ReactElement<Props> {
       if (acc.address === address) {
         setAccount({ accountId: encodeAddress(publicKey, prefix), identity: { display: acc?.name } });
 
-        return result; // ignore the current account, I can not be a friend of mine
+        // return result; // ignore the current account, I can not be a friend of mine
       }
 
       result.push({ address: encodeAddress(publicKey, prefix), name: acc?.name });
@@ -170,6 +188,21 @@ function SocialRecovery({ className }: Props): React.ReactElement<Props> {
     });
   }, [address, api, chain?.name, chain?.ss58Format]);
 
+  useEffect(() => {
+    if (!rescuer || rescuer?.identity) {
+      return;
+    }
+
+    const localRescuer = rescuer;
+    const maybeLocalrescuer = addresesOnThisChain?.find((l) => l.address === String(rescuer.accountId));
+
+    if (maybeLocalrescuer) {
+      localRescuer.nickname = maybeLocalrescuer.name;
+    }
+
+    localRescuer !== rescuer && setRescuer(localRescuer);
+  }, [addresesOnThisChain, rescuer?.accountId]);
+
   const openConfigure = useCallback(() => {
     setConfigureModalOpen(true);
   }, []);
@@ -200,6 +233,7 @@ function SocialRecovery({ className }: Props): React.ReactElement<Props> {
         <Grid container justifyContent='center' sx={{ pt: 3, pb: 2 }}>
           <Button
             color='warning'
+            disabled={!chain}
             onClick={action}
             sx={{ textTransform: 'none', width: '80%' }}
             variant='contained'
@@ -233,6 +267,11 @@ function SocialRecovery({ className }: Props): React.ReactElement<Props> {
   return (
     <>
       <Header showAdd showBackArrow showSettings smallMargin text={`${t<string>('Social Recovery')} ${chain?.name ? 'on' : ''} ${chain?.name ?? ''}`} />
+      {wrongChainAlert &&
+        <Alert severity='error' sx={{ fontSize: 15, fontWeight: '700', mx: 5, px: 5 }}>
+          {t('Social recovery is not available on this chain!')}
+        </Alert>
+      }
       {!showConfigureModal && !showRescueModal && <Selection />}
       {showConfigureModal &&
         <Configure

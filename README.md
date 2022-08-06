@@ -49,11 +49,18 @@ Steps to build the extension and view your changes in a browser:
 
 Once added, you can create an account (via a generated seed) or import via an existing seed.
 
-#### To test on westend:
 
-Check wheather westend network info exists in './node_modules/@substrate/ss58-registry/esm/index.js', if not add the following:
+### Testing
 
-{
+* To run unit tests, first install dependencies using `yarn` then use: `yarn test:plus`
+
+* Test on Westend blockchain:
+
+   - It is possible via the provided [add-on](https://addons.mozilla.org/en-US/firefox/addon/polkadot-js-plus-extension/). To receive some westies (Westend's native token) for a created account use [Westend Faucet](https://matrix.to/#/#westend_faucet:matrix.org)
+
+   - Or build the extension on your own, but it needs to append the following Westend network info to './node_modules/@substrate/ss58-registry/esm/index.js') before build:
+
+     `{
 		"prefix": 42,
 		"network": "westend",
 		"displayName": "Westend",
@@ -65,7 +72,7 @@ Check wheather westend network info exists in './node_modules/@substrate/ss58-re
 		],
 		"standardAccount": "*25519",
 		"website": "https://polkadot.network"
-	}
+	}`
 
 
 ## More information 

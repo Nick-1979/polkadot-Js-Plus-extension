@@ -3,15 +3,15 @@
 
 import { AccountId } from '@polkadot/types/interfaces/runtime';
 
+import { MAX_REWARDS_TO_SHOW } from '../constants';
 import { SubQueryRewardInfo } from '../plusTypes';
 import { getUrl, postReq } from './util';
 
 export async function getRewards(chainName: string, controller: string | AccountId): Promise<SubQueryRewardInfo[]> {
   const url = getUrl(chainName);
-  const historySize = 20; // the maximum history to show in rewards chart in solo staking overview
 
   const query = `query {
-    historyElements (last:${historySize},filter:
+    historyElements (last:${MAX_REWARDS_TO_SHOW},filter:
       {reward:{isNull:false},
         address:{equalTo:"${String(controller)}"}
       }) {
@@ -28,5 +28,5 @@ export async function getRewards(chainName: string, controller: string | Account
 
   console.log('getRewards from subquery:', res.data.historyElements.nodes);
 
-  return res.data.historyElements.nodes as Voucher[];
+  return res.data.historyElements.nodes as SubQueryRewardInfo[];
 }

@@ -6,7 +6,38 @@
  * this component provides icons related to each action, which is depicted in transaction history
  * */
 
-import { AcUnit as AcUnitIcon, Add as AddIcon, AddCircleOutline as AddCircleOutlineIcon, AllOut as AllOutIcon, CallMade as CallMadeIcon, CallReceived as CallReceivedIcon, Check as CheckIcon, GroupRemove as GroupRemoveIcon, HowToReg as HowToRegIcon, Link as LinkIcon, MoveUpRounded as MoveUpRoundedIcon, NotificationsNone as NotificationsNoneIcon, Pool as PoolIcon, PublishedWithChanges as PublishedWithChangesIcon, RecommendOutlined as RecommendOutlinedIcon, Redeem as RedeemIcon, Remove as RemoveIcon, SettingsAccessibility as SettingsAccessibilityIcon, SettingsApplicationsOutlined as SettingsApplicationsOutlinedIcon, StopCircle as StopCircleIcon, SummarizeOutlined as SummarizeOutlinedIcon, SystemUpdateAltOutlined as SystemUpdateAltOutlinedIcon, ThumbsUpDownRounded as ThumbsUpDownRoundedIcon, VolunteerActivismSharp as VolunteerActivismSharpIcon } from '@mui/icons-material';
+import {
+  AcUnit as AcUnitIcon,
+  Add as AddIcon,
+  AddCircleOutline as AddCircleOutlineIcon,
+  AllOut as AllOutIcon,
+  CallMade as CallMadeIcon,
+  CallReceived as CallReceivedIcon,
+  Check as CheckIcon,
+  GroupRemove as GroupRemoveIcon,
+  HowToReg as HowToRegIcon,
+  Link as LinkIcon,
+  MoveUpRounded as MoveUpRoundedIcon,
+  NotificationsNone as NotificationsNoneIcon,
+  Pool as PoolIcon,
+  PublishedWithChanges as PublishedWithChangesIcon,
+  RecommendOutlined as RecommendOutlinedIcon,
+  Redeem as RedeemIcon,
+  Remove as RemoveIcon,
+  SettingsAccessibility as SettingsAccessibilityIcon,
+  SettingsApplicationsOutlined as SettingsApplicationsOutlinedIcon,
+  GppMaybeOutlined as GppMaybeOutlinedIcon,
+  AddModeratorOutlined as AddModeratorOutlinedIcon,
+  AdminPanelSettingsOutlined as AdminPanelSettingsOutlinedIcon,
+  SportsScore  as SportsScoreIcon ,
+  StopCircle as StopCircleIcon,
+  SummarizeOutlined as SummarizeOutlinedIcon,
+  SystemUpdateAltOutlined as SystemUpdateAltOutlinedIcon,
+  ThumbsUpDownRounded as ThumbsUpDownRoundedIcon,
+  VolunteerActivismSharp as VolunteerActivismSharpIcon,
+  VerifiedUserOutlined as VerifiedUserOutlinedIcon,
+  SettingsBackupRestore  as SettingsBackupRestoreIcon 
+} from '@mui/icons-material';
 import React from 'react';
 
 export function getTxIcon(action: string): React.ReactNode {
@@ -136,6 +167,36 @@ export function getTxIcon(action: string): React.ReactNode {
       return <VolunteerActivismSharpIcon
         fontSize='small'
         sx={{ color: 'red' }}
+      />;
+    case ('initiate_recovery'):
+      return <SportsScoreIcon 
+        fontSize='small'
+        sx={{ color: 'OrangeRed' }}
+      />;
+    case ('vouch_recovery'):
+      return <AdminPanelSettingsOutlinedIcon
+        fontSize='small'
+        sx={{ color: 'green' }}
+      />;
+    case ('close_recovery'):
+      return <GppMaybeOutlinedIcon
+        fontSize='small'
+        sx={{ color: 'Crimson' }}
+      />;
+    case ('make_recoverable'):
+      return <AddModeratorOutlinedIcon
+        fontSize='small'
+        sx={{ color: 'Tomato' }}
+      />;
+    case ('remove_recovery'):
+      return <VerifiedUserOutlinedIcon
+        fontSize='small'
+        sx={{ color: 'DarkSlateGray' }}
+      />;
+    case ('withdraw'):
+      return <SettingsBackupRestoreIcon 
+        fontSize='small'
+        sx={{ color: 'LimeGreen' }}
       />;
     default:
       return <NotificationsNoneIcon
