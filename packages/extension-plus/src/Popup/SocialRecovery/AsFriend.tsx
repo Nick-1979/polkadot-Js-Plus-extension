@@ -69,9 +69,7 @@ function AsFriend({ account, accountsInfo, addresesOnThisChain, api, chain, hand
 
   useEffect(() => {
     if (lostAccountRecoveryInfo?.friends && account?.accountId) {
-      const friendIndex = lostAccountRecoveryInfo.friends.findIndex((f) => f.toString() === account.accountId?.toString());
-
-      setIsFriend(friendIndex >= 0);
+      setIsFriend(!!lostAccountRecoveryInfo.friends.find((f) => f.toString() === account.accountId?.toString()));
     }
   }, [account?.accountId, lostAccountRecoveryInfo]);
 
@@ -101,7 +99,7 @@ function AsFriend({ account, accountsInfo, addresesOnThisChain, api, chain, hand
   }, [api, lostAccount]);
 
   useEffect(() => {
-    if (lostAccountRecoveryInfo === undefined) {
+    if (lostAccountRecoveryInfo === undefined || !t) {
       return;
     }
 
