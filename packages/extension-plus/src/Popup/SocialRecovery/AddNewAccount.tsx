@@ -44,9 +44,15 @@ function AddNewAccount({ account, accountsInfo, addresesOnThisChain, chain, help
   const [text, setText] = useState<string | undefined>();
   const [filteredAccountsInfo, setFilteredAccountsInfo] = useState<DeriveAccountInfo[] | undefined | null>();
 
-  const handleChange = useCallback((_event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const value = _event.target.value;
+  // const handleChange = useCallback((_event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  //   const value = _event.target.value;
 
+  //   setText(value);
+  //   setAccount(undefined);
+  //   setInfo(undefined);
+  // }, [setAccount]);
+
+  const handleInputChange = useCallback((event: React.SyntheticEvent<Element, Event>, value: string) => {
     setText(value);
     setAccount(undefined);
     setInfo(undefined);
@@ -93,7 +99,8 @@ function AddNewAccount({ account, accountsInfo, addresesOnThisChain, chain, help
         return account;
       });
     }
-  }, [ account?.accountId, addresesOnThisChain, setAccount]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account?.accountId, addresesOnThisChain, setAccount]);
 
   useEffect(() => {
     handleSearchIdentity();
@@ -164,10 +171,11 @@ function AddNewAccount({ account, accountsInfo, addresesOnThisChain, chain, help
         <Autocomplete
           ListboxProps={{ sx: { fontSize: 12 } }}
           autoFocus
-          defaultValue={info?.accountId || text}
+          inputValue={info?.accountId || text}
           // disabled={!accountsInfo?.length}
           freeSolo
           onChange={handleAutoComplateChange}
+          onInputChange={handleInputChange}
           options={addresesOnThisChain?.map((option) => `${option?.name} :    ${option.address}`)}
           // eslint-disable-next-line react/jsx-no-bind
           renderInput={(params) =>
@@ -182,7 +190,7 @@ function AddNewAccount({ account, accountsInfo, addresesOnThisChain, chain, help
                 </Grid>
               }
               label={label}
-              onChange={handleChange}
+              // onChange={handleChange}
               placeholder={'account Id / name / twitter / element Id / email / web site'}
             />
           }

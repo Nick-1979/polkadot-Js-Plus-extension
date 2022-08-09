@@ -11,8 +11,8 @@
 import type { DeriveAccountInfo } from '@polkadot/api-derive/types';
 import type { ThemeProps } from '../../../../extension-ui/src/types';
 
-import { AddCircleRounded as AddCircleRoundedIcon, NavigateBefore as NavigateBeforeIcon,NavigateNext as NavigateNextIcon, NoAccounts as NoAccountsIcon } from '@mui/icons-material';
-import { Autocomplete, Grid, TextField,Typography } from '@mui/material';
+import { AddCircleRounded as AddCircleRoundedIcon, NavigateBefore as NavigateBeforeIcon, NavigateNext as NavigateNextIcon, NoAccounts as NoAccountsIcon } from '@mui/icons-material';
+import { Autocomplete, Grid, TextField, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -67,9 +67,14 @@ function AddFriend({ account, accountsInfo, addresesOnThisChain, chain, friends,
     handleAddress(value);
   }, [handleAddress]);
 
-  const handleChange = useCallback((_event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const value = _event.target.value;
+  // const handleChange = useCallback((_event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  //   const value = _event.target.value;
 
+  //   setText(value);
+  //   setAccountInfo(undefined);
+  // }, []);
+
+  const handleInputChange = useCallback((event: React.SyntheticEvent<Element, Event>, value: string) => {
     setText(value);
     setAccountInfo(undefined);
   }, []);
@@ -153,7 +158,7 @@ function AddFriend({ account, accountsInfo, addresesOnThisChain, chain, friends,
   const AccountTextBox = () => (
     <Grid alignItems='center' container sx={{ pt: 2 }}>
       <Grid item xs={1}>
-        {text
+        {isValidAddress(text)
           ? <Identicon
             prefix={chain?.ss58Format ?? 42}
             size={40}
@@ -167,9 +172,11 @@ function AddFriend({ account, accountsInfo, addresesOnThisChain, chain, friends,
         <Autocomplete
           ListboxProps={{ sx: { fontSize: 12 } }}
           autoFocus
-          defaultValue={text}
+          // defaultValue={text}
           freeSolo
+          inputValue={text}
           onChange={handleAutoComplateChange}
+          onInputChange={handleInputChange}
           options={addresesOnThisChain?.map((option) => `${option?.name} :    ${option.address}`)}
           // eslint-disable-next-line react/jsx-no-bind
           renderInput={(params) =>
@@ -179,7 +186,7 @@ function AddFriend({ account, accountsInfo, addresesOnThisChain, chain, friends,
               autoFocus
               error={!text}
               label={t('New friend')}
-              onChange={handleChange}
+              // onChange={handleChange}
               placeholder={'account Id / name / twitter / element Id / email / web site'}
             />
           }
