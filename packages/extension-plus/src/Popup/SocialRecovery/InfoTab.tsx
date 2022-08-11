@@ -70,7 +70,7 @@ function InfoTab({ api }: Props): React.ReactElement<Props> {
         </Grid>
         <Grid container item justifyContent='space-between' sx={{ fontSize: 12, py: '5px' }} xs={12}>
           <Grid item>
-            {t('The maximum amount of friends allowed in a recovery configuration')}:
+            {t('The maximum number of friends allowed in a recovery configuration')}:
           </Grid>
           <Grid item>
             <ShowValue value={recoveryConsts?.maxFriends} />
