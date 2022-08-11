@@ -7,13 +7,12 @@ import { fireEvent, Matcher, render } from '@testing-library/react';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { nameAddress } from '../../util/plusTypes';
-import { chain, validatorsIdentities as accountWithId, validatorsName as accountWithName } from '../../util/test/testHelper';
+import { addresesOnThisChain, chain, validatorsIdentities as accountWithId, validatorsName as accountWithName } from '../../util/test/testHelper';
 import AddNewAccount from './AddNewAccount';
 
 jest.setTimeout(90000);
 ReactDOM.createPortal = jest.fn((modal) => modal);
-const addresesOnThisChain: nameAddress[] = [accountWithName[0], accountWithName[1], accountWithName[2]];
+
 const setAccount = jest.fn();
 
 describe('Testing AddNewAccount component', () => {

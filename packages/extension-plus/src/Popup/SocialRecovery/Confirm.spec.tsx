@@ -163,7 +163,7 @@ describe('Testing Confirm component', () => {
 
   test('Confirm: withdrawWithClaim - withdrawAsRecovered', async () => {
     for (let i = 5; i <= 6; i++) {
-      const { debug, getByRole, queryAllByTestId, queryByLabelText, queryByText } = render(
+      const { getByRole, queryAllByTestId, queryByLabelText, queryByText } = render(
         <Confirm
           account={signerAcc}
           api={chainInfo.api} // don't care
