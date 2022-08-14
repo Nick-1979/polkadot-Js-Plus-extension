@@ -13,7 +13,7 @@ import useEndpoints from '../../../../extension-plus/src/hooks/useEndpoints';// 
 import { CROWDLOANS_CHAINS, GOVERNANCE_CHAINS, SOCIAL_RECOVERY_CHAINS } from '../../../../extension-plus/src/util/constants';// added for plus
 import { SavedMetaData } from '../../../../extension-plus/src/util/plusTypes';// added for plus
 import { prepareMetaData } from '../../../../extension-plus/src/util/plusUtils';// added for plus
-import { AccountContext, ActionContext, ActionText, Address, Dropdown, Link, MenuDivider, MenuItem, Svg } from '../../components';// added for plus, AccountContext, ActionContext, Svg
+import { AccountContext, ActionContext, ActionText, PAddress, Dropdown, Link, MenuDivider, MenuItem, Svg } from '../../components';// added for plus, AccountContext, ActionContext, Svg
 import useGenesisHashOptions from '../../hooks/useGenesisHashOptions';
 import useTranslation from '../../hooks/useTranslation';
 import { editAccount, tieAccount, updateMeta } from '../../messaging';// added for plus, updateMeta
@@ -196,7 +196,7 @@ function Account({ address, className, genesisHash, isExternal, isHardware, isHi
 
   return (
     <div className={className}>
-      <Address
+      <PAddress
         actions={_actions}
         address={address}
         className='address'
@@ -219,7 +219,7 @@ function Account({ address, className, genesisHash, isExternal, isHardware, isHi
             onChange={setName}
           />
         )}
-      </Address>
+      </PAddress>
     </div>
   );
 }

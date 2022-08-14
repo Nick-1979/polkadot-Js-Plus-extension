@@ -15,7 +15,7 @@ import { cryptoWaitReady } from '@polkadot/util-crypto'; // added for plus
 
 import { AccountContext } from '../../components';
 import useTranslation from '../../hooks/useTranslation';
-import { Header } from '../../partials';
+import { PHeader } from '../../partials';
 import AccountsTree from './AccountsTree';
 import AddAccount from './AddAccount';
 
@@ -59,14 +59,15 @@ function Accounts({ className }: Props): React.ReactElement {
         ? <AddAccount />
         : (
           <>
-            <Header
+            <PHeader
               onFilter={_onFilter}
-              showAdd
-              showSearch
+              // showAdd
+              // showSearch
               showSettings
-              text={t<string>('Accounts')}
+              text={t<string>('Polkagate')}
             />
             <div className={className}>
+              <div className='title'> {t('Your Accounts')}</div>
               {filteredAccount.map((json, index): React.ReactNode => (
                 <AccountsTree
                   {...json}
@@ -81,14 +82,25 @@ function Accounts({ className }: Props): React.ReactElement {
   );
 }
 
-export default styled(Accounts)`
+export default styled(Accounts)(({ theme }: ThemeProps) => `
   height: calc(100vh - 2px);
   overflow-y: scroll;
-  margin-top: -25px;
-  padding-top: 25px;
+  // margin-top: -25px;
+  // padding-top: 25px;
   scrollbar-width: none;
-
+  
+  .title {
+    font-family: ${theme.fontFamily};
+    color: ${theme.textColor};
+    font-style: normal;
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 36px;
+    text-align: center;
+    letter-spacing: -0.015em;
+  }
+  
   &::-webkit-scrollbar {
     display: none;
   }
-`;
+`);

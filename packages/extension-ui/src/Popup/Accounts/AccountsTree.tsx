@@ -5,7 +5,7 @@ import type { AccountWithChildren } from '@polkadot/extension-base/background/ty
 
 import React from 'react';
 
-import Account from './Account';
+import PAccount from './PAccount';
 
 interface Props extends AccountWithChildren {
   parentName?: string;
@@ -14,7 +14,7 @@ interface Props extends AccountWithChildren {
 export default function AccountsTree ({ parentName, suri, ...account }: Props): React.ReactElement<Props> {
   return (
     <>
-      <Account
+      <PAccount
         {...account}
         parentName={parentName}
         suri={suri}

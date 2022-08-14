@@ -7,7 +7,7 @@ const darkTheme = {
   backButtonBackground: '#3A3B41',
   backButtonBackgroundHover: '#3a3b41ad',
   backButtonTextColor: '#FFFFFF',
-  background: '#26272C',
+  background: '#000000',
   bodyColor: '#20222A',
   borderRadius: '4px',
   boxBackground: '#1A1B20',
@@ -23,7 +23,8 @@ const darkTheme = {
   buttonTextColor: '#FFFFFF',
   errorBorderColor: '#7E3530',
   errorColor: '#E42F2F',
-  fontFamily: 'Nunito, sans-serif',
+  // fontFamily: 'Nunito, sans-serif',
+  fontFamily: 'Montserrat, sans-serif',
   fontSize: '16px',
   highlightedAreaBackground: '#212226',
   iconDangerColor: '#AF1111',
@@ -44,6 +45,7 @@ const darkTheme = {
   readonlyInputBackground: '#1A1B20',
   subTextColor: '#DDD',
   textColor: '#FFFFFF',
+  pinkColor:'#E30B7B',
   textColorDanger: '#FF8686'
 };
 
