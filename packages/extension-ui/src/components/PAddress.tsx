@@ -18,7 +18,7 @@ import styled from 'styled-components';
 
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
-import { Plus } from '../../../extension-plus/src/components'; // added for Plus
+import { Plus, ShortAddress } from '../../../extension-plus/src/components'; // added for Plus
 
 import details from '../assets/details.svg';
 import useMetadata from '../hooks/useMetadata';
@@ -243,26 +243,8 @@ function Address({ actions, address, children, className, genesisHash, isExterna
               </div>
             )
           }
-          {chain?.genesisHash && (
-            <div
-              className='banner chain'
-              data-field='chain'
-              style={
-                chain.definition.color
-                  ? { backgroundColor: chain.definition.color }
-                  : undefined
-              }
-            >
-              {chain.name.replace(' Relay Chain', '')}
-            </div>
-          )}
           <div className='addressDisplay'>
-            <div
-              className='fullAddress'
-              data-field='address'
-            >
-              {formatted || address || t('<unknown>')}
-            </div>
+            <ShortAddress address={formatted || address || t('<unknown>')}/>
             <CopyToClipboard text={(formatted && formatted) || ''}>
               <FontAwesomeIcon
                 className='copyIcon'
@@ -348,9 +330,9 @@ export default styled(Address)(({ theme }: ThemeProps) => `
   }
 
   .addressDisplay {
-    display: flex;
+    // display: flex;
     justify-content: space-between;
-    position: relative;
+    // position: relative;
 
     .svg-inline--fa {
       width: 14px;
@@ -394,6 +376,8 @@ export default styled(Address)(({ theme }: ThemeProps) => `
   }
 
   .info {
+    display: grid;
+    grid-direction:row;
     width: 100%;
   }
 
@@ -413,12 +397,13 @@ export default styled(Address)(({ theme }: ThemeProps) => `
   }
 
   .name {
+    display:flex;
     font-size: 16px;
     line-height: 22px;
     margin: 2px 0;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 300px;
+    width: 50px;
     white-space: nowrap;
 
     &.displaced {
