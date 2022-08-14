@@ -353,23 +353,6 @@ function Plus({ address, chain, formattedAddress, givenType, name, t }: Props): 
 
   return (
     <Container disableGutters sx={{ position: 'relative', top: '-10px' }}>
-      <Grid container justifyContent='flex-end' sx={{ lineHeight: '12px' }}>
-        <Grid container id='QRcodePage' item justifyContent='flex-end' xs={2}>
-          <Grid item sx={{ paddingLeft: '2px' }} xs={2}>
-            <Link color='inherit' href='#' underline='none'>
-              <FontAwesomeIcon
-                color={!chain ? grey[300] : grey[600]}
-                icon={faQrcode}
-                id='receive'
-                onClick={handleShowQRcode}
-                size='sm'
-                title={t && t('receive')}
-              />
-            </Link>
-          </Grid>
-          <Grid item xs={6}></Grid>
-        </Grid>
-      </Grid>
       <Grid alignItems='center' container>
         <Grid container item justifyContent='center' xs={10}>
           {!chain
@@ -406,56 +389,12 @@ function Plus({ address, chain, formattedAddress, givenType, name, t }: Props): 
                 <Grid item xs={4}>
                   <Balance balance={balance} price={price} type='total' />
                 </Grid>
-                <Grid item xs={4}>
-                  <Balance balance={balance} price={price} type='available' />
-                </Grid>
-                <Grid item xs={4}>
-                  <Balance balance={balance} price={price} type='reserved' />
-                </Grid>
               </Grid>
             </>
           }
         </Grid>
         <Grid container item xs={2}>
           <Grid container id='plusToolbar' item xs={12}>
-            <Grid item xs={3}>
-              <Link color='inherit' href='#' underline='none'>
-                <FontAwesomeIcon
-                  color={!chain ? grey[300] : grey[600]}
-                  icon={faPaperPlane}
-                  id='send'
-                  onClick={handleTransferFunds}
-                  size='sm'
-                  swapOpacity={true}
-                  title={t && t('send')}
-                />
-              </Link>
-            </Grid>
-            <Grid container item xs={3}>
-              <Link color='inherit' href='#' underline='none'>
-                <FontAwesomeIcon
-                  color={!chain ? grey[300] : grey[600]}
-                  icon={faSyncAlt}
-                  id='refreshIcon'
-                  onClick={handlerefreshBalance}
-                  size='sm'
-                  spin={refreshing}
-                  title={t && t('refresh')}
-                />
-              </Link>
-            </Grid>
-            <Grid item xs={3}>
-              <Link color='inherit' href='#' underline='none'>
-                <FontAwesomeIcon
-                  color={!chain ? grey[300] : grey[600]}
-                  icon={faTasks}
-                  id='history'
-                  onClick={handleTxHistory}
-                  size='sm'
-                  title={t && t('history')}
-                />
-              </Link>
-            </Grid>
             <Grid item xs={3}>
               <Link color='inherit' href='#' underline='none'>
                 <FontAwesomeIcon
@@ -469,16 +408,6 @@ function Plus({ address, chain, formattedAddress, givenType, name, t }: Props): 
               </Link>
             </Grid>
           </Grid>
-          {chain && <>
-            {balance
-              ? <Grid id='coinPrice' item sx={{ color: grey[600], fontSize: 10, textAlign: 'center' }} xs={12}>
-                {chain && <> {'1 '}{getCoin(balance)}{' = $'}{price.toFixed(2)}</>}
-              </Grid>
-              : <Grid id='emptyCoinPrice' item sx={{ color: grey[400], fontSize: 10, textAlign: 'center' }} xs={12}>
-                {'1 ---  =  $ --- '}
-              </Grid>
-            }
-          </>}
         </Grid>
 
       </Grid>
