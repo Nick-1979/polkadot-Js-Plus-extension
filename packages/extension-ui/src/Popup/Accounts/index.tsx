@@ -18,6 +18,7 @@ import useTranslation from '../../hooks/useTranslation';
 import { PHeader } from '../../partials';
 import AccountsTree from './AccountsTree';
 import AddAccount from './AddAccount';
+import { Grid } from '@mui/material';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -67,7 +68,7 @@ function Accounts({ className }: Props): React.ReactElement {
               text={t<string>('Polkagate')}
             />
             <div className={className}>
-              <div className='title'> {t('Your Accounts')}</div>
+              <p color='primary'> {t('Your Accounts')}</p>
               {filteredAccount.map((json, index): React.ReactNode => (
                 <AccountsTree
                   {...json}

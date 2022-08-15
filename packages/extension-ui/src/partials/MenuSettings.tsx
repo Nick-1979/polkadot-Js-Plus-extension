@@ -14,6 +14,7 @@ import useIsPopup from '../hooks/useIsPopup';
 import useTranslation from '../hooks/useTranslation';
 import { setNotification, windowOpen } from '../messaging';
 import getLanguageOptions from '../util/getLanguageOptions';
+import { SwitchModeButton } from '../components/SwitchModeButton ';
 
 interface Option {
   text: string;
@@ -32,7 +33,7 @@ const prefixOptions = settings.availablePrefixes
   .filter(({ value }) => value !== -1)
   .map(({ text, value }): Option => ({ text, value: `${value}` }));
 
-function MenuSettings ({ className, reference }: Props): React.ReactElement<Props> {
+function MenuSettings({ className, reference }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const [camera, setCamera] = useState(settings.camera === 'on');
   const [prefix, setPrefix] = useState(`${settings.prefix === -1 ? 42 : settings.prefix}`);
@@ -91,6 +92,12 @@ function MenuSettings ({ className, reference }: Props): React.ReactElement<Prop
       className={className}
       reference={reference}
     >
+      <MenuItem
+        className='setting'
+        title='Theme'
+      >
+        <SwitchModeButton />
+      </MenuItem>
       <MenuItem
         className='setting'
         title='Theme'
