@@ -4,13 +4,10 @@
 
 import { ThemeOptions } from '@mui/material';
 import { red, grey, blue } from '@mui/material/colors';
-import { baseTheme } from './baseTheme';
 
-export const lightTheme: ThemeOptions = {
-  ...baseTheme,
-  palette: {
-    mode: 'light',
-    primary: { main: '#000000' },
-    secondary: grey,
+export const baseTheme: ThemeOptions = {
+
+  typography: {
+    fontFamily: 'Montserrat'
   }
 };

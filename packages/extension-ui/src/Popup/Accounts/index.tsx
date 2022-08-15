@@ -18,13 +18,13 @@ import useTranslation from '../../hooks/useTranslation';
 import { PHeader } from '../../partials';
 import AccountsTree from './AccountsTree';
 import AddAccount from './AddAccount';
-import { Grid, Typography } from '@mui/material';
+import { Container, Grid, Typography } from '@mui/material';
 
 interface Props extends ThemeProps {
   className?: string;
 }
 
-function Accounts({ className }: Props): React.ReactElement {
+export default function Accounts({ className }: Props): React.ReactElement {
   const { t } = useTranslation();
   const [filter, setFilter] = useState('');
   const [filteredAccount, setFilteredAccount] = useState<AccountWithChildren[]>([]);
@@ -60,22 +60,26 @@ function Accounts({ className }: Props): React.ReactElement {
         ? <AddAccount />
         : (
           <>
-            <PHeader
-              onFilter={_onFilter}
-              // showAdd
-              // showSearch
-              showSettings
-              text={t<string>('Polkagate')}
-            />
-            <div className={className}>
-              <Typography color='primary'> {t('Your Accounts')}</Typography>
+            <Grid xs={12} textAlign='center' padding='0px'>
+              <PHeader
+                onFilter={_onFilter}
+                // showAdd
+                // showSearch
+                showSettings
+                text={t<string>('Polkagate')}
+              />
+            </Grid>
+            <Grid xs={12} textAlign='center'>
+              <Typography color='primary' sx={{ colorfontWeight: 500, fontSize: '24px', lineHeight: '36px', letterSpacing: '-0.015em'}}> {t('Your Accounts')}</Typography>
+            </Grid>
+            <Container>
               {filteredAccount.map((json, index): React.ReactNode => (
                 <AccountsTree
                   {...json}
                   key={`${index}:${json.address}`}
                 />
               ))}
-            </div>
+            </Container>
           </>
         )
       }
@@ -83,25 +87,25 @@ function Accounts({ className }: Props): React.ReactElement {
   );
 }
 
-export default styled(Accounts)(({ theme }: ThemeProps) => `
-  height: calc(100vh - 2px);
-  overflow-y: scroll;
-  // margin-top: -25px;
-  // padding-top: 25px;
-  scrollbar-width: none;
+// export default styled(Accounts)(({ theme }: ThemeProps) => `
+//   height: calc(100vh - 2px);
+//   overflow-y: scroll;
+//   // margin-top: -25px;
+//   // padding-top: 25px;
+//   scrollbar-width: none;
   
-  .title {
-    font-family: ${theme.fontFamily};
-    color: ${theme.textColor};
-    font-style: normal;
-    font-weight: 500;
-    font-size: 24px;
-    line-height: 36px;
-    text-align: center;
-    letter-spacing: -0.015em;
-  }
+//   .title {
+//     font-family: ${theme.fontFamily};
+//     color: ${theme.textColor};
+//     font-style: normal;
+//     font-weight: 500;
+//     font-size: 24px;
+//     line-height: 36px;
+//     text-align: center;
+//     letter-spacing: -0.015em;
+//   }
   
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`);
+//   &::-webkit-scrollbar {
+//     display: none;
+//   }
+// `);

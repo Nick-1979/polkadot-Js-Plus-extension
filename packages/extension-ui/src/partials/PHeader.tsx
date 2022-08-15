@@ -5,6 +5,8 @@ import type { ThemeProps } from '../types';
 
 import { faArrowLeft, faCog, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import MenuIcon from '@mui/icons-material/Menu';
+import { Avatar,Box,Container,Grid, IconButton, Typography } from '@mui/material';
 import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components';
 
@@ -15,8 +17,7 @@ import useOutsideClick from '../hooks/useOutsideClick';
 import useTranslation from '../hooks/useTranslation';
 import MenuAdd from './MenuAdd';
 import MenuSettings from './MenuSettings';
-import { IconButton, Grid } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+
 interface Props extends ThemeProps {
   children?: React.ReactNode;
   className?: string;
@@ -78,12 +79,11 @@ function Header({ children, className = '', onFilter, showAdd, showBackArrow, sh
   );
 
   return (
-    <div className={`${className} ${smallMargin ? 'smallMargin' : ''}`}>
-      <div className='container'>
-        <div className='branding'>
+    <Container sx={{pt:'28px'}}>
+      <Grid container alignItems='center' justifyContent='space-between'>
+        <Grid item>
           {showBackArrow
-            ? (
-              <Link
+            ?<Link
                 className='backlink'
                 to='/'
               >
@@ -92,205 +92,159 @@ function Header({ children, className = '', onFilter, showAdd, showBackArrow, sh
                   icon={faArrowLeft}
                 />
               </Link>
-            )
-            : (
-              <img
-                className='logo'
-                src={logo}
-              />
-            )
+            :  <Box component='img' sx={{ height: 45, width: 45 }}src={logo}/>
           }
 
-        </div>
-        {/* added for plus */}
-        <Grid color='info'>{text}</Grid>
-        {showSearch && (
-          <div className={`searchBarWrapper ${isSearchOpen ? 'selected' : ''}`}>
-            {isSearchOpen && (
-              <InputFilter
-                className='inputFilter'
-                onChange={_onChangeFilter}
-                placeholder={t<string>('Search by name or network...')}
-                value={filter}
-                withReset
-              />
-            )}
-            <FontAwesomeIcon
-              className={`searchIcon ${isSearchOpen ? 'selected' : ''}`}
-              icon={faSearch}
-              onClick={_toggleSearch}
-              size='lg'
-            />
-          </div>
-        )}
-        <div className='popupMenus'>
-          {/* {showAdd && (
-            <div
-              className='popupToggle'
-              onClick={_toggleAdd}
-              ref={addIconRef}
-            >
-              <FontAwesomeIcon
-                className={`plusIcon ${isAddOpen ? 'selected' : ''}`}
-                icon={faPlusCircle}
-                size='lg'
-              />
-            </div>
-          )} */}
+        </Grid>
+        <Grid item >
+          <Typography color='secondary' sx={{fontStyle: 'italic', fontWeight: 700, fontSize: '20px', lineHeight: '36px', letterSpacing: '-0.015em'}}>{text}</Typography>
+        </Grid>
+        <Grid item>
           {showSettings && (
             <IconButton
               aria-label='menu'
               color='inherit'
               edge='start'
               onClick={_toggleSettings}
-              size='large'
-              sx={{ mr: 2 }}
+              size='small'
             >
               <MenuIcon sx={{ color: '#E30B7B', fontSize: 40 }} />
             </IconButton>
-
-
-            // <div
-            //   className='popupToggle'
-            //   data-toggle-settings
-            //   onClick={_toggleSettings}
-            //   ref={setIconRef}
-            // >
-            //   <FontAwesomeIcon
-            //     className={`cogIcon ${isSettingsOpen ? 'selected' : ''}`}
-            //     icon={faCog}
-            //     size='lg'
-            //   />
-            // </div>
           )}
-        </div>
-        {isAddOpen && (
+        </Grid>
+      </Grid>
+      {
+        isAddOpen && (
           <MenuAdd reference={addMenuRef} />
-        )}
-        {isSettingsOpen && (
+        )
+      }
+      {
+        isSettingsOpen && (
           <MenuSettings reference={setMenuRef} />
-        )}
-        {children}
-      </div>
-    </div>
+        )
+      }
+      {children}
+    </Container>
   );
 }
 
-export default React.memo(styled(Header)(({ theme }: Props) => `
-  max-width: 100%;
-  box-sizing: border-box;
-  font-weight: normal;
-  margin: 0;
-  position: relative;
-  margin-top: 25px;
-  margin-bottom: 13px;
+export default React.memo(Header);
 
-  && {
-    padding: 0 0 0;
-  }
+// export default React.memo(styled(Header)(({ theme }: Props) => `
+//   max-width: 100%;
+//   box-sizing: border-box;
+//   font-weight: normal;
+//   margin: 0;
+//   position: relative;
+//   margin-top: 25px;
+//   margin-bottom: 13px;
 
-  > .container {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    // border-bottom: 1px solid ${theme.inputBorderColor};
-    // min-height: 50px;
+//   && {
+//     padding: 0 0 0;
+//   }
 
-    .branding {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: ${theme.info};
-      font-family: ${theme.fontFamily};
-      text-align: center;
-      margin-left: 24px;
+//   > .container {
+//     display: flex;
+//     justify-content: space-between;
+//     width: 100%;
+//     // border-bottom: 1px solid ${theme.inputBorderColor};
+//     // min-height: 50px;
 
-      .logo {
-        height: 45px;
-        width: 45px;
-        // margin: 8px 12px 12px 0;
-      }
-    }
+//     .branding {
+//       display: flex;
+//       justify-content: center;
+//       align-items: center;
+//       color: ${theme.info};
+//       font-family: ${theme.fontFamily};
+//       text-align: center;
+//       margin-left: 24px;
+
+//       .logo {
+//         height: 45px;
+//         width: 45px;
+//         // margin: 8px 12px 12px 0;
+//       }
+//     }
     
-    .logoText {
-      display: flex;
-      align-self: center;
-      color: ${theme.info};
-      font-family: ${theme.fontFamily};
-      font-style: italic;
-      font-weight: 700;
-      font-size: 20px;
-      line-height: 36px;
-      display: block;
-      letter-spacing: -0.015em;
-      }
+//     .logoText {
+//       display: flex;
+//       align-self: center;
+//       color: ${theme.info};
+//       font-family: ${theme.fontFamily};
+//       font-style: italic;
+//       font-weight: 700;
+//       font-size: 20px;
+//       line-height: 36px;
+//       display: block;
+//       letter-spacing: -0.015em;
+//       }
 
-    .popupMenus, .searchBarWrapper {
-      align-self: center;
-    }
+//     .popupMenus, .searchBarWrapper {
+//       align-self: center;
+//     }
 
-    .searchBarWrapper {
-      flex: 1;
-      display: flex;
-      justify-content: end;
-      align-items: center;;
+//     .searchBarWrapper {
+//       flex: 1;
+//       display: flex;
+//       justify-content: end;
+//       align-items: center;;
 
-      .searchIcon {
-        margin-right: 8px;
+//       .searchIcon {
+//         margin-right: 8px;
 
-        &:hover {
-          cursor: pointer;
-        }
-      }
-    }
+//         &:hover {
+//           cursor: pointer;
+//         }
+//       }
+//     }
 
-    .popupToggle {
-      display: inline-block;
-      vertical-align: middle;
+//     .popupToggle {
+//       display: inline-block;
+//       vertical-align: middle;
 
-      &:last-child {
-        margin-right: 24px;
-      }
+//       &:last-child {
+//         margin-right: 24px;
+//       }
 
-      &:hover {
-        cursor: pointer;
-      }
-    }
+//       &:hover {
+//         cursor: pointer;
+//       }
+//     }
 
-    .inputFilter {
-      width: 100%
-    }
+//     .inputFilter {
+//       width: 100%
+//     }
 
-    .popupToggle+.popupToggle {
-      margin-left: 8px;
-    }
-  }
+//     .popupToggle+.popupToggle {
+//       margin-left: 8px;
+//     }
+//   }
 
-  .plusIcon, .cogIcon, .searchIcon {
-    color: ${theme.iconNeutralColor};
+//   .plusIcon, .cogIcon, .searchIcon {
+//     color: ${theme.iconNeutralColor};
 
-    &.selected {
-      color: ${theme.primary};
-    }
-  }
+//     &.selected {
+//       color: ${theme.primary};
+//     }
+//   }
 
-  .arrowLeftIcon {
-    color: ${theme.labelColor};
-    margin-right: 1rem;
-  }
+//   .arrowLeftIcon {
+//     color: ${theme.labelColor};
+//     margin-right: 1rem;
+//   }
 
-  .backlink {
-    color: ${theme.labelColor};
-    min-height: 52px;
-    text-decoration: underline;
-    width: min-content;
+//   .backlink {
+//     color: ${theme.labelColor};
+//     min-height: 52px;
+//     text-decoration: underline;
+//     width: min-content;
 
-    &:visited {
-      color: ${theme.labelColor};
-    }
-  }
+//     &:visited {
+//       color: ${theme.labelColor};
+//     }
+//   }
 
-  &.smallMargin {
-    margin-bottom: 15px;
-  }
-`));
+//   &.smallMargin {
+//     margin-bottom: 15px;
+//   }
+// `));

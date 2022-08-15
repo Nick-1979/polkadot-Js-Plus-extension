@@ -20,6 +20,7 @@ import { editAccount, tieAccount, updateMeta } from '../../messaging';// added f
 import { Name } from '../../partials';
 import { faUserShield, faTent, faPeopleRoof } from '@fortawesome/free-solid-svg-icons';// added for plus,
 import { ContentCutOutlined } from '@mui/icons-material';
+import { Grid } from '@mui/material';
 
 interface Props extends AccountJson {
   className?: string;
@@ -31,7 +32,7 @@ interface EditState {
   toggleActions: number;
 }
 
-function Account({ address, className, genesisHash, isExternal, isHardware, isHidden, name, parentName, suri, type }: Props): React.ReactElement<Props> {
+export default function Account({ address, className, genesisHash, isExternal, isHardware, isHidden, name, parentName, suri, type }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const [{ isEditing, toggleActions }, setEditing] = useState<EditState>({ isEditing: false, toggleActions: 0 });
   const [editedName, setName] = useState<string | undefined | null>(name);
@@ -195,7 +196,7 @@ function Account({ address, className, genesisHash, isExternal, isHardware, isHi
   ), [_goToLink, _onChangeEndpoint, _onChangeGenesis, _toggleEdit, address, endpointOptions, genesisHash, genesisOptions, isExternal, isHardware, selectedEndpoint, t, type]);
 
   return (
-    <div className={className}>
+    <Grid xs={12} borderTop={1} borderColor='red'>
       <PAddress
         actions={_actions}
         address={address}
@@ -220,95 +221,95 @@ function Account({ address, className, genesisHash, isExternal, isHardware, isHi
           />
         )}
       </PAddress>
-    </div>
+    </Grid>
   );
 }
 
-export default styled(Account)(({ theme }: ThemeProps) => `
-  .address {
-    margin-bottom: 8px;
-  }
+// export default styled(Account)(({ theme }: ThemeProps) => `
+//   .address {
+//     margin-bottom: 8px;
+//   }
 
-  .editName {
-    position: absolute;
-    flex: 1;
-    left: 70px;
-    top: 10px;
-    width: 350px;
+//   .editName {
+//     position: absolute;
+//     flex: 1;
+//     left: 70px;
+//     top: 10px;
+//     width: 350px;
 
-    .danger {
-      background-color: ${theme.bodyColor};
-      margin-top: -13px;
-      width: 330px;
-    }
+//     .danger {
+//       background-color: ${theme.bodyColor};
+//       margin-top: -13px;
+//       width: 330px;
+//     }
 
-    input {
-      height : 30px;
-      width: 350px;
-    }
+//     input {
+//       height : 30px;
+//       width: 350px;
+//     }
 
-    &.withParent {
-      top: 16px
-    }
-  }
+//     &.withParent {
+//       top: 16px
+//     }
+//   }
 
-  .menuItem {
-    border-radius: 8px;
-    display: block;
-    font-size: 15px;
-    line-height: 20px;
-    margin: 0;
-    min-width: 13rem;
-    padding: 1px 16px;  // added for plus, from 4px 16px to 1px 16px
+//   .menuItem {
+//     border-radius: 8px;
+//     display: block;
+//     font-size: 15px;
+//     line-height: 20px;
+//     margin: 0;
+//     min-width: 13rem;
+//     padding: 1px 16px;  // added for plus, from 4px 16px to 1px 16px
 
-    .genesisSelection {
-      margin: 0;
-    }
-  }
-  .newMenuItem {   // added for plus 
-    border-radius: 8px;
-    display: block;
-    font-size: 15px;
-    font-weight: 600;
-    line-height: 20px;
-    margin: 0;
-    min-width: 13rem;
-    padding: 4px 16px;
-  }
-  .newMenu {   // added for plus   
-    span {
-      color: ${theme.textColor};
-      font-size: 15px;
-      line-height: ${theme.lineHeight};
-      text-decoration: none;
-      vertical-align: middle;
-      padding-left: 5px;
-    }
+//     .genesisSelection {
+//       margin: 0;
+//     }
+//   }
+//   .newMenuItem {   // added for plus 
+//     border-radius: 8px;
+//     display: block;
+//     font-size: 15px;
+//     font-weight: 600;
+//     line-height: 20px;
+//     margin: 0;
+//     min-width: 13rem;
+//     padding: 4px 16px;
+//   }
+//   .newMenu {   // added for plus   
+//     span {
+//       color: ${theme.textColor};
+//       font-size: 15px;
+//       line-height: ${theme.lineHeight};
+//       text-decoration: none;
+//       vertical-align: middle;
+//       padding-left: 5px;
+//     }
 
-    ${Svg} {
-      background: ${theme.textColor};
-      height: 20px;
-      top: 4px;
-      width: 20px;
-      margin: 0px;
-    }
-  }
-  .disabledMenu {   // added for plus   
-    span {
-      color: #a8a0a0;
-      font-size: 15px;
-      line-height: ${theme.lineHeight};
-      text-decoration: none;
-      vertical-align: middle;
-      padding-left: 5px;
-    }
+//     ${Svg} {
+//       background: ${theme.textColor};
+//       height: 20px;
+//       top: 4px;
+//       width: 20px;
+//       margin: 0px;
+//     }
+//   }
+//   .disabledMenu {   // added for plus   
+//     span {
+//       color: #a8a0a0;
+//       font-size: 15px;
+//       line-height: ${theme.lineHeight};
+//       text-decoration: none;
+//       vertical-align: middle;
+//       padding-left: 5px;
+//     }
 
-    ${Svg} {
-      background: #a8a0a0;
-      height: 20px;
-      top: 4px;
-      width: 20px;
-      margin: 0px;
-    }
-  }
-`);
+//     ${Svg} {
+//       background: #a8a0a0;
+//       height: 20px;
+//       top: 4px;
+//       width: 20px;
+//       margin: 0px;
+//     }
+//   }
+// `);
