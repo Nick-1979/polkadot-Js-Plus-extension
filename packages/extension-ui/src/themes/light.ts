@@ -3,13 +3,13 @@
 /* eslint-disable header/header */
 
 import { ThemeOptions } from '@mui/material';
+import { red, grey, blue } from '@mui/material/colors';
 
 export const lightTheme: ThemeOptions = {
   palette: {
     mode: 'light',
-    // text: {
-    //     primary: '#000000',
-    //     // secondary: grey[800],
-    //   }
+    primary: { main: '#000000' },
+    info: { main: '#E30B7B' },
+    secondary: grey,
   }
 };

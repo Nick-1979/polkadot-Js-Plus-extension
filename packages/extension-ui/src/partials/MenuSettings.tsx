@@ -98,17 +98,17 @@ function MenuSettings({ className, reference }: Props): React.ReactElement<Props
       >
         <SwitchModeButton />
       </MenuItem>
-      <MenuItem
+      {/* <MenuItem
         className='setting'
         title='Theme'
       >
         <Switch
-          checked={themeContext.id === themes.dark.id}
+          checked={true}//{themeContext.id === themes.dark.id}
           checkedLabel={t<string>('Dark')}
           onChange={_onChangeTheme}
           uncheckedLabel={t<string>('Light')}
         />
-      </MenuItem>
+      </MenuItem> */}
       <MenuItem
         className='setting'
         title={t<string>('Display address format for')}
@@ -180,13 +180,13 @@ function MenuSettings({ className, reference }: Props): React.ReactElement<Props
 }
 
 export default React.memo(styled(MenuSettings)(({ theme }: Props) => `
-  margin-top: 50px;
+  margin-top: 250px;
   right: 24px;
   user-select: none;
 
   .openWindow, .manageWebsiteAccess{
     span {
-      color: ${theme.textColor};
+      color: ${theme.primary};
       font-size: ${theme.fontSize};
       line-height: ${theme.lineHeight};
       text-decoration: none;
@@ -194,7 +194,7 @@ export default React.memo(styled(MenuSettings)(({ theme }: Props) => `
     }
 
     ${Svg} {
-      background: ${theme.textColor};
+      background: ${theme.primary};
       height: 20px;
       top: 4px;
       width: 20px;
@@ -203,7 +203,7 @@ export default React.memo(styled(MenuSettings)(({ theme }: Props) => `
 
   > .setting {
     > .checkbox {
-      color: ${theme.textColor};
+      color: ${theme.primary};
       line-height: 20px;
       font-size: 15px;
       margin-bottom: 0;
@@ -213,12 +213,12 @@ export default React.memo(styled(MenuSettings)(({ theme }: Props) => `
       }
 
       label {
-        color: ${theme.textColor};
+        color: ${theme.primary};
       }
     }
 
     > .dropdown {
-      background: ${theme.background};
+      background: ${theme.primary};
       margin-bottom: 0;
       margin-top: 9px;
       margin-right: 0;

@@ -36,7 +36,7 @@ export default styled(MenuItem)(({ theme }: ThemeProps) => `
     line-height: 14px;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: ${theme.textColor};
+    color: ${theme.primary};
     opacity: 0.65;
   }
 

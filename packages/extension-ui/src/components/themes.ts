@@ -87,6 +87,7 @@ export const themes = {
 export declare type AvailableThemes = keyof typeof themes;
 
 export function chooseTheme (): AvailableThemes {
+  
   const preferredTheme = localStorage.getItem('theme');
 
   if (preferredTheme) {

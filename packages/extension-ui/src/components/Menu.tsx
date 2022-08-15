@@ -24,11 +24,11 @@ function Menu ({ children, className, reference }: Props): React.ReactElement<Pr
 }
 
 export default styled(Menu)(({ theme }: ThemeProps) => `
-  background: ${theme.popupBackground};
+  background: ${theme.primary};
   border-radius: 4px;
-  border: 1px solid ${theme.boxBorderColor};
+  border: 1px solid ${theme.secondary};
   box-sizing: border-box;
-  box-shadow: 0 0 10px ${theme.boxShadow};
+  box-shadow: 0 0 10px ${theme.secondary};
   margin-top: 60px;
   padding: 16px 0;
   position: absolute;

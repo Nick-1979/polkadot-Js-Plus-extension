@@ -154,9 +154,9 @@ export default function Popup(): React.ReactElement {
     : wrapWithErrorBoundary(<Welcome />, 'welcome');
 
   return (
-    <ColorContext.Provider value={colorMode}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline enableColorScheme />
+    // <ColorContext.Provider value={colorMode}>
+    //   <ThemeProvider theme={theme}>
+    //     <CssBaseline enableColorScheme />
         <Loading>{accounts && authRequests && metaRequests && signRequests && (
           <ActionContext.Provider value={_onAction}>
             <SettingsContext.Provider value={settingsCtx}>
@@ -202,7 +202,7 @@ export default function Popup(): React.ReactElement {
             </SettingsContext.Provider>
           </ActionContext.Provider>
         )}</Loading>
-      </ThemeProvider>
-    </ColorContext.Provider>
+    //   </ThemeProvider>
+    // </ColorContext.Provider>
   );
 }

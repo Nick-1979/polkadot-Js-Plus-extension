@@ -15,7 +15,7 @@ import useOutsideClick from '../hooks/useOutsideClick';
 import useTranslation from '../hooks/useTranslation';
 import MenuAdd from './MenuAdd';
 import MenuSettings from './MenuSettings';
-import { IconButton } from '@mui/material';
+import { IconButton, Grid } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 interface Props extends ThemeProps {
   children?: React.ReactNode;
@@ -103,7 +103,7 @@ function Header({ children, className = '', onFilter, showAdd, showBackArrow, sh
 
         </div>
         {/* added for plus */}
-        <div className='logoText'>{text}</div>
+        <Grid color='info'>{text}</Grid>
         {showSearch && (
           <div className={`searchBarWrapper ${isSearchOpen ? 'selected' : ''}`}>
             {isSearchOpen && (
@@ -200,7 +200,7 @@ export default React.memo(styled(Header)(({ theme }: Props) => `
       display: flex;
       justify-content: center;
       align-items: center;
-      color: ${theme.labelColor};
+      color: ${theme.info};
       font-family: ${theme.fontFamily};
       text-align: center;
       margin-left: 24px;
@@ -215,7 +215,7 @@ export default React.memo(styled(Header)(({ theme }: Props) => `
     .logoText {
       display: flex;
       align-self: center;
-      color: ${theme.pinkColor};
+      color: ${theme.info};
       font-family: ${theme.fontFamily};
       font-style: italic;
       font-weight: 700;
@@ -270,7 +270,7 @@ export default React.memo(styled(Header)(({ theme }: Props) => `
     color: ${theme.iconNeutralColor};
 
     &.selected {
-      color: ${theme.primaryColor};
+      color: ${theme.primary};
     }
   }
 
