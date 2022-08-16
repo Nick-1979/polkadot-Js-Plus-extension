@@ -18,7 +18,8 @@ import useTranslation from '../../hooks/useTranslation';
 import { PHeader } from '../../partials';
 import AccountsTree from './AccountsTree';
 import AddAccount from './AddAccount';
-import { Container, Grid, Typography } from '@mui/material';
+import { Box, Container, Grid, InputAdornment, TextField, Typography } from '@mui/material';
+import { Search as SearchIcon  } from '@mui/icons-material';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -71,6 +72,22 @@ export default function Accounts({ className }: Props): React.ReactElement {
             </Grid>
             <Grid xs={12} textAlign='center'>
               <Typography color='primary' sx={{ colorfontWeight: 500, fontSize: '24px', lineHeight: '36px', letterSpacing: '-0.015em'}}> {t('Your Accounts')}</Typography>
+            </Grid>
+            <Grid item xs={12} p='15px 32px 14px'>
+              <TextField
+                InputProps={{ startAdornment: (<InputAdornment position='start'><SearchIcon sx={{fontSize:'15px'}}/></InputAdornment>) }}
+                autoComplete='off'
+                color='warning'
+                fullWidth
+                // label={t('Search you account')}
+                name='search'
+                // onChange={handleValidatorSearch}
+                placeholder={t('Search you account')}
+                size='small'
+                sx={{ fontSize: 11 }}
+                type='text'
+                variant='outlined'
+              />
             </Grid>
             <Container>
               {filteredAccount.map((json, index): React.ReactNode => (

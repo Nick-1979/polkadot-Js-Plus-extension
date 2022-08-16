@@ -196,11 +196,10 @@ export default function Account({ address, className, genesisHash, isExternal, i
   ), [_goToLink, _onChangeEndpoint, _onChangeGenesis, _toggleEdit, address, endpointOptions, genesisHash, genesisOptions, isExternal, isHardware, selectedEndpoint, t, type]);
 
   return (
-    <Grid xs={12} borderTop={1} borderColor='red'>
+    <Grid xs={12} borderTop='2px solid #E30B7B' borderColor='secondary.main'>
       <PAddress
         actions={_actions}
         address={address}
-        className='address'
         genesisHash={genesisHash}
         isExternal={isExternal}
         isHidden={isHidden}
@@ -213,7 +212,6 @@ export default function Account({ address, className, genesisHash, isExternal, i
         {isEditing && (
           <Name
             address={address}
-            className={`editName ${parentName ? 'withParent' : ''}`}
             isFocused
             label={' '}
             onBlur={_saveChanges}

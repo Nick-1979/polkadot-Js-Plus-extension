@@ -58,7 +58,7 @@ interface Subscription {
 }
 const defaultSubscribtion = { chainName: '', endpoint: '' };
 
-function Plus({ address, chain, formattedAddress, givenType, name, t }: Props): React.ReactElement<Props> {
+export default function Plus({ address, chain, formattedAddress, givenType, name, t }: Props): React.ReactElement<Props> {
   const { accounts } = useContext(AccountContext);
   const endpoint = useEndPoint(accounts, address, chain);
   const api = useApi(endpoint);
@@ -359,57 +359,12 @@ function Plus({ address, chain, formattedAddress, givenType, name, t }: Props): 
             ? <Grid id='noChainAlert' item sx={{ color: grey[700], fontFamily: '"Source Sans Pro", Arial, sans-serif', fontWeight: 600, fontSize: 12, textAlign: 'center', paddingLeft: '20px' }} xs={12} >
               {t && t('Please select a chain to view your balance.')}
             </Grid>
-            : <>
-              <Grid alignItems='flex-start' container item justifyContent='center' sx={{ pl: 1, textAlign: 'center' }} xs={2}>
-                <Grid item sx={{ cursor: 'pointer' }}>
-                  {recoverable && isRecoveringAlert === false && rescuer === null &&
-                    <FontAwesomeIcon
-                      color={green[600]}
-                      icon={faShield}
-                      id='recoverable'
-                      onClick={handleOpenRecovery}
-                      size='sm'
-                      title={t && t('recoverable')}
-                    />
-                  }
-                  {(isRecoveringAlert || rescuer) &&
-                    <FontAwesomeIcon
-                      beat
-                      color={red[600]}
-                      icon={faShieldHalved}
-                      id='isRecovering'
-                      onClick={handleCloseRecovery}
-                      size='sm'
-                      title={t && t('is recovering')}
-                    />
-                  }
-                </Grid>
-              </Grid>
-              <Grid container item sx={{ textAlign: 'left', pl: '5px' }} xs={10}>
-                <Grid item xs={4}>
-                  <Balance balance={balance} price={price} type='total' />
-                </Grid>
-              </Grid>
-            </>
+            : <Grid item sx={{ textAlign: 'left' }} xs={12}>
+              <Balance balance={balance} />
+            </Grid>
+
           }
         </Grid>
-        <Grid container item xs={2}>
-          <Grid container id='plusToolbar' item xs={12}>
-            <Grid item xs={3}>
-              <Link color='inherit' href='#' underline='none'>
-                <FontAwesomeIcon
-                  color={!chain || !supported(chain) ? grey[300] : (ledger?.active ? deepOrange[400] : grey[600])}
-                  icon={faCoins}
-                  id='staking'
-                  onClick={handleStaking}
-                  size='sm'
-                  title={t && t('staking')}
-                />
-              </Link>
-            </Grid>
-          </Grid>
-        </Grid>
-
       </Grid>
       {transferModalOpen && sender && chain &&
         <TransferFunds
@@ -466,195 +421,195 @@ function Plus({ address, chain, formattedAddress, givenType, name, t }: Props): 
   );
 }
 
-export default styled(Plus)(({ theme }: ThemeProps) => `
-  background: ${theme.accountBackground};
-  border: 1px solid ${theme.boxBorderColor};
-  box-sizing: border-box;
-  border-radius: 4px;
-  margin-bottom: 8px;
-  position: relative;
+// export default styled(Plus)(({ theme }: ThemeProps) => `
+//   background: ${theme.accountBackground};
+//   border: 1px solid ${theme.boxBorderColor};
+//   box-sizing: border-box;
+//   border-radius: 4px;
+//   margin-bottom: 8px;
+//   position: relative;
 
-  .banner {
-    font-size: 12px;
-    line-height: 16px;
-    position: absolute;
-    top: 0;
+//   .banner {
+//     font-size: 12px;
+//     line-height: 16px;
+//     position: absolute;
+//     top: 0;
 
-    &.chain {
-      background: ${theme.primaryColor};
-      border-radius: 0 0 0 10px;
-      color: white;
-      padding: 0.1rem 0.5rem 0.1rem 0.75rem;
-      right: 0;
-      z-index: 1;
-    }
-  }
+//     &.chain {
+//       background: ${theme.primaryColor};
+//       border-radius: 0 0 0 10px;
+//       color: white;
+//       padding: 0.1rem 0.5rem 0.1rem 0.75rem;
+//       right: 0;
+//       z-index: 1;
+//     }
+//   }
 
-  .balanceDisplay {
-    display: flex;
-    justify-content: space-between;
-    position: relative;
+//   .balanceDisplay {
+//     display: flex;
+//     justify-content: space-between;
+//     position: relative;
 
-    .balance {
-      position: absolute;
-      left: 2px;
-      top: 18px;    
-      color: ${theme.labelColor};
-      font-size: 14px;
-      font-weight: bold;
-    }
-    . availableBalance {
-      position: absolute;
-      right: 2px;
-      top: -18px;
-    }
+//     .balance {
+//       position: absolute;
+//       left: 2px;
+//       top: 18px;
+//       color: ${theme.labelColor};
+//       font-size: 14px;
+//       font-weight: bold;
+//     }
+//     . availableBalance {
+//       position: absolute;
+//       right: 2px;
+//       top: -18px;
+//     }
 
-    .transferIcon {
-      display: flex;
-    justify-content: space-between;
-    position: relative;
+//     .transferIcon {
+//       display: flex;
+//     justify-content: space-between;
+//     position: relative;
 
-    .svg-inline--fa {
-      width: 14px;
-    height: 14px;
-    margin-right: 10px;
-    color: ${theme.accountDotsIconColor};
-    &:hover {
-      color: ${theme.labelColor};
-    cursor: pointer;
-  }
-}
+//     .svg-inline--fa {
+//       width: 14px;
+//     height: 14px;
+//     margin-right: 10px;
+//     color: ${theme.accountDotsIconColor};
+//     &:hover {
+//       color: ${theme.labelColor};
+//     cursor: pointer;
+//   }
+// }
 
-    .refreshIcon {
-          position: absolute;
-        right: 2px;
-        top: +36px;
-    }
+//     .refreshIcon {
+//           position: absolute;
+//         right: 2px;
+//         top: +36px;
+//     }
 
-    .hiddenIcon, .visibleIcon {
-      position: absolute;
-      right: 2px;
-      top: -18px;
-    }
+//     .hiddenIcon, .visibleIcon {
+//       position: absolute;
+//       right: 2px;
+//       top: -18px;
+//     }
 
-    .hiddenIcon {
-      color: ${theme.errorColor};
-      &:hover {
-        color: ${theme.accountDotsIconColor};
-      }
-    }
-  }
+//     .hiddenIcon {
+//       color: ${theme.errorColor};
+//       &:hover {
+//         color: ${theme.accountDotsIconColor};
+//       }
+//     }
+//   }
 
-  .externalIcon, .hardwareIcon {
-    margin-right: 0.3rem;
-    color: ${theme.labelColor};
-    width: 0.875em;
-  }
+//   .externalIcon, .hardwareIcon {
+//     margin-right: 0.3rem;
+//     color: ${theme.labelColor};
+//     width: 0.875em;
+//   }
 
-  .identityIcon {
-    margin-left: 15px;
-    margin-right: 10px;
+//   .identityIcon {
+//     margin-left: 15px;
+//     margin-right: 10px;
 
-    & svg {
-      width: 50px;
-      height: 50px;
-    }
-  }
+//     & svg {
+//       width: 50px;
+//       height: 50px;
+//     }
+//   }
 
-  .info {
-    width: 100%;
-  }
+//   .info {
+//     width: 100%;
+//   }
 
-  .infoRow {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    height: 30px;
-    // border-radius: 4px;
-  }
+//   .infoRow {
+//     display: flex;
+//     flex-direction: row;
+//     justify-content: space-between;
+//     align-items: center;
+//     height: 30px;
+//     // border-radius: 4px;
+//   }
 
-  img {
-    max-width: 50px;
-    max-height: 50px;
-    border-radius: 50%;
-  }
+//   img {
+//     max-width: 50px;
+//     max-height: 50px;
+//     border-radius: 50%;
+//   }
 
-  .name {
-    font-size: 16px;
-    line-height: 22px;
-    margin: 2px 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 300px;
-    white-space: nowrap;
+//   .name {
+//     font-size: 16px;
+//     line-height: 22px;
+//     margin: 2px 0;
+//     overflow: hidden;
+//     text-overflow: ellipsis;
+//     width: 300px;
+//     white-space: nowrap;
 
-    &.displaced {
-      padding-top: 10px;
-    }
-  }
+//     &.displaced {
+//       padding-top: 10px;
+//     }
+//   }
 
-  .parentName {
-    color: ${theme.labelColor};
-    font-size: ${theme.inputLabelFontSize};
-    line-height: 14px;
-    overflow: hidden;
-    padding: 0.25rem 0 0 0.8rem;
-    text-overflow: ellipsis;
-    width: 270px;
-    white-space: nowrap;
-  }
+//   .parentName {
+//     color: ${theme.labelColor};
+//     font-size: ${theme.inputLabelFontSize};
+//     line-height: 14px;
+//     overflow: hidden;
+//     padding: 0.25rem 0 0 0.8rem;
+//     text-overflow: ellipsis;
+//     width: 270px;
+//     white-space: nowrap;
+//   }
 
-  .detailsIcon {
-    background: ${theme.accountDotsIconColor};
-    width: 3px;
-    height: 19px;
+//   .detailsIcon {
+//     background: ${theme.accountDotsIconColor};
+//     width: 3px;
+//     height: 19px;
 
-    &.active {
-      background: ${theme.primaryColor};
-    }
-  }
+//     &.active {
+//       background: ${theme.primaryColor};
+//     }
+//   }
 
-  .deriveIcon {
-    color: ${theme.labelColor};
-    position: absolute;
-    top: 5px;
-    width: 9px;
-    height: 9px;
-  }
+//   .deriveIcon {
+//     color: ${theme.labelColor};
+//     position: absolute;
+//     top: 5px;
+//     width: 9px;
+//     height: 9px;
+//   }
 
-  .movableMenu {
-    margin-top: -20px;
-    right: 28px;
-    top: 0;
+//   .movableMenu {
+//     margin-top: -20px;
+//     right: 28px;
+//     top: 0;
 
-    &.isMoved {
-      top: auto;
-      bottom: 0;
-    }
-  }
+//     &.isMoved {
+//       top: auto;
+//       bottom: 0;
+//     }
+//   }
 
-  .settings {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 40px;
+//   .settings {
+//     position: relative;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     height: 100%;
+//     width: 40px;
 
-    &:before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 25%;
-      bottom: 25%;
-      width: 1px;
-      background: ${theme.boxBorderColor};
-    }
+//     &:before {
+//       content: '';
+//       position: absolute;
+//       left: 0;
+//       top: 25%;
+//       bottom: 25%;
+//       width: 1px;
+//       background: ${theme.boxBorderColor};
+//     }
 
-    &:hover {
-      cursor: pointer;
-      background: ${theme.readonlyInputBackground};
-    }
-  }
-`);
+//     &:hover {
+//       cursor: pointer;
+//       background: ${theme.readonlyInputBackground};
+//     }
+//   }
+// `);

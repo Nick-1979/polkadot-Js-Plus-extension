@@ -32,6 +32,8 @@ import { AccountContext, SettingsContext } from './contexts';
 import Identicon from './Identicon';
 import Menu from './Menu';
 import Svg from './Svg';
+import { Grid } from '@mui/material';
+import { MoreVert as MoreVertIcon, ArrowForwardIosRounded as ArrowForwardIosRoundedIcon } from '@mui/icons-material';
 
 export interface Props {
   actions?: React.ReactNode;
@@ -99,7 +101,7 @@ const ACCOUNTS_SCREEN_HEIGHT = 550;
 const defaultRecoded = { account: null, formatted: null, prefix: 42, type: DEFAULT_TYPE };
 
 // added for plus, 'showPlus' as props
-function Address({ actions, address, children, className, genesisHash, isExternal, isHardware, isHidden, name, parentName, showPlus, suri, toggleActions, type: givenType }: Props): React.ReactElement<Props> {
+export default function Address({ actions, address, children, className, genesisHash, isExternal, isHardware, isHidden, name, parentName, showPlus, suri, toggleActions, type: givenType }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { accounts } = useContext(AccountContext);
   const settings = useContext(SettingsContext);
@@ -202,8 +204,8 @@ function Address({ actions, address, children, className, genesisHash, isExterna
   const parentNameSuri = getParentNameSuri(parentName, suri);
 
   return (
-    <div className={className}>
-      <div className='infoRow'>
+    <Grid container alignItems='center' py='12px'>
+      <Grid item xs={2.5} sx={{ pr: '10px' }}>
         <Identicon
           className='identityIcon'
           iconTheme={theme}
@@ -212,275 +214,274 @@ function Address({ actions, address, children, className, genesisHash, isExterna
           prefix={prefix}
           value={formatted || address}
         />
-        <div className='info'>
-          {parentName
-            ? (
-              <>
-                <div className='banner'>
-                  <FontAwesomeIcon
-                    className='deriveIcon'
-                    icon={faCodeBranch}
-                  />
-                  <div
-                    className='parentName'
-                    data-field='parent'
-                    title={parentNameSuri}
-                  >
-                    {parentNameSuri}
+      </Grid>
+      <Grid item xs={9.5} pl='8.53px'>
+        <Grid container item justifyContent='space-between'>
+          <Grid container item alignItems='center' spacing={1} xs>
+            {parentName
+              ? (
+                <>
+                  <div className='banner'>
+                    <FontAwesomeIcon
+                      className='deriveIcon'
+                      icon={faCodeBranch}
+                    />
+                    <div
+                      className='parentName'
+                      data-field='parent'
+                      title={parentNameSuri}
+                    >
+                      {parentNameSuri}
+                    </div>
                   </div>
-                </div>
-                <div className='name displaced'>
+                  <div className='name displaced'>
+                    <Name />
+                  </div>
+                </>
+              )
+              : (
+                <Grid item sx={{ fontWeight: 400, fontSize: '24px', lineHeight: '0px', letterSpacing: '-0.015em' }}>
                   <Name />
-                </div>
-              </>
-            )
-            : (
-              <div
-                className='name'
-                data-field='name'
-              >
-                <Name />
-              </div>
-            )
-          }
-          <div className='addressDisplay'>
-            <ShortAddress address={formatted || address || t('<unknown>')}/>
-            <CopyToClipboard text={(formatted && formatted) || ''}>
-              <FontAwesomeIcon
-                className='copyIcon'
-                icon={faCopy}
-                onClick={_onCopy}
-                size='sm'
-                title={t('copy address')}
-              />
-            </CopyToClipboard>
+                </Grid>
+              )
+            }
+            <Grid item>
+              <ShortAddress address={formatted || address || t('<unknown>')} addressStyle={{ fontWeight: 400, fontSize: '12px', lineHeight: '0px', letterSpacing: '-0.015em' }} />
+            </Grid>
+            <Grid item>
+              <CopyToClipboard text={(formatted && formatted) || ''}>
+                <FontAwesomeIcon
+                  className='copyIcon'
+                  icon={faCopy}
+                  onClick={_onCopy}
+                  size='sm'
+                  title={t('copy address')}
+                />
+              </CopyToClipboard>
+            </Grid>
+          </Grid>
+          <Grid item xs={1}>
             {actions && (
-              <FontAwesomeIcon
-                className={isHidden ? 'hiddenIcon' : 'visibleIcon'}
-                icon={isHidden ? faEyeSlash : faEye}
-                onClick={_toggleVisibility}
-                size='sm'
-                title={t('account visibility')}
-              />
+              <>
+                <div
+                  className='settings'
+                  onClick={_onClick}
+                  ref={actIconRef}
+                >
+                  <MoreVertIcon sx={{ fontSize: 35 }}/>
+                </div>
+                {showActionsMenu && (
+                  <Menu
+                    className={`movableMenu ${moveMenuUp ? 'isMoved' : ''}`}
+                    reference={actMenuRef}
+                  >
+                    {actions}
+                  </Menu>
+                )}
+              </>
             )}
-          </div>
-        </div>
-        {actions && (
-          <>
-            <div
-              className='settings'
-              onClick={_onClick}
-              ref={actIconRef}
-            >
-              <Svg
-                className={`detailsIcon ${showActionsMenu ? 'active' : ''}`}
-                src={details}
+          </Grid>
+        </Grid>
+        {
+          (formatted || address) && showPlus &&
+          <Grid container item pt='10px' alignItems='center'>
+            <Grid item xs>
+              <Plus
+                address={address}
+                chain={chain}
+                formattedAddress={formatted || address}
+                givenType={givenType}
+                name={name || account?.name || t('<unknown>')}
+                t={t}
               />
-            </div>
-            {showActionsMenu && (
-              <Menu
-                className={`movableMenu ${moveMenuUp ? 'isMoved' : ''}`}
-                reference={actMenuRef}
-              >
-                {actions}
-              </Menu>
-            )}
-          </>
-        )}
-      </div>
-      {/* // added for plus */}
-      {
-        (formatted || address) && showPlus &&
-        <Plus
-          address={address}
-          chain={chain}
-          formattedAddress={formatted || address}
-          givenType={givenType}
-          name={name || account?.name || t('<unknown>')}
-          t={t}
-        />
-      }
+            </Grid>
+            <Grid item xs={1}>
+              <ArrowForwardIosRoundedIcon />
+            </Grid>
+          </Grid>
+        }
+      </Grid>
       {children}
-    </div>
+    </Grid>
   );
 }
 
-export default styled(Address)(({ theme }: ThemeProps) => `
-  // background: ${theme.boxBackground};
-  border-top: 1px solid ${theme.pinkColor};
-  box-sizing: border-box;
-  border-radius: 4px;
-  margin-bottom: 8px;
-  position: relative;
+// export default styled(Address)(({ theme }: ThemeProps) => `
+//   // background: ${theme.boxBackground};
+//   border-top: 1px solid ${theme.pinkColor};
+//   box-sizing: border-box;
+//   border-radius: 4px;
+//   margin-bottom: 8px;
+//   position: relative;
 
-  .banner {
-    font-size: 12px;
-    line-height: 16px;
-    position: absolute;
-    top: 0;
+//   .banner {
+//     font-size: 12px;
+//     line-height: 16px;
+//     position: absolute;
+//     top: 0;
 
-    &.chain {
-      background: ${theme.primaryColor};
-      border-radius: 0 0 0 10px;
-      color: white;
-      padding: 0.1rem 0.5rem 0.1rem 0.75rem;
-      right: 0;
-      z-index: 1;
-    }
-  }
+//     &.chain {
+//       background: ${theme.primaryColor};
+//       border-radius: 0 0 0 10px;
+//       color: white;
+//       padding: 0.1rem 0.5rem 0.1rem 0.75rem;
+//       right: 0;
+//       z-index: 1;
+//     }
+//   }
 
-  .addressDisplay {
-    // display: flex;
-    justify-content: space-between;
-    // position: relative;
+//   .addressDisplay {
+//     // display: flex;
+//     justify-content: space-between;
+//     // position: relative;
 
-    .svg-inline--fa {
-      width: 14px;
-      height: 14px;
-      margin-right: 10px;
-      color: ${theme.accountDotsIconColor};
-      &:hover {
-        color: ${theme.labelColor};
-        cursor: pointer;
-      }
-    }
+//     .svg-inline--fa {
+//       width: 14px;
+//       height: 14px;
+//       margin-right: 10px;
+//       color: ${theme.accountDotsIconColor};
+//       &:hover {
+//         color: ${theme.labelColor};
+//         cursor: pointer;
+//       }
+//     }
 
-    .hiddenIcon, .visibleIcon {
-      position: absolute;
-      right: 2px;
-      top: -18px;
-    }
+//     .hiddenIcon, .visibleIcon {
+//       position: absolute;
+//       right: 2px;
+//       top: -18px;
+//     }
 
-    .hiddenIcon {
-      color: ${theme.errorColor};
-      &:hover {
-        color: ${theme.accountDotsIconColor};
-      }
-    }
-  }
+//     .hiddenIcon {
+//       color: ${theme.errorColor};
+//       &:hover {
+//         color: ${theme.accountDotsIconColor};
+//       }
+//     }
+//   }
 
-  .externalIcon, .hardwareIcon {
-    margin-right: 0.3rem;
-    color: ${theme.labelColor};
-    width: 0.875em;
-  }
+//   .externalIcon, .hardwareIcon {
+//     margin-right: 0.3rem;
+//     color: ${theme.labelColor};
+//     width: 0.875em;
+//   }
 
-  .identityIcon {
-    margin-left: 15px;
-    margin-right: 10px;
+//   .identityIcon {
+//     margin-left: 15px;
+//     margin-right: 10px;
 
-    & svg {
-      width: 50px;
-      height: 50px;
-    }
-  }
+//     & svg {
+//       width: 50px;
+//       height: 50px;
+//     }
+//   }
 
-  .info {
-    display: grid;
-    grid-direction:row;
-    width: 100%;
-  }
+//   .info {
+//     display: grid;
+//     grid-direction:row;
+//     width: 100%;
+//   }
 
-  .infoRow {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    height: 72px;
-    border-radius: 4px;
-  }
+//   .infoRow {
+//     display: flex;
+//     flex-direction: row;
+//     justify-content: flex-start;
+//     align-items: center;
+//     height: 72px;
+//     border-radius: 4px;
+//   }
 
-  img {
-    max-width: 50px;
-    max-height: 50px;
-    border-radius: 50%;
-  }
+//   img {
+//     max-width: 50px;
+//     max-height: 50px;
+//     border-radius: 50%;
+//   }
 
-  .name {
-    display:flex;
-    font-size: 16px;
-    line-height: 22px;
-    margin: 2px 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 50px;
-    white-space: nowrap;
+//   .name {
+//     display:flex;
+//     font-size: 16px;
+//     line-height: 22px;
+//     margin: 2px 0;
+//     overflow: hidden;
+//     text-overflow: ellipsis;
+//     width: 50px;
+//     white-space: nowrap;
 
-    &.displaced {
-      padding-top: 10px;
-    }
-  }
+//     &.displaced {
+//       padding-top: 10px;
+//     }
+//   }
 
-  .parentName {
-    color: ${theme.labelColor};
-    font-size: ${theme.inputLabelFontSize};
-    line-height: 14px;
-    overflow: hidden;
-    padding: 0.25rem 0 0 0.8rem;
-    text-overflow: ellipsis;
-    width: 270px;
-    white-space: nowrap;
-  }
+//   .parentName {
+//     color: ${theme.labelColor};
+//     font-size: ${theme.inputLabelFontSize};
+//     line-height: 14px;
+//     overflow: hidden;
+//     padding: 0.25rem 0 0 0.8rem;
+//     text-overflow: ellipsis;
+//     width: 270px;
+//     white-space: nowrap;
+//   }
 
-  .fullAddress {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: ${theme.labelColor};
-    font-size: 12px;
-    line-height: 16px;
-  }
+//   .fullAddress {
+//     overflow: hidden;
+//     text-overflow: ellipsis;
+//     color: ${theme.labelColor};
+//     font-size: 12px;
+//     line-height: 16px;
+//   }
 
-  .detailsIcon {
-    background: ${theme.accountDotsIconColor};
-    width: 3px;
-    height: 19px;
+//   .detailsIcon {
+//     background: ${theme.accountDotsIconColor};
+//     width: 3px;
+//     height: 19px;
 
-    &.active {
-      background: ${theme.primaryColor};
-    }
-  }
+//     &.active {
+//       background: ${theme.primaryColor};
+//     }
+//   }
 
-  .deriveIcon {
-    color: ${theme.labelColor};
-    position: absolute;
-    top: 5px;
-    width: 9px;
-    height: 9px;
-  }
+//   .deriveIcon {
+//     color: ${theme.labelColor};
+//     position: absolute;
+//     top: 5px;
+//     width: 9px;
+//     height: 9px;
+//   }
 
-  .movableMenu {
-    margin-top: -20px;
-    right: 28px;
-    top: 0;
-    z-index:100;
+//   .movableMenu {
+//     margin-top: -20px;
+//     right: 28px;
+//     top: 0;
+//     z-index:100;
 
-    &.isMoved {
-      top: auto;
-      bottom: -43; // added for plus, 0 -> -29
-    }
-  }
+//     &.isMoved {
+//       top: auto;
+//       bottom: -43; // added for plus, 0 -> -29
+//     }
+//   }
 
-  .settings {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 40px;
+//   .settings {
+//     position: relative;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     height: 100%;
+//     width: 40px;
 
-    &:before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 25%;
-      bottom: 25%;
-      width: 1px;
-      background: ${theme.boxBorderColor};
-    }
+//     &:before {
+//       content: '';
+//       position: absolute;
+//       left: 0;
+//       top: 25%;
+//       bottom: 25%;
+//       width: 1px;
+//       background: ${theme.boxBorderColor};
+//     }
 
-    &:hover {
-      cursor: pointer;
-      background: ${theme.readonlyInputBackground};
-    }
-  }
-`);
+//     &:hover {
+//       cursor: pointer;
+//       background: ${theme.readonlyInputBackground};
+//     }
+//   }
+// `);

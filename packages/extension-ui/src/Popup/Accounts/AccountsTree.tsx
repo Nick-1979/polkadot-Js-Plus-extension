@@ -1,6 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { Container, Grid } from '@mui/material';
 import type { AccountWithChildren } from '@polkadot/extension-base/background/types';
 
 import React from 'react';
@@ -13,7 +14,7 @@ interface Props extends AccountWithChildren {
 
 export default function AccountsTree ({ parentName, suri, ...account }: Props): React.ReactElement<Props> {
   return (
-    <>
+    <Container>
       <PAccount
         {...account}
         parentName={parentName}
@@ -26,6 +27,6 @@ export default function AccountsTree ({ parentName, suri, ...account }: Props): 
           parentName={account.name}
         />
       ))}
-    </>
+    </Container>
   );
 }

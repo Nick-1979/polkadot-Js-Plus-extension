@@ -6,8 +6,9 @@ import { ThemeOptions } from '@mui/material';
 import { red, grey, blue } from '@mui/material/colors';
 
 export const baseTheme: ThemeOptions = {
-
   typography: {
-    fontFamily: 'Montserrat'
+    allVariants: {
+      fontFamily: 'Montserrat'
+    }
   }
 };

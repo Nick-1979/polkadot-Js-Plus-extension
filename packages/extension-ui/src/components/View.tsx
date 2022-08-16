@@ -3,15 +3,14 @@
 
 import type { ThemeProps } from '../types';
 
+import { CssBaseline, PaletteMode } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import React, { useCallback, useState } from 'react';
 import { createGlobalStyle } from 'styled-components';
-import { CssBaseline, PaletteMode, ThemeProvider, createTheme } from '@mui/material';
+
 import { darkTheme as dark } from '../themes/dark';
 import { lightTheme as light } from '../themes/light';
 import { ColorContext } from '.';
-
-
-
 // FIXME We should not import from index when this one is imported there as well
 import { AvailableThemes, chooseTheme, Main, themes, ThemeSwitchContext } from '.';
 
@@ -21,16 +20,6 @@ interface Props {
 }
 
 function View({ children, className }: Props): React.ReactElement<Props> {
-  // const [theme, setTheme] = useState(chooseTheme());
-
-  // const switchTheme = useCallback(
-  //   (theme: AvailableThemes): void => {
-  //     console.log('themethemetheme', theme)
-  //     localStorage.setItem('theme', theme);
-  //     setTheme(theme);
-  //   },
-  //   []
-  // );
   const [mode, setMode] = React.useState<PaletteMode>('dark');
 
   const colorMode = React.useMemo(
@@ -48,10 +37,6 @@ function View({ children, className }: Props): React.ReactElement<Props> {
     () => createTheme(mode === 'light' ? light : dark),
     [mode]
   );
-
-
-
-  // const _theme = theme === 'light' ? light : dark;
 
   return (
     <ColorContext.Provider value={colorMode}>
