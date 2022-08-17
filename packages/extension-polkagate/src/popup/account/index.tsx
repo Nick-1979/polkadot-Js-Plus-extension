@@ -22,6 +22,7 @@ import { AddressState } from '../../util/types';
 import { Header } from './Header';
 import { Identicon } from '@polkadot/extension-ui/components';
 import { ShortAddress } from '../../components';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -38,26 +39,34 @@ export default function Account({ className }: Props): React.ReactElement<Props>
 
   const name = React.useMemo(() => accounts?.find((a) => a.address === address)?.name, [accounts, address]);
 
+  const icon = (
+    <Identicon
+      className='identityIcon'
+      iconTheme={chain?.icon || 'polkadot'}
+      // isExternal={isExternal}
+      // onCopy={_onCopy}
+      prefix={chain?.ss58Format ?? 42}
+      size={58}
+      value={formatted}
+    />
+  );
   const AccountBrief = () => (
-    <Grid item justifyContent='cnter'>
-      <Identicon
-        className='identityIcon'
-        iconTheme={chain?.icon || 'polkadot'}
-        // isExternal={isExternal}
-        // onCopy={_onCopy}
-        prefix={chain?.ss58Format ?? 42}
-        size={58}
-        value={formatted}
-      />
-      <Typography> {name}</Typography>
-      <ShortAddress address={formatted} />
-
+    <Grid item textAlign='center'>
+      <Grid container alignItems='center' justifyContent='center' spacing={1.5}>
+        <Grid item>
+          <Typography sx={{ fontWeight: 500, fontSize: '24px', lineHeight: '36px', letterSpacing: '-0.015em' }}> {name}</Typography>
+        </Grid>
+        <Grid item >
+          <VisibilityOutlinedIcon sx={{ fontSize: '22px', pt: '5px' }} />
+        </Grid>
+      </Grid>
+      <ShortAddress showCopy address={formatted} charsCount={13} addressStyle={{ fontWeight: 400, fontSize: '11px', lineHeight: '32px', letterSpacing: '-0.015em' }} />
     </Grid>
   );
 
   return (
     <Container>
-      <Header address={address} genesisHash={genesisHash} >
+      <Header address={address} genesisHash={genesisHash} icon={icon}>
         <AccountBrief />
       </Header>
 

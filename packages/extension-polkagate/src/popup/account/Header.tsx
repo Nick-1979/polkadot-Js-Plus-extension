@@ -14,48 +14,53 @@ import { ArrowBackIosNewRounded as BackIcon, Menu as MenuIcon } from '@mui/icons
 import { Grid, IconButton } from '@mui/material';
 import React, { useContext } from 'react';
 
-import { SettingsContext, ActionContext } from '../../../../extension-ui/src/components/contexts';
+import { ActionContext, SettingsContext } from '../../../../extension-ui/src/components/contexts';
 import useMetadata from '../../../../extension-ui/src/hooks/useMetadata';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 
-interface Props extends ThemeProps {
+interface Props {
   address: string;
   children?: React.ReactNode;
   genesisHash: string;
+  icon: React.node;
 }
 
-export function Header({ address, children, genesisHash }: Props): React.ReactElement<Props> {
+export function Header({ address, children, icon, genesisHash }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const settings = useContext(SettingsContext);
   const chain = useMetadata(genesisHash, true);
   const onAction = useContext(ActionContext);// added for plus
 
   return (
-    <Grid container alignItems='center' justifyContent='space-between' pt='26px'>
-      <Grid item>
-        <IconButton
-          aria-label='menu'
-          color='inherit'
-          edge='start'
-          onClick={() => onAction('/')}
-          size='small'
-        >
-          <BackIcon sx={{ color: 'secondary.main', fontSize: 24 }} />
-        </IconButton>
+    <>
+      <Grid container alignItems='center' justifyContent='space-between' pt='26px'>
+        <Grid item>
+          <IconButton
+            aria-label='menu'
+            color='inherit'
+            edge='start'
+            onClick={() => onAction('/')}
+            size='small'
+          >
+            <BackIcon sx={{ color: 'secondary.main', fontSize: '24px' }} />
+          </IconButton>
+        </Grid>
+        <Grid item textAlign='center'>
+          {icon}
+        </Grid>
+        <Grid item>
+          <IconButton
+            aria-label='menu'
+            color='inherit'
+            edge='start'
+            // onClick={_toggleSettings}
+            size='small'
+          >
+            <MenuIcon sx={{ color: 'secondary.main', fontSize: 40 }} />
+          </IconButton>
+        </Grid>
       </Grid>
       {children}
-      <Grid item>
-        <IconButton
-          aria-label='menu'
-          color='inherit'
-          edge='start'
-          // onClick={_toggleSettings}
-          size='small'
-        >
-          <MenuIcon sx={{ color: 'secondary.main', fontSize: 40 }} />
-        </IconButton>
-      </Grid>
-
-    </Grid>
+    </>
   );
 }
