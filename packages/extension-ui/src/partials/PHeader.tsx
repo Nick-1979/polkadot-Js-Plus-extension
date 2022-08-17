@@ -108,7 +108,7 @@ function Header({ children, className = '', onFilter, showAdd, showBackArrow, sh
               onClick={_toggleSettings}
               size='small'
             >
-              <MenuIcon sx={{ color: '#E30B7B', fontSize: 40 }} />
+              <MenuIcon  sx={{ color:'secondary.main', fontSize: 40 }} />
             </IconButton>
           )}
         </Grid>

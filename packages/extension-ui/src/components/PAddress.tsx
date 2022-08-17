@@ -28,11 +28,11 @@ import useTranslation from '../hooks/useTranslation';
 import { showAccount } from '../messaging';
 import { DEFAULT_TYPE } from '../util/defaultType';
 import getParentNameSuri from '../util/getParentNameSuri';
-import { AccountContext, SettingsContext } from './contexts';
+import { AccountContext, SettingsContext, ActionContext } from './contexts';
 import Identicon from './Identicon';
 import Menu from './Menu';
 import Svg from './Svg';
-import { Grid } from '@mui/material';
+import { Grid, IconButton } from '@mui/material';
 import { MoreVert as MoreVertIcon, ArrowForwardIosRounded as ArrowForwardIosRoundedIcon } from '@mui/icons-material';
 
 export interface Props {
@@ -105,6 +105,8 @@ export default function Address({ actions, address, children, className, genesis
   const { t } = useTranslation();
   const { accounts } = useContext(AccountContext);
   const settings = useContext(SettingsContext);
+  const onAction = useContext(ActionContext);// added for plus
+
   const [{ account, formatted, genesisHash: recodedGenesis, prefix, type }, setRecoded] = useState<Recoded>(defaultRecoded);
   const chain = useMetadata(genesisHash || recodedGenesis, true);
 
@@ -203,6 +205,11 @@ export default function Address({ actions, address, children, className, genesis
 
   const parentNameSuri = getParentNameSuri(parentName, suri);
 
+  // added for plus
+  const goToAccount = useCallback(() => {
+    onAction(`/account/${genesisHash}/${address}/${formatted}/`);
+  }, [address, formatted, genesisHash, onAction]);
+
   return (
     <Grid container alignItems='center' py='12px'>
       <Grid item xs={2.5} sx={{ pr: '10px' }}>
@@ -211,6 +218,7 @@ export default function Address({ actions, address, children, className, genesis
           iconTheme={theme}
           isExternal={isExternal}
           onCopy={_onCopy}
+          size={59}
           prefix={prefix}
           value={formatted || address}
         />
@@ -260,16 +268,14 @@ export default function Address({ actions, address, children, className, genesis
               </CopyToClipboard>
             </Grid>
           </Grid>
-          <Grid item xs={1}>
+          <Grid item xs={1.5}>
             {actions && (
               <>
-                <div
-                  className='settings'
+                <IconButton
                   onClick={_onClick}
-                  ref={actIconRef}
                 >
-                  <MoreVertIcon sx={{ fontSize: 35 }}/>
-                </div>
+                  <MoreVertIcon sx={{ fontSize: 35 }} />
+                </IconButton>
                 {showActionsMenu && (
                   <Menu
                     className={`movableMenu ${moveMenuUp ? 'isMoved' : ''}`}
@@ -295,8 +301,12 @@ export default function Address({ actions, address, children, className, genesis
                 t={t}
               />
             </Grid>
-            <Grid item xs={1}>
-              <ArrowForwardIosRoundedIcon />
+            <Grid item xs={1.5}>
+              <IconButton
+                onClick={goToAccount}
+              >
+                <ArrowForwardIosRoundedIcon />
+              </IconButton>
             </Grid>
           </Grid>
         }

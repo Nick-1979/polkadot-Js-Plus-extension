@@ -20,7 +20,7 @@ import { editAccount, tieAccount, updateMeta } from '../../messaging';// added f
 import { Name } from '../../partials';
 import { faUserShield, faTent, faPeopleRoof } from '@fortawesome/free-solid-svg-icons';// added for plus,
 import { ContentCutOutlined } from '@mui/icons-material';
-import { Grid } from '@mui/material';
+import { Container, Grid } from '@mui/material';
 
 interface Props extends AccountJson {
   className?: string;
@@ -109,7 +109,7 @@ export default function Account({ address, className, genesisHash, isExternal, i
   );
 
   const _actions = useMemo(() => (
-    <>
+    <Container>
       {/* // added for plus */}
       <MenuItem className='newMenu'>
         <ActionText
@@ -191,7 +191,7 @@ export default function Account({ address, className, genesisHash, isExternal, i
           </div>
         </>
       )}
-    </>
+    </Container>
     // added for plus,'_onChangeEndpoint', 'endpointOptions', and 'selectedEndpoint', _goToSocialRecovery
   ), [_goToLink, _onChangeEndpoint, _onChangeGenesis, _toggleEdit, address, endpointOptions, genesisHash, genesisOptions, isExternal, isHardware, selectedEndpoint, t, type]);
 

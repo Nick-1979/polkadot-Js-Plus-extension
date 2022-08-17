@@ -79,9 +79,8 @@ export default function Accounts({ className }: Props): React.ReactElement {
                 autoComplete='off'
                 color='warning'
                 fullWidth
-                // label={t('Search you account')}
                 name='search'
-                // onChange={handleValidatorSearch}
+                // onChange={handleAccountSearch}
                 placeholder={t('Search you account')}
                 size='small'
                 sx={{ fontSize: 11 }}
