@@ -3,4 +3,5 @@
 
 export { useMapEntries } from './useMapEntries';
 export { useEndpoint } from './useEndpoint';
+export { useEndpoints } from './useEndpoints';
 export { useApi } from './useApi';

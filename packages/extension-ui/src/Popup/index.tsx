@@ -38,10 +38,10 @@ import PhishingDetected from './PhishingDetected';
 import RestoreJson from './RestoreJson';
 import Signing from './Signing';
 import Welcome from './Welcome';
-import { appTheme } from '../themes/theme';
+import { appTheme } from '../../../extension-polkagate/src/themes/theme';
 import { CssBaseline, PaletteMode, ThemeProvider, createTheme } from '@mui/material';
-import { darkTheme } from '../themes/dark';
-import { lightTheme } from '../themes/light';
+import { darkTheme } from '../../../extension-polkagate/src/themes/dark';
+import { lightTheme } from '../../../extension-polkagate/src/themes/light';
 import { ColorContext } from '../components/ColorContext';
 
 const startSettings = uiSettings.get();

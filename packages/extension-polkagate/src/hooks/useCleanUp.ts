@@ -15,7 +15,7 @@ import { AccountJson } from '@polkadot/extension-base/background/types';
 import { updateMeta } from '../../../extension-ui/src/messaging';
 import { PLUS_VERSION } from '../util/constants';
 import { SavedMetaData } from '../util/plusTypes';
-import { prepareMetaData } from '../util/plusUtils';
+import { prepareMetaData } from '../util/utils';
 
 export default function useCleanUp(accounts: AccountJson[] | undefined, address: string | null | undefined): void {
   const history: string[] = [];

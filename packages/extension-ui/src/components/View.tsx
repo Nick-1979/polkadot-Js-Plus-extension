@@ -8,8 +8,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import React, { useCallback, useState } from 'react';
 import { createGlobalStyle } from 'styled-components';
 
-import { darkTheme as dark } from '../themes/dark';
-import { lightTheme as light } from '../themes/light';
+import { darkTheme as dark } from '../../../extension-polkagate/src/themes/dark';
+import { lightTheme as light } from '../../../extension-polkagate/src/themes/light';
 import { ColorContext } from '.';
 // FIXME We should not import from index when this one is imported there as well
 import { AvailableThemes, chooseTheme, Main, themes, ThemeSwitchContext } from '.';

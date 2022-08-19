@@ -14,10 +14,10 @@ import useTranslation from '@polkadot/extension-ui/hooks/useTranslation';
 
 interface Option {
   text: string;
-  value: string | number;
+  value: string;
 }
 
-export default function (genesisHash: string | null | undefined): Option[] {
+export function useEndpoints(genesisHash: string | null | undefined): Option[] {
   const { t } = useTranslation();
   const genesisOptions = useGenesisHashOptions();
 

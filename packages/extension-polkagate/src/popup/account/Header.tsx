@@ -41,6 +41,7 @@ export function Header({ address, children, icon, genesisHash }: Props): React.R
             edge='start'
             onClick={() => onAction('/')}
             size='small'
+            sx={{ p: '0px' }}
           >
             <BackIcon sx={{ color: 'secondary.main', fontSize: '24px' }} />
           </IconButton>
@@ -55,6 +56,7 @@ export function Header({ address, children, icon, genesisHash }: Props): React.R
             edge='start'
             // onClick={_toggleSettings}
             size='small'
+            sx={{ p: '0px' }}
           >
             <MenuIcon sx={{ color: 'secondary.main', fontSize: 40 }} />
           </IconButton>
