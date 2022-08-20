@@ -12,7 +12,7 @@ import type { ThemeProps } from '../../../../extension-ui/src/types';
 import type { AccountJson, AccountWithChildren } from '@polkadot/extension-base/background/types';
 
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import { Avatar, Container, Divider, Grid, Skeleton, Typography } from '@mui/material';
+import { Avatar, Container, Divider, Grid, IconButton, Skeleton, Typography } from '@mui/material';
 import React, { useCallback, useContext, useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router';
 
@@ -37,6 +37,10 @@ import type { SettingsStruct } from '@polkadot/ui-settings/types';
 import { BN } from '@polkadot/util';
 import type { DeriveBalancesAll } from '@polkadot/api-derive/types';
 import { getPriceInUsd } from '../../util/api/getPrice';
+import { MoreVert as MoreVertIcon, ArrowForwardIosRounded as ArrowForwardIosRoundedIcon } from '@mui/icons-material';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
+import send from './icons/send.png';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -102,8 +106,13 @@ export default function Account({ className }: Props): React.ReactElement<Props>
 
   const [newChain, setNewChain] = useState<Chain | null>(chain);
   const genesisOptions = useGenesisHashOptions();
-  const endpointOptions = useEndpoints(newChain?.genesisHash ?? chain?.genesisHash);
-  const endpoint = useEndpoint(accounts, address, newChain?.genesisHash ?? chain?.genesisHash);
+
+  const genesis = newChain?.genesisHash ?? chain?.genesisHash;
+  const endpointOptions = useEndpoints(genesis);
+
+  const currentChain = newChain ?? chain;
+  const endpoint = useEndpoint(accounts, address, currentChain);
+
   const [newEndpoint, setNewEndpoint] = useState<string | undefined>(endpoint);
   const [price, setPrice] = useState<number | undefined>();
 
@@ -128,7 +137,7 @@ export default function Account({ className }: Props): React.ReactElement<Props>
   useEffect(() => {
     chain && getPriceInUsd(chain).then((price) => {
       console.log(`${chain?.name}  ${price}`)
-      setPrice(price);
+      setPrice(price ?? 0);
     })
   }, [chain]);
 
@@ -166,10 +175,11 @@ export default function Account({ className }: Props): React.ReactElement<Props>
 
   useEffect(() => {
     // eslint-disable-next-line no-void
-    newEndpoint && api && formatted && void api.derive.balances?.all(formatted).then((b) => {
-      console.log('balanceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee:', JSON.parse(JSON.stringify(b)))
-      setBalance(b);
-    });
+    newEndpoint && api && (newFormattedAddress === formatted) && String(api.genesisHash) === genesis &&
+      void api.derive.balances?.all(formatted).then((b) => {
+        console.log('balanceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee:', JSON.parse(JSON.stringify(b)))
+        setBalance(b);
+      });
   }, [api, formatted, newEndpoint]);
 
   const _onChangeGenesis = useCallback((genesisHash?: string | null): void => {
@@ -200,6 +210,36 @@ export default function Account({ className }: Props): React.ReactElement<Props>
     />
   );
 
+  const MenuItem = ({ icon, name }: { icon: any, name: string }) => (
+    <Grid container item direction='column' justifyContent='center' xs={2}>
+      <Grid item>
+        <IconButton
+        // onClick={_onClick}
+        >
+          <Avatar
+            alt={'logo'}
+            src={icon}
+            sx={{ height: 38, width: 51 }}
+            variant='square'
+          />
+        </IconButton>
+      </Grid>
+      <Grid item textAlign='center'>
+        <Typography sx={{ fontSize: '12px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '12px' }}>
+          {name}
+        </Typography>
+      </Grid>
+    </Grid>
+  );
+  const Menu = () => (
+    <Grid container item justifyContent='center' spacing={1}>
+      <MenuItem name={'Send'} icon={send} />
+      <Grid item alignItems='center' justifyContent='center' >
+        <Divider orientation='vertical' sx={{ mt: '10px', px: '8pt', height: '28px', width: '2px', borderColor: 'primary.main' }} />
+      </Grid>
+    </Grid>
+  );
+
   const AccountBrief = () => (
     <Grid item textAlign='center'>
       <Grid alignItems='center' container justifyContent='center' spacing={1.5}>
@@ -223,41 +263,57 @@ export default function Account({ className }: Props): React.ReactElement<Props>
     if (type === 'Total' && balance) {
       value = balance.freeBalance.add(balance.reservedBalance)
     }
+    if (type === 'Available' && balance) {
+      value = balance.availableBalance
+    }
+    if (type === 'Reserved' && balance) {
+      value = balance.reservedBalance
+    }
+    if (type === 'Others' && balance) {
+      value = balance.lockedBalance.add(balance.vestingTotal)
+    }
 
     const balanceToShow = value && api?.createType('Balance', value);
-    // const balanceToNumber = value ? value
-
-    console.log('decimals:', api && value && 10 ** api.registry.chainDecimals[0])
     const balanceInUSD = price && value && api && value.div(new BN(10 ** api.registry.chainDecimals[0])).muln(price);
 
     return (
-      <Grid item pt='20px'>
+      <Grid item pt='10px'>
         <Grid alignItems='center' container justifyContent='space-between'>
-          <Grid item xs={3}>
+          <Grid item xs={2}>
             <Typography sx={{ fontSize: '16px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '36px' }}>
               {type}
             </Typography>
           </Grid>
           <Grid container item xs direction='column' justifyContent='flex-end'>
             <Grid item textAlign='right' >
-              <Typography sx={{ fontSize: '20px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '36px' }}>
+              <Typography sx={{ fontSize: '20px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '20px' }}>
                 {balanceToShow
                   ? balanceToShow.toHuman()
                   : <Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }} />
                 }
               </Typography>
             </Grid>
-            <Grid item textAlign='right' >
-              <Typography sx={{ fontSize: '16px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '36px' }}>
-                {balanceInUSD
+            <Grid item textAlign='right' pt='6px'>
+              <Typography sx={{ fontSize: '16px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '20px' }}>
+                {balanceInUSD !== undefined
                   ? `$${Number(balanceInUSD)?.toLocaleString()}`
                   : <Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }} />
                 }
               </Typography>
             </Grid>
           </Grid>
+          {type === 'Others' &&
+            <Grid item xs={1}>
+              <IconButton
+                // onClick={_onClick}
+                sx={{ pr: '13px' }}
+              >
+                <ArrowForwardIosRoundedIcon />
+              </IconButton>
+            </Grid>
+          }
         </Grid>
-        <Divider sx={{ bgcolor: 'secondary.main', height: '2px' }} />
+        <Divider sx={{ bgcolor: 'secondary.main', height: type === 'Others' ? '2px' : '1px', mt: '2px' }} />
       </Grid>
     )
   };
@@ -284,6 +340,10 @@ export default function Account({ className }: Props): React.ReactElement<Props>
         {newEndpoint && <Select defaultValue={newEndpoint} label={'Select the endpoint'} onChange={_onChangeEndpoint} options={endpointOptions} />}
       </Grid>
       <Balance type={'Total'} balance={balance} />
+      <Balance type={'Available'} balance={balance} />
+      <Balance type={'Reserved'} balance={balance} />
+      <Balance type={'Others'} balance={balance} />
+      <Menu />
     </Container>
   );
 }
