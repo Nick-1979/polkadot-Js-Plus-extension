@@ -12,13 +12,14 @@ import { faUsb } from '@fortawesome/free-brands-svg-icons';
 import { faCopy, faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { faCodeBranch, faQrcode } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState, useMemo } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import styled from 'styled-components';
 
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
-import { Plus, ShortAddress } from '../../../extension-plus/src/components'; // added for Plus
+import { Plus } from '../../../extension-plus/src/components'; // added for Plus
+import { ShortAddress } from '../../../extension-polkagate/src/components'; // added for Plus
 
 import details from '../assets/details.svg';
 import useMetadata from '../hooks/useMetadata';
@@ -34,6 +35,9 @@ import Menu from './Menu';
 import Svg from './Svg';
 import { Grid, IconButton } from '@mui/material';
 import { MoreVert as MoreVertIcon, ArrowForwardIosRounded as ArrowForwardIosRoundedIcon } from '@mui/icons-material';
+import { useApi, useEndpoint } from '../../../extension-polkagate/src/hooks';
+import type { DeriveAccountRegistration } from '@polkadot/api-derive/types';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 export interface Props {
   actions?: React.ReactNode;
@@ -101,19 +105,24 @@ const ACCOUNTS_SCREEN_HEIGHT = 550;
 const defaultRecoded = { account: null, formatted: null, prefix: 42, type: DEFAULT_TYPE };
 
 // added for plus, 'showPlus' as props
-export default function Address({ actions, address, children, className, genesisHash, isExternal, isHardware, isHidden, name, parentName, showPlus, suri, toggleActions, type: givenType }: Props): React.ReactElement<Props> {
+export default function PAddress({ actions, address, children, className, genesisHash, isExternal, isHardware, isHidden, name, parentName, showPlus, suri, toggleActions, type: givenType }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { accounts } = useContext(AccountContext);
   const settings = useContext(SettingsContext);
   const onAction = useContext(ActionContext);// added for plus
-
   const [{ account, formatted, genesisHash: recodedGenesis, prefix, type }, setRecoded] = useState<Recoded>(defaultRecoded);
   const chain = useMetadata(genesisHash || recodedGenesis, true);
+
+  const endpoint = useEndpoint(accounts, address, chain);
+  const api = useApi(endpoint);
 
   const [showActionsMenu, setShowActionsMenu] = useState(false);
   const [moveMenuUp, setIsMovedMenu] = useState(false);
   const actIconRef = useRef<HTMLDivElement>(null);
   const actMenuRef = useRef<HTMLDivElement>(null);
+
+  const [identity, setIdentity] = useState<DeriveAccountRegistration | undefined>();
+
   const { show } = useToast();
 
   useOutsideClick([actIconRef, actMenuRef], () => (showActionsMenu && setShowActionsMenu(!showActionsMenu)));
@@ -152,6 +161,16 @@ export default function Address({ actions, address, children, className, genesis
     setShowActionsMenu(false);
   }, [toggleActions]);
 
+  useEffect((): void => {
+    // eslint-disable-next-line no-void
+    api && formatted && void api.derive.accounts.info(formatted).then((info) => {
+      console.log('info:', info);
+      setIdentity(info?.identity);
+    });
+  }, [api, formatted]);
+
+  const judgement = useMemo(() => identity?.judgements && JSON.stringify(identity?.judgements).match(/reasonable|knownGood/gi));
+
   const theme = (
     type === 'ethereum'
       ? 'ethereum'
@@ -177,7 +196,7 @@ export default function Address({ actions, address, children, className, genesis
 
   const Name = () => {
     const accountName = name || account?.name;
-    const displayName = accountName || t('<unknown>');
+    const displayName = identity?.display || accountName || t('<unknown>');
 
     return (
       <>
@@ -225,7 +244,7 @@ export default function Address({ actions, address, children, className, genesis
       </Grid>
       <Grid item xs={9.5} pl='8.53px'>
         <Grid container item justifyContent='space-between'>
-          <Grid container item alignItems='center' spacing={1} xs>
+          <Grid container item alignItems='center' spacing={0.5} xs={11} flexWrap='nowrap'>
             {parentName
               ? (
                 <>
@@ -248,31 +267,28 @@ export default function Address({ actions, address, children, className, genesis
                 </>
               )
               : (
-                <Grid item sx={{ fontWeight: 400, fontSize: '24px', lineHeight: '0px', letterSpacing: '-0.015em' }}>
-                  <Name />
+                <Grid item container xs={5}>
+                  <Grid item xs={judgement ? 10 : 12} sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 400, fontSize: '24px', letterSpacing: '-0.015em' }}>
+                    <Name />
+                  </Grid>
+                  {judgement &&
+                    <Grid item xs={2}>
+                      <CheckCircleIcon color='success' sx={{ fontSize: 20 }} />
+                    </Grid>
+                  }
                 </Grid>
               )
             }
-            <Grid item>
-              <ShortAddress address={formatted || address || t('<unknown>')} addressStyle={{ fontWeight: 400, fontSize: '12px', lineHeight: '0px', letterSpacing: '-0.015em' }} />
-            </Grid>
-            <Grid item>
-              <CopyToClipboard text={(formatted && formatted) || ''}>
-                <FontAwesomeIcon
-                  className='copyIcon'
-                  icon={faCopy}
-                  onClick={_onCopy}
-                  size='sm'
-                  title={t('copy address')}
-                />
-              </CopyToClipboard>
+            <Grid item container xs={7}>
+              <ShortAddress showCopy charsCount={4} address={formatted || address || t('<unknown>')} addressStyle={{ fontWeight: 400, fontSize: '12px', lineHeight: '0px', letterSpacing: '-0.015em' }} />
             </Grid>
           </Grid>
-          <Grid item xs={1.5}>
+          <Grid item xs={1}>
             {actions && (
               <>
                 <IconButton
                   onClick={_onClick}
+                  sx={{ p: 0 }}
                 >
                   <MoreVertIcon sx={{ fontSize: 35 }} />
                 </IconButton>

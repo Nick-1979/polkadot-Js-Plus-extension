@@ -114,9 +114,10 @@ export default function Account({ className }: Props): React.ReactElement<Props>
   const endpoint = useEndpoint(accounts, address, currentChain);
 
   const [newEndpoint, setNewEndpoint] = useState<string | undefined>(endpoint);
+  const api = useApi(newEndpoint);
+
   const [price, setPrice] = useState<number | undefined>();
 
-  const api = useApi(newEndpoint);
 
   const [accountName, setAccountName] = useState<string | undefined>();
   const [balance, setBalance] = useState<DeriveBalancesAll | undefined>();
@@ -175,11 +176,10 @@ export default function Account({ className }: Props): React.ReactElement<Props>
 
   useEffect(() => {
     // eslint-disable-next-line no-void
-    newEndpoint && api && (newFormattedAddress === formatted) && String(api.genesisHash) === genesis &&
-      void api.derive.balances?.all(formatted).then((b) => {
-        console.log('balanceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee:', JSON.parse(JSON.stringify(b)));
-        setBalance(b);
-      });
+    newEndpoint && api && (newFormattedAddress === formatted) && String(api.genesisHash) === genesis && void api.derive.balances?.all(formatted).then((b) => {
+      console.log('balanceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee:', JSON.parse(JSON.stringify(b)));
+      setBalance(b);
+    });
   }, [api, formatted, newEndpoint]);
 
   const _onChangeGenesis = useCallback((genesisHash?: string | null): void => {
@@ -285,7 +285,7 @@ export default function Account({ className }: Props): React.ReactElement<Props>
     }
 
     const balanceToShow = value && api?.createType('Balance', value);
-    const balanceInUSD = price && value && api && value.div(new BN(10 ** api.registry.chainDecimals[0])).muln(price);
+    const balanceInUSD = price && value && api && Number(value) / (10 ** api.registry.chainDecimals[0]) * price;
 
     return (
       <>

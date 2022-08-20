@@ -4,6 +4,7 @@
 import FileCopyOutlinedIcon from '@mui/icons-material/FileCopyOutlined';
 import { Avatar, Grid, IconButton } from '@mui/material';
 import React from 'react';
+import CopyToClipboard from 'react-copy-to-clipboard';
 
 import { AccountId } from '@polkadot/types/interfaces/runtime';
 
@@ -14,30 +15,32 @@ interface Props {
   address: string | AccountId;
   charsCount?: number;
   addressStyle?: any;
-  showCopy: boolean;
+  showCopy?: boolean;
 }
 
 export default function ShortAddress({ address, charsCount = SHORT_ADDRESS_CHARACTERS, addressStyle = {}, showCopy = false }: Props): React.ReactElement {
   return (
-    <Grid container sx={addressStyle} justifyContent='center'>
+    <Grid alignItems='center' container justifyContent='center' sx={addressStyle}>
       <Grid item pr='8px'>
         {address.slice(0, charsCount)}...{address.slice(-charsCount)}
       </Grid>
-      <Grid item>
-        <IconButton
-          // onClick={_onClick}
-          sx={{ p:'0px', mb: '4px' }}
-        >
-          <Avatar
-            alt={'copy'}
-            src={copy}
-            sx={{ height: '20px', width: '20px'  }}
-            variant='square'
-          />
-        </IconButton>
+      {showCopy &&
+        <Grid item>
+          <CopyToClipboard text={address}>
+            <IconButton
+              sx={{ p: '0px', mb: '4px' }}
+            >
+              <Avatar
+                alt={'copy'}
+                src={copy}
+                sx={{ height: '20px', width: '20px' }}
+                variant='square'
+              />
+            </IconButton>
+          </CopyToClipboard>
 
-        {/* <FileCopyOutlinedIcon sx={{ fontSize: '20px', pt: '5px' }} /> */}
-      </Grid>
+        </Grid>
+      }
     </Grid>
   );
 }

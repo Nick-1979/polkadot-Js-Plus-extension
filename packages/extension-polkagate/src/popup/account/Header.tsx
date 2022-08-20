@@ -43,7 +43,7 @@ export function Header({ address, children, icon, genesisHash }: Props): React.R
             size='small'
             sx={{ p: '0px' }}
           >
-            <BackIcon sx={{ color: 'secondary.main', fontSize: '24px' }} />
+            <BackIcon sx={{ color: 'secondary.main', fontSize: '30px' }} />
           </IconButton>
         </Grid>
         <Grid item textAlign='center'>
