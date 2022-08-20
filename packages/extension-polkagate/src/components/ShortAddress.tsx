@@ -2,12 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import FileCopyOutlinedIcon from '@mui/icons-material/FileCopyOutlined';
-import { Grid } from '@mui/material';
+import { Avatar, Grid, IconButton } from '@mui/material';
 import React from 'react';
 
 import { AccountId } from '@polkadot/types/interfaces/runtime';
 
 import { SHORT_ADDRESS_CHARACTERS } from '../util/constants';
+import { copy } from '../util/icons';
 
 interface Props {
   address: string | AccountId;
@@ -18,12 +19,24 @@ interface Props {
 
 export default function ShortAddress({ address, charsCount = SHORT_ADDRESS_CHARACTERS, addressStyle = {}, showCopy = false }: Props): React.ReactElement {
   return (
-    <Grid container sx={addressStyle} justifyContent='center' spacing={1}>
-      <Grid item>
+    <Grid container sx={addressStyle} justifyContent='center'>
+      <Grid item pr='8px'>
         {address.slice(0, charsCount)}...{address.slice(-charsCount)}
       </Grid>
       <Grid item>
-        <FileCopyOutlinedIcon sx={{ fontSize: '20px', pt: '5px' }} />
+        <IconButton
+          // onClick={_onClick}
+          sx={{ p:'0px', mb: '4px' }}
+        >
+          <Avatar
+            alt={'copy'}
+            src={copy}
+            sx={{ height: '20px', width: '20px'  }}
+            variant='square'
+          />
+        </IconButton>
+
+        {/* <FileCopyOutlinedIcon sx={{ fontSize: '20px', pt: '5px' }} /> */}
       </Grid>
     </Grid>
   );

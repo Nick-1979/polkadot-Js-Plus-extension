@@ -40,7 +40,7 @@ import { getPriceInUsd } from '../../util/api/getPrice';
 import { MoreVert as MoreVertIcon, ArrowForwardIosRounded as ArrowForwardIosRoundedIcon } from '@mui/icons-material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
-import send from './icons/send.png';
+import { send, receive, stake, history, refresh } from '../../util/icons';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -128,7 +128,7 @@ export default function Account({ className }: Props): React.ReactElement<Props>
     setNewEndpoint(undefined);
     setRecoded(defaultRecoded);
     setPrice(undefined);
-  }
+  };
 
   useEffect(() => {
     account?.name && setAccountName(account?.name);
@@ -136,9 +136,9 @@ export default function Account({ className }: Props): React.ReactElement<Props>
 
   useEffect(() => {
     chain && getPriceInUsd(chain).then((price) => {
-      console.log(`${chain?.name}  ${price}`)
+      console.log(`${chain?.name}  ${price}`);
       setPrice(price ?? 0);
-    })
+    });
   }, [chain]);
 
   useEffect((): void => {
@@ -177,7 +177,7 @@ export default function Account({ className }: Props): React.ReactElement<Props>
     // eslint-disable-next-line no-void
     newEndpoint && api && (newFormattedAddress === formatted) && String(api.genesisHash) === genesis &&
       void api.derive.balances?.all(formatted).then((b) => {
-        console.log('balanceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee:', JSON.parse(JSON.stringify(b)))
+        console.log('balanceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee:', JSON.parse(JSON.stringify(b)));
         setBalance(b);
       });
   }, [api, formatted, newEndpoint]);
@@ -210,49 +210,57 @@ export default function Account({ className }: Props): React.ReactElement<Props>
     />
   );
 
-  const MenuItem = ({ icon, name }: { icon: any, name: string }) => (
-    <Grid container item direction='column' justifyContent='center' xs={2}>
-      <Grid item>
-        <IconButton
-        // onClick={_onClick}
-        >
-          <Avatar
-            alt={'logo'}
-            src={icon}
-            sx={{ height: 38, width: 51 }}
-            variant='square'
-          />
-        </IconButton>
+  const MenuItem = ({ icon, name, noDivider = false }: { icon: any, name: string, noDivider?: boolean }) => (
+    <>
+      <Grid container direction='column' item justifyContent='center' xs={2}>
+        <Grid item height='38px' width='27px' alignSelf='center'>
+          <IconButton
+          // onClick={_onClick}
+          >
+            <Avatar
+              alt={'logo'}
+              src={icon}
+              sx={{ height: 'auto', width: 'auto' }}
+              variant='square'
+            />
+          </IconButton>
+        </Grid>
+        <Grid item textAlign='center' mt='10px'>
+          <Typography sx={{ fontSize: '12px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '12px' }}>
+            {name}
+          </Typography>
+        </Grid>
       </Grid>
-      <Grid item textAlign='center'>
-        <Typography sx={{ fontSize: '12px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '12px' }}>
-          {name}
-        </Typography>
-      </Grid>
-    </Grid>
+      {!noDivider &&
+        <Grid alignItems='center' item justifyContent='center' mx='8px'>
+          <Divider orientation='vertical' sx={{ mt: '12px', height: '28px', width: '2px', borderColor: 'primary.main' }} />
+        </Grid>
+      }
+    </>
   );
   const Menu = () => (
-    <Grid container item justifyContent='center' spacing={1}>
-      <MenuItem name={'Send'} icon={send} />
-      <Grid item alignItems='center' justifyContent='center' >
-        <Divider orientation='vertical' sx={{ mt: '10px', px: '8pt', height: '28px', width: '2px', borderColor: 'primary.main' }} />
-      </Grid>
+    <Grid container flexWrap='nowrap' item pt='5px'>
+      <MenuItem icon={send} name={'Send'} />
+      <MenuItem icon={receive} name={'Receive'} />
+      <MenuItem icon={stake} name={'Stake'} />
+      <MenuItem icon={history} name={'History'} />
+      <MenuItem icon={refresh} name={'Refresh'} noDivider />
     </Grid>
   );
 
   const AccountBrief = () => (
     <Grid item textAlign='center'>
-      <Grid alignItems='center' container justifyContent='center' spacing={1.5}>
+      <Grid alignItems='center' container justifyContent='center' spacing={1.2}>
         <Grid item>
           <Typography sx={{ fontSize: '24px', fontWeight: 500, letterSpacing: '-0.015em', lineHeight: '36px' }}>
             {accountName}
           </Typography>
         </Grid>
-        <Grid item >
+        <Grid item>
           <VisibilityOutlinedIcon sx={{ fontSize: '22px', pt: '5px' }} />
         </Grid>
       </Grid>
-      <ShortAddress address={formatted} addressStyle={{ fontSize: '11px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '32px' }} charsCount={13} showCopy />
+      <ShortAddress address={formatted} addressStyle={{ fontSize: '11px', fontWeight: 400, letterSpacing: '-0.015em' }} charsCount={13} showCopy />
       <Divider sx={{ bgcolor: 'secondary.main', height: '2px', mx: '40px' }} />
     </Grid>
   );
@@ -261,61 +269,66 @@ export default function Account({ className }: Props): React.ReactElement<Props>
     let value: BN | undefined;
 
     if (type === 'Total' && balance) {
-      value = balance.freeBalance.add(balance.reservedBalance)
+      value = balance.freeBalance.add(balance.reservedBalance);
     }
+
     if (type === 'Available' && balance) {
-      value = balance.availableBalance
+      value = balance.availableBalance;
     }
+
     if (type === 'Reserved' && balance) {
-      value = balance.reservedBalance
+      value = balance.reservedBalance;
     }
+
     if (type === 'Others' && balance) {
-      value = balance.lockedBalance.add(balance.vestingTotal)
+      value = balance.lockedBalance.add(balance.vestingTotal);
     }
 
     const balanceToShow = value && api?.createType('Balance', value);
     const balanceInUSD = price && value && api && value.div(new BN(10 ** api.registry.chainDecimals[0])).muln(price);
 
     return (
-      <Grid item pt='10px'>
-        <Grid alignItems='center' container justifyContent='space-between'>
-          <Grid item xs={2}>
-            <Typography sx={{ fontSize: '16px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '36px' }}>
-              {type}
-            </Typography>
-          </Grid>
-          <Grid container item xs direction='column' justifyContent='flex-end'>
-            <Grid item textAlign='right' >
-              <Typography sx={{ fontSize: '20px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '20px' }}>
-                {balanceToShow
-                  ? balanceToShow.toHuman()
-                  : <Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }} />
-                }
+      <>
+        <Grid item py='5px'>
+          <Grid alignItems='center' container justifyContent='space-between'>
+            <Grid item xs={2}>
+              <Typography sx={{ fontSize: '16px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '36px' }}>
+                {type}
               </Typography>
             </Grid>
-            <Grid item textAlign='right' pt='6px'>
-              <Typography sx={{ fontSize: '16px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '20px' }}>
-                {balanceInUSD !== undefined
-                  ? `$${Number(balanceInUSD)?.toLocaleString()}`
-                  : <Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }} />
-                }
-              </Typography>
+            <Grid container direction='column' item justifyContent='flex-end' xs>
+              <Grid item textAlign='right'>
+                <Typography sx={{ fontSize: '20px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '20px' }}>
+                  {balanceToShow
+                    ? balanceToShow.toHuman()
+                    : <Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }} />
+                  }
+                </Typography>
+              </Grid>
+              <Grid item pt='6px' textAlign='right'>
+                <Typography sx={{ fontSize: '16px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '20px' }}>
+                  {balanceInUSD !== undefined
+                    ? `$${Number(balanceInUSD)?.toLocaleString()}`
+                    : <Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }} />
+                  }
+                </Typography>
+              </Grid>
             </Grid>
+            {type === 'Others' &&
+              <Grid item xs={1}>
+                <IconButton
+                  // onClick={_onClick}
+                  sx={{ pr: '13px' }}
+                >
+                  <ArrowForwardIosRoundedIcon />
+                </IconButton>
+              </Grid>
+            }
           </Grid>
-          {type === 'Others' &&
-            <Grid item xs={1}>
-              <IconButton
-                // onClick={_onClick}
-                sx={{ pr: '13px' }}
-              >
-                <ArrowForwardIosRoundedIcon />
-              </IconButton>
-            </Grid>
-          }
         </Grid>
-        <Divider sx={{ bgcolor: 'secondary.main', height: type === 'Others' ? '2px' : '1px', mt: '2px' }} />
-      </Grid>
-    )
+        <Divider sx={{ bgcolor: 'secondary.main', height: type === 'Others' ? '2px' : '1px', mt: type === 'Others' ? '10px' : '0px' }} />
+      </>
+    );
   };
 
   return (
@@ -336,13 +349,15 @@ export default function Account({ className }: Props): React.ReactElement<Props>
           />
         </Grid>
       </Grid>
-      <Grid item xs>
+      <Grid item xs height='20px'>
         {newEndpoint && <Select defaultValue={newEndpoint} label={'Select the endpoint'} onChange={_onChangeEndpoint} options={endpointOptions} />}
       </Grid>
-      <Balance type={'Total'} balance={balance} />
-      <Balance type={'Available'} balance={balance} />
-      <Balance type={'Reserved'} balance={balance} />
-      <Balance type={'Others'} balance={balance} />
+      <Grid item xs pt='45px'>
+        <Balance balance={balance} type={'Total'} />
+        <Balance balance={balance} type={'Available'} />
+        <Balance balance={balance} type={'Reserved'} />
+        <Balance balance={balance} type={'Others'} />
+      </Grid>
       <Menu />
     </Container>
   );
