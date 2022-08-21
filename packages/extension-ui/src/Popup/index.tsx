@@ -16,6 +16,7 @@ import Governance from '../../../extension-plus/src/Popup/Governance';// added f
 import EnDecrypt from '../../../extension-plus/src/Popup/Encryption';// added for plus
 import SocialRecovery from '../../../extension-plus/src/Popup/SocialRecovery';// added for plus
 import Account from '../../../extension-polkagate/src/popup/account';// added for plus
+import Send from '../../../extension-polkagate/src/popup/send';// added for plus
 
 import { ErrorBoundary, Loading } from '../components';
 import { AccountContext, ActionContext, AuthorizeReqContext, MediaContext, MetadataReqContext, SettingsContext, SigningReqContext } from '../components/contexts';
@@ -175,6 +176,7 @@ export default function Popup(): React.ReactElement {
                             <Route path='/endecrypt/:address'>{wrapWithErrorBoundary(<EnDecrypt />, 'encrypt-decrypt')}</Route>
                             <Route path='/socialRecovery/:genesisHash/:address'>{wrapWithErrorBoundary(<SocialRecovery />, 'socialRecovery')}</Route>
                             <Route path='/account/:genesisHash/:address/:formatted'>{wrapWithErrorBoundary(<Account />, 'account')}</Route>
+                            <Route path='/send/:genesisHash/:formatted'>{wrapWithErrorBoundary(<Send />, 'send')}</Route>
 
                             <Route path='/auth-list'>{wrapWithErrorBoundary(<AuthList />, 'auth-list')}</Route>
                             <Route path='/account/create'>{wrapWithErrorBoundary(<CreateAccount />, 'account-creation')}</Route>

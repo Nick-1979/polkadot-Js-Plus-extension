@@ -20,14 +20,14 @@ export const SwitchModeButton = () => {
         // minHeight: '10vh',
         width: '100%',
         alignItems: 'center',
-        justifyContent: 'left',
+        justifyContent: 'left'
       }}
     >
 
       <IconButton
-        sx={{ ml: 1 }}
-        onClick={colorMode.toggleColorMode}
         color='primary'
+        onClick={colorMode.toggleColorMode}
+        sx={{ ml: 1 }}
       >
         {theme.palette.mode === 'dark' ? <LightIcon /> : <DarkIcon />}
       </IconButton>

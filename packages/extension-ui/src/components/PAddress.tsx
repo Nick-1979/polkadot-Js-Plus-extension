@@ -169,7 +169,11 @@ export default function PAddress({ actions, address, children, className, genesi
     });
   }, [api, formatted]);
 
-  const judgement = useMemo(() => identity?.judgements && JSON.stringify(identity?.judgements).match(/reasonable|knownGood/gi));
+  const judgement = useMemo(
+    () =>
+      identity?.judgements && JSON.stringify(identity?.judgements).match(/reasonable|knownGood/gi)
+    , [identity?.judgements]
+  );
 
   const theme = (
     type === 'ethereum'
@@ -267,7 +271,7 @@ export default function PAddress({ actions, address, children, className, genesi
                 </>
               )
               : (
-                <Grid item container xs={5}>
+                <Grid item container xs={5} alignItems='center'>
                   <Grid item xs={judgement ? 10 : 12} sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 400, fontSize: '24px', letterSpacing: '-0.015em' }}>
                     <Name />
                   </Grid>

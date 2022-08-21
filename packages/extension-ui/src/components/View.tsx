@@ -3,7 +3,7 @@
 
 import type { ThemeProps } from '../types';
 
-import { CssBaseline, PaletteMode } from '@mui/material';
+import { CssBaseline, PaletteMode, useTheme } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import React, { useCallback, useState } from 'react';
 import { createGlobalStyle } from 'styled-components';
@@ -20,15 +20,16 @@ interface Props {
 }
 
 function View({ children, className }: Props): React.ReactElement<Props> {
-  const [mode, setMode] = React.useState<PaletteMode>('dark');
+  const [mode, setMode] = React.useState<PaletteMode>(chooseTheme());
 
   const colorMode = React.useMemo(
     () => ({
       toggleColorMode: () => {
-        setMode((prevMode: PaletteMode) =>
-          prevMode === 'light' ? 'dark' : 'light'
-        );
-      },
+        const toMode = mode === 'light' ? 'dark' : 'light';
+
+        localStorage.setItem('theme', toMode);
+        setMode(toMode);
+      }
     }),
     []
   );

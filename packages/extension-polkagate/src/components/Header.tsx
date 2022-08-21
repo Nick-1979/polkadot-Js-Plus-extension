@@ -8,15 +8,11 @@
  * this component opens social recovery index page to choose between configuring your account and rescuing other account
  * */
 
-import type { ThemeProps } from '../../../../extension-ui/src/types';
-
 import { ArrowBackIosNewRounded as BackIcon, Menu as MenuIcon } from '@mui/icons-material';
 import { Grid, IconButton } from '@mui/material';
 import React, { useContext } from 'react';
 
-import { ActionContext, SettingsContext } from '../../../../extension-ui/src/components/contexts';
-import useMetadata from '../../../../extension-ui/src/hooks/useMetadata';
-import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
+import { ActionContext, SettingsContext } from '../../../extension-ui/src/components/contexts';
 
 interface Props {
   address: string;
@@ -25,10 +21,7 @@ interface Props {
   icon: React.node;
 }
 
-export function Header({ address, children, icon, genesisHash }: Props): React.ReactElement<Props> {
-  const { t } = useTranslation();
-  const settings = useContext(SettingsContext);
-  const chain = useMetadata(genesisHash, true);
+export default function Header({ address, children, icon, genesisHash }: Props): React.ReactElement<Props> {
   const onAction = useContext(ActionContext);// added for plus
 
   return (

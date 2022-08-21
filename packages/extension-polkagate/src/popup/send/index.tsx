@@ -41,9 +41,9 @@ import { MoreVert as MoreVertIcon, ArrowForwardIosRounded as ArrowForwardIosRoun
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { send, isend, receive, stake, history, refresh, ireceive, istake, ihistory, irefresh } from '../../util/icons';
-import AccountBrief from './AccountBrief';
+import AccountBrief from './SendHeader';
 
-interface Props extends ThemeProps {
+interface Props {
   className?: string;
 }
 
@@ -94,7 +94,7 @@ function recodeAddress(address: string, accounts: AccountWithChildren[], chain: 
   };
 }
 
-export default function Account({ className }: Props): React.ReactElement<Props> {
+export default function Send({ className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const settings = useContext(SettingsContext);
   const onAction = useContext(ActionContext);// added for plus
@@ -198,156 +198,25 @@ export default function Account({ className }: Props): React.ReactElement<Props>
     chainName && void updateMeta(address, prepareMetaData(chainName, 'endpoint', newEndpoint));
   }, [address, chainName]);
 
-  const goToSend = useCallback(() => {
-    onAction(`/send/${genesisHash}/${formatted}/`);
-  }, [formatted, genesisHash, onAction]);
-
-  const icon = (
-    <Identicon
-      className='identityIcon'
-      iconTheme={chain?.icon || 'polkadot'}
-      // isExternal={isExternal}
-      // onCopy={_onCopy}
-      prefix={chain?.ss58Format ?? 42}
-      size={58}
-      value={formatted}
-    />
-  );
-
-  const MenuItem = ({ icon, name, noDivider = false, onClick }: { icon: any, name: string, noDivider?: boolean, onClick: () => void }) => (
-    <>
-      <Grid container direction='column' item justifyContent='center' xs={2}>
-        <Grid height='38px' item width='27px'>
-          <IconButton
-            onClick={onClick}
-            sx={{ alignSelf: 'center' }}
-          >
-            <Avatar
-              alt={'logo'}
-              src={icon}
-              sx={{ height: '30px', width: '30px' }}
-              variant='square'
-            />
-          </IconButton>
-        </Grid>
-        <Grid item mt='10px' textAlign='center'>
-          <Typography sx={{ fontSize: '12px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '12px' }}>
-            {name}
-          </Typography>
-        </Grid>
-      </Grid>
-      {!noDivider &&
-        <Grid alignItems='center' item justifyContent='center' mx='8px'>
-          <Divider orientation='vertical' sx={{ mt: '12px', height: '28px', width: '2px', borderColor: 'primary.main' }} />
-        </Grid>
-      }
-    </>
-  );
-
-  const Menu = () => (
-    <Grid container flexWrap='nowrap' item pt='5px'>
-      <MenuItem icon={theme.palette.mode === 'dark' ? send : isend} name={'Send'} onClick={goToSend} />
-      <MenuItem icon={theme.palette.mode === 'dark' ? receive : ireceive} name={'Receive'} />
-      <MenuItem icon={theme.palette.mode === 'dark' ? stake : istake} name={'Stake'} />
-      <MenuItem icon={theme.palette.mode === 'dark' ? history : ihistory} name={'History'} />
-      <MenuItem icon={theme.palette.mode === 'dark' ? refresh : irefresh} name={'Refresh'} noDivider />
-    </Grid>
-  );
-
-  const Balance = ({ balance, type }: { type: string, balance: DeriveBalancesAll | undefined }) => {
-    let value: BN | undefined;
-
-    if (type === 'Total' && balance) {
-      value = balance.freeBalance.add(balance.reservedBalance);
-    }
-
-    if (type === 'Available' && balance) {
-      value = balance.availableBalance;
-    }
-
-    if (type === 'Reserved' && balance) {
-      value = balance.reservedBalance;
-    }
-
-    if (type === 'Others' && balance) {
-      value = balance.lockedBalance.add(balance.vestingTotal);
-    }
-
-    const balanceToShow = value && api?.createType('Balance', value);
-    const balanceInUSD = price && value && api && Number(value) / (10 ** api.registry.chainDecimals[0]) * price;
-
-    return (
-      <>
-        <Grid item py='5px'>
-          <Grid alignItems='center' container justifyContent='space-between'>
-            <Grid item xs={2}>
-              <Typography sx={{ fontSize: '16px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '36px' }}>
-                {type}
-              </Typography>
-            </Grid>
-            <Grid container direction='column' item justifyContent='flex-end' xs>
-              <Grid item textAlign='right'>
-                <Typography sx={{ fontSize: '20px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '20px' }}>
-                  {balanceToShow
-                    ? balanceToShow.toHuman()
-                    : <Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }} />
-                  }
-                </Typography>
-              </Grid>
-              <Grid item pt='6px' textAlign='right'>
-                <Typography sx={{ fontSize: '16px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '20px' }}>
-                  {balanceInUSD !== undefined
-                    ? `$${Number(balanceInUSD)?.toLocaleString()}`
-                    : <Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }} />
-                  }
-                </Typography>
-              </Grid>
-            </Grid>
-            {type === 'Others' &&
-              <Grid item xs={1}>
-                <IconButton
-                  // onClick={_onClick}
-                  sx={{ pr: '13px' }}
-                >
-                  <ArrowForwardIosRoundedIcon />
-                </IconButton>
-              </Grid>
-            }
-          </Grid>
-        </Grid>
-        <Divider sx={{ bgcolor: 'secondary.main', height: type === 'Others' ? '2px' : '1px', mt: type === 'Others' ? '10px' : '0px' }} />
-      </>
-    );
-  };
+  const icon = (<Avatar
+    alt={'logo'}
+    src={theme.palette.mode === 'dark' ? send : isend}
+    sx={{ height: '64px', width: '86px' }}
+  />)
 
   return (
     <Container disableGutters sx={{ px: '30px' }}>
-      <Header address={address} genesisHash={genesisHash} icon={icon}>
-        <AccountBrief accountName={accountName} formatted={formatted} />
+      <Header address={address} genesisHash={genesisHash} icon={icon} >
+        <div style={{ fontWeight: 500, fontSize: '24px', lineHeight: '36px', letterSpacing: '-0.015em', textAlign: 'center' }}>
+          {t('Send Fund')}
+        </div>
+        <div style={{ fontWeight: 700, fontSize: '11px', lineHeight: '30px', letterSpacing: '-0.015em', textAlign: 'center' }}>
+          {t('on the same chain')}
+        </div>
+        <Divider sx={{ bgcolor: 'secondary.main', height: '2px', width: '81px', margin: 'auto' }} />
       </Header>
-      <Grid alignItems='flex-end' container pt={1}>
-        <Grid item xs>
-          <Select defaultValue={genesisHash} label={'Select the chain'} onChange={_onChangeGenesis} options={genesisOptions} />
-        </Grid>
-        <Grid item pl={1}>
-          <Avatar
-            alt={'logo'}
-            src={getLogo(newChain ?? chain)}
-            sx={{ height: 31, width: 31 }}
-            variant='square'
-          />
-        </Grid>
-      </Grid>
-      <Grid height='20px' item xs>
-        {newEndpoint && <Select defaultValue={newEndpoint} label={'Select the endpoint'} onChange={_onChangeEndpoint} options={endpointOptions} />}
-      </Grid>
-      <Grid item pt='45px' xs>
-        <Balance balance={balance} type={'Total'} />
-        <Balance balance={balance} type={'Available'} />
-        <Balance balance={balance} type={'Reserved'} />
-        <Balance balance={balance} type={'Others'} />
-      </Grid>
-      <Menu />
+
+
     </Container>
   );
 }

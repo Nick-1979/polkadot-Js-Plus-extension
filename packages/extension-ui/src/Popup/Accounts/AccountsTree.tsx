@@ -14,7 +14,7 @@ interface Props extends AccountWithChildren {
 
 export default function AccountsTree({ parentName, suri, ...account }: Props): React.ReactElement<Props> {
   return (
-    <Container>
+    <Container disableGutters>
       <PAccount
         {...account}
         parentName={parentName}
