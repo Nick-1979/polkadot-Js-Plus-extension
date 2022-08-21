@@ -58,48 +58,18 @@ interface Subscription {
 }
 const defaultSubscribtion = { chainName: '', endpoint: '' };
 
-export default function Plus({ address, chain, formattedAddress, givenType, name, t }: Props): React.ReactElement<Props> {
+export default function Plus({ address, chain, formattedAddress, name, t }: Props): React.ReactElement<Props> {
   const { accounts } = useContext(AccountContext);
   const endpoint = useEndPoint(accounts, address, chain);
   const api = useApi(endpoint);
-  const onAction = useContext(ActionContext);
   const supported = (chain: Chain) => SUPPORTED_CHAINS.includes(chain?.name.replace(' Relay Chain', ''));
   const [balance, setBalance] = useState<AccountsBalanceType | null>(null);
   const [balanceChangeSubscribtion, setBalanceChangeSubscribtion] = useState<Subscription>(defaultSubscribtion);
-  const [transferModalOpen, setTransferModalOpen] = useState(false);
-  const [showQRcodeModalOpen, setQRcodeModalOpen] = useState(false);
-  const [showTxHistoryModal, setTxHistoryModalOpen] = useState(false);
-  const [showStakingModal, setStakingModalOpen] = useState(false);
   const [showCloseRecoveryModal, setCloseRecoveryModalOpen] = useState<boolean | undefined>();
-  const [refreshing, setRefreshing] = useState(false);
-  const [account, setAccount] = useState<AccountJson | null>(null);
-  const [sender, setSender] = useState<AccountsBalanceType>({ address: String(address), chain: null, name: String(name) });
-  const [price, setPrice] = useState<number>(0);
-  const [ledger, setLedger] = useState<StakingLedger | null>(null);
   const [recoverable, setRecoverable] = useState<boolean | undefined>();
   const [rescuer, setRescuer] = useState<Rescuer | undefined | null>();
   const [isRecoveringAlert, setIsRecoveringAlert] = useState<boolean | undefined>();
-
-  const getLedger = useCallback((): void => {
-    if (!endpoint || !address) { return; }
-
-    const getLedgerWorker: Worker = new Worker(new URL('../util/workers/getLedger.js', import.meta.url));
-
-    getLedgerWorker.postMessage({ address, endpoint });
-
-    getLedgerWorker.onerror = (err) => {
-      console.log(err);
-    };
-
-    getLedgerWorker.onmessage = (e) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const ledger: StakingLedger = e.data;
-
-      console.log('Ledger:', ledger);
-      setLedger(ledger);
-      getLedgerWorker.terminate();
-    };
-  }, [address, endpoint]);
+  const [account, setAccount] = useState<AccountJson | null>(null);
 
   const isRecovering = useCallback((address: string, chain: Chain, endpoint: string): void => {
     if (!endpoint || !address || !chain) { return; }
@@ -229,14 +199,6 @@ export default function Plus({ address, chain, formattedAddress, givenType, name
     });
   }, [api, chain, formattedAddress]);
 
-  useEffect((): void => {
-    if (!chain) { return; }
-
-    if (supported(chain) && endpoint) {
-      getLedger();
-    }
-  }, [getLedger, chain, endpoint]);
-
   function getBalanceFromMetaData(_account: AccountJson, _chain: Chain): AccountsBalanceType | null {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const accLastBalance: SavedMetaData = _account.lastBalance ? JSON.parse(_account.lastBalance) : null;
@@ -265,15 +227,6 @@ export default function Plus({ address, chain, formattedAddress, givenType, name
       void updateMeta(balance.address, prepareMetaData(chain, 'lastBalance', stringifiedBalanceInfo));
     }
   }, [balance, chain]);
-
-  useEffect((): void => {
-    setSender({
-      address: String(formattedAddress),
-      balanceInfo: balance ? balance.balanceInfo : undefined,
-      chain: chain?.name || null,
-      name: String(name)
-    });
-  }, [balance, chain, formattedAddress, name]);
 
   useEffect((): void => {
     if (!accounts || !chain || !endpoint) {
@@ -313,44 +266,6 @@ export default function Plus({ address, chain, formattedAddress, givenType, name
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chain]);
 
-  const handleTransferFunds = useCallback((): void => {
-    if (chain) { setTransferModalOpen(true); }
-  }, [chain]);
-
-  const handleShowQRcode = useCallback((): void => {
-    if (chain) { setQRcodeModalOpen(true); }
-  }, [chain]);
-
-  const handleTxHistory = useCallback((): void => {
-    if (chain) { setTxHistoryModalOpen(true); }
-  }, [chain]);
-
-  const handleStaking = useCallback((): void => {
-    if (chain && supported(chain)) { setStakingModalOpen(true); }
-  }, [chain]);
-
-  const handlerefreshBalance = useCallback((): void => {
-    if (!chain || refreshing) { return; }
-
-    setRefreshing(true);
-    setBalance(null);
-    subscribeToBalanceChanges();
-  }, [chain, refreshing, subscribeToBalanceChanges]);
-
-  const handleOpenRecovery = useCallback((): void => {
-    if (!chain || !onAction) { return; }
-
-    onAction(`/socialRecovery/${chain.genesisHash}/${address}`);
-  }, [address, chain, onAction]);
-
-  const handleCloseRecovery = useCallback((): void => {
-    chain && setCloseRecoveryModalOpen(true);
-  }, [chain]);
-
-  function getCoin(_myBalance: AccountsBalanceType): string {
-    return !_myBalance || !_myBalance.balanceInfo ? '' : _myBalance.balanceInfo.coin;
-  }
-
   return (
     <Container disableGutters sx={{ position: 'relative', top: '-10px' }}>
       <Grid alignItems='center' container>
@@ -366,45 +281,6 @@ export default function Plus({ address, chain, formattedAddress, givenType, name
           }
         </Grid>
       </Grid>
-      {transferModalOpen && sender && chain &&
-        <TransferFunds
-          api={api}
-          chain={chain}
-          givenType={givenType}
-          sender={sender}
-          setTransferModalOpen={setTransferModalOpen}
-          transferModalOpen={transferModalOpen}
-        />
-      }
-      {showQRcodeModalOpen && chain &&
-        <AddressQRcode
-          address={String(formattedAddress || address)}
-          chain={chain}
-          name={name}
-          setQRcodeModalOpen={setQRcodeModalOpen}
-          showQRcodeModalOpen={showQRcodeModalOpen}
-        />
-      }
-      {showTxHistoryModal && chain &&
-        <TransactionHistory
-          address={sender}
-          chain={chain}
-          name={name}
-          setTxHistoryModalOpen={setTxHistoryModalOpen}
-          showTxHistoryModal={showTxHistoryModal}
-        />
-      }
-      {showStakingModal && sender && account && chain &&
-        <StakingIndex
-          account={account}
-          api={api}
-          chain={chain}
-          ledger={ledger}
-          setStakingModalOpen={setStakingModalOpen}
-          showStakingModal={showStakingModal}
-          staker={sender}
-        />
-      }
       {showCloseRecoveryModal && formattedAddress && chain && // TODO: chain should be supported ones
         <Configure
           account={{ accountId: formattedAddress }}

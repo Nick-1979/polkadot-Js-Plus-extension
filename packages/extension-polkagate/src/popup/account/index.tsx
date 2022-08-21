@@ -40,8 +40,9 @@ import { getPriceInUsd } from '../../util/api/getPrice';
 import { MoreVert as MoreVertIcon, ArrowForwardIosRounded as ArrowForwardIosRoundedIcon } from '@mui/icons-material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
-import { send, isend, receive, stake, history, refresh, ireceive, istake, ihistory, irefresh } from '../../util/icons';
+import { send, isend, receive, stake, history as historyIcon, refresh, ireceive, istake, ihistory, irefresh } from '../../util/icons';
 import AccountBrief from './AccountBrief';
+import { useHistory } from 'react-router-dom';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -96,6 +97,7 @@ function recodeAddress(address: string, accounts: AccountWithChildren[], chain: 
 
 export default function Account({ className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
+  const history = useHistory();
   const settings = useContext(SettingsContext);
   const onAction = useContext(ActionContext);// added for plus
   const theme = useTheme();
@@ -120,12 +122,11 @@ export default function Account({ className }: Props): React.ReactElement<Props>
 
   const [price, setPrice] = useState<number | undefined>();
   const [accountName, setAccountName] = useState<string | undefined>();
-  const [balance, setBalance] = useState<DeriveBalancesAll | undefined>();
-
+  const [balances, setBalances] = useState<DeriveBalancesAll | undefined>();
   const chainName = (newChain?.name ?? chain?.name)?.replace(' Relay Chain', '');
 
   const resetToDefaults = () => {
-    setBalance(undefined);
+    setBalances(undefined);
     setNewEndpoint(undefined);
     setRecoded(defaultRecoded);
     setPrice(undefined);
@@ -178,9 +179,9 @@ export default function Account({ className }: Props): React.ReactElement<Props>
     // eslint-disable-next-line no-void
     newEndpoint && api && (newFormattedAddress === formatted) && String(api.genesisHash) === genesis && void api.derive.balances?.all(formatted).then((b) => {
       console.log('balanceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee:', JSON.parse(JSON.stringify(b)));
-      setBalance(b);
+      setBalances(b);
     });
-  }, [api, formatted, newEndpoint]);
+  }, [api, formatted, genesis, newEndpoint, newFormattedAddress]);
 
   const _onChangeGenesis = useCallback((genesisHash?: string | null): void => {
     resetToDefaults();
@@ -199,10 +200,14 @@ export default function Account({ className }: Props): React.ReactElement<Props>
   }, [address, chainName]);
 
   const goToSend = useCallback(() => {
-    onAction(`/send/${genesisHash}/${formatted}/`);
-  }, [formatted, genesisHash, onAction]);
+    // onAction(`/send/${genesisHash}/${address}/${formatted}/`);
+    balances && history.push({
+      pathname: `/send/${genesisHash}/${address}/${formatted}/`,
+      state: { balances, api }
+    });
+  }, [history, genesisHash, address, formatted, balances]);
 
-  const icon = (
+  const identicon = (
     <Identicon
       className='identityIcon'
       iconTheme={chain?.icon || 'polkadot'}
@@ -249,28 +254,28 @@ export default function Account({ className }: Props): React.ReactElement<Props>
       <MenuItem icon={theme.palette.mode === 'dark' ? send : isend} name={'Send'} onClick={goToSend} />
       <MenuItem icon={theme.palette.mode === 'dark' ? receive : ireceive} name={'Receive'} />
       <MenuItem icon={theme.palette.mode === 'dark' ? stake : istake} name={'Stake'} />
-      <MenuItem icon={theme.palette.mode === 'dark' ? history : ihistory} name={'History'} />
+      <MenuItem icon={theme.palette.mode === 'dark' ? historyIcon : ihistory} name={'History'} />
       <MenuItem icon={theme.palette.mode === 'dark' ? refresh : irefresh} name={'Refresh'} noDivider />
     </Grid>
   );
 
-  const Balance = ({ balance, type }: { type: string, balance: DeriveBalancesAll | undefined }) => {
+  const Balance = ({ balances, type }: { type: string, balances: DeriveBalancesAll | undefined }) => {
     let value: BN | undefined;
 
-    if (type === 'Total' && balance) {
-      value = balance.freeBalance.add(balance.reservedBalance);
+    if (type === 'Total' && balances) {
+      value = balances.freeBalance.add(balances.reservedBalance);
     }
 
-    if (type === 'Available' && balance) {
-      value = balance.availableBalance;
+    if (type === 'Available' && balances) {
+      value = balances.availableBalance;
     }
 
-    if (type === 'Reserved' && balance) {
-      value = balance.reservedBalance;
+    if (type === 'Reserved' && balances) {
+      value = balances.reservedBalance;
     }
 
-    if (type === 'Others' && balance) {
-      value = balance.lockedBalance.add(balance.vestingTotal);
+    if (type === 'Others' && balances) {
+      value = balances.lockedBalance.add(balances.vestingTotal);
     }
 
     const balanceToShow = value && api?.createType('Balance', value);
@@ -322,7 +327,7 @@ export default function Account({ className }: Props): React.ReactElement<Props>
 
   return (
     <Container disableGutters sx={{ px: '30px' }}>
-      <Header address={address} genesisHash={genesisHash} icon={icon}>
+      <Header address={address} genesisHash={genesisHash} icon={identicon}>
         <AccountBrief accountName={accountName} formatted={formatted} />
       </Header>
       <Grid alignItems='flex-end' container pt={1}>
@@ -342,10 +347,10 @@ export default function Account({ className }: Props): React.ReactElement<Props>
         {newEndpoint && <Select defaultValue={newEndpoint} label={'Select the endpoint'} onChange={_onChangeEndpoint} options={endpointOptions} />}
       </Grid>
       <Grid item pt='45px' xs>
-        <Balance balance={balance} type={'Total'} />
-        <Balance balance={balance} type={'Available'} />
-        <Balance balance={balance} type={'Reserved'} />
-        <Balance balance={balance} type={'Others'} />
+        <Balance balances={balances} type={'Total'} />
+        <Balance balances={balances} type={'Available'} />
+        <Balance balances={balances} type={'Reserved'} />
+        <Balance balances={balances} type={'Others'} />
       </Grid>
       <Menu />
     </Container>

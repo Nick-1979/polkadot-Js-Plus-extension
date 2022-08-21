@@ -24,7 +24,7 @@ import { AccountContext, SettingsContext, ActionContext } from '../../../../exte
 import useMetadata from '../../../../extension-ui/src/hooks/useMetadata';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { editAccount, getMetadata, tieAccount, updateMeta } from '../../../../extension-ui/src/messaging';// added for plus, updateMeta
-import { Select, ShortAddress } from '../../components';
+import { Select, ShortAddress, ShowBalance } from '../../components';
 import { useApi, useEndpoint, useEndpoints } from '../../hooks';
 import getLogo from '../../util/getLogo';
 import { AddressState, FormattedAddressState, SavedMetaData } from '../../util/types';
@@ -41,181 +41,105 @@ import { MoreVert as MoreVertIcon, ArrowForwardIosRounded as ArrowForwardIosRoun
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { send, isend, receive, stake, history, refresh, ireceive, istake, ihistory, irefresh } from '../../util/icons';
-import AccountBrief from './SendHeader';
+import { useLocation } from "react-router-dom";
 
 interface Props {
   className?: string;
 }
 
-interface Recoded {
-  account: AccountJson | null;
-  newFormattedAddress: string | null;
-  newGenesisHash?: string | null;
-  prefix?: number;
-  type: KeypairType;
-}
-
-const defaultRecoded = { account: null, newFormattedAddress: null, prefix: 42, type: DEFAULT_TYPE };
-
-// find an account in our list
-function findAccountByAddress(accounts: AccountJson[], _address: string): AccountJson | null {
-  return accounts.find(({ address }): boolean =>
-    address === _address
-  ) || null;
-}
-
-// find an account in our list
-function findSubstrateAccount(accounts: AccountJson[], publicKey: Uint8Array): AccountJson | null {
-  const pkStr = publicKey.toString();
-
-  return accounts.find(({ address }): boolean =>
-    decodeAddress(address).toString() === pkStr
-  ) || null;
-}
-
-// recodes an supplied address using the prefix/genesisHash, include the actual saved account & chain
-function recodeAddress(address: string, accounts: AccountWithChildren[], chain: Chain | null, settings: SettingsStruct): Recoded {
-  // decode and create a shortcut for the encoded address
-  const publicKey = decodeAddress(address);
-
-  // find our account using the actual publicKey, and then find the associated chain
-  const account = findSubstrateAccount(accounts, publicKey);
-  const prefix = chain ? chain.ss58Format : (settings.prefix === -1 ? 42 : settings.prefix);
-
-  // always allow the actual settings to override the display
-  return {
-    account,
-    newFormattedAddress: account?.type === 'ethereum'
-      ? address
-      : encodeAddress(publicKey, prefix),
-    newGenesisHash: account?.genesisHash,
-    prefix,
-    type: account?.type || DEFAULT_TYPE
-  };
-}
-
 export default function Send({ className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const settings = useContext(SettingsContext);
-  const onAction = useContext(ActionContext);// added for plus
+  const onAction = useContext(ActionContext);
   const theme = useTheme();
-
-  const { accounts } = useContext(AccountContext);
   const { address, formatted, genesisHash } = useParams<FormattedAddressState>();
-  // const chain = useMetadata(genesisHash, true);
-  const [{ account, newFormattedAddress, newGenesisHash, prefix, type }, setRecoded] = useState<Recoded>(defaultRecoded);
+  const location = useLocation();
+
   const chain = useMetadata(genesisHash, true);
+  const { accounts } = useContext(AccountContext);
+  const api = location.state?.api;
+  const accountName = useMemo(() => accounts?.find((a) => a.address === address)?.name, [accounts, address]);
+  const chainName = chain?.name?.replace(' Relay Chain', '');
+  const prevUrl = `/account/${genesisHash}/${address}/${formatted}/`;
 
-  const [newChain, setNewChain] = useState<Chain | null>(chain);
-  const genesisOptions = useGenesisHashOptions();
-
-  const genesis = newChain?.genesisHash ?? chain?.genesisHash;
-  const endpointOptions = useEndpoints(genesis);
-
-  const currentChain = newChain ?? chain;
-  const endpoint = useEndpoint(accounts, address, currentChain);
-
-  const [newEndpoint, setNewEndpoint] = useState<string | undefined>(endpoint);
-  const api = useApi(newEndpoint);
-
-  const [price, setPrice] = useState<number | undefined>();
-  const [accountName, setAccountName] = useState<string | undefined>();
-  const [balance, setBalance] = useState<DeriveBalancesAll | undefined>();
-
-  const chainName = (newChain?.name ?? chain?.name)?.replace(' Relay Chain', '');
-
-  const resetToDefaults = () => {
-    setBalance(undefined);
-    setNewEndpoint(undefined);
-    setRecoded(defaultRecoded);
-    setPrice(undefined);
-  };
-
-  useEffect(() => {
-    account?.name && setAccountName(account?.name);
-  }, [account]);
-
-  useEffect(() => {
-    chain && getPriceInUsd(chain).then((price) => {
-      console.log(`${chain?.name}  ${price}`);
-      setPrice(price ?? 0);
-    });
-  }, [chain]);
-
-  useEffect((): void => {
-    if (!address) {
-      return setRecoded(defaultRecoded);
-    }
-
-    const account = findAccountByAddress(accounts, address);
-
-    setRecoded(
-      // (
-      //   chain?.definition.chainType === 'ethereum' ||
-      //   account?.type === 'ethereum'
-      //   //|| (!account && givenType === 'ethereum')
-      // )
-      //   ? { account, newFormattedAddress: address, type: 'ethereum' }
-      //   :
-      recodeAddress(address, accounts, chain, settings)
-    );
-  }, [accounts, address, chain, settings]);
-
-  const goToAccount = useCallback(() => {
-    onAction(`/account/${newGenesisHash}/${address}/${newFormattedAddress}/`);
-  }, [address, newFormattedAddress, newGenesisHash, onAction]);
-
-  useEffect(() => {
-    newChain && newGenesisHash && newFormattedAddress && goToAccount();
-  }, [goToAccount, newChain, newFormattedAddress, newGenesisHash]);
-
-  useEffect(() => {
-    !newEndpoint && endpointOptions?.length && setNewEndpoint(endpointOptions[0].value);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [endpointOptions]);
-
-  useEffect(() => {
-    // eslint-disable-next-line no-void
-    newEndpoint && api && (newFormattedAddress === formatted) && String(api.genesisHash) === genesis && void api.derive.balances?.all(formatted).then((b) => {
-      console.log('balanceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee:', JSON.parse(JSON.stringify(b)));
-      setBalance(b);
-    });
-  }, [api, formatted, newEndpoint]);
-
-  const _onChangeGenesis = useCallback((genesisHash?: string | null): void => {
-    resetToDefaults();
-    tieAccount(address, genesisHash || null).catch(console.error);
-    genesisHash && getMetadata(genesisHash, true).then(setNewChain).catch((error): void => {
-      console.error(error);
-      setNewChain(null);
-    });
-  }, [address]);
-
-  const _onChangeEndpoint = useCallback((newEndpoint?: string | undefined): void => {
-    setNewEndpoint(newEndpoint);
-
-    // eslint-disable-next-line no-void
-    chainName && void updateMeta(address, prepareMetaData(chainName, 'endpoint', newEndpoint));
-  }, [address, chainName]);
+  const availableBalance = location.state?.balances.availableBalance;
 
   const icon = (<Avatar
     alt={'logo'}
     src={theme.palette.mode === 'dark' ? send : isend}
     sx={{ height: '64px', width: '86px' }}
-  />)
+  />);
+
+  const identicon = (
+    <Identicon
+      className='identityIcon'
+      iconTheme={chain?.icon || 'polkadot'}
+      // isExternal={isExternal}
+      // onCopy={_onCopy}
+      prefix={chain?.ss58Format ?? 42}
+      size={25}
+      value={formatted}
+    />
+  );
+
+  const ChainLogo = (
+    <Avatar
+      alt={'logo'}
+      src={getLogo(chain)}
+      sx={{ height: 25, width: 25 }}
+      variant='square'
+    />
+  );
 
   return (
     <Container disableGutters sx={{ px: '30px' }}>
-      <Header address={address} genesisHash={genesisHash} icon={icon} >
+      <Header address={address} genesisHash={genesisHash} icon={icon} preUrl={prevUrl}>
         <div style={{ fontWeight: 500, fontSize: '24px', lineHeight: '36px', letterSpacing: '-0.015em', textAlign: 'center' }}>
           {t('Send Fund')}
         </div>
-        <div style={{ fontWeight: 700, fontSize: '11px', lineHeight: '30px', letterSpacing: '-0.015em', textAlign: 'center' }}>
+        <div style={{ fontWeight: 700, fontSize: '11px', lineHeight: '25px', letterSpacing: '-0.015em', textAlign: 'center' }}>
           {t('on the same chain')}
         </div>
         <Divider sx={{ bgcolor: 'secondary.main', height: '2px', width: '81px', margin: 'auto' }} />
       </Header>
-
+      <div style={{ fontSize: '16px', fontWeight: 400, paddingTop: '15px', letterSpacing: '-0.015em' }}>
+        {t('From account')}:
+      </div>
+      <Grid container alignItems='center' sx={{ pt: '8px' }}>
+        <Grid item xs={1} mt='5px'>
+          {identicon}
+        </Grid>
+        <Grid item sx={{ fontSize: '26px', fontWeight: 400, letterSpacing: '-0.015em', pl: '10px' }} xs>
+          {accountName}
+        </Grid>
+        <Grid item xs={3}>
+          <ShortAddress address={formatted} addressStyle={{ fontSize: '18px', fontWeight: 400, letterSpacing: '-0.015em' }} />
+        </Grid>
+      </Grid>
+      <Grid container alignItems='center'>
+        <Grid item xs={1} mt='5px'>
+          {ChainLogo}
+        </Grid>
+        <Grid container item xs={11}>
+          <Grid container item justifyContent='space-between'>
+            <Grid item sx={{ fontSize: '14px', fontWeight: 400, letterSpacing: '-0.015em', ml: '10px' }}>
+              {t('Available balance')}
+            </Grid>
+            <Grid item sx={{ fontSize: '18px', fontWeight: 400, letterSpacing: '-0.015em' }}>
+            <ShowBalance api={api} balance={ location.state?.balances.availableBalance} />
+            </Grid>
+          </Grid>
+          <Grid container item justifyContent='space-between' sx={{lineHeight: '15px'}}>
+            <Grid item sx={{ fontSize: '14px', fontWeight: 400, letterSpacing: '-0.015em', ml: '10px' }}>
+            {t('Fee')}
+            </Grid>
+            <Grid item sx={{ fontSize: '18px', fontWeight: 400, letterSpacing: '-0.015em' }}>
+              <ShowBalance api={api} balance={ location.state?.balances.availableBalance} />
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
+      <Divider sx={{ bgcolor: 'secondary.main', height: '1px', mt: '5px' }} />
 
     </Container>
   );

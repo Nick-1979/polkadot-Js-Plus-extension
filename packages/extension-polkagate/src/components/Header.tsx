@@ -19,9 +19,10 @@ interface Props {
   children?: React.ReactNode;
   genesisHash: string;
   icon: React.node;
+  preUrl: string;
 }
 
-export default function Header({ address, children, icon, genesisHash }: Props): React.ReactElement<Props> {
+export default function Header({ address, children, icon, genesisHash, preUrl = '/' }: Props): React.ReactElement<Props> {
   const onAction = useContext(ActionContext);// added for plus
 
   return (
@@ -32,7 +33,7 @@ export default function Header({ address, children, icon, genesisHash }: Props):
             aria-label='menu'
             color='inherit'
             edge='start'
-            onClick={() => onAction('/')}
+            onClick={() => onAction(preUrl)}
             size='small'
             sx={{ p: '0px' }}
           >
