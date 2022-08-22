@@ -1,6 +1,10 @@
 // Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+/* eslint-disable react/jsx-max-props-per-line */
+
+import type { DeriveAccountRegistration } from '@polkadot/api-derive/types';
+import type { DeriveAccountInfo, DeriveBalancesAll } from '@polkadot/api-derive/types';
 import type { AccountJson, AccountWithChildren } from '@polkadot/extension-base/background/types';
 import type { Chain } from '@polkadot/extension-chains/types';
 import type { IconTheme } from '@polkadot/react-identicon/types';
@@ -12,15 +16,18 @@ import { faUsb } from '@fortawesome/free-brands-svg-icons';
 import { faCopy, faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { faCodeBranch, faQrcode } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useCallback, useContext, useEffect, useRef, useState, useMemo } from 'react';
+import { ArrowForwardIosRounded as ArrowForwardIosRoundedIcon, MoreVert as MoreVertIcon } from '@mui/icons-material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { Grid, IconButton } from '@mui/material';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import styled from 'styled-components';
 
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
 import { Plus } from '../../../extension-plus/src/components'; // added for Plus
-import { ShortAddress } from '../../../extension-polkagate/src/components'; // added for Plus
-
+import { ShortAddress, ShowBalance } from '../../../extension-polkagate/src/components'; // added for Plus
+import { useApi, useEndpoint } from '../../../extension-polkagate/src/hooks';
 import details from '../assets/details.svg';
 import useMetadata from '../hooks/useMetadata';
 import useOutsideClick from '../hooks/useOutsideClick';
@@ -29,15 +36,11 @@ import useTranslation from '../hooks/useTranslation';
 import { showAccount } from '../messaging';
 import { DEFAULT_TYPE } from '../util/defaultType';
 import getParentNameSuri from '../util/getParentNameSuri';
-import { AccountContext, SettingsContext, ActionContext } from './contexts';
+import { AccountContext, ActionContext, SettingsContext } from './contexts';
 import Identicon from './Identicon';
 import Menu from './Menu';
 import Svg from './Svg';
-import { Grid, IconButton } from '@mui/material';
-import { MoreVert as MoreVertIcon, ArrowForwardIosRounded as ArrowForwardIosRoundedIcon } from '@mui/icons-material';
-import { useApi, useEndpoint } from '../../../extension-polkagate/src/hooks';
-import type { DeriveAccountRegistration } from '@polkadot/api-derive/types';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { useHistory } from 'react-router-dom';
 
 export interface Props {
   actions?: React.ReactNode;
@@ -107,6 +110,8 @@ const defaultRecoded = { account: null, formatted: null, prefix: 42, type: DEFAU
 // added for plus, 'showPlus' as props
 export default function PAddress({ actions, address, children, className, genesisHash, isExternal, isHardware, isHidden, name, parentName, showPlus, suri, toggleActions, type: givenType }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
+  const history = useHistory();
+
   const { accounts } = useContext(AccountContext);
   const settings = useContext(SettingsContext);
   const onAction = useContext(ActionContext);// added for plus
@@ -122,6 +127,7 @@ export default function PAddress({ actions, address, children, className, genesi
   const actMenuRef = useRef<HTMLDivElement>(null);
 
   const [identity, setIdentity] = useState<DeriveAccountRegistration | undefined>();
+  const [balances, setBalances] = useState<DeriveBalancesAll | undefined>();
 
   const { show } = useToast();
 
@@ -144,6 +150,14 @@ export default function PAddress({ actions, address, children, className, genesi
         : recodeAddress(address, accounts, chain, settings)
     );
   }, [accounts, address, chain, givenType, settings]);
+
+  useEffect(() => {
+    // eslint-disable-next-line no-void
+    api && void api.derive.balances?.all(formatted).then((b) => {
+      console.log('balanceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee:', JSON.parse(JSON.stringify(b)));
+      setBalances(b);
+    });
+  }, [api, formatted]);
 
   useEffect(() => {
     if (!showActionsMenu) {
@@ -230,8 +244,12 @@ export default function PAddress({ actions, address, children, className, genesi
 
   // added for plus
   const goToAccount = useCallback(() => {
-    onAction(`/account/${genesisHash}/${address}/${formatted}/`);
-  }, [address, formatted, genesisHash, onAction]);
+    // onAction(`/account/${genesisHash}/${address}/${formatted}/`);
+    balances && history.push({
+      pathname: `/account/${genesisHash}/${address}/${formatted}/`,
+      state: { balances, api }
+    });
+  }, [balances, history, genesisHash, address, formatted, api]);
 
   return (
     <Grid container alignItems='center' py='12px'>
@@ -311,15 +329,8 @@ export default function PAddress({ actions, address, children, className, genesi
         {
           (formatted || address) && showPlus &&
           <Grid container item pt='10px' alignItems='center'>
-            <Grid item xs>
-              <Plus
-                address={address}
-                chain={chain}
-                formattedAddress={formatted || address}
-                givenType={givenType}
-                name={name || account?.name || t('<unknown>')}
-                t={t}
-              />
+            <Grid item xs sx={{ fontWeight: 400, fontSize: '20px', letterSpacing: '-0.015em' }}>
+              <ShowBalance api={api} balance={balances?.freeBalance?.add(balances?.reservedBalance)} />
             </Grid>
             <Grid item xs={1.5}>
               <IconButton

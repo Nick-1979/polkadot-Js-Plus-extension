@@ -109,10 +109,10 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
         <Grid item xs={1} mt='5px'>
           {identicon}
         </Grid>
-        <Grid item sx={{ fontSize: '26px', fontWeight: 400, letterSpacing: '-0.015em', pl: '10px' }} xs>
+        <Grid item sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '26px', fontWeight: 400, letterSpacing: '-0.015em', pl: '10px' }} xs={6}>
           {accountName}
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs>
           <ShortAddress address={formatted} addressStyle={{ fontSize: '18px', fontWeight: 400, letterSpacing: '-0.015em' }} />
         </Grid>
       </Grid>
@@ -120,21 +120,21 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
         <Grid item xs={1} mt='5px'>
           {ChainLogo}
         </Grid>
-        <Grid container item xs={11}>
+        <Grid container item xs={11} sx={{ pl: '10px', fontWeight: 400, letterSpacing: '-0.015em' }}>
           <Grid container item justifyContent='space-between'>
-            <Grid item sx={{ fontSize: '14px', fontWeight: 400, letterSpacing: '-0.015em', ml: '10px' }}>
+            <Grid item sx={{ fontSize: '14px' }}>
               {t('Available balance')}
             </Grid>
-            <Grid item sx={{ fontSize: '18px', fontWeight: 400, letterSpacing: '-0.015em' }}>
-            <ShowBalance api={api} balance={ location.state?.balances.availableBalance} />
+            <Grid item sx={{ fontSize: '18px' }}>
+              <ShowBalance api={api} balance={location.state?.balances.availableBalance} />
             </Grid>
           </Grid>
-          <Grid container item justifyContent='space-between' sx={{lineHeight: '15px'}}>
-            <Grid item sx={{ fontSize: '14px', fontWeight: 400, letterSpacing: '-0.015em', ml: '10px' }}>
-            {t('Fee')}
+          <Grid container item justifyContent='space-between' sx={{ lineHeight: '15px' }}>
+            <Grid item sx={{ fontSize: '14px' }}>
+              {t('Fee')}
             </Grid>
-            <Grid item sx={{ fontSize: '18px', fontWeight: 400, letterSpacing: '-0.015em' }}>
-              <ShowBalance api={api} balance={ location.state?.balances.availableBalance} />
+            <Grid item sx={{ fontSize: '18px' }}>
+              <ShowBalance api={api} balance={location.state?.balances.availableBalance} />
             </Grid>
           </Grid>
         </Grid>

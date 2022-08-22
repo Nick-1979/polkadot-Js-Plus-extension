@@ -24,7 +24,7 @@ import { AccountContext, SettingsContext, ActionContext } from '../../../../exte
 import useMetadata from '../../../../extension-ui/src/hooks/useMetadata';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { editAccount, getMetadata, tieAccount, updateMeta } from '../../../../extension-ui/src/messaging';// added for plus, updateMeta
-import { Select, ShortAddress } from '../../components';
+import { Select, ShortAddress, ShowBalance } from '../../components';
 import { useApi, useEndpoint, useEndpoints } from '../../hooks';
 import getLogo from '../../util/getLogo';
 import { AddressState, FormattedAddressState, SavedMetaData } from '../../util/types';
@@ -42,7 +42,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { send, isend, receive, stake, history as historyIcon, refresh, ireceive, istake, ihistory, irefresh } from '../../util/icons';
 import AccountBrief from './AccountBrief';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -101,6 +101,8 @@ export default function Account({ className }: Props): React.ReactElement<Props>
   const settings = useContext(SettingsContext);
   const onAction = useContext(ActionContext);// added for plus
   const theme = useTheme();
+  const location = useLocation();
+  console.log('location', location.state)
 
   const { accounts } = useContext(AccountContext);
   const { address, formatted, genesisHash } = useParams<FormattedAddressState>();
@@ -120,10 +122,15 @@ export default function Account({ className }: Props): React.ReactElement<Props>
   const [newEndpoint, setNewEndpoint] = useState<string | undefined>(endpoint);
   const api = useApi(newEndpoint);
 
+  const [apiToUse, setApiToUse] = useState<ApiPromise | undefined>(location?.state?.api);
   const [price, setPrice] = useState<number | undefined>();
   const [accountName, setAccountName] = useState<string | undefined>();
-  const [balances, setBalances] = useState<DeriveBalancesAll | undefined>();
+  const [balances, setBalances] = useState<DeriveBalancesAll | undefined>(location?.state?.balances as DeriveBalancesAll);
   const chainName = (newChain?.name ?? chain?.name)?.replace(' Relay Chain', '');
+
+  useEffect(() => {
+    api && setApiToUse(api);
+  }, [api]);
 
   const resetToDefaults = () => {
     setBalances(undefined);
@@ -177,11 +184,10 @@ export default function Account({ className }: Props): React.ReactElement<Props>
 
   useEffect(() => {
     // eslint-disable-next-line no-void
-    newEndpoint && api && (newFormattedAddress === formatted) && String(api.genesisHash) === genesis && void api.derive.balances?.all(formatted).then((b) => {
-      console.log('balanceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee:', JSON.parse(JSON.stringify(b)));
+    newEndpoint && apiToUse && (newFormattedAddress === formatted) && String(apiToUse.genesisHash) === genesis && void apiToUse.derive.balances?.all(formatted).then((b) => {
       setBalances(b);
     });
-  }, [api, formatted, genesis, newEndpoint, newFormattedAddress]);
+  }, [apiToUse, formatted, genesis, newEndpoint, newFormattedAddress]);
 
   const _onChangeGenesis = useCallback((genesisHash?: string | null): void => {
     resetToDefaults();
@@ -203,9 +209,9 @@ export default function Account({ className }: Props): React.ReactElement<Props>
     // onAction(`/send/${genesisHash}/${address}/${formatted}/`);
     balances && history.push({
       pathname: `/send/${genesisHash}/${address}/${formatted}/`,
-      state: { balances, api }
+      state: { balances, api: apiToUse }
     });
-  }, [history, genesisHash, address, formatted, balances]);
+  }, [balances, history, genesisHash, address, formatted, apiToUse]);
 
   const identicon = (
     <Identicon
@@ -278,8 +284,7 @@ export default function Account({ className }: Props): React.ReactElement<Props>
       value = balances.lockedBalance.add(balances.vestingTotal);
     }
 
-    const balanceToShow = value && api?.createType('Balance', value);
-    const balanceInUSD = price && value && api && Number(value) / (10 ** api.registry.chainDecimals[0]) * price;
+    const balanceInUSD = price && value && apiToUse && Number(value) / (10 ** apiToUse.registry.chainDecimals[0]) * price;
 
     return (
       <>
@@ -293,10 +298,7 @@ export default function Account({ className }: Props): React.ReactElement<Props>
             <Grid container direction='column' item justifyContent='flex-end' xs>
               <Grid item textAlign='right'>
                 <Typography sx={{ fontSize: '20px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '20px' }}>
-                  {balanceToShow
-                    ? balanceToShow.toHuman()
-                    : <Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }} />
-                  }
+                  <ShowBalance api={apiToUse} balance={value} />
                 </Typography>
               </Grid>
               <Grid item pt='6px' textAlign='right'>

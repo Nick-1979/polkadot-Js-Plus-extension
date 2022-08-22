@@ -188,11 +188,6 @@ export default function Plus({ address, chain, formattedAddress, name, t }: Prop
 
   useEffect((): void => {
     // eslint-disable-next-line no-void
-    chain && void getPriceInUsd(chain).then((p) => { setPrice(p || 0); });
-  }, [chain]);
-
-  useEffect((): void => {
-    // eslint-disable-next-line no-void
     chain && api && api.query?.recovery && api.query.recovery.recoverable(formattedAddress).then((r) => {
       r.isSome && setRecoverable(r.unwrap())
       console.log(`is ${formattedAddress} recoverAble: ${r.isSome && r.unwrap()}`);
