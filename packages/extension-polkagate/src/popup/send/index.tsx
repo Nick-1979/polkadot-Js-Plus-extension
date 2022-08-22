@@ -184,7 +184,7 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
       <div style={{ fontSize: '16px', fontWeight: 400, paddingTop: '9px', letterSpacing: '-0.015em' }}>
         {t('Amount')}:
       </div>
-      <Amount value={amount} setValue={setAmount} token={api?.registry?.chainTokens[0]}/>
+      <Amount value={amount} setValue={setAmount} token={apiToUse?.registry?.chainTokens[0]}/>
 
     </Container>
   );
