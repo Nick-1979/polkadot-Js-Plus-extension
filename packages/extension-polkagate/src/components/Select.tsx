@@ -18,7 +18,7 @@ const BootstrapInput = styled(InputBase)(({ theme }) => ({
     letterSpacing: '-0.015em'
   },
   '& .MuiInputBase-input': {
-    borderRadius: 4,
+    borderRadius: 0,
     // position: 'relative',
     backgroundColor: theme.palette.background.paper,
     border: `1px solid ${theme.palette.primary.main}`,

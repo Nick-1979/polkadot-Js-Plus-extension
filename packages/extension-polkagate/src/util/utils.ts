@@ -8,6 +8,7 @@ import type { Compact, u128 } from '@polkadot/types-codec';
 import { ApiPromise } from '@polkadot/api';
 import { AccountWithChildren } from '@polkadot/extension-base/background/types';
 import { Chain } from '@polkadot/extension-chains/types';
+import { hexToU8a, isHex } from '@polkadot/util';
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
 import { BLOCK_RATE, FLOATING_POINT_DIGIT, SHORT_ADDRESS_CHARACTERS } from './constants';
@@ -15,6 +16,20 @@ import { AccountsBalanceType, SavedMetaData, TransactionDetail } from './types';
 
 interface Meta {
   docs: Text[];
+}
+
+export function isValidAddress(_address: string | undefined): boolean {
+  try {
+    encodeAddress(
+      isHex(_address)
+        ? hexToU8a(_address)
+        : decodeAddress(_address)
+    );
+
+    return true;
+  } catch (error) {
+    return false;
+  }
 }
 
 export function fixFloatingPoint(_number: number | string, decimalDigit = FLOATING_POINT_DIGIT, commify?: boolean): string {

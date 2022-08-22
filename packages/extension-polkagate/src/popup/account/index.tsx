@@ -120,7 +120,6 @@ export default function AccountDetails({ className }: Props): React.ReactElement
   const [newEndpoint, setNewEndpoint] = useState<string | undefined>(endpoint);
   const api = useApi(newEndpoint);
 
-  console.log('identity in details', location)
   const [apiToUse, setApiToUse] = useState<ApiPromise | undefined>(location?.state?.api);
   const [price, setPrice] = useState<number | undefined>();
   const accountName = useMemo(() => location?.state?.identity?.display || account?.name, [location, account]);
