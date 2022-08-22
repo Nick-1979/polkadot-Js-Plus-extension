@@ -105,15 +105,15 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
       <div style={{ fontSize: '16px', fontWeight: 400, paddingTop: '15px', letterSpacing: '-0.015em' }}>
         {t('From account')}:
       </div>
-      <Grid container alignItems='center' sx={{ pt: '8px' }}>
+      <Grid container alignItems='center' justifyContent='space-between' sx={{ pt: '8px', fontWeight: 400, letterSpacing: '-0.015em' }}>
         <Grid item xs={1} mt='5px'>
           {identicon}
         </Grid>
-        <Grid item sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '26px', fontWeight: 400, letterSpacing: '-0.015em', pl: '10px' }} xs={6}>
+        <Grid item sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '26px', pl: '10px' }} xs={7}>
           {accountName}
         </Grid>
-        <Grid item xs>
-          <ShortAddress address={formatted} addressStyle={{ fontSize: '18px', fontWeight: 400, letterSpacing: '-0.015em' }} />
+        <Grid item xs={4} sx={{ textAlign: 'right' }}>
+          <ShortAddress address={formatted} addressStyle={{ fontSize: '18px' }} />
         </Grid>
       </Grid>
       <Grid container alignItems='center'>

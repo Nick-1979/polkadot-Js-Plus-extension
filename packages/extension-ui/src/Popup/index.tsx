@@ -85,23 +85,23 @@ export default function Popup(): React.ReactElement {
   const [signRequests, setSignRequests] = useState<null | SigningRequest[]>(null);
   const [isWelcomeDone, setWelcomeDone] = useState(false);
   const [settingsCtx, setSettingsCtx] = useState<SettingsStruct>(startSettings);
-  const [mode, setMode] = React.useState<PaletteMode>('light');
+  // const [mode, setMode] = React.useState<PaletteMode>('light');
 
-  const colorMode = React.useMemo(
-    () => ({
-      toggleColorMode: () => {
-        setMode((prevMode: PaletteMode) =>
-          prevMode === 'light' ? 'dark' : 'light'
-        );
-      },
-    }),
-    []
-  );
+  // const colorMode = React.useMemo(
+  //   () => ({
+  //     toggleColorMode: () => {
+  //       setMode((prevMode: PaletteMode) =>
+  //         prevMode === 'light' ? 'dark' : 'light'
+  //       );
+  //     },
+  //   }),
+  //   []
+  // );
 
-  const theme = React.useMemo(
-    () => createTheme(mode === 'light' ? lightTheme : darkTheme),
-    [mode]
-  );
+  // const theme = React.useMemo(
+  //   () => createTheme(mode === 'light' ? lightTheme : darkTheme),
+  //   [mode]
+  // );
 
   const _onAction = useCallback(
     (to?: string): void => {

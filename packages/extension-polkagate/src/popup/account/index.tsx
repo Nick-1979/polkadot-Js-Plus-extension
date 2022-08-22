@@ -43,6 +43,7 @@ import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
 import { send, isend, receive, stake, history as historyIcon, refresh, ireceive, istake, ihistory, irefresh } from '../../util/icons';
 import AccountBrief from './AccountBrief';
 import { useHistory, useLocation } from 'react-router-dom';
+import type { ApiPromise } from '@polkadot/api';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -95,18 +96,15 @@ function recodeAddress(address: string, accounts: AccountWithChildren[], chain: 
   };
 }
 
-export default function Account({ className }: Props): React.ReactElement<Props> {
+export default function AccountDetails({ className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const history = useHistory();
   const settings = useContext(SettingsContext);
   const onAction = useContext(ActionContext);// added for plus
   const theme = useTheme();
   const location = useLocation();
-  console.log('location', location.state)
-
   const { accounts } = useContext(AccountContext);
   const { address, formatted, genesisHash } = useParams<FormattedAddressState>();
-  // const chain = useMetadata(genesisHash, true);
   const [{ account, newFormattedAddress, newGenesisHash, prefix, type }, setRecoded] = useState<Recoded>(defaultRecoded);
   const chain = useMetadata(genesisHash, true);
 
@@ -122,9 +120,10 @@ export default function Account({ className }: Props): React.ReactElement<Props>
   const [newEndpoint, setNewEndpoint] = useState<string | undefined>(endpoint);
   const api = useApi(newEndpoint);
 
+  console.log('identity in details', location)
   const [apiToUse, setApiToUse] = useState<ApiPromise | undefined>(location?.state?.api);
   const [price, setPrice] = useState<number | undefined>();
-  const [accountName, setAccountName] = useState<string | undefined>();
+  const accountName = useMemo(() => location?.state?.identity?.display || account?.name, [location, account]);
   const [balances, setBalances] = useState<DeriveBalancesAll | undefined>(location?.state?.balances as DeriveBalancesAll);
   const chainName = (newChain?.name ?? chain?.name)?.replace(' Relay Chain', '');
 
@@ -140,10 +139,6 @@ export default function Account({ className }: Props): React.ReactElement<Props>
   };
 
   useEffect(() => {
-    account?.name && setAccountName(account?.name);
-  }, [account]);
-
-  useEffect(() => {
     chain && getPriceInUsd(chain).then((price) => {
       console.log(`${chain?.name}  ${price}`);
       setPrice(price ?? 0);
@@ -155,7 +150,7 @@ export default function Account({ className }: Props): React.ReactElement<Props>
       return setRecoded(defaultRecoded);
     }
 
-    const account = findAccountByAddress(accounts, address);
+    // const account = findAccountByAddress(accounts, address);
 
     setRecoded(
       // (
@@ -170,7 +165,7 @@ export default function Account({ className }: Props): React.ReactElement<Props>
   }, [accounts, address, chain, settings]);
 
   const goToAccount = useCallback(() => {
-    onAction(`/account/${newGenesisHash}/${address}/${newFormattedAddress}/`);
+    newFormattedAddress && newGenesisHash && onAction(`/account/${newGenesisHash}/${address}/${newFormattedAddress}/`);
   }, [address, newFormattedAddress, newGenesisHash, onAction]);
 
   useEffect(() => {
@@ -225,7 +220,7 @@ export default function Account({ className }: Props): React.ReactElement<Props>
     />
   );
 
-  const MenuItem = ({ icon, name, noDivider = false, onClick }: { icon: any, name: string, noDivider?: boolean, onClick: () => void }) => (
+  const MenuItem = ({ icon, title, noDivider = false, onClick }: { icon: any, title: string, noDivider?: boolean, onClick: () => void }) => (
     <>
       <Grid container direction='column' item justifyContent='center' xs={2}>
         <Grid height='38px' item width='27px'>
@@ -243,7 +238,7 @@ export default function Account({ className }: Props): React.ReactElement<Props>
         </Grid>
         <Grid item mt='10px' textAlign='center'>
           <Typography sx={{ fontSize: '12px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '12px' }}>
-            {name}
+            {title}
           </Typography>
         </Grid>
       </Grid>
@@ -257,11 +252,11 @@ export default function Account({ className }: Props): React.ReactElement<Props>
 
   const Menu = () => (
     <Grid container flexWrap='nowrap' item pt='5px'>
-      <MenuItem icon={theme.palette.mode === 'dark' ? send : isend} name={'Send'} onClick={goToSend} />
-      <MenuItem icon={theme.palette.mode === 'dark' ? receive : ireceive} name={'Receive'} />
-      <MenuItem icon={theme.palette.mode === 'dark' ? stake : istake} name={'Stake'} />
-      <MenuItem icon={theme.palette.mode === 'dark' ? historyIcon : ihistory} name={'History'} />
-      <MenuItem icon={theme.palette.mode === 'dark' ? refresh : irefresh} name={'Refresh'} noDivider />
+      <MenuItem icon={theme.palette.mode === 'dark' ? send : isend} title={'Send'} onClick={goToSend} />
+      <MenuItem icon={theme.palette.mode === 'dark' ? receive : ireceive} title={'Receive'} />
+      <MenuItem icon={theme.palette.mode === 'dark' ? stake : istake} title={'Stake'} />
+      <MenuItem icon={theme.palette.mode === 'dark' ? historyIcon : ihistory} title={'History'} />
+      <MenuItem icon={theme.palette.mode === 'dark' ? refresh : irefresh} title={'Refresh'} noDivider />
     </Grid>
   );
 

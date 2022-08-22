@@ -23,7 +23,7 @@ export default function ShortAddress({ address, charsCount = SHORT_ADDRESS_CHARA
 
   return (
     <Grid alignItems='center' container justifyContent='center' sx={addressStyle}>
-      <Grid item pr='8px'>
+      <Grid item pr={showCopy ? 1 : 0}>
         {address.slice(0, charsCount)}...{address.slice(-charsCount)}
       </Grid>
       {showCopy &&

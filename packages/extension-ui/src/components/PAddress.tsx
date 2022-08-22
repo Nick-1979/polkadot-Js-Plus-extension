@@ -153,8 +153,7 @@ export default function PAddress({ actions, address, children, className, genesi
 
   useEffect(() => {
     // eslint-disable-next-line no-void
-    api && void api.derive.balances?.all(formatted).then((b) => {
-      console.log('balanceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee:', JSON.parse(JSON.stringify(b)));
+    api && formatted && void api.derive.balances?.all(formatted).then((b) => {
       setBalances(b);
     });
   }, [api, formatted]);
@@ -245,11 +244,11 @@ export default function PAddress({ actions, address, children, className, genesi
   // added for plus
   const goToAccount = useCallback(() => {
     // onAction(`/account/${genesisHash}/${address}/${formatted}/`);
-    balances && history.push({
+    history.push({
       pathname: `/account/${genesisHash}/${address}/${formatted}/`,
-      state: { balances, api }
+      state: { api, balances, identity }
     });
-  }, [balances, history, genesisHash, address, formatted, api]);
+  }, [balances, history, genesisHash, address, formatted, api, identity]);
 
   return (
     <Grid container alignItems='center' py='12px'>
