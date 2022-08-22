@@ -70,15 +70,16 @@ export default function CustomizedTextField({ address, setAddress }: Props) {
         ),
         // style: { fontSize: 14 }
       }}
+      autoComplete='off'
+      color='primary'
       fullWidth
-      onChange={_onChange}
       // placeholder={t('Search, Public address')}
+      onChange={_onChange}
       size='small'
+      sx={{ pt: '6px' }}
+      // variant='outlined'
       type='string'
       value={address ?? ''}
-      // variant='outlined'
-      color='primary'
-      sx={{ pt: '6px' }}
     />
   );
 }

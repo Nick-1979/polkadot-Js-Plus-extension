@@ -12,6 +12,7 @@ import { styled } from '@mui/material/styles';
 import React, { useCallback } from 'react';
 import { ArrowBackIosRounded, CheckRounded as CheckRoundedIcon, Clear as ClearIcon } from '@mui/icons-material';
 import { isValidAddress } from '../util/utils';
+import { MAX_AMOUNT_LENGTH } from '../util/constants';
 
 const CssTextField = styled(TextField)(({ theme }) => ({
   // '& label.Mui-focused': {
@@ -48,7 +49,7 @@ interface Props {
 export default function CustomizedTextField({ value, setValue, token }: Props) {
   const _onChange = useCallback(
     ({ target: { value } }: React.ChangeEvent<HTMLSelectElement>) =>
-      setValue(value.trim()),
+      setValue(value.trim().slice(0, MAX_AMOUNT_LENGTH)),
     [setValue]
   );
 
@@ -61,6 +62,7 @@ export default function CustomizedTextField({ value, setValue, token }: Props) {
           </InputAdornment>
         )
       }}
+      autoComplete='off'
       color='primary'
       fullWidth
       onChange={_onChange}

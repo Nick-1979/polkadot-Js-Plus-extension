@@ -28,6 +28,7 @@ export const MAX_ACCEPTED_COMMISSION = 20;
 export const SHORT_ADDRESS_CHARACTERS = 4;
 export const MAX_VOTES = 16;
 export const MAX_REWARDS_TO_SHOW = 20;
+export const MAX_AMOUNT_LENGTH = 15;
 export const RELAY_CHAINS = [
   {
     name: 'Polkadot',

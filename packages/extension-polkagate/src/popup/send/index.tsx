@@ -63,10 +63,9 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
   const endpoint = useEndpoint(accounts, address, chain);
   const api = useApi(endpoint);
   const [apiToUse, setApiToUse] = useState<ApiPromise | undefined>(location?.state?.api);
-  const [transferAmount, setTransferAmount] = useState<BN>(BN_ZERO);
   const [estimatedFee, setEstimatedFee] = useState<Balance>();
   const [recepient, setRecepient] = useState<string | undefined>();
-  const [amount, setAmount] = useState<string | undefined>();
+  const [amount, setAmount] = useState<string >('0');
   const [balances, setBalances] = useState<DeriveBalancesAll | undefined>(location?.state?.balances as DeriveBalancesAll);
 
   const prevUrl = `/account/${genesisHash}/${address}/${formatted}/`;
@@ -92,10 +91,12 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
   useEffect(() => {
     if (!apiToUse || !transfer) { return; }
 
+    const decimals = apiToUse.registry.chainDecimals[0];
+
     // eslint-disable-next-line no-void
-    void transfer(formatted, transferAmount).paymentInfo(formatted)
+    void transfer(formatted, new BN(amount).mul(new BN(10 ** decimals))).paymentInfo(formatted)
       .then((i) => setEstimatedFee(i?.partialFee)).catch(console.error);
-  }, [apiToUse, formatted, transfer, transferAmount]);
+  }, [apiToUse, formatted, transfer, amount]);
 
   const icon = (<Avatar
     alt={'logo'}
@@ -184,7 +185,7 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
       <div style={{ fontSize: '16px', fontWeight: 400, paddingTop: '9px', letterSpacing: '-0.015em' }}>
         {t('Amount')}:
       </div>
-      <Amount value={amount} setValue={setAmount} token={apiToUse?.registry?.chainTokens[0]}/>
+      <Amount value={amount} setValue={setAmount} token={apiToUse?.registry?.chainTokens[0]} />
 
     </Container>
   );
