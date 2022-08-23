@@ -196,7 +196,7 @@ export default function PAccount({ address, className, genesisHash, isExternal, 
   ), [_goToLink, _onChangeEndpoint, _onChangeGenesis, _toggleEdit, address, endpointOptions, genesisHash, genesisOptions, isExternal, isHardware, selectedEndpoint, t, type]);
 
   return (
-    <Grid sx={{ borderTopColor: 'secondary.main', borderTopWidth: '2px', borderTopStyle: 'solid' }} xs={12}>
+    <Grid sx={{ borderBottomColor: 'secondary.main', borderBottomWidth: '1px', borderBottomStyle: 'solid' }} xs={12}>
       <PAddress
         actions={_actions}
         address={address}

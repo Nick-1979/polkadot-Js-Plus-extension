@@ -41,12 +41,12 @@ const CssTextField = styled(TextField)(({ theme }) => ({
 }));
 
 interface Props {
-  setValue: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setValue: React.Dispatch<React.SetStateAction<string>>;
   value: string | undefined;
   token: string | undefined;
 }
 
-export default function CustomizedTextField({ value, setValue, token }: Props) {
+export default function CustomizedTextField({ setValue, token, value }: Props) {
   const _onChange = useCallback(
     ({ target: { value } }: React.ChangeEvent<HTMLSelectElement>) =>
       setValue(value.trim().slice(0, MAX_AMOUNT_LENGTH)),

@@ -18,7 +18,7 @@ import useTranslation from '../../hooks/useTranslation';
 import { PHeader } from '../../partials';
 import AccountsTree from './AccountsTree';
 import AddAccount from './AddAccount';
-import { Box, Container, Grid, InputAdornment, TextField, Typography } from '@mui/material';
+import { Box, Container, Divider, Grid, InputAdornment, TextField, Typography } from '@mui/material';
 import { Search as SearchIcon  } from '@mui/icons-material';
 
 interface Props extends ThemeProps {
@@ -88,7 +88,8 @@ export default function Accounts({ className }: Props): React.ReactElement {
                 variant='outlined'
               />
             </Grid>
-            <Container disableGutters sx={{px: '30px'}}>
+            <Container disableGutters sx={{px: '30px'}} >
+              <Divider sx={{bgcolor: 'secondary.main', height: '2px' }}/>
               {filteredAccount.map((json, index): React.ReactNode => (
                 <AccountsTree
                   {...json}
