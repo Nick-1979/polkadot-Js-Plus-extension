@@ -569,10 +569,10 @@ export default function ConfirmStaking({ amount, api, basePool, chain, handlePoo
           block,
           date: Date.now(),
           fee: fee || '',
-          from: staker.address,
+          from: pool?.accounts?.rewardId ?? '',
           hash: txHash || '',
           status: failureText || status,
-          to: ''
+          to: staker.address
         });
 
         setConfirmingState(status);
