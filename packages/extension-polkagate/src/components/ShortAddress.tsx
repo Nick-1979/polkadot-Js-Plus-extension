@@ -12,7 +12,7 @@ import { SHORT_ADDRESS_CHARACTERS } from '../util/constants';
 import { copy, icopy } from '../util/icons';
 
 interface Props {
-  address: string | AccountId;
+  address: string | AccountId | undefined;
   charsCount?: number;
   addressStyle?: any;
   showCopy?: boolean;
@@ -24,7 +24,7 @@ export default function ShortAddress({ address, charsCount = SHORT_ADDRESS_CHARA
   return (
     <Grid alignItems='center' container justifyContent='center' sx={addressStyle}>
       <Grid item pr={showCopy ? 1 : 0}>
-        {address.slice(0, charsCount)}...{address.slice(-charsCount)}
+        {address?.slice(0, charsCount)}...{address?.slice(-charsCount)}
       </Grid>
       {showCopy &&
         <Grid item>

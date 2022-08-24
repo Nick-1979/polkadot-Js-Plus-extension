@@ -49,11 +49,16 @@ const Customized = styled(Button)<ButtonProps>(({ theme }) => ({
 interface Props {
   title: string;
   style?: any;
+  _onClick?: React.MouseEventHandler<HTMLDivElement> | undefined;
 }
 
-export default function CustomizedButton({ title, style = {} }: Props) {
+export default function CustomizedButton({ title, style = {}, _onClick }: Props) {
   return (
-    <Customized fullWidth variant='contained' sx={style}>
+    <Customized
+      fullWidth
+      onClick={_onClick}
+      sx={style}
+      variant='contained'>
       {title}
     </Customized>
   );

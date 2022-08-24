@@ -17,6 +17,7 @@ import EnDecrypt from '../../../extension-plus/src/Popup/Encryption';// added fo
 import SocialRecovery from '../../../extension-plus/src/Popup/SocialRecovery';// added for plus
 import Account from '../../../extension-polkagate/src/popup/account';// added for plus
 import Send from '../../../extension-polkagate/src/popup/send';// added for plus
+import Review from '../../../extension-polkagate/src/popup/send/Review';// added for plus
 
 import { ErrorBoundary, Loading } from '../components';
 import { AccountContext, ActionContext, AuthorizeReqContext, MediaContext, MetadataReqContext, SettingsContext, SigningReqContext } from '../components/contexts';
@@ -85,23 +86,6 @@ export default function Popup(): React.ReactElement {
   const [signRequests, setSignRequests] = useState<null | SigningRequest[]>(null);
   const [isWelcomeDone, setWelcomeDone] = useState(false);
   const [settingsCtx, setSettingsCtx] = useState<SettingsStruct>(startSettings);
-  // const [mode, setMode] = React.useState<PaletteMode>('light');
-
-  // const colorMode = React.useMemo(
-  //   () => ({
-  //     toggleColorMode: () => {
-  //       setMode((prevMode: PaletteMode) =>
-  //         prevMode === 'light' ? 'dark' : 'light'
-  //       );
-  //     },
-  //   }),
-  //   []
-  // );
-
-  // const theme = React.useMemo(
-  //   () => createTheme(mode === 'light' ? lightTheme : darkTheme),
-  //   [mode]
-  // );
 
   const _onAction = useCallback(
     (to?: string): void => {
@@ -175,7 +159,8 @@ export default function Popup(): React.ReactElement {
                         <Route path='/endecrypt/:address'>{wrapWithErrorBoundary(<EnDecrypt />, 'encrypt-decrypt')}</Route>
                         <Route path='/socialRecovery/:genesisHash/:address'>{wrapWithErrorBoundary(<SocialRecovery />, 'socialRecovery')}</Route>
                         <Route path='/account/:genesisHash/:address/:formatted'>{wrapWithErrorBoundary(<Account />, 'account')}</Route>
-                        <Route path='/send/:genesisHash/:address/:formatted'>{wrapWithErrorBoundary(<Send />, 'send')}</Route>
+                        <Route exact path='/send/:genesisHash/:address/:formatted'>{wrapWithErrorBoundary(<Send />, 'send')}</Route>
+                        <Route exact path='/send/review/:genesisHash/:address/:formatted'>{wrapWithErrorBoundary(<Review />, 'review')}</Route>
                         <Route path='/auth-list'>{wrapWithErrorBoundary(<AuthList />, 'auth-list')}</Route>
                         <Route path='/account/create'>{wrapWithErrorBoundary(<CreateAccount />, 'account-creation')}</Route>
                         <Route path='/account/forget/:address'>{wrapWithErrorBoundary(<Forget />, 'forget-address')}</Route>

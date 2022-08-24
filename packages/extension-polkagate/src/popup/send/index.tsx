@@ -8,42 +8,26 @@
  * this component opens social recovery index page to choose between configuring your account and rescuing other account
  * */
 
-import type { ThemeProps } from '../../../../extension-ui/src/types';
-import type { AccountJson, AccountWithChildren } from '@polkadot/extension-base/background/types';
+import type { DeriveBalancesAll } from '@polkadot/api-derive/types';
+import type { Balance } from '@polkadot/types/interfaces';
 
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import { Avatar, Container, Divider, Grid, IconButton, Skeleton, Typography, useTheme } from '@mui/material';
-import React, { useCallback, useContext, useEffect, useState, useMemo } from 'react';
+import { Avatar, Container, Divider, Grid, useTheme } from '@mui/material';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
+import { useHistory, useLocation } from 'react-router-dom';
 
-import { Chain } from '@polkadot/extension-chains/types';
+import { ApiPromise } from '@polkadot/api';
 import { Identicon } from '@polkadot/extension-ui/components';
-import useGenesisHashOptions from '@polkadot/extension-ui/hooks/useGenesisHashOptions';
+import { BN, BN_ZERO } from '@polkadot/util';
 
-import { AccountContext, SettingsContext, ActionContext } from '../../../../extension-ui/src/components/contexts';
+import { AccountContext, ActionContext, SettingsContext } from '../../../../extension-ui/src/components/contexts';
 import useMetadata from '../../../../extension-ui/src/hooks/useMetadata';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
-import { editAccount, getMetadata, tieAccount, updateMeta } from '../../../../extension-ui/src/messaging';// added for plus, updateMeta
-import { Select, ShortAddress, ShowBalance, To } from '../../components';
-import { useApi, useEndpoint, useEndpoints } from '../../hooks';
+import { Amount, Button, Header, ShortAddress, ShowBalance, To } from '../../components';
+import { useApi, useEndpoint } from '../../hooks';
 import getLogo from '../../util/getLogo';
-import { AddressState, FormattedAddressState, SavedMetaData } from '../../util/types';
-import { Header, Amount, Button } from '../../components';
-import { prepareMetaData } from '../../../../extension-plus/src/util/plusUtils';// added for plus
-import { DEFAULT_TYPE } from '../../../../extension-ui/src/util/defaultType';
-import type { KeypairType } from '@polkadot/util-crypto/types';
-import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
-import type { SettingsStruct } from '@polkadot/ui-settings/types';
-import { BN, BN_ZERO } from '@polkadot/util';
-import type { DeriveBalancesAll } from '@polkadot/api-derive/types';
-import { getPriceInUsd } from '../../util/api/getPrice';
-import { MoreVert as MoreVertIcon, ArrowForwardIosRounded as ArrowForwardIosRoundedIcon } from '@mui/icons-material';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
-import { send, isend, receive, stake, history, refresh, ireceive, istake, ihistory, irefresh } from '../../util/icons';
-import { useLocation } from "react-router-dom";
-import type { Balance } from '@polkadot/types/interfaces';
-import { ApiPromise } from '@polkadot/api';
+import { isend, send } from '../../util/icons';
+import { FormattedAddressState } from '../../util/types';
 import { getFormattedAddress } from '../../util/utils';
 
 interface Props {
@@ -53,7 +37,7 @@ interface Props {
 export default function Send({ className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const settings = useContext(SettingsContext);
-  const onAction = useContext(ActionContext);
+  const history = useHistory();
   const theme = useTheme();
   const { address, formatted, genesisHash } = useParams<FormattedAddressState>();
   const location = useLocation();
@@ -62,7 +46,7 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
   const endpoint = useEndpoint(accounts, address, chain);
   const api = useApi(endpoint);
   const [apiToUse, setApiToUse] = useState<ApiPromise | undefined>(location?.state?.api);
-  const [estimatedFee, setEstimatedFee] = useState<Balance>();
+  const [fee, setFee] = useState<Balance>();
   const [maxFee, setMaxFee] = useState<Balance>();
   const [recepient, setRecepient] = useState<string | undefined>();
   const [amount, setAmount] = useState<string>('0');
@@ -71,11 +55,30 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
   const prevUrl = `/account/${genesisHash}/${address}/${formatted}/`;
   const accountName = useMemo(() => accounts?.find((a) => a.address === address)?.name, [accounts, address]);
   const transfer = apiToUse && apiToUse.tx?.balances && apiToUse.tx.balances.transfer;
-  const recepientLocalName = useMemo(
+  const recepientName = useMemo(
     () =>
-      accounts?.find((a) => getFormattedAddress(a.address, chain, settings?.prefix) === recepient)?.name,
-    [accounts, chain, recepient, settings?.prefix]
+      accounts?.find((a) => getFormattedAddress(a.address, chain, settings?.prefix) === recepient)?.name ?? t('Unknown'),
+    [accounts, chain, recepient, settings?.prefix, t]
   );
+
+  const setWholeAmount = useCallback((type: string) => {
+    if (!api || !balances?.availableBalance || !maxFee) {
+      return;
+    }
+
+    const ED = type === 'max' ? api.consts.balances.existentialDeposit : BN_ZERO;
+
+    const allAmount = parseFloat(api.createType('Balance', balances?.availableBalance.sub(maxFee).sub(ED)).toHuman());
+
+    setAmount(allAmount.toString());
+  }, [api, balances?.availableBalance, maxFee]);
+
+  const goToReview = useCallback(() => {
+    balances && history.push({
+      pathname: `/send/review/${genesisHash}/${address}/${formatted}/`,
+      state: { amount, api: apiToUse, balances, fee, recepient, recepientName }
+    });
+  }, [balances, history, genesisHash, address, formatted, amount, apiToUse, fee, recepient, recepientName]);
 
   useEffect(() => {
     api && setApiToUse(api);
@@ -86,7 +89,7 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
     endpoint && apiToUse && void apiToUse.derive.balances?.all(formatted).then((b) => {
       setBalances(b);
     });
-  }, [apiToUse, formatted, endpoint,]);
+  }, [apiToUse, formatted, endpoint]);
 
   useEffect(() => {
     if (!apiToUse || !transfer) { return; }
@@ -96,7 +99,7 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
 
     // eslint-disable-next-line no-void
     void transfer(formatted, amountInNumber).paymentInfo(formatted)
-      .then((i) => setEstimatedFee(i?.partialFee)).catch(console.error);
+      .then((i) => setFee(i?.partialFee)).catch(console.error);
   }, [apiToUse, formatted, transfer, amount]);
 
   useEffect(() => {
@@ -107,7 +110,6 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
       .then((i) => setMaxFee(i?.partialFee)).catch(console.error);
   }, [apiToUse, formatted, transfer, balances]);
 
-  console.log('maxFee:', maxFee?.toHuman())
   const icon = (<Avatar
     alt={'logo'}
     src={theme.palette.mode === 'dark' ? send : isend}
@@ -142,7 +144,7 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
           {t('Send Fund')}
         </div>
         <div style={{ fontWeight: 700, fontSize: '11px', lineHeight: '25px', letterSpacing: '-0.015em', textAlign: 'center' }}>
-          {t('on the same chain')}
+          {t('On the same chain')}
         </div>
         <Divider sx={{ bgcolor: 'secondary.main', height: '2px', width: '81px', margin: 'auto' }} />
       </Header>
@@ -178,7 +180,7 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
               {t('Fee')}
             </Grid>
             <Grid item sx={{ fontSize: '18px' }}>
-              <ShowBalance api={apiToUse} balance={estimatedFee} />
+              <ShowBalance api={apiToUse} balance={fee} />
             </Grid>
           </Grid>
         </Grid>
@@ -189,7 +191,7 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
       </div>
       <To address={recepient} setAddress={setRecepient} />
       <Grid item sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', height: '38px', fontSize: '24px', fontWeight: 400, letterSpacing: '-0.015em' }} xs={12}>
-        {recepientLocalName}
+        {recepientName}
       </Grid>
       <Divider sx={{ bgcolor: 'secondary.main', height: '1px', mt: '5px' }} />
       <div style={{ fontSize: '16px', fontWeight: 400, paddingTop: '8px', letterSpacing: '-0.015em' }}>
@@ -197,17 +199,17 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
       </div>
       <Amount setValue={setAmount} token={apiToUse?.registry?.chainTokens[0]} value={amount} />
       <Grid container sx={{ fontSize: '16px', fontWeight: 400, letterSpacing: '-0.015em', mt: '13px' }}>
-        <Grid item sx={{ textDecorationLine: 'underline' }}>
+        <Grid item onClick={() => setWholeAmount('all')} sx={{ textDecorationLine: 'underline', cursor: 'pointer' }}>
           {t('All amount')}
         </Grid>
         <Grid item px='10px'>
           <Divider orientation='vertical' sx={{ m: 'auto', height: '28px', width: '2px', borderColor: 'primary.main' }} />
         </Grid>
-        <Grid item sx={{ textDecorationLine: 'underline' }}>
+        <Grid item onClick={() => setWholeAmount('max')} sx={{ textDecorationLine: 'underline', cursor: 'pointer' }}>
           {t('Max amount')}
         </Grid>
       </Grid>
-      <Button title={t('Next')} style={{ mt: '15px' }} />
+      <Button style={{ mt: '15px' }} title={t('Next')} _onClick={goToReview} />
 
     </Container>
   );

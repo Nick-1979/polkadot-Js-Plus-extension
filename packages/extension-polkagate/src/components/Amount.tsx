@@ -68,8 +68,7 @@ export default function CustomizedTextField({ setValue, token, value }: Props) {
       onChange={_onChange}
       size='small'
       sx={{ pt: '6px' }}
-      // variant='outlined'
-      type='string'
+      type='number'
       value={value ?? ''}
     />
   );
