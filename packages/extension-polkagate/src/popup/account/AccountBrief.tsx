@@ -34,7 +34,7 @@ export default function AccountBrief({ accountName, formatted }: Props): React.R
           <VisibilityOutlinedIcon sx={{ fontSize: '22px', pt: '5px' }} />
         </Grid>
       </Grid>
-      <ShortAddress address={formatted} addressStyle={{ fontSize: '11px', fontWeight: 400, letterSpacing: '-0.015em' }} charsCount={13} showCopy />
+      <ShortAddress address={formatted} addressStyle={{ fontSize: '11px', fontWeight: 300, letterSpacing: '-0.015em' }} charsCount={13} showCopy />
       <Divider sx={{ bgcolor: 'secondary.main', height: '2px', mx: '40px' }} />
     </Grid>
   );

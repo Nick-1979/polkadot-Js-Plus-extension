@@ -235,7 +235,7 @@ export default function AccountDetails({ className }: Props): React.ReactElement
           </IconButton>
         </Grid>
         <Grid item mt='10px' textAlign='center'>
-          <Typography sx={{ fontSize: '12px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '12px' }}>
+          <Typography sx={{ fontSize: '12px', fontWeight: 300, letterSpacing: '-0.015em', lineHeight: '12px' }}>
             {title}
           </Typography>
         </Grid>
@@ -284,18 +284,18 @@ export default function AccountDetails({ className }: Props): React.ReactElement
         <Grid item py='5px'>
           <Grid alignItems='center' container justifyContent='space-between'>
             <Grid item xs={2}>
-              <Typography sx={{ fontSize: '16px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '36px' }}>
+              <Typography sx={{ fontSize: '16px', fontWeight: 300, letterSpacing: '-0.015em', lineHeight: '36px' }}>
                 {type}
               </Typography>
             </Grid>
             <Grid container direction='column' item justifyContent='flex-end' xs>
               <Grid item textAlign='right'>
-                <Typography sx={{ fontSize: '20px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '20px' }}>
+                <Typography sx={{ fontSize: '20px', fontWeight: 300, letterSpacing: '-0.015em', lineHeight: '20px' }}>
                   <ShowBalance api={apiToUse} balance={value} />
                 </Typography>
               </Grid>
               <Grid item pt='6px' textAlign='right'>
-                <Typography sx={{ fontSize: '16px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '20px' }}>
+                <Typography sx={{ fontSize: '16px', fontWeight: 300, letterSpacing: '-0.015em', lineHeight: '20px' }}>
                   {balanceInUSD !== undefined
                     ? `$${Number(balanceInUSD)?.toLocaleString()}`
                     : <Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }} />

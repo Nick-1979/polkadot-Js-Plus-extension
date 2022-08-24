@@ -10,7 +10,8 @@
 
 import { ArrowBackIosNewRounded as BackIcon, Menu as MenuIcon } from '@mui/icons-material';
 import { Grid, IconButton } from '@mui/material';
-import React, { useContext } from 'react';
+import React, { useContext, useCallback } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import { ActionContext, SettingsContext } from '../../../extension-ui/src/components/contexts';
 
@@ -20,10 +21,19 @@ interface Props {
   genesisHash: string;
   icon: React.node;
   preUrl: string;
+  state?: any;
 }
 
-export default function Header({ address, children, icon, genesisHash, preUrl = '/' }: Props): React.ReactElement<Props> {
+export default function Header({ address, children, icon, genesisHash, preUrl = '/', state = {} }: Props): React.ReactElement<Props> {
   const onAction = useContext(ActionContext);// added for plus
+  const history = useHistory();
+
+  const gotoPreUrl = useCallback(() => {
+    history.push({
+      pathname: preUrl,
+      state
+    });
+  }, [history, preUrl, state]);
 
   return (
     <>
@@ -33,7 +43,7 @@ export default function Header({ address, children, icon, genesisHash, preUrl = 
             aria-label='menu'
             color='inherit'
             edge='start'
-            onClick={() => onAction(preUrl)}
+            onClick={gotoPreUrl}
             size='small'
             sx={{ p: '0px' }}
           >

@@ -65,7 +65,7 @@ export default function Send(): React.ReactElement<Props> {
 
   return (
     <Container disableGutters sx={{ px: '30px' }}>
-      <Header address={address} genesisHash={genesisHash} icon={icon} preUrl={prevUrl}>
+      <Header address={address} genesisHash={genesisHash} icon={icon} preUrl={prevUrl} state={location?.state}>
         <div style={{ fontWeight: 500, fontSize: '24px', lineHeight: '36px', letterSpacing: '-0.015em', textAlign: 'center' }}>
           {t('Send Fund')}
         </div>
@@ -74,7 +74,7 @@ export default function Send(): React.ReactElement<Props> {
         </div>
         <Divider sx={{ bgcolor: 'secondary.main', height: '2px', width: '81px', margin: 'auto' }} />
       </Header>
-      <Grid alignItems='top' container justifyContent='center' sx={{ fontWeight: 400, letterSpacing: '-0.015em' }}>
+      <Grid alignItems='top' container justifyContent='center' sx={{ fontWeight: 300, letterSpacing: '-0.015em' }}>
         <Grid item sx={{ fontSize: '16px', paddingTop: '15px' }} xs={4}>
           {t('From')}:
         </Grid>
@@ -90,8 +90,8 @@ export default function Send(): React.ReactElement<Props> {
           </Grid>
         </Grid>
       </Grid>
-      <Divider sx={{ bgcolor: 'secondary.main', height: '1px', mt: '5px' }} />
-      <Grid alignItems='top' container justifyContent='center' sx={{ fontWeight: 400, letterSpacing: '-0.015em' }}>
+      <Divider sx={{ bgcolor: 'secondary.main', height: '1px', mt: '8px' }} />
+      <Grid alignItems='top' container justifyContent='center' sx={{ fontWeight: 300, letterSpacing: '-0.015em' }}>
         <Grid item sx={{ fontSize: '16px', paddingTop: '15px' }} xs={4}>
           {t('Amount')}:
         </Grid>
@@ -112,8 +112,8 @@ export default function Send(): React.ReactElement<Props> {
           </Grid>
         </Grid>
       </Grid>
-      <Divider sx={{ bgcolor: 'secondary.main', height: '1px', mt: '15px' }} />
-      <Grid alignItems='top' container justifyContent='center' sx={{ fontWeight: 400, letterSpacing: '-0.015em' }}>
+      <Divider sx={{ bgcolor: 'secondary.main', height: '1px', mt: '8px' }} />
+      <Grid alignItems='top' container justifyContent='center' sx={{ fontWeight: 300, letterSpacing: '-0.015em' }}>
         <Grid item sx={{ fontSize: '16px', paddingTop: '15px' }} xs={4}>
           {t('To')}:
         </Grid>
@@ -129,14 +129,12 @@ export default function Send(): React.ReactElement<Props> {
           </Grid>
         </Grid>
       </Grid>
-      <Divider sx={{ bgcolor: 'secondary.main', height: '1px', mt: '5px' }} />
+      <Divider sx={{ bgcolor: 'secondary.main', height: '1px', mt: '8px' }} />
       <Grid item sx={{ fontSize: '16px', paddingTop: '15px' }} xs={4}>
         {t('Password')}:
       </Grid>
       <Password setValue={setPassword} value={password} />
-
-      <Button style={{ mt: '15px' }} title={t('Send')} />
-
-    </Container >
+      <Button style={{ mt: '20px' }} title={t('Send')} />
+    </Container>
   );
 }

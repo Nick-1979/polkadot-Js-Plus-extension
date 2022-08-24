@@ -28,7 +28,7 @@ import { useApi, useEndpoint } from '../../hooks';
 import getLogo from '../../util/getLogo';
 import { isend, send } from '../../util/icons';
 import { FormattedAddressState } from '../../util/types';
-import { getFormattedAddress } from '../../util/utils';
+import { amountToHuman, getFormattedAddress } from '../../util/utils';
 
 interface Props {
   className?: string;
@@ -48,11 +48,12 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
   const [apiToUse, setApiToUse] = useState<ApiPromise | undefined>(location?.state?.api);
   const [fee, setFee] = useState<Balance>();
   const [maxFee, setMaxFee] = useState<Balance>();
-  const [recepient, setRecepient] = useState<string | undefined>();
-  const [amount, setAmount] = useState<string>('0');
+  const [recepient, setRecepient] = useState<string | undefined>(location?.state?.recepient);
+  const [amount, setAmount] = useState<string>(location?.state?.amount ?? '0');
   const [balances, setBalances] = useState<DeriveBalancesAll | undefined>(location?.state?.balances as DeriveBalancesAll);
 
   const prevUrl = `/account/${genesisHash}/${address}/${formatted}/`;
+  const decimals = apiToUse?.registry?.chainDecimals[0] ?? 1;
   const accountName = useMemo(() => accounts?.find((a) => a.address === address)?.name, [accounts, address]);
   const transfer = apiToUse && apiToUse.tx?.balances && apiToUse.tx.balances.transfer;
   const recepientName = useMemo(
@@ -67,11 +68,10 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
     }
 
     const ED = type === 'max' ? api.consts.balances.existentialDeposit : BN_ZERO;
+    const allAmount = amountToHuman(balances?.availableBalance.sub(maxFee).sub(ED).toString(), decimals);
 
-    const allAmount = parseFloat(api.createType('Balance', balances?.availableBalance.sub(maxFee).sub(ED)).toHuman());
-
-    setAmount(allAmount.toString());
-  }, [api, balances?.availableBalance, maxFee]);
+    setAmount(allAmount);
+  }, [api, balances?.availableBalance, decimals, maxFee]);
 
   const goToReview = useCallback(() => {
     balances && history.push({
@@ -94,7 +94,6 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
   useEffect(() => {
     if (!apiToUse || !transfer) { return; }
 
-    const decimals = apiToUse.registry.chainDecimals[0];
     const amountInNumber = new BN(parseFloat(parseFloat(amount).toFixed(4)) * 10 ** 4).mul(new BN(10 ** (decimals - 4)));
 
     // eslint-disable-next-line no-void
@@ -148,10 +147,10 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
         </div>
         <Divider sx={{ bgcolor: 'secondary.main', height: '2px', width: '81px', margin: 'auto' }} />
       </Header>
-      <div style={{ fontSize: '16px', fontWeight: 400, paddingTop: '15px', letterSpacing: '-0.015em' }}>
+      <div style={{ fontSize: '16px', fontWeight: 300, paddingTop: '15px', letterSpacing: '-0.015em' }}>
         {t('From Account')}:
       </div>
-      <Grid alignItems='center' container justifyContent='space-between' sx={{ pt: '7px', fontWeight: 400, letterSpacing: '-0.015em' }}>
+      <Grid alignItems='center' container justifyContent='space-between' sx={{ pt: '7px', fontWeight: 300, letterSpacing: '-0.015em' }}>
         <Grid item mt='7px' xs={1}>
           {identicon}
         </Grid>
@@ -166,7 +165,7 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
         <Grid item mt='5px' xs={1}>
           {ChainLogo}
         </Grid>
-        <Grid container item sx={{ pl: '10px', fontWeight: 400, letterSpacing: '-0.015em' }} xs={11}>
+        <Grid container item sx={{ pl: '10px', fontWeight: 300, letterSpacing: '-0.015em' }} xs={11}>
           <Grid alignItems='center' container item justifyContent='space-between'>
             <Grid item sx={{ fontSize: '14px' }}>
               {t('Available balance')}
@@ -186,19 +185,19 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
         </Grid>
       </Grid>
       <Divider sx={{ bgcolor: 'secondary.main', height: '1px', mt: '5px' }} />
-      <div style={{ fontSize: '16px', fontWeight: 400, paddingTop: '7px', letterSpacing: '-0.015em' }}>
+      <div style={{ fontSize: '16px', fontWeight: 300, paddingTop: '7px', letterSpacing: '-0.015em' }}>
         {t('To')}:
       </div>
       <To address={recepient} setAddress={setRecepient} />
-      <Grid item sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', height: '38px', fontSize: '24px', fontWeight: 400, letterSpacing: '-0.015em' }} xs={12}>
+      <Grid item sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', height: '38px', fontSize: '24px', fontWeight: 300, letterSpacing: '-0.015em' }} xs={12}>
         {recepientName}
       </Grid>
       <Divider sx={{ bgcolor: 'secondary.main', height: '1px', mt: '5px' }} />
-      <div style={{ fontSize: '16px', fontWeight: 400, paddingTop: '8px', letterSpacing: '-0.015em' }}>
+      <div style={{ fontSize: '16px', fontWeight: 300, paddingTop: '8px', letterSpacing: '-0.015em' }}>
         {t('Amount')}:
       </div>
       <Amount setValue={setAmount} token={apiToUse?.registry?.chainTokens[0]} value={amount} />
-      <Grid container sx={{ fontSize: '16px', fontWeight: 400, letterSpacing: '-0.015em', mt: '13px' }}>
+      <Grid container sx={{ fontSize: '16px', fontWeight: 300, letterSpacing: '-0.015em', mt: '13px' }}>
         <Grid item onClick={() => setWholeAmount('all')} sx={{ textDecorationLine: 'underline', cursor: 'pointer' }}>
           {t('All amount')}
         </Grid>
@@ -209,7 +208,7 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
           {t('Max amount')}
         </Grid>
       </Grid>
-      <Button style={{ mt: '15px' }} title={t('Next')} _onClick={goToReview} />
+      <Button _disabled={!recepient} _onClick={goToReview} style={{ mt: '15px' }} title={t('Next')} />
 
     </Container>
   );

@@ -39,6 +39,7 @@ const Customized = styled(Button)<ButtonProps>(({ theme }) => ({
   fontWeight: 600,
   textTransform: 'capitalize',
   letterSpacing: '-0.015em',
+  borderRadius: '6px',
   color: theme.palette.primary.main,
   backgroundColor: theme.palette.secondary.main,
   '&:hover': {
@@ -50,12 +51,14 @@ interface Props {
   title: string;
   style?: any;
   _onClick?: React.MouseEventHandler<HTMLDivElement> | undefined;
+  _disabled?: boolean;
 }
 
-export default function CustomizedButton({ title, style = {}, _onClick }: Props) {
+export default function CustomizedButton({ title, style = {}, _onClick, _disabled = false }: Props) {
   return (
     <Customized
       fullWidth
+      disabled={_disabled}
       onClick={_onClick}
       sx={style}
       variant='contained'>
