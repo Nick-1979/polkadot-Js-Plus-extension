@@ -6747,6 +6747,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"better-react-spinkit@npm:^2.0.4":
+  version: 2.0.6
+  resolution: "better-react-spinkit@npm:2.0.6"
+  dependencies:
+    inline-style-prefixer: ^3.0.3
+    lodash.memoize: ^4.1.2
+    lodash.omitby: ^4.6.0
+    lodash.range: ^3.2.0
+    minify-css-string: ^1.0.0
+  peerDependencies:
+    prop-types: "*"
+    react: "*"
+  checksum: 50b98bc795a64a5ce5164699568f17c5cfbe429a7b26342087dfc452cc7426688cc3e8818f1e32f61f5b371c12c78bbecfcd0b9477a2874e6b8dfb930e6f2f28
+  languageName: node
+  linkType: hard
+
 "big.js@npm:^5.2.2":
   version: 5.2.2
   resolution: "big.js@npm:5.2.2"
@@ -6883,6 +6899,13 @@ __metadata:
   version: 1.0.0
   resolution: "boolbase@npm:1.0.0"
   checksum: 3e25c80ef626c3a3487c73dbfc70ac322ec830666c9ad915d11b701142fab25ec1e63eff2c450c74347acfd2de854ccde865cd79ef4db1683f7c7b046ea43bb0
+  languageName: node
+  linkType: hard
+
+"bowser@npm:^1.7.3":
+  version: 1.9.4
+  resolution: "bowser@npm:1.9.4"
+  checksum: 127584ee1b8f0c27f410f652d409ea8bcb23d185a4269bcbe0229069720be9d83dc80a939e0fa33d8a9055141a0cf2fee5a02b2b5515c38841ddc899d67dec8d
   languageName: node
   linkType: hard
 
@@ -8019,6 +8042,16 @@ __metadata:
   version: 1.0.0
   resolution: "css-color-keywords@npm:1.0.0"
   checksum: 8f125e3ad477bd03c77b533044bd9e8a6f7c0da52d49bbc0bbe38327b3829d6ba04d368ca49dd9ff3b667d2fc8f1698d891c198bbf8feade1a5501bf5a296408
+  languageName: node
+  linkType: hard
+
+"css-in-js-utils@npm:^2.0.0":
+  version: 2.0.1
+  resolution: "css-in-js-utils@npm:2.0.1"
+  dependencies:
+    hyphenate-style-name: ^1.0.2
+    isobject: ^3.0.1
+  checksum: c9964c4708216954c468b69bbee2d971fd759ada4f40637b8ca4d3f79caba4818d0532a4f190ac560227c08742ad063ffec7a30afddc4d96b66a18c3a008f0d8
   languageName: node
   linkType: hard
 
@@ -11008,6 +11041,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hyphenate-style-name@npm:^1.0.2":
+  version: 1.0.4
+  resolution: "hyphenate-style-name@npm:1.0.4"
+  checksum: 4f5bf4b055089754924babebaa23c17845937bcca6aee95d5d015f8fa1e6814279002bd6a9e541e3fac2cd02519fc76305396727066c57c8e21a7e73e7a12137
+  languageName: node
+  linkType: hard
+
 "i18next-scanner@npm:^3.1.0":
   version: 3.1.0
   resolution: "i18next-scanner@npm:3.1.0"
@@ -11180,6 +11220,16 @@ __metadata:
   version: 1.3.8
   resolution: "ini@npm:1.3.8"
   checksum: dfd98b0ca3a4fc1e323e38a6c8eb8936e31a97a918d3b377649ea15bdb15d481207a0dda1021efbd86b464cae29a0d33c1d7dcaf6c5672bee17fa849bc50a1b3
+  languageName: node
+  linkType: hard
+
+"inline-style-prefixer@npm:^3.0.3":
+  version: 3.0.8
+  resolution: "inline-style-prefixer@npm:3.0.8"
+  dependencies:
+    bowser: ^1.7.3
+    css-in-js-utils: ^2.0.0
+  checksum: a33b7c820fbe6a4c159c7ec64965174f287bd50d8b33b7b4988a7432c0ea0f9012608c44c2bab8d29e1c082027db39796a1638a21de34a9bbd761ad415630083
   languageName: node
   linkType: hard
 
@@ -12892,10 +12942,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.memoize@npm:^4.1.2":
+  version: 4.1.2
+  resolution: "lodash.memoize@npm:4.1.2"
+  checksum: 9ff3942feeccffa4f1fafa88d32f0d24fdc62fd15ded5a74a5f950ff5f0c6f61916157246744c620173dddf38d37095a92327d5fd3861e2063e736a5c207d089
+  languageName: node
+  linkType: hard
+
 "lodash.merge@npm:^4.6.2":
   version: 4.6.2
   resolution: "lodash.merge@npm:4.6.2"
   checksum: ad580b4bdbb7ca1f7abf7e1bce63a9a0b98e370cf40194b03380a46b4ed799c9573029599caebc1b14e3f24b111aef72b96674a56cfa105e0f5ac70546cdc005
+  languageName: node
+  linkType: hard
+
+"lodash.omitby@npm:^4.6.0":
+  version: 4.6.0
+  resolution: "lodash.omitby@npm:4.6.0"
+  checksum: 46b0bb8fcadfa36d2ceb04a1052bc409257a7b960e98c7bdd8a7274a81ddabea098fec57884533bb6f808df2492ff0edc5881d4922cca98a38480a18844ea311
+  languageName: node
+  linkType: hard
+
+"lodash.range@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "lodash.range@npm:3.2.0"
+  checksum: 9355140c0ae66c51e1828fe6b4aa64bfc986bcf3afeae720904cc89e0b15ec8d5e174454cbbf087485447e67e4b1d9000d7e53e89c7deea892d3c0b472461035
   languageName: node
   linkType: hard
 
@@ -13274,6 +13345,13 @@ __metadata:
     prop-types: ^15.0.0
     react: ^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
   checksum: f8cb2c7738aac355fe9ce7e8425f371b7fa90daddd5133edda4ccfdc18c49043b2ec04be6f3abf09b60a0f52549d54f158d5bfd81cdfb1a658531e5b9fe7bc6a
+  languageName: node
+  linkType: hard
+
+"minify-css-string@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "minify-css-string@npm:1.0.0"
+  checksum: eef50790aefa92ef8e2009405d9e38e7bac4ea9b34e195d010439fc229a97c4153c871e96601662e791a11bd6e9ef80fbbc0d138108c2ca649e973592bedd62f
   languageName: node
   linkType: hard
 
@@ -15888,6 +15966,7 @@ resolve@^2.0.0-next.3:
     "@testing-library/react": ^13.3.0
     "@types/jest": ^28.1.1
     babel-plugin-transform-import-meta: ^2.1.1
+    better-react-spinkit: ^2.0.4
     chart.js: ^3.8.0
     i18next-scanner: ^3.1.0
     intersection-observer: ^0.12.0

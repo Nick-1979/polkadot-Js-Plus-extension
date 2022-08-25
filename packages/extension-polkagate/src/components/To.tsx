@@ -1,16 +1,11 @@
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { CheckRounded as CheckRoundedIcon, Clear as ClearIcon } from '@mui/icons-material';
 import { IconButton, InputAdornment, TextField } from '@mui/material';
-import FormControl from '@mui/material/FormControl';
-import InputBase from '@mui/material/InputBase';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import NativeSelect from '@mui/material/NativeSelect';
-import Select from '@mui/material/Select';
 import { styled } from '@mui/material/styles';
 import React, { useCallback } from 'react';
-import { ArrowBackIosRounded, CheckRounded as CheckRoundedIcon, Clear as ClearIcon } from '@mui/icons-material';
+
 import { isValidAddress } from '../util/utils';
 
 const CssTextField = styled(TextField)(({ theme }) => ({

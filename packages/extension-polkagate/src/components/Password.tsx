@@ -24,7 +24,7 @@ const CssTextField = styled(TextField)(({ theme }) => ({
 }));
 
 interface Props {
-  setValue: React.Dispatch<React.SetStateAction<string>>;
+  setValue: React.Dispatch<React.SetStateAction<string | undefined>>;
   value: string | undefined;
 }
 

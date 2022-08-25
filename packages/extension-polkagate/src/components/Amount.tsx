@@ -49,7 +49,7 @@ interface Props {
 export default function CustomizedTextField({ setValue, token, value }: Props) {
   const _onChange = useCallback(
     ({ target: { value } }: React.ChangeEvent<HTMLSelectElement>) =>
-      setValue(value.trim().slice(0, MAX_AMOUNT_LENGTH)),
+      setValue(value.slice(0, MAX_AMOUNT_LENGTH)),
     [setValue]
   );
 
@@ -60,7 +60,8 @@ export default function CustomizedTextField({ setValue, token, value }: Props) {
           <InputAdornment position='end' sx={{ pr: '10px', fontweight: 400, fontSize: '18px', letterSpacing: '-0.015em' }}>
             {token ?? ''}
           </InputAdornment>
-        )
+        ),
+        inputProps: { min: 0 }
       }}
       autoComplete='off'
       color='primary'

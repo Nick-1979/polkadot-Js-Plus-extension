@@ -71,7 +71,9 @@ export default function Accounts({ className }: Props): React.ReactElement {
               />
             </Grid>
             <Grid xs={12} textAlign='center'>
-              <Typography color='primary' sx={{ colorfontWeight: 500, fontSize: '24px', lineHeight: '36px', letterSpacing: '-0.015em' }}> {t('Your Accounts')}</Typography>
+              <Typography color='primary' sx={{ colorfontWeight: 500, fontSize: '24px', lineHeight: '36px', letterSpacing: '-0.015em' }}>
+                 {t('Your Accounts')}
+              </Typography>
             </Grid>
             <Grid item xs={12} p='15px 32px 14px'>
               <TextField
@@ -88,8 +90,8 @@ export default function Accounts({ className }: Props): React.ReactElement {
                 variant='outlined'
               />
             </Grid>
-            <Container disableGutters sx={{px: '30px'}} >
-              <Divider sx={{bgcolor: 'secondary.main', height: '2px' }}/>
+            <Divider sx={{bgcolor: 'secondary.main', height: '2px', width:'297px', margin:'auto' }}/>
+            <Container disableGutters sx={{px: '30px', height: '410px', overflowY: 'auto', scrollbarWidth: 'none'}} >
               {filteredAccount.map((json, index): React.ReactNode => (
                 <AccountsTree
                   {...json}

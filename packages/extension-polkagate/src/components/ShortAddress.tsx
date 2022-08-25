@@ -16,15 +16,16 @@ interface Props {
   charsCount?: number;
   addressStyle?: any;
   showCopy?: boolean;
+  inParentheses?: boolean;
 }
 
-export default function ShortAddress({ address, charsCount = SHORT_ADDRESS_CHARACTERS, addressStyle = {}, showCopy = false }: Props): React.ReactElement {
+export default function ShortAddress({ address, charsCount = SHORT_ADDRESS_CHARACTERS, addressStyle = {}, showCopy = false, inParentheses = false }: Props): React.ReactElement {
   const theme = useTheme();
 
   return (
     <Grid alignItems='center' container justifyContent='center' sx={addressStyle}>
       <Grid item pr={showCopy ? 1 : 0}>
-        {address?.slice(0, charsCount)}...{address?.slice(-charsCount)}
+        {inParentheses ? '(' : ''}{address?.slice(0, charsCount)}...{address?.slice(-charsCount)}{inParentheses ? ')' : ''}
       </Grid>
       {showCopy &&
         <Grid item>

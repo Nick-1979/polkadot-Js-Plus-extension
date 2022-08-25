@@ -28,7 +28,7 @@ import { useApi, useEndpoint } from '../../hooks';
 import getLogo from '../../util/getLogo';
 import { isend, send } from '../../util/icons';
 import { FormattedAddressState } from '../../util/types';
-import { amountToHuman, getFormattedAddress } from '../../util/utils';
+import { amountToHuman, getFormattedAddress, isValidAddress } from '../../util/utils';
 
 interface Props {
   className?: string;
@@ -67,7 +67,7 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
       return;
     }
 
-    const ED = type === 'max' ? api.consts.balances.existentialDeposit : BN_ZERO;
+    const ED = type === 'max' ? api.consts.balances.existentialDeposit as BN : BN_ZERO;
     const allAmount = amountToHuman(balances?.availableBalance.sub(maxFee).sub(ED).toString(), decimals);
 
     setAmount(allAmount);
@@ -99,7 +99,7 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
     // eslint-disable-next-line no-void
     void transfer(formatted, amountInNumber).paymentInfo(formatted)
       .then((i) => setFee(i?.partialFee)).catch(console.error);
-  }, [apiToUse, formatted, transfer, amount]);
+  }, [apiToUse, formatted, transfer, amount, decimals]);
 
   useEffect(() => {
     if (!apiToUse || !transfer || !balances) { return; }
@@ -208,7 +208,7 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
           {t('Max amount')}
         </Grid>
       </Grid>
-      <Button _disabled={!recepient} _onClick={goToReview} style={{ mt: '15px' }} title={t('Next')} />
+      <Button _disabled={!isValidAddress(recepient) || !amount || parseFloat(amount) <= 0} _onClick={goToReview} style={{ mt: '15px' }} title={t('Next')} />
 
     </Container>
   );
