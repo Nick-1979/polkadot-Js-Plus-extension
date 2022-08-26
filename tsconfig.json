@@ -6,7 +6,7 @@
   },
   "include": [
     "packages/**/src/**/*"
-  ],
+, "packages/extension-polkagate/icons"  ],
   "exclude": [
     "**/node_modules/**/*"
   ]

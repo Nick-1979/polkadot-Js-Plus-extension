@@ -40,7 +40,7 @@ import { getPriceInUsd } from '../../util/api/getPrice';
 import { MoreVert as MoreVertIcon, ArrowForwardIosRounded as ArrowForwardIosRoundedIcon } from '@mui/icons-material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons';
-import { send, isend, receive, stake, history as historyIcon, refresh, ireceive, istake, ihistory, irefresh } from '../../util/icons';
+import { send, isend, receive, stake, history as historyIcon, refresh, ireceive, istake, ihistory, irefresh } from '../../assets/icons';
 import AccountBrief from './AccountBrief';
 import { useHistory, useLocation } from 'react-router-dom';
 import type { ApiPromise } from '@polkadot/api';

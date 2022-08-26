@@ -5,28 +5,29 @@
 
 /**
  * @description
- * this component opens social recovery index page to choose between configuring your account and rescuing other account
+ * this component opens a header on top of pages except the accounts page
  * */
 
 import { ArrowBackIosNewRounded as BackIcon, Menu as MenuIcon } from '@mui/icons-material';
-import { Grid, IconButton } from '@mui/material';
-import React, { useContext, useCallback } from 'react';
+import { Box, Grid, IconButton, useTheme } from '@mui/material';
+import React, { useCallback,useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { ActionContext, SettingsContext } from '../../../extension-ui/src/components/contexts';
+import {logoBlack,logoWhite} from '../assets/logos/';
 
 interface Props {
-  address: string;
   children?: React.ReactNode;
-  genesisHash: string;
   icon: React.node;
-  preUrl: string;
+  preUrl?: string;
   state?: any;
+  showLogo?: boolean;
 }
 
-export default function Header({ address, children, icon, genesisHash, preUrl = '/', state = {} }: Props): React.ReactElement<Props> {
+export default function Header({ children, icon, preUrl = '/', state = {}, showLogo }: Props): React.ReactElement<Props> {
   const onAction = useContext(ActionContext);// added for plus
   const history = useHistory();
+  const theme = useTheme();
 
   const gotoPreUrl = useCallback(() => {
     history.push({
@@ -39,16 +40,19 @@ export default function Header({ address, children, icon, genesisHash, preUrl = 
     <>
       <Grid container alignItems='center' justifyContent='space-between' pt='26px'>
         <Grid item>
-          <IconButton
-            aria-label='menu'
-            color='inherit'
-            edge='start'
-            onClick={gotoPreUrl}
-            size='small'
-            sx={{ p: '0px' }}
-          >
-            <BackIcon sx={{ color: 'secondary.main', fontSize: '30px' }} />
-          </IconButton>
+          {showLogo
+            ? <Box component='img' sx={{ height: 45, width: 45 }} src={theme.palette.mode === 'dark' ? logoWhite : logoBlack} />
+            : <IconButton
+              aria-label='menu'
+              color='inherit'
+              edge='start'
+              onClick={gotoPreUrl}
+              size='small'
+              sx={{ p: '0px' }}
+            >
+              <BackIcon sx={{ color: 'secondary.main', fontSize: '30px' }} />
+            </IconButton>
+          }
         </Grid>
         <Grid item textAlign='center'>
           {icon}

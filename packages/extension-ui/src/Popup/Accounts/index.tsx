@@ -72,7 +72,7 @@ export default function Accounts({ className }: Props): React.ReactElement {
             </Grid>
             <Grid xs={12} textAlign='center'>
               <Typography color='primary' sx={{ colorfontWeight: 500, fontSize: '24px', lineHeight: '36px', letterSpacing: '-0.015em' }}>
-                 {t('Your Accounts')}
+                {t('Your Accounts')}
               </Typography>
             </Grid>
             <Grid item xs={12} p='15px 32px 14px'>
@@ -91,7 +91,20 @@ export default function Accounts({ className }: Props): React.ReactElement {
               />
             </Grid>
             <Divider sx={{bgcolor: 'secondary.main', height: '2px', width:'297px', margin:'auto' }}/>
-            <Container disableGutters sx={{px: '30px', height: '410px', overflowY: 'auto', scrollbarWidth: 'none'}} >
+            <Container disableGutters 
+              sx={{px: '30px', height: '410px', overflowY: 'auto',
+                '&::-webkit-scrollbar': {
+                  display: 'none',
+                  // display: 'none'
+                }, 
+                // '&::-webkit-scrollbar-track': {
+                //   boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+                //   webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)'
+                // },
+                // '&::-webkit-scrollbar-thumb': {
+                //   backgroundColor: 'rgba(0,0,0,.1)',
+                //   outline: '1px solid slategrey'    }
+              }} >
               {filteredAccount.map((json, index): React.ReactNode => (
                 <AccountsTree
                   {...json}

@@ -6,11 +6,11 @@ import type { ThemeProps } from '../types';
 import { faArrowLeft, faCog, faPlusCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Avatar,Box,Container,Grid, IconButton, Typography } from '@mui/material';
+import { Avatar,Box,Container,Grid, IconButton, Typography, useTheme } from '@mui/material';
 import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import logo from '../assets/pg.svg';
+import {logoWhite, logoBlack} from '../../../extension-polkagate/src/assets/logos/';
 import InputFilter from '../components/InputFilter';
 import Link from '../components/Link';
 import useOutsideClick from '../hooks/useOutsideClick';
@@ -40,6 +40,7 @@ function Header({ children, className = '', onFilter, showAdd, showBackArrow, sh
   const addMenuRef = useRef(null);
   const setIconRef = useRef(null);
   const setMenuRef = useRef(null);
+  const theme = useTheme();
 
   useOutsideClick([addIconRef, addMenuRef], (): void => {
     isAddOpen && setShowAdd(!isAddOpen);
@@ -80,24 +81,26 @@ function Header({ children, className = '', onFilter, showAdd, showBackArrow, sh
 
   return (
     <Container sx={{pt:'28px'}}>
-      <Grid container alignItems='center' justifyContent='space-between'>
+      <Grid alignItems='center' container justifyContent='space-between'>
         <Grid item>
           {showBackArrow
-            ?<Link
-                className='backlink'
-                to='/'
-              >
-                <FontAwesomeIcon
-                  className='arrowLeftIcon'
-                  icon={faArrowLeft}
-                />
-              </Link>
-            :  <Box component='img' sx={{ height: 45, width: 45 }}src={logo}/>
+            ? <Link
+              className='backlink'
+              to='/'
+            >
+              <FontAwesomeIcon
+                className='arrowLeftIcon'
+                icon={faArrowLeft}
+              />
+            </Link>
+            : <Box component='img' sx={{ height: 45, width: 45, pt:'5px' }} src={theme.palette.mode === 'dark' ? logoWhite : logoBlack} />
           }
 
         </Grid>
         <Grid item >
-          <Typography color='secondary' sx={{fontStyle: 'italic', fontWeight: 700, fontSize: '20px', lineHeight: '36px', letterSpacing: '-0.015em'}}>{text}</Typography>
+          <Typography color='secondary' sx={{fontStyle: 'italic', fontWeight: 700, fontSize: '20px', letterSpacing: '-0.015em'}}>
+            {text}
+          </Typography>
         </Grid>
         <Grid item>
           {showSettings && (
@@ -108,7 +111,7 @@ function Header({ children, className = '', onFilter, showAdd, showBackArrow, sh
               onClick={_toggleSettings}
               size='small'
             >
-              <MenuIcon  sx={{ color:'secondary.main', fontSize: 40 }} />
+              <MenuIcon sx={{ color:'secondary.main', fontSize: 40 }} />
             </IconButton>
           )}
         </Grid>

@@ -26,7 +26,7 @@ import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { Amount, Button, Header, ShortAddress, ShowBalance, To } from '../../components';
 import { useApi, useEndpoint } from '../../hooks';
 import getLogo from '../../util/getLogo';
-import { isend, send } from '../../util/icons';
+import { isend, send } from '../../assets/icons';
 import { FormattedAddressState } from '../../util/types';
 import { amountToHuman, getFormattedAddress, isValidAddress } from '../../util/utils';
 

@@ -9,7 +9,7 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 import { AccountId } from '@polkadot/types/interfaces/runtime';
 
 import { SHORT_ADDRESS_CHARACTERS } from '../util/constants';
-import { copy, icopy } from '../util/icons';
+import { copy, icopy } from '../assets/icons';
 
 interface Props {
   address: string | AccountId | undefined;
