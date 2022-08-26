@@ -29,10 +29,13 @@ import getLogo from '../../util/getLogo';
 import { isend, send } from '../../assets/icons';
 import { FormattedAddressState } from '../../util/types';
 import { amountToHuman, getFormattedAddress, isValidAddress } from '../../util/utils';
+import { FLOATING_POINT_DIGIT } from '../../util/constants';
 
 interface Props {
   className?: string;
 }
+
+type TransferType = 'All' | 'Max' | 'Normal';
 
 export default function Send({ className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
@@ -50,39 +53,56 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
   const [maxFee, setMaxFee] = useState<Balance>();
   const [recepient, setRecepient] = useState<string | undefined>(location?.state?.recepient);
   const [amount, setAmount] = useState<string>(location?.state?.amount ?? '0');
+  const [allMaxAmount, setAllMaxAmount] = useState<string | undefined>();
   const [balances, setBalances] = useState<DeriveBalancesAll | undefined>(location?.state?.balances as DeriveBalancesAll);
+  const [transferType, setTransferType] = useState<TransferType | undefined>();
+  const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
 
   const prevUrl = `/account/${genesisHash}/${address}/${formatted}/`;
   const decimals = apiToUse?.registry?.chainDecimals[0] ?? 1;
   const accountName = useMemo(() => accounts?.find((a) => a.address === address)?.name, [accounts, address]);
-  const transfer = apiToUse && apiToUse.tx?.balances && apiToUse.tx.balances.transfer;
+  const transfer = apiToUse && apiToUse.tx?.balances && (['All', 'Max'].includes(transferType) ? (apiToUse.tx.balances.transferAll) : (apiToUse.tx.balances.transferKeepAlive));
+
   const recepientName = useMemo(
     () =>
       accounts?.find((a) => getFormattedAddress(a.address, chain, settings?.prefix) === recepient)?.name ?? t('Unknown'),
     [accounts, chain, recepient, settings?.prefix, t]
   );
 
-  const setWholeAmount = useCallback((type: string) => {
+  const setWholeAmount = useCallback((type: TransferType) => {
     if (!api || !balances?.availableBalance || !maxFee) {
       return;
     }
 
-    const ED = type === 'max' ? api.consts.balances.existentialDeposit as BN : BN_ZERO;
-    const allAmount = amountToHuman(balances?.availableBalance.sub(maxFee).sub(ED).toString(), decimals);
+    setTransferType(type);
+    const ED = type === 'Max' ? api.consts.balances.existentialDeposit as unknown as BN : BN_ZERO;
+    const allMaxAmount = amountToHuman(balances?.availableBalance.sub(maxFee).sub(ED).toString(), decimals);
 
-    setAmount(allAmount);
+    setAllMaxAmount(allMaxAmount);
   }, [api, balances?.availableBalance, decimals, maxFee]);
 
   const goToReview = useCallback(() => {
     balances && history.push({
       pathname: `/send/review/${genesisHash}/${address}/${formatted}/`,
-      state: { amount, api: apiToUse, balances, fee, recepient, recepientName }
+      state: { amount: allMaxAmount ?? amount, api: apiToUse, balances, fee, recepient, recepientName, transfer, transferType }
     });
-  }, [balances, history, genesisHash, address, formatted, amount, apiToUse, fee, recepient, recepientName]);
+  }, [balances, history, genesisHash, address, formatted, allMaxAmount, amount, apiToUse, fee, recepient, recepientName, transfer, transferType]);
+
+  useEffect(() => {
+    const amountAsBN = new BN(parseFloat(parseFloat(allMaxAmount ?? amount).toFixed(FLOATING_POINT_DIGIT)) * 10 ** FLOATING_POINT_DIGIT).mul(new BN(10 ** (decimals - FLOATING_POINT_DIGIT)));
+    const isAmountGreaterThanAllTransferAble = amountAsBN.gt(balances?.availableBalance?.sub(maxFee ?? BN_ZERO) ?? BN_ZERO);
+
+    setButtonDisabled(!isValidAddress(recepient) || !(amount || allMaxAmount) || isAmountGreaterThanAllTransferAble);
+  }, [allMaxAmount, amount, api, balances?.availableBalance, decimals, maxFee, recepient]);
 
   useEffect(() => {
     api && setApiToUse(api);
   }, [api]);
+
+  useEffect(() => {
+    setAllMaxAmount(undefined);
+    setTransferType('Normal');
+  }, [amount]);
 
   useEffect(() => {
     // eslint-disable-next-line no-void
@@ -94,12 +114,15 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
   useEffect(() => {
     if (!apiToUse || !transfer) { return; }
 
-    const amountInNumber = new BN(parseFloat(parseFloat(amount).toFixed(4)) * 10 ** 4).mul(new BN(10 ** (decimals - 4)));
+    const amountAsBN = new BN(parseFloat(parseFloat(allMaxAmount ?? amount).toFixed(FLOATING_POINT_DIGIT)) * 10 ** FLOATING_POINT_DIGIT).mul(new BN(10 ** (decimals - FLOATING_POINT_DIGIT)));
+
+    const keepAlive = transferType === 'Max';
+    const params = ['All', 'Max'].includes(transferType) ? [formatted, keepAlive] : [formatted, amountAsBN];
 
     // eslint-disable-next-line no-void
-    void transfer(formatted, amountInNumber).paymentInfo(formatted)
+    void transfer(...params).paymentInfo(formatted)
       .then((i) => setFee(i?.partialFee)).catch(console.error);
-  }, [apiToUse, formatted, transfer, amount, decimals]);
+  }, [apiToUse, formatted, transfer, amount, decimals, allMaxAmount, transferType]);
 
   useEffect(() => {
     if (!apiToUse || !transfer || !balances) { return; }
@@ -196,19 +219,19 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
       <div style={{ fontSize: '16px', fontWeight: 300, paddingTop: '8px', letterSpacing: '-0.015em' }}>
         {t('Amount')}:
       </div>
-      <Amount setValue={setAmount} token={apiToUse?.registry?.chainTokens[0]} value={amount} />
+      <Amount setValue={setAmount} token={apiToUse?.registry?.chainTokens[0]} value={allMaxAmount ?? amount} />
       <Grid container sx={{ fontSize: '16px', fontWeight: 300, letterSpacing: '-0.015em', mt: '13px' }}>
-        <Grid item onClick={() => setWholeAmount('all')} sx={{ textDecorationLine: 'underline', cursor: 'pointer' }}>
+        <Grid item onClick={() => setWholeAmount('All')} sx={{ textDecorationLine: 'underline', cursor: 'pointer' }}>
           {t('All amount')}
         </Grid>
         <Grid item px='10px'>
           <Divider orientation='vertical' sx={{ m: 'auto', height: '28px', width: '2px', borderColor: 'primary.main' }} />
         </Grid>
-        <Grid item onClick={() => setWholeAmount('max')} sx={{ textDecorationLine: 'underline', cursor: 'pointer' }}>
+        <Grid item onClick={() => setWholeAmount('Max')} sx={{ textDecorationLine: 'underline', cursor: 'pointer' }}>
           {t('Max amount')}
         </Grid>
       </Grid>
-      <Button _disabled={!isValidAddress(recepient) || !amount || parseFloat(amount) <= 0} _onClick={goToReview} style={{ mt: '15px' }} title={t('Next')} />
+      <Button _disabled={buttonDisabled} _onClick={goToReview} style={{ mt: '15px' }} title={t('Next')} />
 
     </Container>
   );

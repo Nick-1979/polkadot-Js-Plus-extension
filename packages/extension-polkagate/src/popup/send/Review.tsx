@@ -37,29 +37,43 @@ import {
   ThreeBounce,
   WanderingCubes,
   Wave
-} from 'better-react-spinkit'
+} from 'better-react-spinkit';
+import { BN } from '@polkadot/util';
+import { FLOATING_POINT_DIGIT } from '../../util/constants';
+import broadcast from '../../util/api/broadcast';
 
-export default function Send(): React.ReactElement<Props> {
+interface TxLog {
+  from: string;
+  to?: string;
+  block: number;
+  hash: string;
+  amount?: BN;
+}
+
+export default function Send(): React.ReactElement {
   const { t } = useTranslation();
   const theme = useTheme();
   const { address, formatted, genesisHash } = useParams<FormattedAddressState>();
-  const location = useLocation();
+  const { state } = useLocation();
   const onAction = useContext(ActionContext);
   const chain = useMetadata(genesisHash, true);
   const { accounts } = useContext(AccountContext);
   const [password, setPassword] = useState<string | undefined>();
   const [isConfirming, setIsConfirming] = useState<boolean>(false);
+  const [txLog, setTxLog] = useState<TxLog | undefined>();
 
-  const prevUrl = `/send/${genesisHash}/${address}/${formatted}/`;
+  const prevUrl = isConfirming ? '' : `/send/${genesisHash}/${address}/${formatted}/`;
   const accountName = useMemo(() => accounts?.find((a) => a.address === address)?.name, [accounts, address]);
   const network = chain ? chain.name.replace(' Relay Chain', '') : 'westend';
   const subscanLink = (txHash: string) => 'https://' + network + '.subscan.io/extrinsic/' + String(txHash);
+  const decimals = state?.api?.registry?.chainDecimals[0] ?? 1;
 
-  const icon = (<Avatar
-    alt={'logo'}
-    src={theme.palette.mode === 'dark' ? sendIcon : isend}
-    sx={{ height: '64px', width: '86px' }}
-  />);
+  const icon = (
+    <Avatar
+      alt={'logo'}
+      src={theme.palette.mode === 'dark' ? sendIcon : isend}
+      sx={{ height: '64px', width: '86px' }}
+    />);
 
   const identicon = (
     <Identicon
@@ -83,8 +97,8 @@ export default function Send(): React.ReactElement<Props> {
   );
 
   useEffect(() => {
-    !location?.state?.amount && onAction(prevUrl);
-  }, [location, onAction, prevUrl]);
+    !state?.amount && onAction(prevUrl);
+  }, [state, onAction, prevUrl]);
 
   useEffect(() => {
     cryptoWaitReady()
@@ -101,19 +115,38 @@ export default function Send(): React.ReactElement<Props> {
       });
   }, []);
 
-  const send = useCallback(() => {
+  const send = useCallback(async () => {
     try {
+      if (!state || !formatted) {
+        return;
+      }
+
+      const { api, amount, transferType, transfer } = state;
       const signer = keyring.getPair(formatted);
 
       signer.unlock(password);
-
-      //1. checkPassword
       setIsConfirming(true);
-      //2. send transaction
+      let params = [];
+
+      if (['All', 'Max'].includes(transferType)) {
+        const keepAlive = transferType === 'Max';
+
+        params = [formatted, keepAlive];
+      } else {
+        const amountAsBN = new BN(parseFloat(parseFloat(amount).toFixed(FLOATING_POINT_DIGIT)) * 10 ** FLOATING_POINT_DIGIT).mul(new BN(10 ** (decimals - FLOATING_POINT_DIGIT)));
+
+        params = [formatted, amountAsBN];
+      }
+
+      const { block, failureText, fee, status, txHash } = await broadcast(api, transfer, params, signer, formatted);
+      console.log('block, failureText, fee, status, txHash', block, failureText, fee, status, txHash);
+
+      // setIsConfirming(false);
     } catch (e) {
       console.log('error:', e);
+      setIsConfirming(false);
     }
-  }, [formatted, password]);
+  }, [decimals, formatted, password, state]);
 
   const backToMyAccounts = useCallback(() => {
     onAction('/');
@@ -139,7 +172,7 @@ export default function Send(): React.ReactElement<Props> {
 
   return (
     <Container disableGutters sx={{ px: '30px' }}>
-      <Header address={address} genesisHash={genesisHash} icon={icon} preUrl={prevUrl} state={location?.state}>
+      <Header address={address} genesisHash={genesisHash} icon={icon} preUrl={prevUrl} state={state}>
         <div style={{ fontWeight: 500, fontSize: '24px', lineHeight: '36px', letterSpacing: '-0.015em', textAlign: 'center' }}>
           {t('Send Fund')}
         </div>
@@ -176,14 +209,14 @@ export default function Send(): React.ReactElement<Props> {
                 {ChainLogo}
               </Grid>
               <Grid item sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '26px', pl: '8px' }} xs={10.5}>
-                {location?.state?.amount} {location?.state?.api?.registry?.chainTokens[0]}
+                {state?.amount} {state?.api?.registry?.chainTokens[0]}
               </Grid>
               <Grid container item pt='10px'>
                 <Grid item sx={{ fontSize: '14px', pr: '8px' }}>
                   {t('Fee')}:
                 </Grid>
                 <Grid item sx={{ fontSize: '16px' }}>
-                  {location?.state?.fee?.toHuman()}
+                  {state?.fee?.toHuman()}
                 </Grid>
               </Grid>
             </Grid>
@@ -198,10 +231,10 @@ export default function Send(): React.ReactElement<Props> {
             {identicon}
           </Grid> */}
               <Grid item sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '26px' }} xs={10.5}>
-                {location?.state?.recepientName}
+                {state?.recepientName}
               </Grid>
               <Grid item>
-                <ShortAddress address={location?.state?.recepient} addressStyle={{ fontSize: '16px' }} />
+                <ShortAddress address={state?.recepient} addressStyle={{ fontSize: '16px' }} />
               </Grid>
             </Grid>
           </Grid>
@@ -218,11 +251,11 @@ export default function Send(): React.ReactElement<Props> {
             <Circle color='#E30B7B' size={86} scaleEnd={0.7} scaleStart={0.4} />
           </Grid>
           <Triology part1={t('From')} part2={accountName} part3={<ShortAddress address={formatted} addressStyle={{ fontSize: '16px' }} inParentheses />} showDivider />
-          <Triology part1={t('Amount')} part2={location?.state?.amount} part3={location?.state?.api?.registry?.chainTokens[0]} />
-          <Triology part1={t('Fee')} part2={location?.state?.fee?.toHuman()} showDivider />
-          <Triology part1={t('To')} part2={location?.state?.recepientName} part3={<ShortAddress address={location?.state?.recepient} addressStyle={{ fontSize: '16px' }} inParentheses />} showDivider />
-          <Triology part1={t('Block')} part2={location?.state?.recepientName} />
-          <Triology part1={t('Hash')} part2={location?.state?.recepientName} />
+          <Triology part1={t('Amount')} part2={state?.amount} part3={state?.api?.registry?.chainTokens[0]} />
+          <Triology part1={t('Fee')} part2={state?.fee?.toHuman()} showDivider />
+          <Triology part1={t('To')} part2={state?.recepientName} part3={<ShortAddress address={state?.recepient} addressStyle={{ fontSize: '16px' }} inParentheses />} showDivider />
+          <Triology part1={t('Block')} part2={state?.recepientName} />
+          <Triology part1={t('Hash')} part2={state?.recepientName} />
           <Grid item container justifyContent='center' xs={12} pt='5px'>
             <Link
               // href={`${subscanLink(transaction.hash)}`}
@@ -240,7 +273,6 @@ export default function Send(): React.ReactElement<Props> {
           </Grid>
           <Button _onClick={backToMyAccounts} style={{ mt: '15px' }} title={t('Back to My Account(s)')} />
         </>}
-
     </Container>
   );
 }

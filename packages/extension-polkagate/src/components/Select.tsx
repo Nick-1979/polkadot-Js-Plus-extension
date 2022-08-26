@@ -13,7 +13,7 @@ import React, { useCallback } from 'react';
 const BootstrapInput = styled(InputBase)(({ theme }) => ({
   'label + &': {
     marginTop: theme.spacing(3),
-    fontWeight: '400',
+    fontWeight: '300',
     fontSize: '10px',
     letterSpacing: '-0.015em'
   },
@@ -23,7 +23,7 @@ const BootstrapInput = styled(InputBase)(({ theme }) => ({
     backgroundColor: theme.palette.background.paper,
     border: `1px solid ${theme.palette.primary.main}`,
     fontSize: '14px',
-    fontWeight: '400',
+    fontWeight: '300',
     letterSpacing: '-0.015em',
     padding: '5px 10px 0px',
     transition: theme.transitions.create(['border-color', 'box-shadow']),
@@ -60,7 +60,7 @@ export default function CustomizedSelect({ defaultValue, label, onChange, option
       <InputLabel
         htmlFor='selectChain'
         variant='standard'
-        sx={{ transformOrigin: 'left bottom' }}
+        sx={{ transformOrigin: 'left bottom', fontWeight: 300, letterSpacing: '-0.015em' }}
 
       >
         {label}
@@ -71,14 +71,14 @@ export default function CustomizedSelect({ defaultValue, label, onChange, option
         input={<BootstrapInput />}
         onChange={_onChange}
         sx={{ width: '100%', height: 31 }}
-        // value={defaultValue}
+      // value={defaultValue}
       >
         {options.map(({ text, value }): React.ReactNode => (
-          <MenuItem key={value} sx={{ fontSize: '14px', fontWeight: '400', letterSpacing: '-0.015em', }}
-            value={value}>{text}
+          <MenuItem key={value} sx={{ fontSize: '14px', fontWeight: 300, letterSpacing: '-0.015em' }} value={value}>
+              {text}
           </MenuItem>
         ))}
       </Select>
-    </FormControl>
+    </FormControl >
   );
 }

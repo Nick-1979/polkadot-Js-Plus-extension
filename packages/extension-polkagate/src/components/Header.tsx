@@ -10,11 +10,11 @@
 
 import { ArrowBackIosNewRounded as BackIcon, Menu as MenuIcon } from '@mui/icons-material';
 import { Box, Grid, IconButton, useTheme } from '@mui/material';
-import React, { useCallback,useContext } from 'react';
+import React, { useCallback, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { ActionContext, SettingsContext } from '../../../extension-ui/src/components/contexts';
-import {logoBlack,logoWhite} from '../assets/logos/';
+import { logoBlack, logoWhite } from '../assets/logos/';
 
 interface Props {
   children?: React.ReactNode;
@@ -39,10 +39,10 @@ export default function Header({ children, icon, preUrl = '/', state = {}, showL
   return (
     <>
       <Grid container alignItems='center' justifyContent='space-between' pt='26px'>
-        <Grid item>
+        <Grid item >
           {showLogo
             ? <Box component='img' sx={{ height: 45, width: 45 }} src={theme.palette.mode === 'dark' ? logoWhite : logoBlack} />
-            : <IconButton
+            : preUrl && <IconButton
               aria-label='menu'
               color='inherit'
               edge='start'
