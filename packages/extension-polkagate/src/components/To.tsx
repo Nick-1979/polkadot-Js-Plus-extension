@@ -1,7 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { CheckRounded as CheckRoundedIcon, Clear as ClearIcon } from '@mui/icons-material';
+import { CheckRounded as CheckRoundedIcon, Clear as ClearIcon, ContentPasteGo as ContentPasteGoIcon } from '@mui/icons-material';
 import { IconButton, InputAdornment, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import React, { useCallback } from 'react';
@@ -46,16 +46,27 @@ export default function CustomizedTextField({ address, setAddress }: Props) {
     [setAddress]
   );
 
+  const pastAddress = useCallback(async () => {
+    setAddress(await navigator.clipboard.readText());
+  }, [setAddress]);
+
   return (
     <CssTextField
       InputProps={{
         endAdornment: (
           <InputAdornment position='end'>
-            <IconButton
-              onClick={() => setAddress('')}
-            >
-              {address !== null ? <ClearIcon sx={{ fontSize: '13px' }} /> : ''}
-            </IconButton>
+            {address
+              ? <IconButton
+                onClick={() => setAddress('')}
+              >
+                <ClearIcon sx={{ fontSize: '13px' }} />
+              </IconButton>
+              : <IconButton
+                onClick={() => pastAddress('')}
+              >
+                <ContentPasteGoIcon sx={{ fontSize: '16px', transform: 'scaleX(-1)' }} />
+              </IconButton>
+            }
           </InputAdornment>
         ),
         startAdornment: (

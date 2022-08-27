@@ -38,8 +38,8 @@ export default function Header({ children, icon, preUrl = '/', state = {}, showL
 
   return (
     <>
-      <Grid container alignItems='center' justifyContent='space-between' pt='26px'>
-        <Grid item >
+      <Grid container alignItems='center' justifyContent='flex-end' pt='26px'>
+        <Grid item xs={4}>
           {showLogo
             ? <Box component='img' sx={{ height: 45, width: 45 }} src={theme.palette.mode === 'dark' ? logoWhite : logoBlack} />
             : preUrl && <IconButton
@@ -54,10 +54,10 @@ export default function Header({ children, icon, preUrl = '/', state = {}, showL
             </IconButton>
           }
         </Grid>
-        <Grid item textAlign='center'>
+        <Grid item textAlign='center' xs={4}>
           {icon}
         </Grid>
-        <Grid item>
+        <Grid item xs={4} textAlign='right'>
           <IconButton
             aria-label='menu'
             color='inherit'

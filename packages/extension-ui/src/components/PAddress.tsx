@@ -17,7 +17,7 @@ import { faCopy, faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { faCodeBranch, faQrcode } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ArrowForwardIosRounded as ArrowForwardIosRoundedIcon, MoreVert as MoreVertIcon } from '@mui/icons-material';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CheckIcon from '@mui/icons-material/Check';
 import { Grid, IconButton } from '@mui/material';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
@@ -293,8 +293,8 @@ export default function PAddress({ actions, address, children, className, genesi
                     <Name />
                   </Grid>
                   {judgement &&
-                    <Grid item xs={2}>
-                      <CheckCircleIcon color='success' sx={{ fontSize: 20 }} />
+                    <Grid item xs={2} >
+                      <CheckIcon sx={{ bgcolor: 'green', color: 'white', borderRadius: '50%', fontSize: 20, p:'2px' }} />
                     </Grid>
                   }
                 </Grid>

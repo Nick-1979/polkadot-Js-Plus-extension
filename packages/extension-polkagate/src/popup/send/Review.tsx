@@ -41,13 +41,17 @@ import {
 import { BN } from '@polkadot/util';
 import { FLOATING_POINT_DIGIT } from '../../util/constants';
 import broadcast from '../../util/api/broadcast';
+import CheckIcon from '@mui/icons-material/Check';
 
 interface TxLog {
   from: string;
   to?: string;
   block: number;
-  hash: string;
+  txHash: string;
   amount?: BN;
+  failureText?: string;
+  fee: string;
+  status: 'failed' | 'success';
 }
 
 export default function Send(): React.ReactElement {
@@ -121,7 +125,7 @@ export default function Send(): React.ReactElement {
         return;
       }
 
-      const { api, amount, transferType, transfer } = state;
+      const { api, amount, transferType, transfer, recepient } = state;
       const signer = keyring.getPair(formatted);
 
       signer.unlock(password);
@@ -131,15 +135,25 @@ export default function Send(): React.ReactElement {
       if (['All', 'Max'].includes(transferType)) {
         const keepAlive = transferType === 'Max';
 
-        params = [formatted, keepAlive];
+        params = [recepient, keepAlive];
       } else {
         const amountAsBN = new BN(parseFloat(parseFloat(amount).toFixed(FLOATING_POINT_DIGIT)) * 10 ** FLOATING_POINT_DIGIT).mul(new BN(10 ** (decimals - FLOATING_POINT_DIGIT)));
 
-        params = [formatted, amountAsBN];
+        params = [recepient, amountAsBN];
       }
 
       const { block, failureText, fee, status, txHash } = await broadcast(api, transfer, params, signer, formatted);
-      console.log('block, failureText, fee, status, txHash', block, failureText, fee, status, txHash);
+
+      setTxLog({
+        from: formatted,
+        to: recepient,
+        block: block || 0,
+        txHash: txHash || '',
+        amount,
+        failureText,
+        fee: fee || '',
+        status
+      });
 
       // setIsConfirming(false);
     } catch (e) {
@@ -227,9 +241,6 @@ export default function Send(): React.ReactElement {
               {t('To')}:
             </Grid>
             <Grid alignItems='center' container item sx={{ pt: '15px' }} xs={8}>
-              {/* <Grid item mt='7px'pr='8px' xs={1.5}>
-            {identicon}
-          </Grid> */}
               <Grid item sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '26px' }} xs={10.5}>
                 {state?.recepientName}
               </Grid>
@@ -248,17 +259,20 @@ export default function Send(): React.ReactElement {
       {isConfirming &&
         <>
           <Grid container justifyContent='center' py='15px'>
-            <Circle color='#E30B7B' size={86} scaleEnd={0.7} scaleStart={0.4} />
+            {!txLog?.status
+              ? <Circle color='#E30B7B' size={78} scaleEnd={0.7} scaleStart={0.4} />
+              : <CheckIcon sx={{ bgcolor: 'green', color: 'white', borderRadius: '50%', fontSize: '80px', fontWeight: 600, p: '10px' }} />
+            }
           </Grid>
           <Triology part1={t('From')} part2={accountName} part3={<ShortAddress address={formatted} addressStyle={{ fontSize: '16px' }} inParentheses />} showDivider />
           <Triology part1={t('Amount')} part2={state?.amount} part3={state?.api?.registry?.chainTokens[0]} />
           <Triology part1={t('Fee')} part2={state?.fee?.toHuman()} showDivider />
           <Triology part1={t('To')} part2={state?.recepientName} part3={<ShortAddress address={state?.recepient} addressStyle={{ fontSize: '16px' }} inParentheses />} showDivider />
-          <Triology part1={t('Block')} part2={state?.recepientName} />
-          <Triology part1={t('Hash')} part2={state?.recepientName} />
+          <Triology part1={t('Block')} part2={txLog?.block ? `#${txLog?.block}` : ''} />
+          <Triology part1={t('Hash')} part2={<ShortAddress address={txLog?.txHash} charsCount={6} addressStyle={{ fontSize: '16px' }} showCopy/>} />
           <Grid item container justifyContent='center' xs={12} pt='5px'>
             <Link
-              // href={`${subscanLink(transaction.hash)}`}
+              href={`${subscanLink(txLog?.txHash)}`}
               rel='noreferrer'
               target='_blank'
               underline='none'

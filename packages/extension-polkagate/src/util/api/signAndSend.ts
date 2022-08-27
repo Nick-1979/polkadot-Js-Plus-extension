@@ -46,14 +46,19 @@ export async function signAndSend(
         const signedBlock = await api.rpc.chain.getBlock(hash);
         const blockNumber = signedBlock.block.header.number;
         const txHash = result.txHash.toString();
-
+console.log('txHash:', txHash)
         // search for the hash of the extrinsic in the block
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         signedBlock.block.extrinsics.forEach(async (ex) => {
+          console.log('ex:', ex)
+
           if (ex.isSigned) {
+            console.log('ex.isSigned:', ex.isSigned)
+
             if (String(ex.signer) == senderAddress) {
               const queryInfo = await api.rpc.payment.queryInfo(ex.toHex(), signedBlock.block.hash);
               const fee = queryInfo.partialFee.toString();
+              console.log('blockNumber:', blockNumber)
 
               resolve({ block: Number(blockNumber), failureText, fee, status: txFailed ? 'failed' : 'success', txHash });
             }
