@@ -51,8 +51,9 @@ export default function Accounts({ className }: Props): React.ReactElement {
     );
   }, [filter, hierarchy, networkMap]);
 
-  const _onFilter = useCallback(( event: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>) => {
-    const filter=event.target.value;
+  const _onFilter = useCallback((event: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>) => {
+    const filter = event.target.value;
+
     setFilter(filter.toLowerCase());
   }, []);
 
