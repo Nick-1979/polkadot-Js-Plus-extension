@@ -44,13 +44,21 @@ interface Props {
   setValue: React.Dispatch<React.SetStateAction<string>>;
   value: string | undefined;
   token: string | undefined;
+  decimals: number;
 }
 
-export default function CustomizedTextField({ setValue, token, value }: Props) {
+export default function CustomizedTextField({ decimals, setValue, token, value }: Props) {
   const _onChange = useCallback(
-    ({ target: { value } }: React.ChangeEvent<HTMLSelectElement>) =>
-      setValue(value.slice(0, MAX_AMOUNT_LENGTH)),
-    [setValue]
+    ({ target: { value } }: React.ChangeEvent<HTMLSelectElement>) => {
+      if (parseInt(value).toString().length > decimals - 1) {
+        console.log(`The amount digits is more than decimal:${decimals}`);
+
+        return;
+      }
+
+      setValue(value.slice(0, MAX_AMOUNT_LENGTH))
+    },
+    [decimals, setValue]
   );
 
   return (

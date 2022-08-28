@@ -29,7 +29,7 @@ import getLogo from '../../util/getLogo';
 import { isend, send } from '../../assets/icons';
 import { FormattedAddressState } from '../../util/types';
 import { amountToHuman, getFormattedAddress, isValidAddress } from '../../util/utils';
-import { FLOATING_POINT_DIGIT } from '../../util/constants';
+import { DEFAULT_TOKEN_DECIMALS, FLOATING_POINT_DIGIT } from '../../util/constants';
 
 interface Props {
   className?: string;
@@ -59,7 +59,7 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
 
   const prevUrl = `/account/${genesisHash}/${address}/${formatted}/`;
-  const decimals = apiToUse?.registry?.chainDecimals[0] ?? 1;
+  const decimals = apiToUse?.registry?.chainDecimals[0] ?? DEFAULT_TOKEN_DECIMALS;
   const accountName = useMemo(() => accounts?.find((a) => a.address === address)?.name, [accounts, address]);
   const transfer = apiToUse && apiToUse.tx?.balances && (['All', 'Max'].includes(transferType) ? (apiToUse.tx.balances.transferAll) : (apiToUse.tx.balances.transferKeepAlive));
 
@@ -219,7 +219,7 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
       <div style={{ fontSize: '16px', fontWeight: 300, paddingTop: '8px', letterSpacing: '-0.015em' }}>
         {t('Amount')}:
       </div>
-      <Amount setValue={setAmount} token={apiToUse?.registry?.chainTokens[0]} value={allMaxAmount ?? amount} />
+      <Amount decimals={decimals} setValue={setAmount} token={apiToUse?.registry?.chainTokens[0]} value={allMaxAmount ?? amount} />
       <Grid container sx={{ fontSize: '16px', fontWeight: 300, letterSpacing: '-0.015em', mt: '13px' }}>
         <Grid item onClick={() => setWholeAmount('All')} sx={{ textDecorationLine: 'underline', cursor: 'pointer' }}>
           {t('All amount')}
