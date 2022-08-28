@@ -51,7 +51,8 @@ export default function Accounts({ className }: Props): React.ReactElement {
     );
   }, [filter, hierarchy, networkMap]);
 
-  const _onFilter = useCallback((filter: string) => {
+  const _onFilter = useCallback(( event: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>) => {
+    const filter=event.target.value;
     setFilter(filter.toLowerCase());
   }, []);
 
@@ -70,7 +71,7 @@ export default function Accounts({ className }: Props): React.ReactElement {
                 text={t<string>('Polkagate')}
               />
             </Grid>
-            <Grid xs={12} textAlign='center'>
+            <Grid textAlign='center' xs={12}>
               <Typography color='primary' sx={{ colorfontWeight: 500, fontSize: '24px', lineHeight: '36px', letterSpacing: '-0.015em' }}>
                 {t('Your Accounts')}
               </Typography>
@@ -82,7 +83,7 @@ export default function Accounts({ className }: Props): React.ReactElement {
                 color='warning'
                 fullWidth
                 name='search'
-                // onChange={handleAccountSearch}
+                onChange={_onFilter}
                 placeholder={t('Search you account')}
                 size='small'
                 sx={{ fontSize: 11 }}
