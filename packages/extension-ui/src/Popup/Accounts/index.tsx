@@ -92,7 +92,7 @@ export default function Accounts({ className }: Props): React.ReactElement {
                 variant='outlined'
               />
             </Grid>
-            <Divider sx={{bgcolor: 'secondary.main', height: '2px', width:'297px', margin:'auto' }}/>
+            <Divider sx={{bgcolor: 'secondary.main', height: '2px', width: '297px', margin: 'auto' }}/>
             <Container disableGutters 
               sx={{px: '30px', height: '410px', overflowY: 'auto',
                 '&::-webkit-scrollbar': {
