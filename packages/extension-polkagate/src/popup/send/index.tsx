@@ -76,7 +76,7 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
 
     setTransferType(type);
     const ED = type === 'Max' ? api.consts.balances.existentialDeposit as unknown as BN : BN_ZERO;
-    const allMaxAmount = amountToHuman(balances?.availableBalance.sub(maxFee).sub(ED).toString(), decimals);
+    const allMaxAmount = balances.availableBalance.isZero() ? '0' : amountToHuman(balances.availableBalance.sub(maxFee).sub(ED).toString(), decimals);
 
     setAllMaxAmount(allMaxAmount);
   }, [api, balances?.availableBalance, decimals, maxFee]);
