@@ -10,9 +10,8 @@ import { createGlobalStyle } from 'styled-components';
 
 import { darkTheme as dark } from '../../../extension-polkagate/src/themes/dark';
 import { lightTheme as light } from '../../../extension-polkagate/src/themes/light';
-import { ColorContext } from '.';
 // FIXME We should not import from index when this one is imported there as well
-import { AvailableThemes, chooseTheme, Main, themes, ThemeSwitchContext } from '.';
+import { AvailableThemes, ColorContext, chooseTheme, Main, themes, ThemeSwitchContext } from '.';
 
 interface Props {
   children: React.ReactNode;
@@ -31,7 +30,7 @@ function View({ children, className }: Props): React.ReactElement<Props> {
         setMode(toMode);
       }
     }),
-    []
+    [mode]
   );
 
   const theme = React.useMemo(
