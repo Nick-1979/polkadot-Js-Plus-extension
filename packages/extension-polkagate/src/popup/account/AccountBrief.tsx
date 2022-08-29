@@ -26,7 +26,7 @@ export default function AccountBrief({ accountName, formatted }: Props): React.R
     <Grid item textAlign='center' >
       <Grid alignItems='center' xs={12} container justifyContent='center' spacing={1.2}>
         <Grid item xs={accountName?.length > 19 ? 10 : 'auto'} sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          <Typography sx={{ fontSize: '24px', fontWeight: 500, letterSpacing: '-0.015em', lineHeight: '36px' }}>
+          <Typography sx={{ fontSize: '24px', fontWeight: 400, letterSpacing: '-0.015em', lineHeight: '36px' }}>
             {accountName}
           </Typography>
         </Grid>
