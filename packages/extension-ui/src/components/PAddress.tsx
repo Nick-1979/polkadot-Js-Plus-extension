@@ -4,31 +4,25 @@
 /* eslint-disable react/jsx-max-props-per-line */
 
 import type { DeriveAccountRegistration } from '@polkadot/api-derive/types';
-import type { DeriveAccountInfo, DeriveBalancesAll } from '@polkadot/api-derive/types';
+import type { DeriveBalancesAll } from '@polkadot/api-derive/types';
 import type { AccountJson, AccountWithChildren } from '@polkadot/extension-base/background/types';
 import type { Chain } from '@polkadot/extension-chains/types';
 import type { IconTheme } from '@polkadot/react-identicon/types';
 import type { SettingsStruct } from '@polkadot/ui-settings/types';
 import type { KeypairType } from '@polkadot/util-crypto/types';
-import type { ThemeProps } from '../types';
 
 import { faUsb } from '@fortawesome/free-brands-svg-icons';
-import { faCopy, faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { faCodeBranch, faQrcode } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ArrowForwardIosRounded as ArrowForwardIosRoundedIcon, MoreVert as MoreVertIcon } from '@mui/icons-material';
 import CheckIcon from '@mui/icons-material/Check';
-import { Grid, IconButton } from '@mui/material';
+import { Avatar, Grid, IconButton } from '@mui/material';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import CopyToClipboard from 'react-copy-to-clipboard';
-import styled from 'styled-components';
 
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
-import { Plus } from '../../../extension-plus/src/components'; // added for Plus
 import { ShortAddress, ShowBalance } from '../../../extension-polkagate/src/components'; // added for Plus
 import { useApi, useEndpoint } from '../../../extension-polkagate/src/hooks';
-import details from '../assets/details.svg';
 import useMetadata from '../hooks/useMetadata';
 import useOutsideClick from '../hooks/useOutsideClick';
 import useToast from '../hooks/useToast';
@@ -39,8 +33,9 @@ import getParentNameSuri from '../util/getParentNameSuri';
 import { AccountContext, ActionContext, SettingsContext } from './contexts';
 import Identicon from './Identicon';
 import Menu from './Menu';
-import Svg from './Svg';
 import { useHistory } from 'react-router-dom';
+import { faShieldHalved } from '@fortawesome/free-solid-svg-icons';
+import { green } from '@mui/material/colors';
 
 export interface Props {
   actions?: React.ReactNode;
@@ -128,10 +123,18 @@ export default function PAddress({ actions, address, children, className, genesi
 
   const [identity, setIdentity] = useState<DeriveAccountRegistration | undefined>();
   const [balances, setBalances] = useState<DeriveBalancesAll | undefined>();
-
+  const [recoverable, setRecoverable] = useState<boolean | undefined>();
   const { show } = useToast();
 
   useOutsideClick([actIconRef, actMenuRef], () => (showActionsMenu && setShowActionsMenu(!showActionsMenu)));
+
+  useEffect((): void => {
+    // eslint-disable-next-line no-void
+    api && api.query?.recovery && api.query.recovery.recoverable(formatted).then((r) => {
+      r.isSome && setRecoverable(r.unwrap())
+      console.log(`is ${formatted} recoverAble: ${r.isSome && r.unwrap()}`);
+    });
+  }, [api, formatted]);
 
   useEffect((): void => {
     if (!address) {
@@ -251,21 +254,33 @@ export default function PAddress({ actions, address, children, className, genesi
   }, [balances, history, genesisHash, address, formatted, api, identity]);
 
   return (
-    <Grid container alignItems='center' py='12px'>
-      <Grid item xs={2.5} sx={{ pr: '10px' }}>
+    <Grid alignItems='center' container py='12px'>
+      <Grid item sx={{ position: 'relative' }} xs={2.5}>
         <Identicon
           className='identityIcon'
           iconTheme={theme}
           isExternal={isExternal}
           onCopy={_onCopy}
-          size={59}
           prefix={prefix}
+          size={59}
           value={formatted || address}
         />
+        {recoverable &&
+          <Avatar sx={{ bgcolor: 'green', height: 22, position: 'absolute', right: '-3px', top: '-3px', width: 22 }}>
+            <FontAwesomeIcon
+              color='white'
+              icon={faShieldHalved}
+              id='recoverable'
+              // onClick={handleOpenRecovery}
+              style={{ height: '18.65px', width: '16px' }}
+              title={t && t('recoverable')}
+            />
+          </Avatar>
+        }
       </Grid>
-      <Grid item xs={9.5} pl='8.53px'>
+      <Grid item pl='8.53px' xs={9.5}>
         <Grid container item justifyContent='space-between'>
-          <Grid container item alignItems='center' spacing={0.5} xs={11} flexWrap='nowrap'>
+          <Grid alignItems='center' container flexWrap='nowrap' item xs={11}>
             {parentName
               ? (
                 <>
@@ -288,20 +303,20 @@ export default function PAddress({ actions, address, children, className, genesi
                 </>
               )
               : (
-                <Grid item container xs={5} alignItems='center'>
-                  <Grid item xs={judgement ? 10 : 12} sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 400, fontSize: '24px', letterSpacing: '-0.015em' }}>
+                <Grid alignItems='center' container item sx={{ width: 'fit-content', maxWidth: '47%' }}>
+                  <Grid item sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 300, fontSize: '24px', letterSpacing: '-0.015em' }} xs>
                     <Name />
                   </Grid>
                   {judgement &&
-                    <Grid item xs={2} >
-                      <CheckIcon sx={{ bgcolor: 'green', color: 'white', borderRadius: '50%', fontSize: 20, p:'2px' }} />
+                    <Grid item xs={2.5} pt='10px' >
+                      <CheckIcon sx={{ bgcolor: 'green', color: 'white', borderRadius: '50%', fontSize: 19, p: '3px' }} />
                     </Grid>
                   }
                 </Grid>
               )
             }
-            <Grid item container xs={7}>
-              <ShortAddress showCopy charsCount={4} address={formatted || address || t('<unknown>')} addressStyle={{ fontWeight: 400, fontSize: '12px', lineHeight: '0px', letterSpacing: '-0.015em' }} />
+            <Grid container item xs>
+              <ShortAddress address={formatted || address || t('<unknown>')} addressStyle={{ fontWeight: 300, fontSize: '12px', lineHeight: '0px', letterSpacing: '-0.015em', justifyContent: 'flex-start', pl: '8px' }} charsCount={4} showCopy />
             </Grid>
           </Grid>
           <Grid item xs={1}>
@@ -311,7 +326,7 @@ export default function PAddress({ actions, address, children, className, genesi
                   onClick={_onClick}
                   sx={{ p: 0 }}
                 >
-                  <MoreVertIcon sx={{ fontSize: 35 }} />
+                  <MoreVertIcon sx={{ fontSize: 30 }} />
                 </IconButton>
                 {showActionsMenu && (
                   <Menu
@@ -327,12 +342,13 @@ export default function PAddress({ actions, address, children, className, genesi
         </Grid>
         {
           (formatted || address) && showPlus &&
-          <Grid container item pt='10px' alignItems='center'>
-            <Grid item xs sx={{ fontWeight: 400, fontSize: '20px', letterSpacing: '-0.015em' }}>
+          <Grid alignItems='center' container item>
+            <Grid item sx={{ fontWeight: 300, fontSize: '20px', letterSpacing: '-0.015em' }} xs>
               <ShowBalance api={api} balance={balances?.freeBalance?.add(balances?.reservedBalance)} />
             </Grid>
-            <Grid item xs={1.5}>
+            <Grid item xs={1}>
               <IconButton
+                sx={{ p: 0 }}
                 onClick={goToAccount}
               >
                 <ArrowForwardIosRoundedIcon />
