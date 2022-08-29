@@ -130,10 +130,7 @@ export default function PAddress({ actions, address, children, className, genesi
 
   useEffect((): void => {
     // eslint-disable-next-line no-void
-    api && api.query?.recovery && api.query.recovery.recoverable(formatted).then((r) => {
-      r.isSome && setRecoverable(r.unwrap())
-      console.log(`is ${formatted} recoverAble: ${r.isSome && r.unwrap()}`);
-    });
+    api && api.query?.recovery && api.query.recovery.recoverable(formatted).then((r) => r.isSome && setRecoverable(r.unwrap()));
   }, [api, formatted]);
 
   useEffect((): void => {
