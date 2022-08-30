@@ -18,7 +18,7 @@ import { Identicon } from '@polkadot/extension-ui/components';
 import { AccountContext, ActionContext } from '../../../../extension-ui/src/components/contexts';
 import useMetadata from '../../../../extension-ui/src/hooks/useMetadata';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
-import { Button, Header, Password, ShortAddress } from '../../components';
+import { Button, Header, Motion, Password, ShortAddress } from '../../components';
 import getLogo from '../../util/getLogo';
 import { isend, send as sendIcon } from '../../assets/icons';
 import { FormattedAddressState } from '../../util/types';
@@ -185,108 +185,110 @@ export default function Send(): React.ReactElement {
   );
 
   return (
-    <Container disableGutters sx={{ px: '30px' }}>
-      <Header address={address} genesisHash={genesisHash} icon={icon} preUrl={prevUrl} state={state}>
-        <div style={{ fontWeight: 500, fontSize: '24px', lineHeight: '36px', letterSpacing: '-0.015em', textAlign: 'center' }}>
-          {t('Send Fund')}
-        </div>
-        <div style={{ fontWeight: 700, fontSize: '11px', lineHeight: '25px', letterSpacing: '-0.015em', textAlign: 'center' }}>
-          {isConfirming ? t('Confirmation') : t('Review')}
-        </div>
-        <Divider sx={{ bgcolor: 'secondary.main', height: '2px', width: '81px', margin: 'auto' }} />
-      </Header>
-      {!isConfirming &&
-        <>
-          <Grid alignItems='top' container justifyContent='center' sx={{ fontWeight: 300, letterSpacing: '-0.015em' }}>
-            <Grid item sx={{ fontSize: '16px', paddingTop: '15px' }} xs={4}>
-              {t('From')}:
-            </Grid>
-            <Grid alignItems='center' container item sx={{ pt: '15px' }} xs={8}>
-              <Grid item mt='7px' xs={1.5}>
-                {identicon}
+    <Motion>
+      <Container disableGutters sx={{ px: '30px' }}>
+        <Header address={address} genesisHash={genesisHash} icon={icon} preUrl={prevUrl} state={state}>
+          <div style={{ fontWeight: 500, fontSize: '24px', lineHeight: '36px', letterSpacing: '-0.015em', textAlign: 'center' }}>
+            {t('Send Fund')}
+          </div>
+          <div style={{ fontWeight: 700, fontSize: '11px', lineHeight: '25px', letterSpacing: '-0.015em', textAlign: 'center' }}>
+            {isConfirming ? t('Confirmation') : t('Review')}
+          </div>
+          <Divider sx={{ bgcolor: 'secondary.main', height: '2px', width: '81px', margin: 'auto' }} />
+        </Header>
+        {!isConfirming &&
+          <>
+            <Grid alignItems='top' container justifyContent='center' sx={{ fontWeight: 300, letterSpacing: '-0.015em' }}>
+              <Grid item sx={{ fontSize: '16px', paddingTop: '15px' }} xs={4}>
+                {t('From')}:
               </Grid>
-              <Grid item sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '26px', pl: '8px' }} xs={10.5}>
-                {accountName}
-              </Grid>
-              <Grid item>
-                <ShortAddress address={formatted} addressStyle={{ fontSize: '16px' }} />
-              </Grid>
-            </Grid>
-          </Grid>
-          <Divider sx={{ bgcolor: 'secondary.main', height: '1px', mt: '8px' }} />
-          <Grid alignItems='top' container justifyContent='center' sx={{ fontWeight: 300, letterSpacing: '-0.015em' }}>
-            <Grid item sx={{ fontSize: '16px', paddingTop: '15px' }} xs={4}>
-              {t('Amount')}:
-            </Grid>
-            <Grid alignItems='center' container item sx={{ pt: '15px' }} xs={8}>
-              <Grid item xs={1.5}>
-                {ChainLogo}
-              </Grid>
-              <Grid item sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '26px', pl: '8px' }} xs={10.5}>
-                {state?.amount} {state?.api?.registry?.chainTokens[0]}
-              </Grid>
-              <Grid container item pt='10px'>
-                <Grid item sx={{ fontSize: '14px', pr: '8px' }}>
-                  {t('Fee')}:
+              <Grid alignItems='center' container item sx={{ pt: '15px' }} xs={8}>
+                <Grid item mt='7px' xs={1.5}>
+                  {identicon}
                 </Grid>
-                <Grid item sx={{ fontSize: '16px' }}>
-                  {state?.fee?.toHuman()}
+                <Grid item sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '26px', pl: '8px' }} xs={10.5}>
+                  {accountName}
+                </Grid>
+                <Grid item>
+                  <ShortAddress address={formatted} addressStyle={{ fontSize: '16px' }} />
                 </Grid>
               </Grid>
             </Grid>
-          </Grid>
-          <Divider sx={{ bgcolor: 'secondary.main', height: '1px', mt: '8px' }} />
-          <Grid alignItems='top' container justifyContent='center' sx={{ fontWeight: 300, letterSpacing: '-0.015em' }}>
+            <Divider sx={{ bgcolor: 'secondary.main', height: '1px', mt: '8px' }} />
+            <Grid alignItems='top' container justifyContent='center' sx={{ fontWeight: 300, letterSpacing: '-0.015em' }}>
+              <Grid item sx={{ fontSize: '16px', paddingTop: '15px' }} xs={4}>
+                {t('Amount')}:
+              </Grid>
+              <Grid alignItems='center' container item sx={{ pt: '15px' }} xs={8}>
+                <Grid item xs={1.5}>
+                  {ChainLogo}
+                </Grid>
+                <Grid item sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '26px', pl: '8px' }} xs={10.5}>
+                  {state?.amount} {state?.api?.registry?.chainTokens[0]}
+                </Grid>
+                <Grid container item pt='10px'>
+                  <Grid item sx={{ fontSize: '14px', pr: '8px' }}>
+                    {t('Fee')}:
+                  </Grid>
+                  <Grid item sx={{ fontSize: '16px' }}>
+                    {state?.fee?.toHuman()}
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Divider sx={{ bgcolor: 'secondary.main', height: '1px', mt: '8px' }} />
+            <Grid alignItems='top' container justifyContent='center' sx={{ fontWeight: 300, letterSpacing: '-0.015em' }}>
+              <Grid item sx={{ fontSize: '16px', paddingTop: '15px' }} xs={4}>
+                {t('To')}:
+              </Grid>
+              <Grid alignItems='center' container item sx={{ pt: '15px' }} xs={8}>
+                <Grid item sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '26px' }} xs={10.5}>
+                  {state?.recepientName}
+                </Grid>
+                <Grid item>
+                  <ShortAddress address={state?.recepient} addressStyle={{ fontSize: '16px' }} />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Divider sx={{ bgcolor: 'secondary.main', height: '1px', mt: '8px' }} />
             <Grid item sx={{ fontSize: '16px', paddingTop: '15px' }} xs={4}>
-              {t('To')}:
+              {t('Password')}:
             </Grid>
-            <Grid alignItems='center' container item sx={{ pt: '15px' }} xs={8}>
-              <Grid item sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '26px' }} xs={10.5}>
-                {state?.recepientName}
-              </Grid>
-              <Grid item>
-                <ShortAddress address={state?.recepient} addressStyle={{ fontSize: '16px' }} />
-              </Grid>
+            <Password setValue={setPassword} value={password} />
+            <Button _disabled={isConfirming} _onClick={send} style={{ mt: '20px' }} title={t('Send')} />
+          </>}
+        {isConfirming &&
+          <>
+            <Grid container justifyContent='center' py='15px'>
+              {!txLog?.status
+                ? <Circle color='#E30B7B' scaleEnd={0.7} scaleStart={0.4} size={78} />
+                : <CheckIcon sx={{ bgcolor: 'green', color: 'white', borderRadius: '50%', fontSize: '78px', fontWeight: 600, p: '8px' }} />
+              }
             </Grid>
-          </Grid>
-          <Divider sx={{ bgcolor: 'secondary.main', height: '1px', mt: '8px' }} />
-          <Grid item sx={{ fontSize: '16px', paddingTop: '15px' }} xs={4}>
-            {t('Password')}:
-          </Grid>
-          <Password setValue={setPassword} value={password} />
-          <Button _disabled={isConfirming} _onClick={send} style={{ mt: '20px' }} title={t('Send')} />
-        </>}
-      {isConfirming &&
-        <>
-          <Grid container justifyContent='center' py='15px'>
-            {!txLog?.status
-              ? <Circle color='#E30B7B' scaleEnd={0.7} scaleStart={0.4} size={78} />
-              : <CheckIcon sx={{ bgcolor: 'green', color: 'white', borderRadius: '50%', fontSize: '80px', fontWeight: 600, p: '10px' }} />
-            }
-          </Grid>
-          <Triology part1={t('From')} part2={accountName} part3={<ShortAddress address={formatted} addressStyle={{ fontSize: '16px' }} inParentheses />} showDivider />
-          <Triology part1={t('Amount')} part2={state?.amount} part3={state?.api?.registry?.chainTokens[0]} />
-          <Triology part1={t('Fee')} part2={state?.fee?.toHuman()} showDivider />
-          <Triology part1={t('To')} part2={state?.recepientName} part3={<ShortAddress address={state?.recepient} addressStyle={{ fontSize: '16px' }} inParentheses />} showDivider />
-          <Triology part1={t('Block')} part2={txLog?.block ? `#${txLog?.block}` : <Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }} />} />
-          <Triology part1={t('Hash')} part2={txLog?.txHash ? <ShortAddress address={txLog?.txHash} addressStyle={{ fontSize: '16px' }} charsCount={6} showCopy /> : <Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }} />} />
-          <Grid container item justifyContent='center' pt='5px' xs={12}>
-            <Link
-              href={`${subscanLink(txLog?.txHash)}`}
-              rel='noreferrer'
-              target='_blank'
-              underline='none'
-            >
-              <Grid
-                alt={'subscan'}
-                component='img'
-                src={getLogo('subscan')}
-                sx={{ height: 44, width: 44 }}
-              />
-            </Link>
-          </Grid>
-          <Button _onClick={backToMyAccounts} style={{ mt: '15px' }} title={t('Back to My Account(s)')} />
-        </>}
-    </Container>
+            <Triology part1={t('From')} part2={accountName} part3={<ShortAddress address={formatted} addressStyle={{ fontSize: '16px' }} inParentheses />} showDivider />
+            <Triology part1={t('Amount')} part2={state?.amount} part3={state?.api?.registry?.chainTokens[0]} />
+            <Triology part1={t('Fee')} part2={state?.fee?.toHuman()} showDivider />
+            <Triology part1={t('To')} part2={state?.recepientName} part3={<ShortAddress address={state?.recepient} addressStyle={{ fontSize: '16px' }} inParentheses />} showDivider />
+            <Triology part1={t('Block')} part2={txLog?.block ? `#${txLog?.block}` : <Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }} />} />
+            <Triology part1={t('Hash')} part2={txLog?.txHash ? <ShortAddress address={txLog?.txHash} addressStyle={{ fontSize: '16px' }} charsCount={6} showCopy /> : <Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }} />} />
+            <Grid container item justifyContent='center' pt='5px' xs={12}>
+              <Link
+                href={`${subscanLink(txLog?.txHash)}`}
+                rel='noreferrer'
+                target='_blank'
+                underline='none'
+              >
+                <Grid
+                  alt={'subscan'}
+                  component='img'
+                  src={getLogo('subscan')}
+                  sx={{ height: 44, width: 44 }}
+                />
+              </Link>
+            </Grid>
+            <Button _onClick={backToMyAccounts} style={{ mt: '15px' }} title={t('Back to My Account(s)')} />
+          </>}
+      </Container>
+    </Motion>
   );
 }

@@ -28,7 +28,7 @@ import { Select, ShortAddress, ShowBalance } from '../../components';
 import { useApi, useEndpoint, useEndpoints } from '../../hooks';
 import getLogo from '../../util/getLogo';
 import { AddressState, FormattedAddressState, SavedMetaData } from '../../util/types';
-import { Header } from '../../components';
+import { Header , Motion} from '../../components';
 import { prepareMetaData } from '../../../../extension-plus/src/util/plusUtils';// added for plus
 import { DEFAULT_TYPE } from '../../../../extension-ui/src/util/defaultType';
 import type { KeypairType } from '@polkadot/util-crypto/types';
@@ -320,33 +320,36 @@ export default function AccountDetails({ className }: Props): React.ReactElement
   };
 
   return (
-    <Container disableGutters sx={{ px: '30px' }}>
-      <Header address={address} genesisHash={genesisHash} icon={identicon}>
-        <AccountBrief accountName={accountName} formatted={formatted} />
-      </Header>
-      <Grid alignItems='flex-end' container pt={1}>
-        <Grid item xs>
-          <Select defaultValue={genesisHash} label={'Select the chain'} onChange={_onChangeGenesis} options={genesisOptions} />
+    <Motion>
+      <Container disableGutters sx={{ px: '30px' }}>
+        <Header address={address} genesisHash={genesisHash} icon={identicon}>
+          <AccountBrief accountName={accountName} formatted={formatted} />
+        </Header>
+        <Grid alignItems='flex-end' container pt={1}>
+          <Grid item xs>
+            <Select defaultValue={genesisHash} label={'Select the chain'} onChange={_onChangeGenesis} options={genesisOptions} />
+          </Grid>
+          <Grid item pl={1}>
+            <Avatar
+              alt={'logo'}
+              src={getLogo(newChain ?? chain)}
+              sx={{ height: 31, width: 31 }}
+              variant='square'
+            />
+          </Grid>
         </Grid>
-        <Grid item pl={1}>
-          <Avatar
-            alt={'logo'}
-            src={getLogo(newChain ?? chain)}
-            sx={{ height: 31, width: 31 }}
-            variant='square'
-          />
+        <Grid height='20px' item xs>
+          {newEndpoint && <Select defaultValue={newEndpoint} label={'Select the endpoint'} onChange={_onChangeEndpoint} options={endpointOptions} />}
         </Grid>
-      </Grid>
-      <Grid height='20px' item xs>
-        {newEndpoint && <Select defaultValue={newEndpoint} label={'Select the endpoint'} onChange={_onChangeEndpoint} options={endpointOptions} />}
-      </Grid>
-      <Grid item pt='45px' xs>
-        <Balance balances={balances} type={'Total'} />
-        <Balance balances={balances} type={'Available'} />
-        <Balance balances={balances} type={'Reserved'} />
-        <Balance balances={balances} type={'Others'} />
-      </Grid>
-      <Menu />
-    </Container>
+        <Grid item pt='45px' xs>
+          <Balance balances={balances} type={'Total'} />
+          <Balance balances={balances} type={'Available'} />
+          <Balance balances={balances} type={'Reserved'} />
+          <Balance balances={balances} type={'Others'} />
+        </Grid>
+        <Menu />
+      </Container>
+    </Motion>
+
   );
 }

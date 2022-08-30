@@ -63,7 +63,7 @@ export default function Accounts({ className }: Props): React.ReactElement {
         ? <AddAccount />
         : (
           <>
-            <Grid xs={12} textAlign='center' padding='0px'>
+            <Grid padding='0px' textAlign='center' xs={12}>
               <PHeader
                 onFilter={_onFilter}
                 // showAdd
@@ -77,7 +77,7 @@ export default function Accounts({ className }: Props): React.ReactElement {
                 {t('Your Accounts')}
               </Typography>
             </Grid>
-            <Grid item xs={12} p='15px 32px 14px'>
+            <Grid item p='15px 32px 14px' xs={12}>
               <TextField
                 InputProps={{ startAdornment: (<InputAdornment position='start'><SearchIcon sx={{fontSize: '15px'}}/></InputAdornment>) }}
                 autoComplete='off'

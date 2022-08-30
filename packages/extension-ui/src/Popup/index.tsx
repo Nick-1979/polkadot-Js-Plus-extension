@@ -45,6 +45,7 @@ import { CssBaseline, PaletteMode, ThemeProvider, createTheme } from '@mui/mater
 import { darkTheme } from '../../../extension-polkagate/src/themes/dark';
 import { lightTheme } from '../../../extension-polkagate/src/themes/light';
 import { ColorContext } from '../components/ColorContext';
+import { AnimatePresence } from "framer-motion";
 
 const startSettings = uiSettings.get();
 
@@ -143,52 +144,54 @@ export default function Popup(): React.ReactElement {
     // <ColorContext.Provider value={colorMode}>
     //   <ThemeProvider theme={theme}>
     //     <CssBaseline enableColorScheme />
-    <Loading>{accounts && authRequests && metaRequests && signRequests && (
-      <ActionContext.Provider value={_onAction}>
-        <SettingsContext.Provider value={settingsCtx}>
-          <AccountContext.Provider value={accountCtx}>
-            <AuthorizeReqContext.Provider value={authRequests}>
-              <MediaContext.Provider value={cameraOn && mediaAllowed}>
-                <MetadataReqContext.Provider value={metaRequests}>
-                  <SigningReqContext.Provider value={signRequests}>
-                    <ToastProvider>
-                      <Switch>
-                        {/* // added for plus */}
-                        <Route path='/crowdloans/:genesisHash/:address'>{wrapWithErrorBoundary(<CrowdLoans />, 'crowdloans')}</Route>
-                        <Route path='/governance/:genesisHash/:address'>{wrapWithErrorBoundary(<Governance />, 'governance')}</Route>
-                        <Route path='/endecrypt/:address'>{wrapWithErrorBoundary(<EnDecrypt />, 'encrypt-decrypt')}</Route>
-                        <Route path='/socialRecovery/:genesisHash/:address'>{wrapWithErrorBoundary(<SocialRecovery />, 'socialRecovery')}</Route>
-                        <Route path='/account/:genesisHash/:address/:formatted'>{wrapWithErrorBoundary(<Account />, 'account')}</Route>
-                        <Route exact path='/send/:genesisHash/:address/:formatted'>{wrapWithErrorBoundary(<Send />, 'send')}</Route>
-                        <Route exact path='/send/review/:genesisHash/:address/:formatted'>{wrapWithErrorBoundary(<Review />, 'review')}</Route>
-                        <Route path='/auth-list'>{wrapWithErrorBoundary(<AuthList />, 'auth-list')}</Route>
-                        <Route path='/account/create'>{wrapWithErrorBoundary(<CreateAccount />, 'account-creation')}</Route>
-                        <Route path='/account/forget/:address'>{wrapWithErrorBoundary(<Forget />, 'forget-address')}</Route>
-                        <Route path='/account/export/:address'>{wrapWithErrorBoundary(<Export />, 'export-address')}</Route>
-                        <Route path='/account/export-all'>{wrapWithErrorBoundary(<ExportAll />, 'export-all-address')}</Route>
-                        <Route path='/account/import-ledger'>{wrapWithErrorBoundary(<ImportLedger />, 'import-ledger')}</Route>
-                        <Route path='/account/import-qr'>{wrapWithErrorBoundary(<ImportQr />, 'import-qr')}</Route>
-                        <Route path='/account/import-seed'>{wrapWithErrorBoundary(<ImportSeed />, 'import-seed')}</Route>
-                        <Route path='/account/restore-json'>{wrapWithErrorBoundary(<RestoreJson />, 'restore-json')}</Route>
-                        <Route path='/account/derive/:address/locked'>{wrapWithErrorBoundary(<Derive isLocked />, 'derived-address-locked')}</Route>
-                        <Route path='/account/derive/:address'>{wrapWithErrorBoundary(<Derive />, 'derive-address')}</Route>
-                        <Route path={`${PHISHING_PAGE_REDIRECT}/:website`}>{wrapWithErrorBoundary(<PhishingDetected />, 'phishing-page-redirect')}</Route>
-                        <Route
-                          exact
-                          path='/'
-                        >
-                          {Root}
-                        </Route>
-                      </Switch>
-                    </ToastProvider>
-                  </SigningReqContext.Provider>
-                </MetadataReqContext.Provider>
-              </MediaContext.Provider>
-            </AuthorizeReqContext.Provider>
-          </AccountContext.Provider>
-        </SettingsContext.Provider>
-      </ActionContext.Provider>
-    )}</Loading>
+    <AnimatePresence exitBeforeEnter>
+      <Loading>{accounts && authRequests && metaRequests && signRequests && (
+        <ActionContext.Provider value={_onAction}>
+          <SettingsContext.Provider value={settingsCtx}>
+            <AccountContext.Provider value={accountCtx}>
+              <AuthorizeReqContext.Provider value={authRequests}>
+                <MediaContext.Provider value={cameraOn && mediaAllowed}>
+                  <MetadataReqContext.Provider value={metaRequests}>
+                    <SigningReqContext.Provider value={signRequests}>
+                      <ToastProvider>
+                        <Switch>
+                          {/* // added for plus */}
+                          <Route path='/crowdloans/:genesisHash/:address'>{wrapWithErrorBoundary(<CrowdLoans />, 'crowdloans')}</Route>
+                          <Route path='/governance/:genesisHash/:address'>{wrapWithErrorBoundary(<Governance />, 'governance')}</Route>
+                          <Route path='/endecrypt/:address'>{wrapWithErrorBoundary(<EnDecrypt />, 'encrypt-decrypt')}</Route>
+                          <Route path='/socialRecovery/:genesisHash/:address'>{wrapWithErrorBoundary(<SocialRecovery />, 'socialRecovery')}</Route>
+                          <Route path='/account/:genesisHash/:address/:formatted'>{wrapWithErrorBoundary(<Account />, 'account')}</Route>
+                          <Route exact path='/send/:genesisHash/:address/:formatted'>{wrapWithErrorBoundary(<Send />, 'send')}</Route>
+                          <Route exact path='/send/review/:genesisHash/:address/:formatted'>{wrapWithErrorBoundary(<Review />, 'review')}</Route>
+                          <Route path='/auth-list'>{wrapWithErrorBoundary(<AuthList />, 'auth-list')}</Route>
+                          <Route path='/account/create'>{wrapWithErrorBoundary(<CreateAccount />, 'account-creation')}</Route>
+                          <Route path='/account/forget/:address'>{wrapWithErrorBoundary(<Forget />, 'forget-address')}</Route>
+                          <Route path='/account/export/:address'>{wrapWithErrorBoundary(<Export />, 'export-address')}</Route>
+                          <Route path='/account/export-all'>{wrapWithErrorBoundary(<ExportAll />, 'export-all-address')}</Route>
+                          <Route path='/account/import-ledger'>{wrapWithErrorBoundary(<ImportLedger />, 'import-ledger')}</Route>
+                          <Route path='/account/import-qr'>{wrapWithErrorBoundary(<ImportQr />, 'import-qr')}</Route>
+                          <Route path='/account/import-seed'>{wrapWithErrorBoundary(<ImportSeed />, 'import-seed')}</Route>
+                          <Route path='/account/restore-json'>{wrapWithErrorBoundary(<RestoreJson />, 'restore-json')}</Route>
+                          <Route path='/account/derive/:address/locked'>{wrapWithErrorBoundary(<Derive isLocked />, 'derived-address-locked')}</Route>
+                          <Route path='/account/derive/:address'>{wrapWithErrorBoundary(<Derive />, 'derive-address')}</Route>
+                          <Route path={`${PHISHING_PAGE_REDIRECT}/:website`}>{wrapWithErrorBoundary(<PhishingDetected />, 'phishing-page-redirect')}</Route>
+                          <Route
+                            exact
+                            path='/'
+                          >
+                            {Root}
+                          </Route>
+                        </Switch>
+                      </ToastProvider>
+                    </SigningReqContext.Provider>
+                  </MetadataReqContext.Provider>
+                </MediaContext.Provider>
+              </AuthorizeReqContext.Provider>
+            </AccountContext.Provider>
+          </SettingsContext.Provider>
+        </ActionContext.Provider>
+      )}</Loading>
+    </AnimatePresence>
     //   </ThemeProvider>
     // </ColorContext.Provider>
   );
