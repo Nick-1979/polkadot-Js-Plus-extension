@@ -241,10 +241,9 @@ export default function PAddress({ actions, address, children, className, genesi
 
   const parentNameSuri = getParentNameSuri(parentName, suri);
 
-  // added for plus
   const goToAccount = useCallback(() => {
     // onAction(`/account/${genesisHash}/${address}/${formatted}/`);
-    history.push({
+    genesisHash && address && formatted && history.push({
       pathname: `/account/${genesisHash}/${address}/${formatted}/`,
       state: { api, balances, identity }
     });
