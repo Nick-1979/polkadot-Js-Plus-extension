@@ -213,7 +213,7 @@ export default function PAddress({ actions, address, children, className, genesi
 
   const Name = () => {
     const accountName = name || account?.name;
-    const displayName = identity?.display || accountName || t('<unknown>');
+    const displayName = identity?.display || accountName || t('<Unknown>');
 
     return (
       <>
