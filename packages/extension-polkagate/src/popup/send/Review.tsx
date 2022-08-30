@@ -8,7 +8,7 @@
  * this component opens send review page
  * */
 
-import { Avatar, Container, Divider, Grid, Link, useTheme } from '@mui/material';
+import { Avatar, Container, Divider, Grid, Link, Skeleton, useTheme } from '@mui/material';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { useLocation } from 'react-router-dom';
@@ -260,7 +260,7 @@ export default function Send(): React.ReactElement {
         <>
           <Grid container justifyContent='center' py='15px'>
             {!txLog?.status
-              ? <Circle color='#E30B7B' size={78} scaleEnd={0.7} scaleStart={0.4} />
+              ? <Circle color='#E30B7B' scaleEnd={0.7} scaleStart={0.4} size={78} />
               : <CheckIcon sx={{ bgcolor: 'green', color: 'white', borderRadius: '50%', fontSize: '80px', fontWeight: 600, p: '10px' }} />
             }
           </Grid>
@@ -268,9 +268,9 @@ export default function Send(): React.ReactElement {
           <Triology part1={t('Amount')} part2={state?.amount} part3={state?.api?.registry?.chainTokens[0]} />
           <Triology part1={t('Fee')} part2={state?.fee?.toHuman()} showDivider />
           <Triology part1={t('To')} part2={state?.recepientName} part3={<ShortAddress address={state?.recepient} addressStyle={{ fontSize: '16px' }} inParentheses />} showDivider />
-          <Triology part1={t('Block')} part2={txLog?.block ? `#${txLog?.block}` : ''} />
-          <Triology part1={t('Hash')} part2={<ShortAddress address={txLog?.txHash} charsCount={6} addressStyle={{ fontSize: '16px' }} showCopy/>} />
-          <Grid item container justifyContent='center' xs={12} pt='5px'>
+          <Triology part1={t('Block')} part2={txLog?.block ? `#${txLog?.block}` : <Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }} />} />
+          <Triology part1={t('Hash')} part2={txLog?.txHash ? <ShortAddress address={txLog?.txHash} addressStyle={{ fontSize: '16px' }} charsCount={6} showCopy /> : <Skeleton sx={{ display: 'inline-block', fontWeight: 'bold', width: '70px' }} />} />
+          <Grid container item justifyContent='center' pt='5px' xs={12}>
             <Link
               href={`${subscanLink(txLog?.txHash)}`}
               rel='noreferrer'

@@ -347,7 +347,7 @@ export default function PAddress({ actions, address, children, className, genesi
                 sx={{ p: 0 }}
                 onClick={goToAccount}
               >
-                <ArrowForwardIosRoundedIcon />
+                <ArrowForwardIosRoundedIcon sx={{ fontSize:'25px'}} />
               </IconButton>
             </Grid>
           </Grid>

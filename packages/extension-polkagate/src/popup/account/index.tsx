@@ -283,7 +283,7 @@ export default function AccountDetails({ className }: Props): React.ReactElement
       <>
         <Grid item py='5px'>
           <Grid alignItems='center' container justifyContent='space-between'>
-            <Grid item xs={2}>
+            <Grid item xs={3}>
               <Typography sx={{ fontSize: '16px', fontWeight: 300, letterSpacing: '-0.015em', lineHeight: '36px' }}>
                 {type}
               </Typography>
@@ -304,10 +304,10 @@ export default function AccountDetails({ className }: Props): React.ReactElement
               </Grid>
             </Grid>
             {type === 'Others' &&
-              <Grid item xs={1}>
+              <Grid item textAlign='right' xs={1.5}>
                 <IconButton
                   // onClick={_onClick}
-                  sx={{ pr: '13px' }}
+                  sx={{ p: 0 }}
                 >
                   <ArrowForwardIosRoundedIcon />
                 </IconButton>
