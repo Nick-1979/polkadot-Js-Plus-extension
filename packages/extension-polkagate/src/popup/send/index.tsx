@@ -10,6 +10,7 @@
 
 import type { DeriveBalancesAll } from '@polkadot/api-derive/types';
 import type { Balance } from '@polkadot/types/interfaces';
+import type { DeriveAccountRegistration } from '@polkadot/api-derive/types';
 
 import { Avatar, Container, Divider, Grid, useTheme } from '@mui/material';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
@@ -57,16 +58,24 @@ export default function Send({ className }: Props): React.ReactElement<Props> {
   const [balances, setBalances] = useState<DeriveBalancesAll | undefined>(location?.state?.balances as DeriveBalancesAll);
   const [transferType, setTransferType] = useState<TransferType | undefined>();
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
+  const [identity, setIdentity] = useState<DeriveAccountRegistration | undefined>();
 
   const prevUrl = `/account/${genesisHash}/${address}/${formatted}/`;
   const decimals = apiToUse?.registry?.chainDecimals[0] ?? DEFAULT_TOKEN_DECIMALS;
   const accountName = useMemo(() => accounts?.find((a) => a.address === address)?.name, [accounts, address]);
   const transfer = apiToUse && apiToUse.tx?.balances && (['All', 'Max'].includes(transferType) ? (apiToUse.tx.balances.transferAll) : (apiToUse.tx.balances.transferKeepAlive));
 
+  useEffect((): void => {
+    // eslint-disable-next-line no-void
+    apiToUse && recepient && void apiToUse.derive.accounts.info(recepient).then((info) => {
+      setIdentity(info?.identity);
+    });
+  }, [apiToUse, recepient]);
+
   const recepientName = useMemo(
-    () =>
-      accounts?.find((a) => getFormattedAddress(a.address, chain, settings?.prefix) === recepient)?.name ?? t('Unknown'),
-    [accounts, chain, recepient, settings?.prefix, t]
+    (): string =>
+      identity?.display || accounts?.find((a) => getFormattedAddress(a.address, chain, settings?.prefix) === recepient)?.name || t('Unknown'),
+    [accounts, chain, recepient, settings?.prefix, t, identity]
   );
 
   const setWholeAmount = useCallback((type: TransferType) => {
