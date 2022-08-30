@@ -208,7 +208,6 @@ export default function AccountDetails({ className }: Props): React.ReactElement
 
   const identicon = (
     <Identicon
-      className='identityIcon'
       iconTheme={chain?.icon || 'polkadot'}
       // isExternal={isExternal}
       // onCopy={_onCopy}
