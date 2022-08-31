@@ -40,10 +40,6 @@ import PhishingDetected from './PhishingDetected';
 import RestoreJson from './RestoreJson';
 import Signing from './Signing';
 import Welcome from './Welcome';
-import { appTheme } from '../../../extension-polkagate/src/themes/theme';
-import { CssBaseline, PaletteMode, ThemeProvider, createTheme } from '@mui/material';
-import { darkTheme } from '../../../extension-polkagate/src/themes/dark';
-import { lightTheme } from '../../../extension-polkagate/src/themes/light';
 import { ColorContext } from '../components/ColorContext';
 import { AnimatePresence } from "framer-motion";
 
@@ -142,8 +138,6 @@ export default function Popup(): React.ReactElement {
 
   return (
     // <ColorContext.Provider value={colorMode}>
-    //   <ThemeProvider theme={theme}>
-    //     <CssBaseline enableColorScheme />
     <AnimatePresence exitBeforeEnter>
       <Loading>{accounts && authRequests && metaRequests && signRequests && (
         <ActionContext.Provider value={_onAction}>
@@ -192,7 +186,6 @@ export default function Popup(): React.ReactElement {
         </ActionContext.Provider>
       )}</Loading>
     </AnimatePresence>
-    //   </ThemeProvider>
     // </ColorContext.Provider>
   );
 }
