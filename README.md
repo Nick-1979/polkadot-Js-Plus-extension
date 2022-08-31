@@ -34,8 +34,8 @@ The extension for firefox can be downloaded from [here](https://addons.mozilla.o
 Steps to build the extension and view your changes in a browser:
 
 1. download the files via `git clone https://github.com/Nick-1979/polkadot-Js-Plus-extension.git`
-2. got to downloaded folder via 'cd polkadot-Js-Plus-extension`
-3. install dependencies via `yarn
+2. got to downloaded folder via `cd polkadot-Js-Plus-extension`
+3. install dependencies via `yarn`
 4. Build via `yarn build` or `yarn watch`
 5. Install the extension
   - Chrome:
