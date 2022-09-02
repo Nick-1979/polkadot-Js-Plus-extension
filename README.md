@@ -26,15 +26,24 @@ Currently, the following features are available:
 
 ### Add-on
 
-The extension for firefox can be downloaded from [here](https://addons.mozilla.org/en-US/firefox/addon/polkadot-js-plus-extension/)
+FireFox: The extension for firefox can be downloaded from Firefox add-ons page [here](https://addons.mozilla.org/en-US/firefox/addon/polkadot-js-plus-extension/)
 
-
+Chrome: 
+   1. download the [zip file](https://github.com/Nick-1979/plus/archive/refs/heads/main.zip)
+   2. go to `chrome://extensions/`
+   3. switch on the "Developer mode" on top right
+   4. click on "Load unpacked" button and point to the unzipped downloaded folder
+   
+   
 ### Development version
 
 Steps to build the extension and view your changes in a browser:
 
-1. Build via `yarn build` or `yarn watch`
-2. Install the extension
+1. download the files via `git clone https://github.com/Nick-1979/polkadot-Js-Plus-extension.git`
+2. got to downloaded folder via `cd polkadot-Js-Plus-extension`
+3. install dependencies via `yarn`
+4. Build via `yarn build` or `yarn watch`
+5. Install the extension
   - Chrome:
     - go to `chrome://extensions/`
     - ensure you have the Development flag set
