@@ -30,7 +30,7 @@ async function getPools(endpoint) {
   const poolsInfo = info.map((i, index) => {
     if (i[1].isSome) {
       return {
-        bondedPool: { points: String(i[1].unwrap().points), state: i[1].unwrap().state, memberCounter: i[1].unwrap().memberCounter, roles: i[1].unwrap().roles },
+        bondedPool: { points: String(i[1].unwrap().points), state: i[1].unwrap().state, memberCounter: String(i[1].unwrap().memberCounter), roles: i[1].unwrap().roles },
         metadata: i[0]?.length
           ? i[0]?.isUtf8
             ? i[0]?.toUtf8()
