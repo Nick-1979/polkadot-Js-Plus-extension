@@ -2,10 +2,10 @@
   "author": "polkadot.{js+}",
   "description": "Polkadot js extension, plus new features",
   "homepage_url": "http://polkadotjs.plus",
-  "name": "polkadot{.js} plus extension",
+  "name": "polkadot js plus extension",
   "short_name": "Plus",
   "manifest_version": 2,
-  "version": "0.44.1.1",
+  "version": "0.44.1.12",
   "permissions": ["storage", "tabs"],
   "background": {
     "scripts": ["background.js"],
