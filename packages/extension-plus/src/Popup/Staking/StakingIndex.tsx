@@ -30,7 +30,7 @@ import { BN, bnMax } from '@polkadot/util';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { PlusHeader, Popup, ShowBalance2 } from '../../components';
 import useEndPoint from '../../hooks/useEndPoint';
-import { prepareMetaData } from '../../util/plusUtils';
+import { isJsonString, prepareMetaData } from '../../util/plusUtils';
 import PoolStaking from './Pool/Index';
 import SoloStaking from './Solo/Index';
 
@@ -285,15 +285,17 @@ export default function StakingIndex({ account, api, chain, ledger, setStakingMo
       return;
     }
 
-    console.log('Account:', account);
+    console.log('Account:', account); 
 
     // * retrive staking consts from local sorage
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const stakingConstsFromLocalStrorage: SavedMetaData = account?.stakingConsts ? JSON.parse(account.stakingConsts) : null;
 
     if (stakingConstsFromLocalStrorage?.metaData && stakingConstsFromLocalStrorage?.chainName === chainName) {
-      console.log('stakingConsts from local:', JSON.parse(stakingConstsFromLocalStrorage.metaData as string));
-      setStakingConsts(JSON.parse(stakingConstsFromLocalStrorage.metaData as string) as StakingConsts);
+      if (isJsonString(stakingConstsFromLocalStrorage.metaData as string)) {
+        console.log('stakingConsts from local:', JSON.parse(stakingConstsFromLocalStrorage.metaData as string));
+        setStakingConsts(JSON.parse(stakingConstsFromLocalStrorage.metaData as string) as StakingConsts);
+      }
     }
 
     // * retrive pool staking consts from local sorage

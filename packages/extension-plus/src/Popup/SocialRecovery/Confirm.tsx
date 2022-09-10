@@ -497,7 +497,7 @@ export default function Confirm({ account, api, chain, friends, lostAccount, oth
           }
           {['makeRecoverable', 'initiateRecovery'].includes(state) &&
             friends?.map((f, index) => (
-              <Grid alignItems='flex-start' key={index} sx={{ fontFamily: 'sans-serif', px: 6 }} xs={12}>
+              <Grid item alignItems='flex-start' key={index} sx={{ fontFamily: 'sans-serif', px: 6 }} xs={12}>
                 <Identity accountInfo={f} chain={chain} showAddress />
               </Grid>
             ))

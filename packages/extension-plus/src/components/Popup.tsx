@@ -43,7 +43,7 @@ function Popup({ children, handleClose, id, showModal }: Props): React.ReactElem
           id={id}
           maxWidth='md'
         >
-          <Typography>
+          <Typography component={'span'}>
             {children}
           </Typography>
         </Container>

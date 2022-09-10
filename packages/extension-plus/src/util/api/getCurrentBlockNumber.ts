@@ -10,7 +10,5 @@ export default async function getCurrentBlockNumber(_chain: Chain | string): Pro
   const { api } = await getChainInfo(_chain);
   const currentBlockNumber = await api.rpc.chain.getHeader();
 
-  console.log(`currentBlockNumber:${currentBlockNumber.number}`);
-
   return Number(currentBlockNumber.number);
 }

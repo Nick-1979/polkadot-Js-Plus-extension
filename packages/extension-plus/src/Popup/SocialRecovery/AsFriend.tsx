@@ -15,7 +15,7 @@ import type { ThemeProps } from '../../../../extension-ui/src/types';
 
 import { AdminPanelSettingsOutlined as AdminPanelSettingsOutlinedIcon } from '@mui/icons-material';
 import { Alert, Grid, Typography } from '@mui/material';
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo,useState } from 'react';
 import styled from 'styled-components';
 
 import { Chain } from '@polkadot/extension-chains/types';
@@ -56,14 +56,14 @@ function AsFriend({ account, accountsInfo, addresesOnThisChain, api, chain, hand
     setConfirmModalOpen(true);
   }, []);
 
-  useEffect(() => {
-    if (api && lostAccountRecoveryInfo?.friends) {
-      Promise.all(
-        lostAccountRecoveryInfo.friends.map((f) => api.derive.accounts.info(f))
-      ).then((info) => setfriendsAccountsInfo(info))
-        .catch(console.error);
-    }
-  }, [lostAccountRecoveryInfo, api]);
+  // useEffect(() => {
+  //   if (api && lostAccountRecoveryInfo?.friends) {
+  //     Promise.all(
+  //       lostAccountRecoveryInfo.friends.map((f) => api.derive.accounts.info(f))
+  //     ).then((info) => setfriendsAccountsInfo(info))
+  //       .catch(console.error);
+  //   }
+  // }, [lostAccountRecoveryInfo, api]);
 
   useEffect(() => {
     if (lostAccountRecoveryInfo?.friends && account?.accountId) {
@@ -89,7 +89,6 @@ function AsFriend({ account, accountsInfo, addresesOnThisChain, api, chain, hand
     // eslint-disable-next-line no-void
     api && lostAccount?.accountId && void api.query.recovery.recoverable(lostAccount.accountId).then((r) => {
       setLostAccountRecoveryInfo(r.isSome ? r.unwrap() : null);
-      console.log('is lost account recoverable:', r.isSome ? JSON.parse(JSON.stringify(r.unwrap())) : 'noch');
     });
   }, [api, lostAccount]);
 
@@ -131,7 +130,6 @@ function AsFriend({ account, accountsInfo, addresesOnThisChain, api, chain, hand
     // eslint-disable-next-line no-void
     void activeRecoveries(lostAccount.accountId, rescuerAccount.accountId).then((r) => {
       setActiveRecoveries(r.isSome ? r.unwrap() : null);
-      console.log('activeRecoveries:', r.isSome ? JSON.parse(JSON.stringify(r.unwrap())) : 'noch');
     });
 
     // eslint-disable-next-line no-void
@@ -201,7 +199,7 @@ function AsFriend({ account, accountsInfo, addresesOnThisChain, api, chain, hand
           account={account}
           api={api}
           chain={chain}
-          friends={friendsAccountsInfo}
+          // friends={friendsAccountsInfo}
           lostAccount={lostAccount}
           recoveryConsts={recoveryConsts}
           recoveryDelay={lostAccountRecoveryInfo?.delayPeriod ? parseFloat((lostAccountRecoveryInfo.delayPeriod.toNumber() / (24 * 60 * 10)).toFixed(4)) : 0}

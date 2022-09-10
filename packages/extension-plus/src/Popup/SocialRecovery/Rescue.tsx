@@ -49,7 +49,6 @@ function Rescue({ account, accountsInfo, addresesOnThisChain, api, chain, recove
     const chainName = chain?.name.replace(' Relay Chain', '');
 
     account?.accountId && chainName && getInitiations(chainName, account.accountId, 'rescuer', true).then((intiation: Initiation | null) => {
-      console.log('intiation:', intiation);
 
       setActiveRescue(intiation);
     });
@@ -91,7 +90,7 @@ function Rescue({ account, accountsInfo, addresesOnThisChain, api, chain, recove
 
   const RescuerSelection = () => (
     <Grid container justifyContent='center' sx={{ pt: 13 }}>
-      <Grid alignItems='center' container justifyContent='center' xs={6}>
+      <Grid alignItems='center' container item justifyContent='center' xs={6}>
         <Grid container item justifyContent='center' sx={{ fontSize: 12 }} >
           <StyledBadge
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
@@ -110,7 +109,7 @@ function Rescue({ account, accountsInfo, addresesOnThisChain, api, chain, recove
               <LoadingButton
                 color='warning'
                 loading={activeRescue === undefined}
-                loadingPosition='start'
+                // loadingPosition='start'
                 onClick={handleRescuer}
                 sx={{ textTransform: 'none', width: '80%' }}
                 variant='contained'
@@ -121,7 +120,7 @@ function Rescue({ account, accountsInfo, addresesOnThisChain, api, chain, recove
           </Paper>
         </Grid>
       </Grid>
-      <Grid alignItems='center' container justifyContent='center' xs={6}>
+      <Grid alignItems='center' container item justifyContent='center' xs={6}>
         <Grid container item justifyContent='center' sx={{ fontSize: 12 }} xs={6}>
           <StyledBadge
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}

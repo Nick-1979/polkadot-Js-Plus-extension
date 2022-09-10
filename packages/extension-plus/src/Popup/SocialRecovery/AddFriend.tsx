@@ -121,7 +121,6 @@ function AddFriend({ account, accountsInfo, addresesOnThisChain, chain, friends,
 
       accountInfo ? temp.push(accountInfo) : temp.push({ accountId: mayBeNewFriend, identity: undefined });
 
-      console.log('setting friends to ', [...temp]);
       setFriends([...temp]);
       setShowAddFriendModal(false);
     }

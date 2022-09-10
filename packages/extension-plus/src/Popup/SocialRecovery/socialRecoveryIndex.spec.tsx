@@ -22,6 +22,22 @@ import SocialRecoveryIndex from './index';
 jest.setTimeout(240000);
 ReactDOM.createPortal = jest.fn((modal) => modal);
 
+jest.mock('react-i18next', () => ({
+  // this mock makes sure any components using the translate HoC receive the t function as a prop
+  withTranslation: () => Component => {
+    Component.defaultProps = { ...Component.defaultProps, t: () => "" };
+    return Component;
+  },
+  useTranslation: () => {
+    return {
+      t: (str) => str,
+      i18n: {
+        changeLanguage: () => new Promise(() => {}),
+      },
+    };
+  },
+}));
+
 const validAddress = '5FbSap4BsWfjyRhCchoVdZHkDnmDm3NEgLZ25mesq4aw2WvX'; // Not recoverable account
 const kusamaGenesisHash = chain('kusama').definition.genesisHash;
 let recoveryConsts: RecoveryConsts;

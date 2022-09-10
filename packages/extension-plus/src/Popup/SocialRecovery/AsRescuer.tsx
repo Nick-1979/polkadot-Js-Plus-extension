@@ -37,7 +37,7 @@ interface Props extends ThemeProps {
   api: ApiPromise | undefined;
   account: DeriveAccountInfo | undefined;
   accountsInfo: DeriveAccountInfo[] | undefined;
-  chain: Chain;
+  chain: Chain | null;
   className?: string;
   handleCloseAsRescuer: () => void
   showAsRescuerModal: boolean;
@@ -94,7 +94,6 @@ function AsRescuer({ account, accountsInfo, addresesOnThisChain, api, chain, han
   }, [lostAccountBalance, redeemable, lostAccountRecoveryInfo, otherPossibleRescuersDeposit]);
 
   const resetPage = useCallback(() => {
-    console.log('reseting page ...');
     setState(undefined);
     setRemainingBlocksToClaim(undefined);
     setActiveStep(STEP_MAP.INIT);
@@ -206,12 +205,10 @@ function AsRescuer({ account, accountsInfo, addresesOnThisChain, api, chain, han
     // eslint-disable-next-line no-void
     lostAccount?.accountId && activeStep === STEP_MAP.WITHDRAW && api && void api.derive.balances?.all(lostAccount.accountId).then((b) => {
       setLostAccountBalance(b);
-      console.log('lost balances:', JSON.parse(JSON.stringify(b)));
 
       // eslint-disable-next-line no-void
       void api.query.staking.ledger(lostAccount.accountId).then((l) => {
         setLostAccountLedger(l?.isSome ? l.unwrap() as unknown as StakingLedger : null);
-        console.log('lost account ledger:', JSON.parse(JSON.stringify(l)));
       });
 
       // eslint-disable-next-line no-void
@@ -293,7 +290,6 @@ function AsRescuer({ account, accountsInfo, addresesOnThisChain, api, chain, han
     // eslint-disable-next-line no-void
     void api.query.recovery.recoverable(lostAccount.accountId).then((r) => {
       setLostAccountRecoveryInfo(r.isSome ? r.unwrap() as unknown as PalletRecoveryRecoveryConfig : null);
-      console.log('is lost account recoverable:', r.isSome ? JSON.parse(JSON.stringify(r.unwrap())) : 'null');
     });
   }, [api, lostAccount]);
 
@@ -315,8 +311,6 @@ function AsRescuer({ account, accountsInfo, addresesOnThisChain, api, chain, han
 
         setHasActiveRecoveries(activeRecovery);
         activeRecovery && setReceivedVouchers(activeRecovery.friends.length)
-
-        console.log('hasActiveRecoveries:', r.isSome ? JSON.parse(JSON.stringify(r.unwrap())) : 'no');
       });
     }
 
@@ -325,7 +319,6 @@ function AsRescuer({ account, accountsInfo, addresesOnThisChain, api, chain, han
       const proxy = r.isSome ? String(r.unwrap()) : null;
 
       setIsProxy(proxy === String(lostAccount.accountId));
-      console.log(`is a proxy ${proxy === String(lostAccount.accountId)} proxy address:${r.isSome ? r.unwrap().toString() : ''}`);
     });
   }, [account?.accountId, api, chain?.ss58Format, lostAccount, lostAccountRecoveryInfo]);
 

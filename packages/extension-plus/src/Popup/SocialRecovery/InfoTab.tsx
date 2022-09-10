@@ -44,10 +44,10 @@ function InfoTab({ api }: Props): React.ReactElement<Props> {
 
   return (
     <Grid container data-testid='info' sx={{ fontFamily: 'sans-serif', paddingTop: '75px', textAlign: 'center' }}>
-      <Grid sx={{ color: grey[600], fontSize: 15, fontWeight: '600' }} xs={12}>
+      <Grid item sx={{ color: grey[600], fontSize: 15, fontWeight: '600' }} xs={12}>
         {t('Welcome to social recovery')}
       </Grid>
-      <Grid sx={{ fontSize: 11, pt: '5px', pb: 2 }} xs={12}>
+      <Grid item sx={{ fontSize: 11, pb: 2, pt: '5px' }} xs={12}>
         {t('Information you need to know')}
         <Divider light />
       </Grid>

@@ -99,7 +99,7 @@ function AddNewAccount({ account, accountsInfo, addresesOnThisChain, chain, help
         return account;
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account?.accountId, addresesOnThisChain, setAccount]);
 
   useEffect(() => {
@@ -171,9 +171,9 @@ function AddNewAccount({ account, accountsInfo, addresesOnThisChain, chain, help
         <Autocomplete
           ListboxProps={{ sx: { fontSize: 12 } }}
           autoFocus
-          inputValue={info?.accountId || text}
-          // disabled={!accountsInfo?.length}
           freeSolo
+          // disabled={!accountsInfo?.length}
+          inputValue={info?.accountId || text}
           onChange={handleAutoComplateChange}
           onInputChange={handleInputChange}
           options={addresesOnThisChain?.map((option) => `${option?.name} :    ${option.address}`)}
@@ -185,7 +185,7 @@ function AddNewAccount({ account, accountsInfo, addresesOnThisChain, chain, help
               autoFocus
               error={!text}
               helperText={info &&
-                <Grid item sx={{ color: { helperColor } }}>
+                <Grid component='span' item sx={{ color: { helperColor } }}>
                   {helperText}
                 </Grid>
               }

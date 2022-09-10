@@ -1,9 +1,8 @@
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
+/* eslint-disable react/jsx-max-props-per-line */
 
-import { IconDefinition } from '@fortawesome/fontawesome-common-types/types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Avatar, Divider, Grid } from '@mui/material';
 import React from 'react';
 
@@ -14,7 +13,6 @@ import getLogo from '../util/getLogo';
 
 interface Props {
   chain: string | Chain;
-  // icon: IconDefinition;
   icon: React.ReactElement;
   title: string;
   closeText: string;
@@ -34,7 +32,7 @@ function PlusHeader({ action, chain, closeText, icon, title }: Props): React.Rea
             sx={{ height: 30, width: 30 }}
           />
         </Grid>
-        <Grid item container justifyContent='center' spacing={1} sx={{ fontWeight: 350 }} xs={10}>
+        <Grid container item justifyContent='center' spacing={1} sx={{ fontWeight: 350 }} xs={10}>
           <Grid item>
             {icon}
           </Grid>

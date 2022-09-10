@@ -16,6 +16,21 @@ import AsFriend from './AsFriend';
 
 jest.setTimeout(120000);
 ReactDOM.createPortal = jest.fn((modal) => modal);
+jest.mock('react-i18next', () => ({
+  // this mock makes sure any components using the translate HoC receive the t function as a prop
+  withTranslation: () => Component => {
+    Component.defaultProps = { ...Component.defaultProps, t: () => "" };
+    return Component;
+  },
+  useTranslation: () => {
+    return {
+      t: (str) => str,
+      i18n: {
+        changeLanguage: () => new Promise(() => {}),
+      },
+    };
+  },
+}));
 
 let chainInfo: ChainInfo;
 let recoveryConsts: RecoveryConsts;
@@ -42,7 +57,7 @@ describe('Testing AsFriend component', () => {
         addresesOnThisChain={addresesOnThisChain}
         api={chainInfo.api}
         chain={chain('westend')}
-        handleCloseAsFriend={showAsFriendModal()}
+        handleCloseAsFriend={handleCloseAsFriend}
         recoveryConsts={recoveryConsts}
         showAsFriendModal={showAsFriendModal()}
       />

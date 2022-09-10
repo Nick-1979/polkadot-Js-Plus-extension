@@ -81,7 +81,7 @@ function SocialRecovery({ className }: Props): React.ReactElement<Props> {
     // eslint-disable-next-line no-void
     void cryptoWaitReady().then(() => {
       keyring.loadAll({ store: new AccountsStore() });
-    }).catch(console.error);
+    }).catch(() => null);
   }, []);
 
   const handleAlladdressesOnThisChain = useCallback((prefix: number): void => {
@@ -142,7 +142,6 @@ function SocialRecovery({ className }: Props): React.ReactElement<Props> {
     // eslint-disable-next-line no-void
     void api.query.recovery.recoverable(account.accountId).then((r) => {
       setRecoveryInfo(r.isSome ? r.unwrap() as unknown as PalletRecoveryRecoveryConfig : null);
-      console.log('is recoverable:', r.isSome ? JSON.parse(JSON.stringify(r.unwrap())) : 'noch');
     });
   }, [api, account?.accountId]);
 
@@ -163,12 +162,12 @@ function SocialRecovery({ className }: Props): React.ReactElement<Props> {
   }, [api]);
 
   useEffect(() => {
-    if (!api) { return; }
+    if (!api) {
+      return;
+    }
 
     // eslint-disable-next-line no-void
     void api.query.identity.identityOf.entries().then((ids) => {
-      console.log(`${ids?.length} accountsInfo fetched from ${chain?.name}`);
-
       const accountsInfo = ids.map(([key, option]) => {
         return {
           accountId: encodeAddress('0x' + key.toString().slice(82), chain?.ss58Format),

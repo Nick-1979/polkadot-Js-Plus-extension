@@ -169,7 +169,7 @@ function MakeRecoverableTab({ account, accountsInfo, addresesOnThisChain, api, c
               }
             </Grid>
           ))
-          : <Grid alignItems='center' container justifyContent='center' sx={{ px: 3 }} xs={12}>
+          : <Grid alignItems='center' container justifyContent='center' sx={{ px: 3 }}>
             <Grid item>
               <Typography sx={{ color: 'text.secondary' }} variant='caption'>
                 {t('No friends are added yet!')}
@@ -179,7 +179,7 @@ function MakeRecoverableTab({ account, accountsInfo, addresesOnThisChain, api, c
         }
       </Grid>
       <Grid container item justifyContent='space-between' spacing={1.5} sx={{ mt: '25px' }} xs={12}>
-        <Grid alignItems='center' container justifyContent='flex-start' xs={6}>
+        <Grid alignItems='center' container item justifyContent='flex-start' xs={6}>
           <Grid item xs={1}>
             <Hint icon id='recoveryThreshold' place='top' tip='The threshold of vouches that is to be reached to recover the account'>
             </Hint>
@@ -206,7 +206,7 @@ function MakeRecoverableTab({ account, accountsInfo, addresesOnThisChain, api, c
             />
           </Grid>
         </Grid>
-        <Grid alignItems='center' container justifyContent='flex-end' xs={6}>
+        <Grid alignItems='center' container item justifyContent='flex-end' xs={6}>
           <Grid item xs={1}>
             <Hint icon id='recoveryDelay' place='top' tip='The delay after a recovery attempt is initialized that needs to pass before the account can be recovered' >
             </Hint>
