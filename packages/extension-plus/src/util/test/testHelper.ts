@@ -1986,12 +1986,14 @@ export const poolsInfo: PoolInfo[] = [
 export const lostAccfriends = [validatorsIdentities[3], validatorsIdentities[5]];
 export const signerAcc = validatorsIdentities[0];
 export const lostAccount = validatorsIdentities[0];
-export const rescuerAcc = validatorsIdentities[2].accountId;
-export const notRecoverableAcc = validatorsIdentities[4].accountId;
-export const notRescuerAcc = validatorsIdentities[6].accountId;
+export const rescuerAcc = validatorsIdentities[2];
+export const notRecoverableAcc = validatorsIdentities[4];
+export const notRescuerAcc = validatorsIdentities[6];
 export const addresesOnThisChain: nameAddress[] = [validatorsName[0], validatorsName[1], validatorsName[2]];
+export const configMyAcc = validatorsIdentities[0];
+export const kusamaAddress = 'Gc5K2sABfGQnshpvt74vr4uVHBg347rjV6WEGhMLaLdWCkv';
 export const rescuer: Rescuer = {
-  accountId: rescuerAcc,
+  accountId: rescuerAcc.accountId,
   identity: {
     display: validatorsName[2].name
   },

@@ -13,15 +13,14 @@ import { BN } from '@polkadot/util';
 
 import { ShowBalance2 } from '../../components';
 import getChainInfo from '../../util/getChainInfo';
-import { ChainInfo, nameAddress, RecoveryConsts } from '../../util/plusTypes';
-import { chain, makeShortAddr, validatorsIdentities as accountWithId, validatorsName as accountWithName } from '../../util/test/testHelper';
+import { ChainInfo, RecoveryConsts } from '../../util/plusTypes';
+import { addresesOnThisChain, chain, makeShortAddr, validatorsIdentities as accountWithId, validatorsName as accountWithName,signerAcc } from '../../util/test/testHelper';
 import RecoverableTab from './RecoverableTab';
 
 jest.setTimeout(240000);
 ReactDOM.createPortal = jest.fn((modal) => modal);
 
 let chainInfo: ChainInfo;
-const addresesOnThisChain: nameAddress[] = [accountWithName[0], accountWithName[1], accountWithName[2]];
 let recoveryConsts: RecoveryConsts;
 let counter: number;
 let recoveryInfo: PalletRecoveryRecoveryConfig;
@@ -29,7 +28,7 @@ let recoveryInfo: PalletRecoveryRecoveryConfig;
 describe('Testing RecoverableTab component', () => {
   describe('Making an account recoverable', () => {
     beforeAll(async () => {
-      chainInfo = await getChainInfo('kusama') as ChainInfo;
+      chainInfo = await getChainInfo('westend') as ChainInfo;
 
       recoveryConsts = {
         configDepositBase: chainInfo.api.consts.recovery.configDepositBase as unknown as BN,
@@ -38,14 +37,15 @@ describe('Testing RecoverableTab component', () => {
         recoveryDeposit: chainInfo.api.consts.recovery.recoveryDeposit as unknown as BN
       };
     });
+
     test('Checking if everything is working properly', () => {
       const { getByRole, queryAllByTestId, queryByText } = render(
         <RecoverableTab
-          account={accountWithId[0]}
+          account={signerAcc}
           accountsInfo={accountWithId} // undefined
           addresesOnThisChain={addresesOnThisChain} // empty
           api={chainInfo.api}
-          chain={chain('kusama')}
+          chain={chain('westend')}
           recoveryConsts={recoveryConsts} // undeifend
           recoveryInfo={null}
         />
@@ -127,11 +127,11 @@ describe('Testing RecoverableTab component', () => {
     test('When some props have not set yet', () => {
       const { getByRole } = render(
         <RecoverableTab
-          account={accountWithId[0]}
+          account={signerAcc}
           accountsInfo={undefined} // Don't care
           addresesOnThisChain={[]} // Don't care
           api={chainInfo.api}
-          chain={chain('kusama')}
+          chain={chain('westend')}
           recoveryConsts={undefined}
           recoveryInfo={null}
         />
@@ -156,7 +156,7 @@ describe('Testing RecoverableTab component', () => {
         recoveryDeposit: chainInfo.api.consts.recovery.recoveryDeposit as unknown as BN
       };
 
-      await chainInfo.api.query.recovery.recoverable(accountWithId[0].accountId).then((r) => {
+      await chainInfo.api.query.recovery.recoverable(signerAcc.accountId).then((r) => {
         recoveryInfo = r.unwrap() as unknown as PalletRecoveryRecoveryConfig;
       });
     });
@@ -164,11 +164,11 @@ describe('Testing RecoverableTab component', () => {
     test('Checking if everything is working properly', () => {
       const { getByRole, queryByRole, queryByTestId, queryByText } = render(
         <RecoverableTab
-          account={accountWithId[0]}
+          account={signerAcc}
           accountsInfo={accountWithId}
           addresesOnThisChain={addresesOnThisChain}
           api={chainInfo.api}
-          chain={chain('kusama')}
+          chain={chain('westend')}
           recoveryConsts={recoveryConsts}
           recoveryInfo={recoveryInfo}
         />
@@ -212,11 +212,11 @@ describe('Testing RecoverableTab component', () => {
     test('When some props have not set yet', () => {
       const { getByRole, queryByRole, queryByTestId, queryByText } = render(
         <RecoverableTab
-          account={accountWithId[0]}
+          account={signerAcc}
           accountsInfo={accountWithId}
           addresesOnThisChain={addresesOnThisChain}
           api={chainInfo.api}
-          chain={chain('kusama')}
+          chain={chain('westend')}
           recoveryConsts={undefined}
           recoveryInfo={recoveryInfo}
         />

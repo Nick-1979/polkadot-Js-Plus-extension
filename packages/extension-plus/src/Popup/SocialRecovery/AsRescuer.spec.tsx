@@ -13,21 +13,17 @@ import { BN } from '@polkadot/util';
 
 import getCurrentBlockNumber from '../../util/api/getCurrentBlockNumber';
 import getChainInfo from '../../util/getChainInfo';
-import { ChainInfo, nameAddress, RecoveryConsts } from '../../util/plusTypes';
+import { ChainInfo, RecoveryConsts } from '../../util/plusTypes';
 import { remainingTimeCountDown } from '../../util/plusUtils';
-import { chain, validatorsIdentities as accountWithId, validatorsName as accountWithName } from '../../util/test/testHelper';
+import { addresesOnThisChain, chain, lostAccount, notRecoverableAcc, notRescuerAcc, rescuerAcc, signerAcc, validatorsIdentities as accountWithId } from '../../util/test/testHelper';
 import AsRescuer from './AsRescuer';
 
-jest.setTimeout(90000);
+jest.setTimeout(20000);
 ReactDOM.createPortal = jest.fn((modal) => modal);
 
 let chainInfo: ChainInfo;
-const addresesOnThisChain: nameAddress[] = [accountWithName[0], accountWithName[1], accountWithName[2]];
 let recoveryConsts: RecoveryConsts;
 const showAsRescuerModal = () => true;
-const notRecoverableAccount = accountWithName[6].address;
-const recoverableAccount = accountWithName[0].address;
-const initaitedRescuerAcc = accountWithId[2];
 
 describe('Testing AsRescuer component', () => {
   beforeAll(async () => {
@@ -44,7 +40,7 @@ describe('Testing AsRescuer component', () => {
   test('Checking the existance of the elements', async () => {
     const { getByRole, queryByText } = render(
       <AsRescuer
-        account={accountWithId[3]} // undefined
+        account={rescuerAcc} // undefined
         accountsInfo={accountWithId} // undefined - don't care
         addresesOnThisChain={addresesOnThisChain} // Don't care
         api={chainInfo.api} // Undefined
@@ -76,7 +72,7 @@ describe('Testing AsRescuer component', () => {
   test('Not recoverable account as lost account', async () => {
     const { getByRole, queryByText } = render(
       <AsRescuer
-        account={accountWithId[3]} // undefined
+        account={rescuerAcc} // undefined
         accountsInfo={accountWithId} // undefined - don't care
         addresesOnThisChain={addresesOnThisChain} // Don't care
         api={chainInfo.api}
@@ -88,7 +84,7 @@ describe('Testing AsRescuer component', () => {
       />
     );
 
-    fireEvent.change(getByRole('combobox', { hidden: true, name: 'Lost' }), { target: { value: notRecoverableAccount } });
+    fireEvent.change(getByRole('combobox', { hidden: true, name: 'Lost' }), { target: { value: String(notRecoverableAcc.accountId) } });
     expect(queryByText('No indetity found for this account!')).toBeFalsy();
     fireEvent.click(getByRole('button', { hidden: true, name: 'Confirm the account address' }));
     expect(getByRole('progressbar', { hidden: true })).toBeTruthy();
@@ -107,7 +103,7 @@ describe('Testing AsRescuer component', () => {
   test('Recoverable account as lost account; phase 1: Initiate', async () => {
     const { getByRole, queryByText } = render(
       <AsRescuer
-        account={accountWithId[3]} // undefined
+        account={notRescuerAcc} // undefined
         accountsInfo={accountWithId} // undefined - don't care
         addresesOnThisChain={addresesOnThisChain} // Don't care
         api={chainInfo.api} // Undefined
@@ -119,7 +115,7 @@ describe('Testing AsRescuer component', () => {
       />
     );
 
-    fireEvent.change(getByRole('combobox', { hidden: true, name: 'Lost' }), { target: { value: recoverableAccount } });
+    fireEvent.change(getByRole('combobox', { hidden: true, name: 'Lost' }), { target: { value: lostAccount.accountId?.toString() } });
     fireEvent.click(getByRole('button', { hidden: true, name: 'Confirm the account address' }));
     expect(getByRole('progressbar', { hidden: true })).toBeTruthy();
     expect(queryByText('Checking the account')).toBeTruthy();
@@ -138,13 +134,13 @@ describe('Testing AsRescuer component', () => {
     let initiateRecoveryBlock = 0;
     let recoveryInfo: PalletRecoveryRecoveryConfig;
 
-    await chainInfo.api.query.recovery.activeRecoveries(recoverableAccount, initaitedRescuerAcc.accountId).then((activeRecovery) => {
+    await chainInfo.api.query.recovery.activeRecoveries(lostAccount.accountId?.toString(), rescuerAcc.accountId).then((activeRecovery) => {
       const unwrapedRescuer = activeRecovery.unwrap();
 
       initiateRecoveryBlock = unwrapedRescuer.created.toNumber() as number;
       VouchedFriends = JSON.parse(JSON.stringify(unwrapedRescuer.friends)) as string[];
     });
-    await chainInfo.api.query.recovery.recoverable(recoverableAccount).then((r) => {
+    await chainInfo.api.query.recovery.recoverable(lostAccount.accountId?.toString()).then((r) => {
       recoveryInfo = r.unwrap() as unknown as PalletRecoveryRecoveryConfig;
     });
 
@@ -156,7 +152,7 @@ describe('Testing AsRescuer component', () => {
 
     const { getByRole, queryByText } = render(
       <AsRescuer
-        account={initaitedRescuerAcc} // undefined
+        account={rescuerAcc} // undefined
         accountsInfo={accountWithId} // undefined - don't care
         addresesOnThisChain={addresesOnThisChain} // Don't care
         api={chainInfo.api} // Undefined
@@ -168,7 +164,7 @@ describe('Testing AsRescuer component', () => {
       />
     );
 
-    fireEvent.change(getByRole('combobox', { hidden: true, name: 'Lost' }), { target: { value: recoverableAccount } });
+    fireEvent.change(getByRole('combobox', { hidden: true, name: 'Lost' }), { target: { value: lostAccount.accountId?.toString() } });
     fireEvent.click(getByRole('button', { hidden: true, name: 'Confirm the account address' }));
     await waitForElementToBeRemoved(() => queryByText('Checking the account'), {
       onTimeout: () => {
@@ -196,9 +192,9 @@ describe('Testing AsRescuer component', () => {
   });
 
   test('Recovering an account; phase 3: Withdraw', async () => {
-    const { getByRole, queryByText } = render(
+    const { debug, getByRole, queryByText } = render(
       <AsRescuer
-        account={accountWithId[0]} // undefined
+        account={signerAcc} // undefined
         accountsInfo={accountWithId} // undefined - don't care
         addresesOnThisChain={addresesOnThisChain} // Don't care
         api={chainInfo.api} // Undefined
@@ -210,7 +206,7 @@ describe('Testing AsRescuer component', () => {
       />
     );
 
-    fireEvent.change(getByRole('combobox', { hidden: true, name: 'Lost' }), { target: { value: recoverableAccount } });
+    fireEvent.change(getByRole('combobox', { hidden: true, name: 'Lost' }), { target: { value: lostAccount.accountId?.toString() } });
     fireEvent.click(getByRole('button', { hidden: true, name: 'Confirm the account address' }));
     await waitForElementToBeRemoved(() => queryByText('Checking the account'), {
       onTimeout: () => {
@@ -220,9 +216,10 @@ describe('Testing AsRescuer component', () => {
     });
     await waitFor(() => expect(queryByText('The lost account\'s balance(s) can be withdrawn')).toBeTruthy(), {
       onTimeout: () => {
+        debug(undefined, 30000);
         throw new Error('Something went wrong at showing the Step 3: Withdraw Recovery progress!');
       },
-      timeout: 5000
+      timeout: 15000
     });
     await waitFor(() => expect(queryByText('Total')).toBeTruthy(), {
       onTimeout: () => {

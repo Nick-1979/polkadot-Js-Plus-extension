@@ -16,13 +16,12 @@ import { BN } from '@polkadot/util';
 import { ShowBalance2 } from '../../components';
 import getChainInfo from '../../util/getChainInfo';
 import { ChainInfo, RecoveryConsts } from '../../util/plusTypes';
-import { accounts, chain, SettingsStruct } from '../../util/test/testHelper';
+import { accounts, chain, kusamaAddress, SettingsStruct } from '../../util/test/testHelper';
 import SocialRecoveryIndex from './index';
 
-jest.setTimeout(240000);
+jest.setTimeout(150000);
 ReactDOM.createPortal = jest.fn((modal) => modal);
 
-const validAddress = '5FbSap4BsWfjyRhCchoVdZHkDnmDm3NEgLZ25mesq4aw2WvX'; // Not recoverable account
 const kusamaGenesisHash = chain('kusama').definition.genesisHash;
 let recoveryConsts: RecoveryConsts;
 let chainInfo: ChainInfo;
@@ -48,7 +47,7 @@ describe('Testing Social Recovery component', () => {
             hierarchy: buildHierarchy(accounts)
           }}
         >
-          <MemoryRouter initialEntries={[`/socialRecovery/${kusamaGenesisHash}/${validAddress}`]}>
+          <MemoryRouter initialEntries={[`/socialRecovery/${kusamaGenesisHash}/${kusamaAddress}`]}>
             <Route path='/socialRecovery/:genesisHash/:address'>
               <SocialRecoveryIndex />
             </Route>
@@ -139,7 +138,7 @@ describe('Testing Social Recovery component', () => {
             hierarchy: buildHierarchy(accounts)
           }}
         >
-          <MemoryRouter initialEntries={[`/socialRecovery/${kusamaGenesisHash}/${validAddress}`]}>
+          <MemoryRouter initialEntries={[`/socialRecovery/${kusamaGenesisHash}/${kusamaAddress}`]}>
             <Route path='/socialRecovery/:genesisHash/:address'>
               <SocialRecoveryIndex />
             </Route>
@@ -166,7 +165,7 @@ describe('Testing Social Recovery component', () => {
     expect(queryByText('as Friend')).toBeTruthy();
     expect(queryByText('If you are set as a friend account of a lost account, you can vouch the recovery of the lost account by a rescuer.')).toBeTruthy();
     expect(getByRole('button', { hidden: true, name: 'Vouch' })).toBeTruthy();
-    expect(getByRole('progressbar', { hidden: true })).toBeTruthy(); // progressbar in the Rescue button, 
+    expect(getByRole('progressbar', { hidden: true })).toBeTruthy(); // progressbar in the Rescue button,
 
     await waitForElementToBeRemoved(() => getByRole('progressbar', { hidden: true }), {
       onTimeout: () => {
@@ -207,7 +206,7 @@ describe('Testing Social Recovery component', () => {
             hierarchy: buildHierarchy(accounts)
           }}
         >
-          <MemoryRouter initialEntries={[`/socialRecovery/${kusamaGenesisHash}/${validAddress}`]}>
+          <MemoryRouter initialEntries={[`/socialRecovery/${kusamaGenesisHash}/${kusamaAddress}`]}>
             <Route path='/socialRecovery/:genesisHash/:address'>
               <SocialRecoveryIndex />
             </Route>

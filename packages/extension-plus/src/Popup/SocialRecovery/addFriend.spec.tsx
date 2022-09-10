@@ -9,13 +9,12 @@ import ReactDOM from 'react-dom';
 
 import { DeriveAccountInfo } from '@polkadot/api-derive/types';
 
-import { nameAddress } from '../../util/plusTypes';
-import { chain, validatorsIdentities as accountWithId, validatorsName as accountWithName } from '../../util/test/testHelper';
+import { addresesOnThisChain, chain, signerAcc, validatorsIdentities as accountWithId, validatorsName as accountWithName } from '../../util/test/testHelper';
 import AddFriend from './AddFriend';
 
 jest.setTimeout(90000);
 ReactDOM.createPortal = jest.fn((modal) => modal);
-const addresesOnThisChain: nameAddress[] = [accountWithName[0], accountWithName[1], accountWithName[2]];
+
 let friends: DeriveAccountInfo[] = [];
 const showAddFriendModal = () => true;
 const setShowAddFriendModal = jest.fn();
@@ -25,7 +24,7 @@ describe('Testing addFriend component', () => {
   test('Checking the existance of elements', () => {
     const { getByRole, queryByText } = render(
       <AddFriend
-        account={accountWithId[0]}
+        account={signerAcc}
         accountsInfo={accountWithId}
         addresesOnThisChain={addresesOnThisChain}
         chain={chain('westend')}
@@ -52,7 +51,7 @@ describe('Testing addFriend component', () => {
     for (const account of accs) {
       const { getByRole, queryByText } = render(
         <AddFriend
-          account={accountWithId[0]}
+          account={signerAcc}
           accountsInfo={accountWithId}
           addresesOnThisChain={addresesOnThisChain}
           chain={chain('westend')}
@@ -78,7 +77,7 @@ describe('Testing addFriend component', () => {
     setShowAddFriendModal.mockReset();
     const { getByRole } = render(
       <AddFriend
-        account={accountWithId[0]}
+        account={signerAcc}
         accountsInfo={accountWithId}
         addresesOnThisChain={addresesOnThisChain}
         chain={chain('westend')}
@@ -89,7 +88,7 @@ describe('Testing addFriend component', () => {
       />
     );
 
-    fireEvent.change(getByRole('combobox', { hidden: true, name: 'New friend' }), { target: { value: accountWithName[0].address } });
+    fireEvent.change(getByRole('combobox', { hidden: true, name: 'New friend' }), { target: { value: signerAcc.accountId?.toString() } });
     fireEvent.click(getByRole('button', { hidden: true, name: 'Add' }));
     expect(setFriends).not.toHaveBeenCalled();
     expect(setShowAddFriendModal).not.toHaveBeenCalled();
@@ -107,7 +106,7 @@ describe('Testing addFriend component', () => {
 
     const { getByRole } = render(
       <AddFriend
-        account={accountWithId[0]}
+        account={signerAcc}
         accountsInfo={accountWithId}
         addresesOnThisChain={addresesOnThisChain}
         chain={chain('westend')}
@@ -130,7 +129,7 @@ describe('Testing addFriend component', () => {
     friends = [];
     const { getByRole, queryByText } = render(
       <AddFriend
-        account={accountWithId[0]}
+        account={signerAcc}
         accountsInfo={accountWithId}
         addresesOnThisChain={addresesOnThisChain}
         chain={chain('westend')}
@@ -154,7 +153,7 @@ describe('Testing addFriend component', () => {
     friends = [];
     const { getByRole } = render(
       <AddFriend
-        account={accountWithId[0]}
+        account={signerAcc}
         accountsInfo={accountWithId}
         addresesOnThisChain={addresesOnThisChain}
         chain={chain('westend')}

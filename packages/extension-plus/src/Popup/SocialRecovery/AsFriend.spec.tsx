@@ -75,7 +75,7 @@ describe('Testing AsFriend component', () => {
       />
     );
 
-    fireEvent.change(queryByRole('combobox', { hidden: true, name: 'Lost' }) as Element, { target: { value: notRecoverableAcc } });
+    fireEvent.change(queryByRole('combobox', { hidden: true, name: 'Lost' }) as Element, { target: { value: String(notRecoverableAcc.accountId) } });
     expect(queryByRole('button', { hidden: true, name: 'Confirm the account address' })).toBeTruthy();
     fireEvent.click(queryByRole('button', { hidden: true, name: 'Confirm the account address' }) as Element);
 
@@ -115,7 +115,7 @@ describe('Testing AsFriend component', () => {
     expect(queryByRole('combobox', { hidden: true, name: 'Rescuer' })).toBeTruthy();
     expect(queryByRole('button', { hidden: true, name: 'Next' })?.hasAttribute('disabled')).toBe(true);
 
-    fireEvent.change(queryByRole('combobox', { hidden: true, name: 'Rescuer' }) as Element, { target: { value: notRescuerAcc } });
+    fireEvent.change(queryByRole('combobox', { hidden: true, name: 'Rescuer' }) as Element, { target: { value: notRescuerAcc.accountId?.toString() } });
     expect(queryByRole('button', { hidden: true, name: 'Confirm the account address' })).toBeTruthy();
     fireEvent.click(queryByRole('button', { hidden: true, name: 'Confirm the account address' }) as Element);
 
@@ -177,7 +177,7 @@ describe('Testing AsFriend component', () => {
 
     await waitFor(() => expect(queryByText('Enter the rescuer account address (or search by identity):')).toBeTruthy(), { timeout: 15000 });
     expect(queryByRole('combobox', { hidden: true, name: 'Rescuer' })).toBeTruthy();
-    fireEvent.change(queryByRole('combobox', { hidden: true, name: 'Rescuer' }) as Element, { target: { value: rescuerAcc?.toString() } });
+    fireEvent.change(queryByRole('combobox', { hidden: true, name: 'Rescuer' }) as Element, { target: { value: rescuerAcc.accountId?.toString() } });
     fireEvent.click(queryByRole('button', { hidden: true, name: 'Confirm the account address' }) as Element);
 
     expect(queryByText('Checking the resuer account')).toBeTruthy();
@@ -189,7 +189,7 @@ describe('Testing AsFriend component', () => {
   });
 
   test('Already vouched friend', async () => {
-    const { debug, queryByRole, queryByText } = render(
+    const { queryByRole, queryByText } = render(
       <AsFriend
         account={lostAccfriends[0]}
         accountsInfo={accountWithId}
@@ -213,7 +213,7 @@ describe('Testing AsFriend component', () => {
 
     await waitFor(() => expect(queryByText('Enter the rescuer account address (or search by identity):')).toBeTruthy(), { timeout: 15000 });
     expect(queryByRole('combobox', { hidden: true, name: 'Rescuer' })).toBeTruthy();
-    fireEvent.change(queryByRole('combobox', { hidden: true, name: 'Rescuer' }) as Element, { target: { value: rescuerAcc?.toString() } });
+    fireEvent.change(queryByRole('combobox', { hidden: true, name: 'Rescuer' }) as Element, { target: { value: rescuerAcc.accountId?.toString() } });
     fireEvent.click(queryByRole('button', { hidden: true, name: 'Confirm the account address' }) as Element);
 
     expect(queryByText('Checking the resuer account')).toBeTruthy();
@@ -239,7 +239,7 @@ describe('Testing AsFriend component', () => {
         />
       );
 
-      fireEvent.change(queryByRole('combobox', { hidden: true, name: 'Lost' }) as Element, { target: { value: (i === 0) ? lostAccount.accountId?.toString() : notRecoverableAcc?.toString() } });
+      fireEvent.change(queryByRole('combobox', { hidden: true, name: 'Lost' }) as Element, { target: { value: (i === 0) ? lostAccount.accountId?.toString() : notRecoverableAcc.accountId?.toString() } });
       expect(queryByRole('button', { hidden: true, name: 'Confirm the account address' })).toBeTruthy();
       fireEvent.click(queryByRole('button', { hidden: true, name: 'Confirm the account address' }) as Element);
 

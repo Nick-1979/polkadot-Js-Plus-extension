@@ -10,8 +10,8 @@ import ReactDOM from 'react-dom';
 import { BN } from '@polkadot/util';
 
 import getChainInfo from '../../util/getChainInfo';
-import { ChainInfo, nameAddress, RecoveryConsts, Rescuer } from '../../util/plusTypes';
-import { chain, validatorsIdentities as accountWithId, validatorsName as accountWithName } from '../../util/test/testHelper';
+import { ChainInfo, RecoveryConsts } from '../../util/plusTypes';
+import { addresesOnThisChain, chain, configMyAcc, rescuer, validatorsIdentities as accountWithId } from '../../util/test/testHelper';
 import Configure from './Configure';
 
 jest.setTimeout(240000);
@@ -19,18 +19,9 @@ ReactDOM.createPortal = jest.fn((modal) => modal);
 
 let chainInfo: ChainInfo;
 let recoveryConsts: RecoveryConsts;
-const rescuerValue: Rescuer = {
-  accountId: accountWithId[1].accountId,
-  option: {
-    created: new BN('11907021'),
-    deposit: new BN('5000000000000'),
-    friends: ['5G6TeiXHZJFV3DtPABJ22thuLguSEPJgH7FkqcRPrn88mFKh']
-  }
-};
-const addresesOnThisChain: nameAddress[] = [accountWithName[0], accountWithName[1], accountWithName[2]];
-const setConfigureModalOpen = () => undefined;
+const setConfigureModalOpen = jest.fn();
 const recoveryInfoStates = [undefined, null];
-const rescuerStates = [undefined, null, rescuerValue];
+const rescuerStates = [undefined, null, rescuer];
 const apiStates = [undefined];
 
 describe('Testing the Configure component', () => {
@@ -44,7 +35,7 @@ describe('Testing the Configure component', () => {
       recoveryDeposit: chainInfo.api.consts.recovery.recoveryDeposit as unknown as BN
     };
 
-    await chainInfo.api.query.recovery.recoverable(accountWithId[0].accountId).then((r) => {
+    await chainInfo.api.query.recovery.recoverable(configMyAcc.accountId).then((r) => {
       recoveryInfoStates.push(r.unwrap());
     });
   });
@@ -55,11 +46,11 @@ describe('Testing the Configure component', () => {
         for (const rescuer of rescuerStates) {
           const { getByRole, queryByText } = render(
             <Configure
-              account={accountWithId[1]}
+              account={configMyAcc}
               accountsInfo={accountWithId} // don't care
               addresesOnThisChain={addresesOnThisChain} // don't care
               api={api}
-              chain={chain('kusama')} // don't care
+              chain={chain('westend')} // don't care
               recoveryConsts={recoveryConsts} // don't care
               recoveryInfo={recoveryInfo}
               rescuer={rescuer}
