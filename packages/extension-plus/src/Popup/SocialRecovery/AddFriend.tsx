@@ -259,7 +259,6 @@ function AddFriend({ account, accountsInfo, addresesOnThisChain, chain, friends,
             {t('Add')}
           </Button>
         </Grid>
-
       </Grid>
     </Popup>
   );
