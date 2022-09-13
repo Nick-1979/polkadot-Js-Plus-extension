@@ -35,14 +35,17 @@ interface Props {
   accountsInfo: DeriveAccountInfo[] | undefined;
   addresesOnThisChain: nameAddress[] | undefined;
   api: ApiPromise;
+  recoveryThreshold: number;
+  setRecoveryThreshold: React.Dispatch<React.SetStateAction<number>>;
+  recoveryDelay: number;
+  setRecoveryDelay: React.Dispatch<React.SetStateAction<number>>;
+  friends: DeriveAccountInfo[];
+  setFriends: React.Dispatch<React.SetStateAction<DeriveAccountInfo[]>>;
 }
 
-function MakeRecoverableTab({ account, accountsInfo, addresesOnThisChain, api, chain, recoveryConsts, recoveryInfo }: Props): React.ReactElement<Props> {
+function MakeRecoverableTab({ account, accountsInfo, addresesOnThisChain, api, chain, friends, recoveryConsts, recoveryDelay, recoveryInfo, recoveryThreshold, setFriends, setRecoveryDelay, setRecoveryThreshold }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
 
-  const [recoveryThreshold, setRecoveryThreshold] = useState<number>(0);
-  const [recoveryDelay, setRecoveryDelay] = useState<number>(0);
-  const [friends, setFriends] = useState<DeriveAccountInfo[]>([]);
   const [showConfirmModal, setConfirmModalOpen] = useState<boolean>(false);
   const [showAddFriendModal, setShowAddFriendModal] = useState<boolean>(false);
   const [state, setState] = useState<string | undefined>();
@@ -61,7 +64,7 @@ function MakeRecoverableTab({ account, accountsInfo, addresesOnThisChain, api, c
   const handleDeleteFriend = useCallback((index: number) => {
     friends.splice(index, 1);
     setFriends([...friends]);
-  }, [friends]);
+  }, [friends, setFriends]);
 
   const handleRecoveryDelay = useCallback((event: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>) => {
     const top4char = event.target.value.substr(0, 4) as string;
@@ -88,7 +91,7 @@ function MakeRecoverableTab({ account, accountsInfo, addresesOnThisChain, api, c
     });
 
     setFriends(onChainFriendsAccountInfo);
-  }, [recoveryInfo, accountsInfo]);
+  }, [recoveryInfo, accountsInfo, setRecoveryThreshold, setRecoveryDelay, setFriends]);
 
   useEffect(() => {
     recoveryConsts?.friendDepositFactor && recoveryConsts?.configDepositBase && friends?.length && setDeposit(recoveryConsts.configDepositBase.add(recoveryConsts.friendDepositFactor.muln(friends.length)));
@@ -109,8 +112,9 @@ function MakeRecoverableTab({ account, accountsInfo, addresesOnThisChain, api, c
       return f;
     });
 
-    friendsWithLocalNamesIfNeeded?.lenght && setFriends([...friendsWithLocalNamesIfNeeded]);
-  }, [addresesOnThisChain, friends?.length]);
+    friendsWithLocalNamesIfNeeded?.length && setFriends([...friendsWithLocalNamesIfNeeded]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [addresesOnThisChain, friends?.length, setFriends]);
 
   return (
     <>
@@ -180,10 +184,6 @@ function MakeRecoverableTab({ account, accountsInfo, addresesOnThisChain, api, c
       </Grid>
       <Grid container item justifyContent='space-between' spacing={1.5} sx={{ mt: '25px' }} xs={12}>
         <Grid alignItems='center' container item justifyContent='flex-start' xs={6}>
-          <Grid item xs={1}>
-            <Hint icon id='recoveryThreshold' place='top' tip='The threshold of vouches that is to be reached to recover the account'>
-            </Hint>
-          </Grid>
           <Grid item xs={10}>
             <TextField
               InputLabelProps={{ shrink: true }}
@@ -205,12 +205,12 @@ function MakeRecoverableTab({ account, accountsInfo, addresesOnThisChain, api, c
               variant='outlined'
             />
           </Grid>
-        </Grid>
-        <Grid alignItems='center' container item justifyContent='flex-end' xs={6}>
-          <Grid item xs={1}>
-            <Hint icon id='recoveryDelay' place='top' tip='The delay after a recovery attempt is initialized that needs to pass before the account can be recovered' >
+          <Grid item xs={1} sx={{ pt: '15px' }}>
+            <Hint icon id='recoveryThreshold' place='top' tip='The threshold of vouches that is to be reached to recover the account'>
             </Hint>
           </Grid>
+        </Grid>
+        <Grid alignItems='center' container item justifyContent='flex-end' xs={6}>
           <Grid item xs={10}>
             <TextField
               InputLabelProps={{ shrink: true }}
@@ -230,6 +230,10 @@ function MakeRecoverableTab({ account, accountsInfo, addresesOnThisChain, api, c
               value={recoveryDelay}
               variant='outlined'
             />
+          </Grid>
+          <Grid item xs={1} sx={{ pt: '15px' }}>
+            <Hint icon id='recoveryDelay' place='top' tip='The delay after a recovery attempt is initialized that needs to pass before the account can be recovered' >
+            </Hint>
           </Grid>
         </Grid>
       </Grid>

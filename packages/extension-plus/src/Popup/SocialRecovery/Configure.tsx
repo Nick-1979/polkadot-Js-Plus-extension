@@ -12,7 +12,7 @@ import type { DeriveAccountInfo } from '@polkadot/api-derive/types';
 import type { PalletRecoveryRecoveryConfig } from '@polkadot/types/lookup';
 import type { ThemeProps } from '../../../../extension-ui/src/types';
 
-import { AddModeratorOutlined as AddModeratorOutlinedIcon, GppMaybeOutlined as GppMaybeOutlinedIcon, InfoOutlined as InfoOutlinedIcon, PolicyOutlined as PolicyOutlinedIcon, Security as SecurityIcon,VerifiedUserOutlined as VerifiedUserOutlinedIcon } from '@mui/icons-material';
+import { AddModeratorOutlined as AddModeratorOutlinedIcon, GppMaybeOutlined as GppMaybeOutlinedIcon, InfoOutlined as InfoOutlinedIcon, PolicyOutlined as PolicyOutlinedIcon, Security as SecurityIcon, VerifiedUserOutlined as VerifiedUserOutlinedIcon } from '@mui/icons-material';
 import { Grid, Tab, Tabs } from '@mui/material';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
@@ -48,6 +48,9 @@ function Configure({ account, accountsInfo, addresesOnThisChain, api, chain, cla
 
   const [tabValue, setTabValue] = useState('configuration');
   const [status, setStatus] = useState<string | undefined>(recoveryStatus);
+  const [recoveryThreshold, setRecoveryThreshold] = useState<number>(0);
+  const [recoveryDelay, setRecoveryDelay] = useState<number>(0);
+  const [friends, setFriends] = useState<DeriveAccountInfo[]>([]);
 
   const handleTabChange = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
@@ -90,8 +93,14 @@ function Configure({ account, accountsInfo, addresesOnThisChain, api, chain, cla
             addresesOnThisChain={addresesOnThisChain}
             api={api}
             chain={chain}
+            friends={friends}
             recoveryConsts={recoveryConsts}
+            recoveryDelay={recoveryDelay}
             recoveryInfo={recoveryInfo}
+            recoveryThreshold={recoveryThreshold}
+            setFriends={setFriends}
+            setRecoveryDelay={setRecoveryDelay}
+            setRecoveryThreshold={setRecoveryThreshold}
           />
         }
         {tabValue === 'configuration' && status && status === 'closeRecovery' && rescuer && account &&
