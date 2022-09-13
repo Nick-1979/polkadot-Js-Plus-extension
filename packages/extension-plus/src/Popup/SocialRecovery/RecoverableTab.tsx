@@ -113,7 +113,7 @@ function MakeRecoverableTab({ account, accountsInfo, addresesOnThisChain, api, c
     });
 
     friendsWithLocalNamesIfNeeded?.length && setFriends([...friendsWithLocalNamesIfNeeded]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addresesOnThisChain, friends?.length, setFriends]);
 
   return (
@@ -184,10 +184,6 @@ function MakeRecoverableTab({ account, accountsInfo, addresesOnThisChain, api, c
       </Grid>
       <Grid container item justifyContent='space-between' spacing={1.5} sx={{ mt: '25px' }} xs={12}>
         <Grid alignItems='center' container item justifyContent='flex-start' xs={6}>
-          <Grid item xs={1}>
-            <Hint icon id='recoveryThreshold' place='top' tip='The threshold of vouches that is to be reached to recover the account'>
-            </Hint>
-          </Grid>
           <Grid item xs={10}>
             <TextField
               InputLabelProps={{ shrink: true }}
@@ -209,12 +205,12 @@ function MakeRecoverableTab({ account, accountsInfo, addresesOnThisChain, api, c
               variant='outlined'
             />
           </Grid>
-        </Grid>
-        <Grid alignItems='center' container item justifyContent='flex-end' xs={6}>
-          <Grid item xs={1}>
-            <Hint icon id='recoveryDelay' place='top' tip='The delay after a recovery attempt is initialized that needs to pass before the account can be recovered' >
+          <Grid item xs={1} sx={{ pt: '15px' }}>
+            <Hint icon id='recoveryThreshold' place='top' tip='The threshold of vouches that is to be reached to recover the account'>
             </Hint>
           </Grid>
+        </Grid>
+        <Grid alignItems='center' container item justifyContent='flex-end' xs={6}>
           <Grid item xs={10}>
             <TextField
               InputLabelProps={{ shrink: true }}
@@ -234,6 +230,10 @@ function MakeRecoverableTab({ account, accountsInfo, addresesOnThisChain, api, c
               value={recoveryDelay}
               variant='outlined'
             />
+          </Grid>
+          <Grid item xs={1} sx={{ pt: '15px' }}>
+            <Hint icon id='recoveryDelay' place='top' tip='The delay after a recovery attempt is initialized that needs to pass before the account can be recovered' >
+            </Hint>
           </Grid>
         </Grid>
       </Grid>
