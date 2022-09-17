@@ -6,12 +6,13 @@ import type { AccountId } from '@polkadot/types/interfaces';
 import type { Compact, u128 } from '@polkadot/types-codec';
 
 import { ApiPromise } from '@polkadot/api';
-import { AccountWithChildren } from '@polkadot/extension-base/background/types';
+import { AccountJson, AccountWithChildren } from '@polkadot/extension-base/background/types';
 import { Chain } from '@polkadot/extension-chains/types';
-import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
+import { decodeAddress, encodeAddress } from '@polkadot/keyring';
+import { hexToU8a, isHex } from '@polkadot/util';
 
 import { BLOCK_RATE, FLOATING_POINT_DIGIT, SHORT_ADDRESS_CHARACTERS } from './constants';
-import { AccountsBalanceType, SavedMetaData, TransactionDetail } from './plusTypes';
+import { AccountsBalanceType, NameAddress, SavedMetaData, TransactionDetail } from './plusTypes';
 
 interface Meta {
   docs: Text[];
@@ -269,6 +270,41 @@ export function saveHistory(chain: Chain | null, hierarchy: AccountWithChildren[
 
 //   return (values[half - 1] + values[half]) / 2.0;
 // }
+
+export function getAllFormattedAddressesOnThisChain(
+  chain: Chain,
+  settingsPrefix: number,
+  accounts: AccountJson[],
+  me: string,
+  ignoreMe = true): NameAddress[] {
+  const prefix: number = chain ? chain.ss58Format : (settingsPrefix === -1 ? 42 : settingsPrefix);
+
+  return accounts.reduce(function (result: NameAddress[], acc): NameAddress[] {
+    const publicKey = decodeAddress(acc.address);
+
+    if (ignoreMe && acc.address === me) {
+      return result;
+    }
+
+    result.push({ address: encodeAddress(publicKey, prefix), name: acc?.name });
+
+    return result;
+  }, []);
+}
+
+export function isValidAddress(_address: string | undefined): boolean {
+  try {
+    encodeAddress(
+      isHex(_address)
+        ? hexToU8a(_address)
+        : decodeAddress(_address)
+    );
+
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
 
 export function isJsonString(str: string): boolean {
   try {
