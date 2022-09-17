@@ -11,15 +11,15 @@
 import type { DeriveAccountInfo } from '@polkadot/api-derive/types';
 import type { PalletRecoveryRecoveryConfig } from '@polkadot/types/lookup';
 import type { ThemeProps } from '../../../../extension-ui/src/types';
- 
+
 import { AddModeratorOutlined as AddModeratorOutlinedIcon, GppMaybeOutlined as GppMaybeOutlinedIcon, InfoOutlined as InfoOutlinedIcon, PolicyOutlined as PolicyOutlinedIcon, Security as SecurityIcon, VerifiedUserOutlined as VerifiedUserOutlinedIcon } from '@mui/icons-material';
 import { Grid, Tab, Tabs } from '@mui/material';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
- 
+
 import { ApiPromise } from '@polkadot/api';
 import { Chain } from '@polkadot/extension-chains/types';
- 
+
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { PlusHeader, Popup } from '../../components';
 import { nameAddress, RecoveryConsts, Rescuer } from '../../util/plusTypes';
@@ -27,7 +27,7 @@ import CloseRecoveryTab from './CloseRecoveryTab';
 import InfoTab from './InfoTab';
 import RecoverableTab from './RecoverableTab';
 import RecoveryChecking from './RecoveryCheckingTab';
- 
+
 interface Props extends ThemeProps {
   className?: string;
   account: DeriveAccountInfo | undefined;
@@ -42,24 +42,24 @@ interface Props extends ThemeProps {
   setConfigureModalOpen: React.Dispatch<React.SetStateAction<boolean | undefined>>;
   recoveryStatus?: string;
 }
- 
+
 function Configure({ account, accountsInfo, addresesOnThisChain, api, chain, className, recoveryConsts, recoveryInfo, recoveryStatus, rescuer, setConfigureModalOpen, showConfigureModal }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
- 
+
   const [tabValue, setTabValue] = useState('configuration');
   const [status, setStatus] = useState<string | undefined>(recoveryStatus);
   const [recoveryThreshold, setRecoveryThreshold] = useState<number>(0);
   const [recoveryDelay, setRecoveryDelay] = useState<number>(0);
   const [friends, setFriends] = useState<DeriveAccountInfo[]>([]);
- 
+
   const handleTabChange = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
   }, []);
- 
+
   const handleCloseModal = useCallback((): void => {
     setConfigureModalOpen(false);
   }, [setConfigureModalOpen]);
- 
+
   const ConfigureTabIcon = () => (
     <>
       {status === 'makeRecoverable' && <AddModeratorOutlinedIcon fontSize='small' />}
@@ -68,7 +68,7 @@ function Configure({ account, accountsInfo, addresesOnThisChain, api, chain, cla
       {!status && <PolicyOutlinedIcon fontSize='small' />}
     </>
   );
- 
+
   return (
     <Popup handleClose={handleCloseModal} showModal={showConfigureModal}>
       <PlusHeader action={handleCloseModal} chain={chain} closeText={'Close'} icon={<SecurityIcon fontSize='small' />} title={t<string>('Configure my account')} />
@@ -121,7 +121,7 @@ function Configure({ account, accountsInfo, addresesOnThisChain, api, chain, cla
     </Popup>
   );
 }
- 
+
 export default styled(Configure)`
         height: calc(100vh - 2px);
         overflow: auto;
