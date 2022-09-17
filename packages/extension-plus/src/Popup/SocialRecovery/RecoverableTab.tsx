@@ -137,17 +137,17 @@ function MakeRecoverableTab({ account, accountsInfo, addresesOnThisChain, api, c
           </Grid>
           <Grid item>
             {!recoveryInfo &&
-              <Hint id='addFriend' place='right' tip={t('add a friend')}>
-                <IconButton
-                  aria-label='addFriend'
-                  color='warning'
-                  disabled={!(recoveryConsts && friends.length < recoveryConsts.maxFriends)}
-                  onClick={handleAddFriend}
-                  size='small'
-                >
-                  <AddCircleRoundedIcon sx={{ fontSize: 25 }} />
-                </IconButton>
-              </Hint>
+                <Hint id='addFriend' place='right' tip={t('add a friend')}>
+                  <IconButton
+                    aria-label='addFriend'
+                    color='warning'
+                    disabled={!(recoveryConsts && friends.length < recoveryConsts.maxFriends)}
+                    onClick={handleAddFriend}
+                    size='small'
+                  >
+                    <AddCircleRoundedIcon sx={{ fontSize: 25 }} />
+                  </IconButton>
+                </Hint>
             }
           </Grid>
         </Grid>
@@ -163,13 +163,13 @@ function MakeRecoverableTab({ account, accountsInfo, addresesOnThisChain, api, c
                 <Identity accountInfo={f} chain={chain} showAddress />
               </Grid>
               {!recoveryInfo &&
-                <Grid item xs={1}>
-                  <Hint id='deleteFriend' place='left' tip={t('add a friend')}>
-                    <IconButton aria-label='deleteFriend' color='error' onClick={() => handleDeleteFriend(index)} size='small'>
-                      <ClearIcon sx={{ fontSize: 15 }} />
-                    </IconButton>
-                  </Hint>
-                </Grid>
+                  <Grid item xs={1}>
+                    <Hint id='deleteFriend' place='left' tip={t('add a friend')}>
+                      <IconButton aria-label='deleteFriend' color='error' onClick={() => handleDeleteFriend(index)} size='small'>
+                        <ClearIcon sx={{ fontSize: 15 }} />
+                      </IconButton>
+                    </Hint>
+                  </Grid>
               }
             </Grid>
           ))
@@ -247,33 +247,33 @@ function MakeRecoverableTab({ account, accountsInfo, addresesOnThisChain, api, c
         </NextStepButton>
       </Grid>
       {showAddFriendModal &&
-        <AddFriend
-          account={account}
-          accountsInfo={accountsInfo}
-          addresesOnThisChain={addresesOnThisChain}
-          chain={chain}
-          friends={friends}
-          setFriends={setFriends}
-          setShowAddFriendModal={setShowAddFriendModal}
-          showAddFriendModal={showAddFriendModal}
-        />
+          <AddFriend
+            account={account}
+            accountsInfo={accountsInfo}
+            addresesOnThisChain={addresesOnThisChain}
+            chain={chain}
+            friends={friends}
+            setFriends={setFriends}
+            setShowAddFriendModal={setShowAddFriendModal}
+            showAddFriendModal={showAddFriendModal}
+          />
       }
       {
         showConfirmModal && api && state && recoveryConsts &&
-        <Confirm
-          account={account}
-          api={api}
-          chain={chain}
-          friends={friends}
-          lostAccount={account}
-          recoveryConsts={recoveryConsts}
-          recoveryDelay={recoveryDelay}
-          recoveryThreshold={recoveryThreshold}
-          setConfirmModalOpen={setConfirmModalOpen}
-          setState={setState}
-          showConfirmModal={showConfirmModal}
-          state={state}
-        />
+          <Confirm
+            account={account}
+            api={api}
+            chain={chain}
+            friends={friends}
+            lostAccount={account}
+            recoveryConsts={recoveryConsts}
+            recoveryDelay={recoveryDelay}
+            recoveryThreshold={recoveryThreshold}
+            setConfirmModalOpen={setConfirmModalOpen}
+            setState={setState}
+            showConfirmModal={showConfirmModal}
+            state={state}
+          />
       }
 
     </>
