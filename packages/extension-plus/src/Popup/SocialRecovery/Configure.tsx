@@ -80,42 +80,42 @@ function Configure({ account, accountsInfo, addresesOnThisChain, api, chain, cla
           </Tabs>
         </Grid>
         {tabValue === 'configuration' && ((status === 'closeRecovery' && !rescuer) || !status) &&
-            <RecoveryChecking
-              recoveryInfo={recoveryInfo}
-              rescuer={rescuer}
-              setStatus={setStatus}
-            />
+          <RecoveryChecking
+            recoveryInfo={recoveryInfo}
+            rescuer={rescuer}
+            setStatus={setStatus}
+          />
         }
         {api && tabValue === 'configuration' && recoveryInfo !== undefined && status && ['makeRecoverable', 'removeRecovery'].includes(status) && account &&
-            <RecoverableTab
-              account={account}
-              accountsInfo={accountsInfo}
-              addresesOnThisChain={addresesOnThisChain}
-              api={api}
-              chain={chain}
-              friends={friends}
-              recoveryConsts={recoveryConsts}
-              recoveryDelay={recoveryDelay}
-              recoveryInfo={recoveryInfo}
-              recoveryThreshold={recoveryThreshold}
-              setFriends={setFriends}
-              setRecoveryDelay={setRecoveryDelay}
-              setRecoveryThreshold={setRecoveryThreshold}
-            />
+          <RecoverableTab
+            account={account}
+            accountsInfo={accountsInfo}
+            addresesOnThisChain={addresesOnThisChain}
+            api={api}
+            chain={chain}
+            friends={friends}
+            recoveryConsts={recoveryConsts}
+            recoveryDelay={recoveryDelay}
+            recoveryInfo={recoveryInfo}
+            recoveryThreshold={recoveryThreshold}
+            setFriends={setFriends}
+            setRecoveryDelay={setRecoveryDelay}
+            setRecoveryThreshold={setRecoveryThreshold}
+          />
         }
         {tabValue === 'configuration' && status && status === 'closeRecovery' && rescuer && account &&
-            <CloseRecoveryTab
-              account={account}
-              api={api}
-              chain={chain}
-              rescuer={rescuer}
-            />
+          <CloseRecoveryTab
+            account={account}
+            api={api}
+            chain={chain}
+            rescuer={rescuer}
+          />
         }
         {tabValue === 'info' &&
-            <InfoTab
-              api={api}
-              recoveryConsts={recoveryConsts}
-            />
+          <InfoTab
+            api={api}
+            recoveryConsts={recoveryConsts}
+          />
         }
       </Grid>
     </Popup>
