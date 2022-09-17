@@ -5,7 +5,7 @@
 
 /**
  * @description
- * this component opens confiure page, to make an account recoverable or remove recovery, even close it 
+ * this component opens confiure page, to make an account recoverable or remove recovery, even close it
  * */
 
 import type { DeriveAccountInfo } from '@polkadot/api-derive/types';
@@ -80,42 +80,42 @@ function Configure({ account, accountsInfo, addresesOnThisChain, api, chain, cla
           </Tabs>
         </Grid>
         {tabValue === 'configuration' && ((status === 'closeRecovery' && !rescuer) || !status) &&
-          <RecoveryChecking
-            recoveryInfo={recoveryInfo}
-            rescuer={rescuer}
-            setStatus={setStatus}
-          />
+            <RecoveryChecking
+              recoveryInfo={recoveryInfo}
+              rescuer={rescuer}
+              setStatus={setStatus}
+            />
         }
         {api && tabValue === 'configuration' && recoveryInfo !== undefined && status && ['makeRecoverable', 'removeRecovery'].includes(status) && account &&
-          <RecoverableTab
-            account={account}
-            accountsInfo={accountsInfo}
-            addresesOnThisChain={addresesOnThisChain}
-            api={api}
-            chain={chain}
-            friends={friends}
-            recoveryConsts={recoveryConsts}
-            recoveryDelay={recoveryDelay}
-            recoveryInfo={recoveryInfo}
-            recoveryThreshold={recoveryThreshold}
-            setFriends={setFriends}
-            setRecoveryDelay={setRecoveryDelay}
-            setRecoveryThreshold={setRecoveryThreshold}
-          />
+            <RecoverableTab
+              account={account}
+              accountsInfo={accountsInfo}
+              addresesOnThisChain={addresesOnThisChain}
+              api={api}
+              chain={chain}
+              friends={friends}
+              recoveryConsts={recoveryConsts}
+              recoveryDelay={recoveryDelay}
+              recoveryInfo={recoveryInfo}
+              recoveryThreshold={recoveryThreshold}
+              setFriends={setFriends}
+              setRecoveryDelay={setRecoveryDelay}
+              setRecoveryThreshold={setRecoveryThreshold}
+            />
         }
         {tabValue === 'configuration' && status && status === 'closeRecovery' && rescuer && account &&
-          <CloseRecoveryTab
-            account={account}
-            api={api}
-            chain={chain}
-            rescuer={rescuer}
-          />
+            <CloseRecoveryTab
+              account={account}
+              api={api}
+              chain={chain}
+              rescuer={rescuer}
+            />
         }
         {tabValue === 'info' &&
-          <InfoTab
-            api={api}
-            recoveryConsts={recoveryConsts}
-          />
+            <InfoTab
+              api={api}
+              recoveryConsts={recoveryConsts}
+            />
         }
       </Grid>
     </Popup>
@@ -123,14 +123,14 @@ function Configure({ account, accountsInfo, addresesOnThisChain, api, chain, cla
 }
 
 export default styled(Configure)`
-      height: calc(100vh - 2px);
-      overflow: auto;
-      scrollbar - width: none;
-
-      &:: -webkit - scrollbar {
-        display: none;
-      width:0,
-        }
-      .empty-list {
-        text - align: center;
-   }`;
+        height: calc(100vh - 2px);
+        overflow: auto;
+        scrollbar - width: none;
+  
+        &:: -webkit - scrollbar {
+          display: none;
+        width:0,
+          }
+        .empty-list {
+          text - align: center;
+     }`;
