@@ -68,7 +68,7 @@ function PoolTab({ api, chain, handleConfirmStakingModalOpen, newPool, pool, poo
       {api && pool !== undefined
         ? pool
           ? <>
-            <Pool api={api} chain={chain} pool={pool} poolsMembers={poolsMembers} showIds={!canChangePoolState && !canEditPool} showRoles />
+            <Pool api={api} chain={chain} pool={pool} poolsMembers={poolsMembers} stakerId={staker.address} showIds={!canChangePoolState && !canEditPool} showRoles />
             {canChangePoolState &&
               <Grid container item justifyContent='space-between' sx={{ padding: '5px 1px' }} xs={12}>
                 <Grid container item xs={8}>

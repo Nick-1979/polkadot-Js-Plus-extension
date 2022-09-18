@@ -29,6 +29,7 @@ interface Props {
   api: ApiPromise | undefined;
   pool: MyPoolInfo | undefined;
   poolsMembers?: MembersMapEntry[] | undefined;
+  stakerId?: string;
   showCheck?: boolean;
   showHeader?: boolean;
   selectedPool?: PoolInfo;
@@ -39,7 +40,7 @@ interface Props {
   showRewards?: boolean;
 }
 
-export default function Pool({ api, chain, pool, poolsMembers, selectedPool, setSelectedPool, showCheck = false, showHeader = true, showIds, showMore = true, showRewards, showRoles }: Props): React.ReactElement<Props> {
+export default function Pool({ api, chain, pool, poolsMembers, selectedPool, stakerId, setSelectedPool, showCheck = false, showHeader = true, showIds, showMore = true, showRewards, showRoles }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const [showPoolInfo, setShowPoolInfo] = useState(false);
   const [staked, setStaked] = useState<Balance | undefined>();
@@ -143,10 +144,10 @@ export default function Pool({ api, chain, pool, poolsMembers, selectedPool, set
                       <AccordionDetails sx={{ overflowY: 'auto', p: 0 }}>
                         <Grid item xs={12}>
                           <Paper elevation={3} sx={{ p: '10px' }}>
-                            {pool?.bondedPool?.roles?.root && <ShowAddress api={api}  address={String(pool.bondedPool.roles.root)} chain={chain} role={'Root'} />}
-                            {pool?.bondedPool?.roles?.depositor && <ShowAddress api={api}  address={String(pool.bondedPool.roles.depositor)} chain={chain} role={'Depositor'} />}
-                            {pool?.bondedPool?.roles?.nominator && <ShowAddress api={api}  address={String(pool.bondedPool.roles.nominator)} chain={chain} role={'Nominator'} />}
-                            {pool?.bondedPool?.roles?.stateToggler && <ShowAddress api={api}  address={String(pool.bondedPool.roles.stateToggler)} chain={chain} role={'State toggler'} />}
+                            {pool?.bondedPool?.roles?.root && <ShowAddress api={api} address={String(pool.bondedPool.roles.root)} chain={chain} role={'Root'} />}
+                            {pool?.bondedPool?.roles?.depositor && <ShowAddress api={api} address={String(pool.bondedPool.roles.depositor)} chain={chain} role={'Depositor'} />}
+                            {pool?.bondedPool?.roles?.nominator && <ShowAddress api={api} address={String(pool.bondedPool.roles.nominator)} chain={chain} role={'Nominator'} />}
+                            {pool?.bondedPool?.roles?.stateToggler && <ShowAddress api={api} address={String(pool.bondedPool.roles.stateToggler)} chain={chain} role={'State toggler'} />}
                           </Paper>
                         </Grid>
                       </AccordionDetails>
@@ -162,8 +163,8 @@ export default function Pool({ api, chain, pool, poolsMembers, selectedPool, set
                       <AccordionDetails sx={{ overflowY: 'auto', p: 0 }}>
                         <Grid item xs={12}>
                           <Paper elevation={3} sx={{ p: '10px' }}>
-                            <ShowAddress api={api}  address={pool.accounts.stashId} chain={chain} role={'Stash id'} />
-                            <ShowAddress api={api}  address={pool.accounts.rewardId} chain={chain} role={'Reward id'} />
+                            <ShowAddress api={api} address={pool.accounts.stashId} chain={chain} role={'Stash id'} />
+                            <ShowAddress api={api} address={pool.accounts.rewardId} chain={chain} role={'Reward id'} />
                           </Paper>
                         </Grid>
                       </AccordionDetails>
@@ -218,6 +219,7 @@ export default function Pool({ api, chain, pool, poolsMembers, selectedPool, set
           pool={pool}
           poolId={poolId}
           poolsMembers={poolsMembers}
+          stakerId={stakerId}
           showPoolInfo={showPoolInfo}
         />
       }
