@@ -1,23 +1,24 @@
 // Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import type { Call, ExtrinsicEra, ExtrinsicPayload } from '@polkadot/types/interfaces';
 import type { SignerPayloadJSON } from '@polkadot/types/types';
+import type { AnyJson } from '@polkadot/types/types';
 
 import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { useRef } from 'react';
 
+import { Chain } from '@polkadot/extension-chains/types';
+// added for plus
+import { BN, bnToBn } from '@polkadot/util';
+
+import { useApi, useEndpoint2 } from '../../../../extension-plus/src/hooks';
 import { Loading, SigningReqContext } from '../../components';
+import useMetadata from '../../hooks/useMetadata';
 import useTranslation from '../../hooks/useTranslation';
 import { Header } from '../../partials';
 import Request from './Request';
 import TransactionIndex from './TransactionIndex';
-
-// added for plus
-import { BN, bnToBn } from '@polkadot/util';
-import type { AnyJson } from '@polkadot/types/types';
-import { Chain } from '@polkadot/extension-chains/types';
-import type { Call, ExtrinsicEra, ExtrinsicPayload } from '@polkadot/types/interfaces';
-import useMetadata from '../../hooks/useMetadata';
-import { useRef } from 'react';
 
 interface Decoded { // added for plus
   args: AnyJson | null;
@@ -84,14 +85,21 @@ export default function Signing(): React.ReactElement {
     : null;
   const isTransaction = !!((request?.request?.payload as SignerPayloadJSON)?.blockNumber);
 
-  const p = request?.request?.payload
-  const chain = useMetadata(p?.genesisHash);
-  const specVersion = useRef(bnToBn(p?.specVersion)).current;
-  const { args, method } = decodeMethod(p?.method, chain, specVersion)
-  console.log('requests payload', p)
-  console.log(`${method?.section} . ${method?.method}`);
-  console.log('args:', args);
-  // console.log('requests method',p?.method?.toU8a());
+  const payload = request?.request?.payload;
+  const { address, genesisHash } = payload;
+  const chain = useMetadata(genesisHash);
+  const endpoint = useEndpoint2(address, genesisHash);
+  const api = useApi(endpoint);
+  const specVersion = useRef(bnToBn(payload?.specVersion)).current;
+  const { args, method } = decodeMethod(payload?.method, chain, specVersion);
+  console.log('request?.request', request?.request);
+  console.log('endpoint', endpoint);
+  console.log('request?.request?.payload', payload);
+  console.log(`${method?.section}.${method?.method}`);
+  const arg = method?.args && String(method.args).split(',');
+  console.log('apiiii', api && arg ? api.tx[method.section][method.method](...arg) : '');
+  console.log('args::', method?.args && String(method.args).split(','));
+  // console.log('requests method',payload?.method?.toU8a());
 
   return request
     ? (

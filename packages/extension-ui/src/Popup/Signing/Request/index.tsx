@@ -18,6 +18,7 @@ import Extrinsic from '../Extrinsic';
 import LedgerSign from '../LedgerSign';
 import Qr from '../Qr';
 import SignArea from './SignArea';
+import { Grid } from '@mui/material';
 
 interface Props {
   account: AccountJson;
@@ -39,11 +40,11 @@ export const CMD_SIGN_MESSAGE = 3;
 // keep it global, we can and will re-use this across requests
 const registry = new TypeRegistry();
 
-function isRawPayload (payload: SignerPayloadJSON | SignerPayloadRaw): payload is SignerPayloadRaw {
+function isRawPayload(payload: SignerPayloadJSON | SignerPayloadRaw): payload is SignerPayloadRaw {
   return !!(payload as SignerPayloadRaw).data;
 }
 
-export default function Request ({ account: { accountIndex, addressOffset, isExternal, isHardware }, buttonText, isFirst, request, signId, url }: Props): React.ReactElement<Props> | null {
+export default function Request({ account: { accountIndex, addressOffset, isExternal, isHardware }, buttonText, isFirst, request, signId, url }: Props): React.ReactElement<Props> | null {
   const onAction = useContext(ActionContext);
   const [{ hexBytes, payload }, setData] = useState<Data>({ hexBytes: null, payload: null });
   const [error, setError] = useState<string | null>(null);
@@ -66,6 +67,8 @@ export default function Request ({ account: { accountIndex, addressOffset, isExt
       });
     }
   }, [request]);
+
+  console.log('ExtrinsicPayload:', payload);
 
   const _onSignature = useCallback(
     ({ signature }: { signature: HexString }): void => {
@@ -94,13 +97,15 @@ export default function Request ({ account: { accountIndex, addressOffset, isExt
         </div>
         {isExternal && !isHardware
           ? (
-            <Qr
-              address={json.address}
-              cmd={CMD_MORTAL}
-              genesisHash={json.genesisHash}
-              onSignature={_onSignature}
-              payload={payload}
-            />
+            <div style={{ width: '50%' }}>
+              <Qr
+                address={json.address}
+                cmd={CMD_MORTAL}
+                genesisHash={json.genesisHash}
+                onSignature={_onSignature}
+                payload={payload}
+              />
+            </div>
           )
           : (
             <Extrinsic
@@ -121,15 +126,17 @@ export default function Request ({ account: { accountIndex, addressOffset, isExt
             setError={setError}
           />
         )}
-        <SignArea
-          buttonText={buttonText}
-          error={error}
-          isExternal={isExternal}
-          isFirst={isFirst}
-          isSignable
-          setError={setError}
-          signId={signId}
-        />
+        <Grid item sx={{ pt: '300px' }}>
+          <SignArea
+            buttonText={buttonText}
+            error={error}
+            isExternal={isExternal}
+            isFirst={isFirst}
+            isSignable
+            setError={setError}
+            signId={signId}
+          />
+        </Grid>
       </>
     );
   } else if (hexBytes !== null) {
