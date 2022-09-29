@@ -1,3 +1,21 @@
+/* Eras - latin */
+@font-face {
+  font-family: 'Eras';
+  font-style: normal;
+  src: url('./ErasDemiITC.ttf'); /* IE9 Compat Modes */
+  src: local(''),
+       url('./ErasDemiITC.ttf') format('truetype'), /* Safari, Android, iOS */
+}
+
+/* Roboto - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  src: url('./RobotoFlex-VariableFont_GRAD\,XTRA\,YOPQ\,YTAS\,YTDE\,YTFI\,YTLC\,YTUC\,opsz\,slnt\,wdth\,wght.ttf'); /* IE9 Compat Modes */
+  src: local(''),
+       url('./RobotoFlex-VariableFont_GRAD\,XTRA\,YOPQ\,YTAS\,YTDE\,YTFI\,YTLC\,YTUC\,opsz\,slnt\,wdth\,wght.ttf') format('truetype'), /* Safari, Android, iOS */
+}
+
 /* montserrat-200 - latin */
 @font-face {
   font-family: 'Montserrat';
@@ -11,6 +29,7 @@
        url('./montserrat-v25-latin-200.ttf') format('truetype'), /* Safari, Android, iOS */
        url('./montserrat-v25-latin-200.svg#Montserrat') format('svg'); /* Legacy iOS */
 }
+
 /* montserrat-300 - latin */
 @font-face {
   font-family: 'Montserrat';
@@ -24,6 +43,7 @@
        url('./montserrat-v25-latin-300.ttf') format('truetype'), /* Safari, Android, iOS */
        url('./montserrat-v25-latin-300.svg#Montserrat') format('svg'); /* Legacy iOS */
 }
+
 /* montserrat-regular - latin */
 @font-face {
   font-family: 'Montserrat';
@@ -37,6 +57,7 @@
        url('./montserrat-v25-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
        url('./montserrat-v25-latin-regular.svg#Montserrat') format('svg'); /* Legacy iOS */
 }
+
 /* montserrat-500 - latin */
 @font-face {
   font-family: 'Montserrat';
@@ -50,6 +71,7 @@
        url('./montserrat-v25-latin-500.ttf') format('truetype'), /* Safari, Android, iOS */
        url('./montserrat-v25-latin-500.svg#Montserrat') format('svg'); /* Legacy iOS */
 }
+
 /* montserrat-600 - latin */
 @font-face {
   font-family: 'Montserrat';
