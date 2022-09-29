@@ -17,7 +17,8 @@ import { AccountContext } from '../../components';
 import useTranslation from '../../hooks/useTranslation';
 import { PHeader } from '../../partials';
 import AccountsTree from './AccountsTree';
-import AddAccount from './AddAccount';
+// import AddAccount from './AddAccount';
+import AddAccount from './PAddAccount';
 import { Box, Container, Divider, Grid, InputAdornment, TextField, Typography } from '@mui/material';
 import { Search as SearchIcon  } from '@mui/icons-material';
 

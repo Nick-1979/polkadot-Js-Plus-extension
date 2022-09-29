@@ -8,7 +8,10 @@ import { red, grey, blue } from '@mui/material/colors';
 export const baseTheme: ThemeOptions = {
   typography: {
     allVariants: {
-      fontFamily: 'Montserrat'
+      fontFamily: 'Roboto'
+    },
+    h1: {
+      fontFamily: 'Eras'
     }
   }
 };

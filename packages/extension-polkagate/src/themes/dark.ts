@@ -15,6 +15,6 @@ export const darkTheme: ThemeOptions = {
     mode: 'dark',
     secondary: { main: '#E30B7B' },
     primary: { main: '#FFFFFF' },
-    background: { default: '#000000' }
+    background: { default: '#180710' }
   }
 };

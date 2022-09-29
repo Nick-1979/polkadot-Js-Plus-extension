@@ -39,7 +39,8 @@ import Metadata from './Metadata';
 import PhishingDetected from './PhishingDetected';
 import RestoreJson from './RestoreJson';
 import Signing from './Signing';
-import Welcome from './Welcome';
+import Welcome from './PWelcome';
+// import Welcome from './Welcome';
 import { ColorContext } from '../components/ColorContext';
 import { AnimatePresence } from "framer-motion";
 
