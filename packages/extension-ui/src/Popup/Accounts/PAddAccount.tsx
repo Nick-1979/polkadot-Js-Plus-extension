@@ -7,9 +7,9 @@ import { Typography } from '@mui/material';
 import React, { useCallback, useContext } from 'react';
 
 import { ActionContext } from '../../components';
+import PButton from '../../components/PButton';
 import useTranslation from '../../hooks/useTranslation';
 import PHeaderBrand from '../../partials/PHeaderBrand';
-import PButton from '../../components/PButton';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -44,7 +44,7 @@ function AddAccount({ className }: Props): React.ReactElement<Props> {
         </Typography>
         <Typography
           component={'p'}
-          sx={{ fontSize: '14px', px: '24px', fontWeight: '200' }}
+          sx={{ fontSize: '14px', fontWeight: '200', px: '24px' }}
         >{t<string>('You currently don’t have any account. Create your first account or import an existing one to get started.')}</Typography>
       </div>
       <PButton
@@ -55,10 +55,10 @@ function AddAccount({ className }: Props): React.ReactElement<Props> {
       />
       <Typography
         component={'p'}
-        sx={{ fontSize: '14px', textAlign: 'center', py: '25px' }}
+        sx={{ fontSize: '18px', py: '25px', textAlign: 'center' }}
       >{t<string>('Or')}</Typography>
       <PButton
-        _mt='17px'
+        _mt='0'
         _onClick={_onClick}
         _variant={'outlined'}
         text={t<string>('Restore from JSON file')}
