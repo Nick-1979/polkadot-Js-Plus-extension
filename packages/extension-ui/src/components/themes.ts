@@ -24,7 +24,7 @@ const darkTheme = {
   errorBorderColor: '#7E3530',
   errorColor: '#E42F2F',
   // fontFamily: 'Nunito, sans-serif',
-  fontFamily: 'Montserrat, sans-serif',
+  // fontFamily: 'Montserrat, sans-serif',
   fontSize: '16px',
   highlightedAreaBackground: '#212226',
   iconDangerColor: '#AF1111',

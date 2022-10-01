@@ -7,17 +7,83 @@
        url('./ErasDemiITC.ttf') format('truetype'), /* Safari, Android, iOS */
 }
 
-/* Roboto - latin */
+/* RobotoThin - latin */
 @font-face {
+  font-family: 'Roboto';
+  font-weight: 100;
+  font-style: normal;
+  src: url('./ROBOTO/Roboto-Thin.ttf'); /* IE9 Compat Modes */
+  src: local(''),
+       url('./ROBOTO//Roboto-Thin.ttf') format('truetype'), /* Safari, Android, iOS */
+}
+
+/* RobotoLight - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 300;
+  font-style: normal;
+  src: url('./ROBOTO/Roboto-Light.ttf'); /* IE9 Compat Modes */
+  src: local(''),
+       url('./ROBOTO//Roboto-Light.ttf') format('truetype'), /* Safari, Android, iOS */
+}
+
+/* RobotoRegular - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 400;
+  font-style: normal;
+  src: url('./ROBOTO/Roboto-Regular.ttf'); /* IE9 Compat Modes */
+  src: local(''),
+       url('./ROBOTO//Roboto-Regular.ttf') format('truetype'), /* Safari, Android, iOS */
+}
+
+/* RobotoMedium - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 500;
+  font-style: normal;
+  src: url('./ROBOTO/Roboto-Medium.ttf'); /* IE9 Compat Modes */
+  src: local(''),
+       url('./ROBOTO//Roboto-Medium.ttf') format('truetype'), /* Safari, Android, iOS */
+}
+
+/* RobotoBold - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 700;
+  font-style: normal;
+  src: url('./ROBOTO/Roboto-Bold.ttf'); /* IE9 Compat Modes */
+  src: local(''),
+       url('./ROBOTO//Roboto-Bold.ttf') format('truetype'), /* Safari, Android, iOS */
+}
+
+/* RobotoBlack - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 900;
+  font-style: normal;
+  src: url('./ROBOTO/Roboto-Black.ttf'); /* IE9 Compat Modes */
+  src: local(''),
+       url('./ROBOTO//Roboto-Black.ttf') format('truetype'), /* Safari, Android, iOS */
+}
+
+
+
+
+
+
+
+/* Roboto - latin */
+/* @font-face {
   font-family: 'Roboto';
   font-style: normal;
   src: url('./RobotoFlex-VariableFont_GRAD\,XTRA\,YOPQ\,YTAS\,YTDE\,YTFI\,YTLC\,YTUC\,opsz\,slnt\,wdth\,wght.ttf'); /* IE9 Compat Modes */
   src: local(''),
        url('./RobotoFlex-VariableFont_GRAD\,XTRA\,YOPQ\,YTAS\,YTDE\,YTFI\,YTLC\,YTUC\,opsz\,slnt\,wdth\,wght.ttf') format('truetype'), /* Safari, Android, iOS */
-}
+} */
 
 /* montserrat-200 - latin */
-@font-face {
+/* @font-face {
   font-family: 'Montserrat';
   font-style: normal;
   font-weight: 200;
@@ -28,10 +94,10 @@
        url('./montserrat-v25-latin-200.woff') format('woff'), /* Modern Browsers */
        url('./montserrat-v25-latin-200.ttf') format('truetype'), /* Safari, Android, iOS */
        url('./montserrat-v25-latin-200.svg#Montserrat') format('svg'); /* Legacy iOS */
-}
+} */
 
 /* montserrat-300 - latin */
-@font-face {
+/* @font-face {
   font-family: 'Montserrat';
   font-style: normal;
   font-weight: 300;
@@ -42,10 +108,10 @@
        url('./montserrat-v25-latin-300.woff') format('woff'), /* Modern Browsers */
        url('./montserrat-v25-latin-300.ttf') format('truetype'), /* Safari, Android, iOS */
        url('./montserrat-v25-latin-300.svg#Montserrat') format('svg'); /* Legacy iOS */
-}
+} */
 
 /* montserrat-regular - latin */
-@font-face {
+/* @font-face {
   font-family: 'Montserrat';
   font-style: normal;
   font-weight: 400;
@@ -56,10 +122,10 @@
        url('./montserrat-v25-latin-regular.woff') format('woff'), /* Modern Browsers */
        url('./montserrat-v25-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
        url('./montserrat-v25-latin-regular.svg#Montserrat') format('svg'); /* Legacy iOS */
-}
+} */
 
 /* montserrat-500 - latin */
-@font-face {
+/* @font-face {
   font-family: 'Montserrat';
   font-style: normal;
   font-weight: 500;
@@ -70,10 +136,10 @@
        url('./montserrat-v25-latin-500.woff') format('woff'), /* Modern Browsers */
        url('./montserrat-v25-latin-500.ttf') format('truetype'), /* Safari, Android, iOS */
        url('./montserrat-v25-latin-500.svg#Montserrat') format('svg'); /* Legacy iOS */
-}
+} */
 
 /* montserrat-600 - latin */
-@font-face {
+/* @font-face {
   font-family: 'Montserrat';
   font-style: normal;
   font-weight: 600;
@@ -84,4 +150,4 @@
        url('./montserrat-v25-latin-600.woff') format('woff'), /* Modern Browsers */
        url('./montserrat-v25-latin-600.ttf') format('truetype'), /* Safari, Android, iOS */
        url('./montserrat-v25-latin-600.svg#Montserrat') format('svg'); /* Legacy iOS */
-}
+} */

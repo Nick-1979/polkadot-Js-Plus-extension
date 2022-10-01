@@ -1,8 +1,6 @@
 // Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { ThemeProps } from '../types';
-
 import React from 'react';
 import styled from 'styled-components';
 
@@ -21,15 +19,11 @@ function Label ({ children, className, label }: Props): React.ReactElement<Props
   );
 }
 
-export default styled(Label)(({ theme }: ThemeProps) => `
-  color: ${theme.textColor};
-
+export default styled(Label)(() => `
   label {
-    font-size: ${theme.inputLabelFontSize};
-    line-height: 14px;
-    letter-spacing: 0.04em;
-    opacity: 0.65;
-    margin-bottom: 12px;
-    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 300;
+    padding-left: 23px;
+    text-transform: none;
   }
 `);

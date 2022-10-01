@@ -6,12 +6,13 @@ import React, { useEffect, useState } from 'react';
 
 interface Props {
   text: string;
-  _variant: string;
-  _onClick: any;
+  _variant?: 'text' | 'contained' | 'outlined';
+  _onClick: React.MouseEventHandler<HTMLButtonElement>;
   _mt: string;
+  disabled?: boolean;
 }
 
-function PButton({ _onClick, _variant, text, _mt }: Props): React.ReactElement<Props> {
+function PButton({ _mt, _onClick, _variant = 'contained', disabled = false, text }: Props): React.ReactElement<Props> {
   // Change backGroundColor when button is disable, busy, ...
   const [bgc, setBgc] = useState<string>('#99004F');
 
@@ -23,8 +24,9 @@ function PButton({ _onClick, _variant, text, _mt }: Props): React.ReactElement<P
 
   return (
     <Button
+      disabled={disabled}
       onClick={_onClick}
-      sx={{ background: bgc, borderRadius: '5px', color: '#fff', fontSize: '16px', height: '36px', ml: '6%', mt: _mt, textTransform: 'none', width: '88%' }}
+      sx={{ background: bgc, borderRadius: '5px', color: '#fff', fontSize: '16px', fontWeight: 300, height: '36px', ml: '6%', mt: _mt, textTransform: 'none', width: '88%' }}
       variant={_variant}
     >
       {text}

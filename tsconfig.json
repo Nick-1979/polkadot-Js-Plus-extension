@@ -6,7 +6,7 @@
   },
   "include": [
     "packages/**/src/**/*"
-, "packages/extension-polkagate/icons"  ],
+, "packages/extension-polkagate/icons", "packages/extension-polkagate/patials/PHeaderBrand.tsx"  ],
   "exclude": [
     "**/node_modules/**/*"
   ]

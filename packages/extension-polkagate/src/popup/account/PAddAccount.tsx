@@ -1,15 +1,15 @@
 // Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { ThemeProps } from '../../types';
+import type { ThemeProps } from '../../../../extension-ui/src/types';
 
 import { Typography } from '@mui/material';
 import React, { useCallback, useContext } from 'react';
 
-import { ActionContext } from '../../components';
+import { ActionContext } from '../../../../extension-ui/src/components';
 import PButton from '../../components/PButton';
-import useTranslation from '../../hooks/useTranslation';
-import PHeaderBrand from '../../partials/PHeaderBrand';
+import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
+import PHeaderBrand from '../../patials/PHeaderBrand';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -44,7 +44,7 @@ function AddAccount({ className }: Props): React.ReactElement<Props> {
         </Typography>
         <Typography
           component={'p'}
-          sx={{ fontSize: '14px', fontWeight: '200', px: '24px' }}
+          sx={{ fontSize: '14px', fontWeight: 300, px: '24px' }}
         >{t<string>('You currently don’t have any account. Create your first account or import an existing one to get started.')}</Typography>
       </div>
       <PButton
@@ -55,7 +55,7 @@ function AddAccount({ className }: Props): React.ReactElement<Props> {
       />
       <Typography
         component={'p'}
-        sx={{ fontSize: '18px', py: '25px', textAlign: 'center' }}
+        sx={{ fontSize: '18px', fontWeight: 300, py: '25px', textAlign: 'center' }}
       >{t<string>('Or')}</Typography>
       <PButton
         _mt='0'

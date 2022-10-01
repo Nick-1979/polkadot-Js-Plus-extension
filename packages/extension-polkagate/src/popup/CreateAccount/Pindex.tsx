@@ -4,15 +4,16 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { ActionContext, Address, Dropdown, Loading } from '../../components';
-import AccountNamePasswordCreation from '../../components/AccountNamePasswordCreation';
-import useGenesisHashOptions from '../../hooks/useGenesisHashOptions';
-import useMetadata from '../../hooks/useMetadata';
-import useTranslation from '../../hooks/useTranslation';
-import { createAccountSuri, createSeed, validateSeed } from '../../messaging';
-import { HeaderWithSteps } from '../../partials';
-import { DEFAULT_TYPE } from '../../util/defaultType';
-import Mnemonic from '../../../../extension-polkagate/src/popup/CreateAccount/Mnemonic';
+import { ActionContext, Dropdown, Loading } from '../../../../extension-ui/src/components';
+import AccountNamePasswordCreation from '../../../../extension-ui/src/components/AccountNamePasswordCreation';
+import useGenesisHashOptions from '../../../../extension-ui/src/hooks/useGenesisHashOptions';
+import useMetadata from '../../../../extension-ui/src/hooks/useMetadata';
+import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
+import { createAccountSuri, createSeed, validateSeed } from '../../../../extension-ui/src/messaging';
+import { DEFAULT_TYPE } from '../../../../extension-ui/src/util/defaultType';
+import PAddress from '../../components/Address';
+import PHeaderBrand from '../../patials/PHeaderBrand';
+import Mnemonic from './Mnemonic';
 
 interface Props {
   className?: string;
@@ -88,13 +89,14 @@ function CreateAccount ({ className }: Props): React.ReactElement {
 
   return (
     <>
-      <HeaderWithSteps
-        step={step}
+      <PHeaderBrand
+        showBackArrow
+        showSettings
         text={t<string>('Create an account')}
       />
       <Loading>
         <div>
-          <Address
+          <PAddress
             address={address}
             genesisHash={genesisHash}
             name={name}

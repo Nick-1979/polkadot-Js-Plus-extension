@@ -1,7 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { ThemeProps } from '../types';
+import type { ThemeProps } from '../../../extension-ui/src/types';
 
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
@@ -29,7 +29,7 @@ function Checkbox ({ checked, className, label, onChange, onClick }: Props): Rea
 
   return (
     <div className={className}>
-      <label>
+      <label color='text.primary'>
         {label}
         <input
           checked={checked}
@@ -44,57 +44,52 @@ function Checkbox ({ checked, className, label, onChange, onClick }: Props): Rea
 }
 
 export default styled(Checkbox)(({ theme }: ThemeProps) => `
-  margin: ${theme.boxMargin};
+  margin: 41px auto 10px;
 
   label {
     display: block;
     position: relative;
     cursor: pointer;
     user-select: none;
-    padding-left: 24px;
-    padding-top: 1px;
-    color: ${theme.subTextColor};
-    font-size: ${theme.fontSize};
-    line-height: ${theme.lineHeight};
+    padding-left: 45px;
+    font-size: 16px;
+    font-weight: 300;
+    margin: auto;
 
     & input {
       position: absolute;
       opacity: 0;
+      left: 15px;
       cursor: pointer;
-      height: 0;
-      width: 0;
+      height: 20px;
+      width: 20px;
+      border-color: #BA2882;
     }
 
     & span {
       position: absolute;
-      top: 4px;
-      left: 0;
-      height: 16px;
-      width: 16px;
-      border-radius: ${theme.borderRadius};
-      background-color: ${theme.readonlyInputBackground};
-      border: 1px solid ${theme.inputBorderColor};
-      border: 1px solid ${theme.inputBorderColor};
+      top: 2px;
+      left: 20px;
+      height: 20px;
+      width: 20px;
+      border-radius: 5px;
+      background-color: transparent;
+      border: 0.5px solid #BA2882;
       &:after {
         content: '';
         display: none;
-        width: 13px;
-        height: 10px;
+        width: 17px;
+        height: 15px;
         position: absolute;
-        left: 1px;
-        top: 2px;
+        left: 0;
+        top: 0;
         mask: url(${Checkmark});
         mask-size: cover;
-        background: ${theme.primaryColor};
+        background: #BA2882;
       }
     }
-
-    &:hover input ~ span {
-      background-color: ${theme.inputBackground};
-    }
-
-    input:checked ~ span:after {
-      display: block;
-    }
+  }
+  input:checked ~ span:after {
+    display: block;
   }
 `);

@@ -3,9 +3,10 @@
 
 import React, { useCallback, useState } from 'react';
 
-import { ButtonArea, Checkbox, MnemonicSeed, NextStepButton, VerticalSpace, Warning } from '../../components';
-import useToast from '../../hooks/useToast';
-import useTranslation from '../../hooks/useTranslation';
+import { Checkbox, MnemonicSeed, Warning } from '../../../../extension-ui/src/components';
+import useToast from '../../../../extension-ui/src/hooks/useToast';
+import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
+import PButton from '../../components/PButton';
 
 interface Props {
   onNextStep: () => void;
@@ -23,7 +24,7 @@ const onCopy = (): void => {
   document.execCommand('copy');
 };
 
-function Mnemonic ({ onNextStep, seed }: Props): React.ReactElement<Props> {
+function Mnemonic({ onNextStep, seed }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const [isMnemonicSaved, setIsMnemonicSaved] = useState(false);
   const { show } = useToast();
@@ -40,22 +41,20 @@ function Mnemonic ({ onNextStep, seed }: Props): React.ReactElement<Props> {
         seed={seed}
       />
       <Warning>
-        {t<string>("Please write down your wallet's mnemonic seed and keep it in a safe place. The mnemonic can be used to restore your wallet. Keep it carefully to not lose your assets.")}
+        {t<string>('Please write down your wallet’s mnemotic seed and keep it in a safe place. The mnemotic can be used to restore your wallet. Keep it carefully to not lose your assets.')}
       </Warning>
-      <VerticalSpace />
       <Checkbox
         checked={isMnemonicSaved}
         label={t<string>('I have saved my mnemonic seed safely.')}
         onChange={setIsMnemonicSaved}
       />
-      <ButtonArea>
-        <NextStepButton
-          isDisabled={!isMnemonicSaved}
-          onClick={onNextStep}
-        >
-          {t<string>('Next step')}
-        </NextStepButton>
-      </ButtonArea>
+      <PButton
+        _mt='0'
+        _onClick={onNextStep}
+        _variant='contained'
+        disabled={!isMnemonicSaved}
+        text={t<string>('Create a new account')}
+      />
     </>
   );
 }

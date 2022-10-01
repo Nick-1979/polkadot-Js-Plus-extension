@@ -3,14 +3,14 @@
 
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Close as CloseIcon, Menu as MenuIcon } from '@mui/icons-material';
+import { ArrowBackIos as ArrowBackIosIcon, Close as CloseIcon, Menu as MenuIcon } from '@mui/icons-material';
 import { Box, Container, Grid, IconButton, Typography, useTheme } from '@mui/material';
 import React, { useCallback, useRef, useState } from 'react';
 
-import { logoBlack, logoWhite } from '../../../extension-polkagate/src/assets/logos';
-import Link from '../components/Link';
-import useOutsideClick from '../hooks/useOutsideClick';
-import MenuSettings from './MenuSettings';
+import Link from '../../../extension-ui/src/components/Link';
+import useOutsideClick from '../../../extension-ui/src/hooks/useOutsideClick';
+import MenuSettings from '../../../extension-ui/src/partials/MenuSettings';
+import { logoBlack, logoWhite } from '../assets/logos';
 
 interface Props {
   showBackArrow?: boolean;
@@ -42,7 +42,7 @@ function PHeaderBrand({ showBackArrow, showSettings, text }: Props): React.React
 
   return (
     <Container sx={{
-      background: 'radial-gradient(88.81% 88.81% at 50% 50.75%, #99004F 0%, rgba(153, 0, 79, 0) 100%)',
+      background: showBackArrow ? 'transparent' : 'radial-gradient(88.81% 88.81% at 50% 50.75%, #99004F 0%, rgba(153, 0, 79, 0) 100%)',
       borderBottom: '0.5px solid #BA2882',
       lineHeight: 0,
       p: '18px 30px 11px'
@@ -59,10 +59,7 @@ function PHeaderBrand({ showBackArrow, showSettings, text }: Props): React.React
               className='backlink'
               to='/'
             >
-              <FontAwesomeIcon
-                className='arrowLeftIcon'
-                icon={faArrowLeft}
-              />
+              <ArrowBackIosIcon sx={{ color: '#BA2882', fontSize: 25, stroke: '#BA2882', strokeWidth: 1.5 }} />
             </Link>
             : <Box
               component='img'
@@ -70,13 +67,12 @@ function PHeaderBrand({ showBackArrow, showSettings, text }: Props): React.React
               sx={{ height: 38, width: 38 }}
             />
           }
-
         </Grid>
         <Grid item>
           <Typography
             color='#fff'
-            sx={{ fontSize: '30px', letterSpacing: '-0.015em' }}
-            variant='h1'
+            sx={{ fontSize: showBackArrow ? '20px' : '30px', letterSpacing: '-0.015em' }}
+            variant={showBackArrow ? 'h3' : 'h1'}
           >
             {text}
           </Typography>
@@ -104,7 +100,7 @@ function PHeaderBrand({ showBackArrow, showSettings, text }: Props): React.React
           <MenuSettings reference={setMenuRef} />
         )
       }
-    </Container>
+    </Container >
   );
 }
 

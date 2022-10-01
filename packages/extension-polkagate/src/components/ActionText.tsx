@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import type { ThemeProps } from '../types';
+import type { ThemeProps } from '../../../extension-ui/src/types';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { MouseEventHandler } from 'react';
@@ -15,33 +15,33 @@ interface Props {
   text: string;
 }
 
-function ActionText ({ className, icon, onClick, text }: Props): React.ReactElement<Props> {
+function ActionText({ className, icon, onClick, text }: Props): React.ReactElement<Props> {
   return (
     <div
       className={className}
       onClick={onClick}
     >
       {icon && <FontAwesomeIcon icon={icon} />}
-      <span>{text}</span>
+      <span color='text.primary'>{text}</span>
     </div>
   );
 }
 
 export default styled(ActionText)(({ theme }: ThemeProps) => `
   cursor: pointer;
-
+  margin-top: 10px;
   span {
-    color: ${theme.labelColor}
-    font-size: ${theme.labelFontSize};
-    line-height: ${theme.labelLineHeight};
+    font-size: 16px;
     text-decoration-line: underline;
+    font-weight: 300;
   }
 
   .svg-inline--fa {
-    color: ${theme.iconNeutralColor};
+    color: #BA2882;
     display: inline-block;
-    margin-right: 0.3rem;
+    margin-right: 12px;
+    margin-left: 18px;
     position: relative;
-    top: 2px;
+    font-size: 20px
   }
 `);

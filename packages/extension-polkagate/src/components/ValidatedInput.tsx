@@ -3,8 +3,8 @@
 
 import React, { useEffect, useState } from 'react';
 
-import useIsMounted from '../hooks/useIsMounted';
-import { Result, Validator } from '../util/validators';
+import useIsMounted from '../../../extension-ui/src/hooks/useIsMounted';
+import { Result, Validator } from '../../../extension-ui/src/util/validators';
 import Warning from './Warning';
 
 interface BasicProps {
@@ -25,6 +25,7 @@ function ValidatedInput<T extends Record<string, unknown>> ({ className, compone
   const [value, setValue] = useState(defaultValue || '');
   const [validationResult, setValidationResult] = useState<Result<string>>(Result.ok(''));
   const isMounted = useIsMounted();
+
 
   useEffect(() => {
     if (defaultValue) {
