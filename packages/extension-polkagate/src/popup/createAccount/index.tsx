@@ -12,7 +12,7 @@ import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { createAccountSuri, createSeed, validateSeed } from '../../../../extension-ui/src/messaging';
 import { DEFAULT_TYPE } from '../../../../extension-ui/src/util/defaultType';
 import PAddress from '../../components/Address';
-import PHeaderBrand from '../../patials/PHeaderBrand';
+import HeaderBrand from '../../patials/HeaderBrand';
 import Mnemonic from './Mnemonic';
 
 interface Props {
@@ -89,7 +89,7 @@ function CreateAccount ({ className }: Props): React.ReactElement {
 
   return (
     <>
-      <PHeaderBrand
+      <HeaderBrand
         showBackArrow
         showSettings
         text={t<string>('Create an account')}

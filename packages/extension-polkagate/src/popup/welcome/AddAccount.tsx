@@ -9,7 +9,7 @@ import React, { useCallback, useContext } from 'react';
 import { ActionContext } from '../../../../extension-ui/src/components';
 import PButton from '../../components/PButton';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
-import PHeaderBrand from '../../patials/PHeaderBrand';
+import HeaderBrand from '../../patials/HeaderBrand';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -25,7 +25,7 @@ function AddAccount({ className }: Props): React.ReactElement<Props> {
 
   return (
     <>
-      <PHeaderBrand
+      <HeaderBrand
         showSettings
         text={t<string>('Polkagate')}
       />

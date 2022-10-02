@@ -10,7 +10,7 @@ import React, { useCallback, useContext } from 'react';
 import { ActionContext } from '../../../../extension-ui/src/components';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import PButton from '../../components/PButton';
-import PHeaderBrand from '../../patials/PHeaderBrand';
+import HeaderBrand from '../../patials/HeaderBrand';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -30,7 +30,7 @@ const Welcome = function ({ className }: Props): React.ReactElement<Props> {
 
   return (
     <>
-      <PHeaderBrand text={t<string>('Polkagate')} />
+      <HeaderBrand text={t<string>('Polkagate')} />
       <div className={className}>
         <Typography
           component='h2'

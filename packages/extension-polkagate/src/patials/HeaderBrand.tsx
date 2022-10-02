@@ -18,7 +18,7 @@ interface Props {
   text?: React.ReactNode;
 }
 
-function PHeaderBrand({ showBackArrow, showSettings, text }: Props): React.ReactElement<Props> {
+function HeaderBrand({ showBackArrow, showSettings, text }: Props): React.ReactElement<Props> {
   const [isAddOpen, setShowAdd] = useState(false);
   const [isSettingsOpen, setShowSettings] = useState(false);
   const addIconRef = useRef(null);
@@ -104,4 +104,4 @@ function PHeaderBrand({ showBackArrow, showSettings, text }: Props): React.React
   );
 }
 
-export default React.memo(PHeaderBrand);
+export default React.memo(HeaderBrand);
