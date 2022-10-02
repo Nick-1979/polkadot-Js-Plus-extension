@@ -6,8 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useCallback, useRef } from 'react';
 import styled from 'styled-components';
 
+import { Input } from '../../../extension-polkagate/src/components/TextInputs';
 import { ThemeProps } from '../types';
-import { Input } from './TextInputs';
 
 interface Props extends ThemeProps {
   className?: string;

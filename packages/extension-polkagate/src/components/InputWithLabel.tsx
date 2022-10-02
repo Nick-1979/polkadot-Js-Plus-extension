@@ -1,10 +1,11 @@
 // Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { useTheme } from '@mui/material';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
-import useTranslation from '../hooks/useTranslation';
+import useTranslation from '../../../extension-ui/src/hooks/useTranslation';
 import Label from './Label';
 import { Input } from './TextInputs';
 import Warning from './Warning';
@@ -29,7 +30,7 @@ interface Props {
 function InputWithLabel ({ className, defaultValue, disabled, isError, isFocused, isReadOnly, label = '', onBlur, onChange, onEnter, placeholder, type = 'text', value, withoutMargin }: Props): React.ReactElement<Props> {
   const [isCapsLock, setIsCapsLock] = useState(false);
   const { t } = useTranslation();
-
+  const theme = useTheme();
   const _checkKey = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>): void => {
       onEnter && event.key === 'Enter' && onEnter();
@@ -69,6 +70,8 @@ function InputWithLabel ({ className, defaultValue, disabled, isError, isFocused
         placeholder={placeholder}
         readOnly={isReadOnly}
         spellCheck={false}
+        style={{ padding: 0 }}
+        theme={theme}
         type={type}
         value={value}
         withError={isError}

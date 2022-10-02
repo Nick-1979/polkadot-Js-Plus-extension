@@ -7,8 +7,8 @@ import { faCopy } from '@fortawesome/free-regular-svg-icons';
 import React, { MouseEventHandler } from 'react';
 import styled from 'styled-components';
 
-import useTranslation from '../hooks/useTranslation';
-import ActionText from './ActionText';
+import ActionText from '../../../extension-polkagate/src/components/ActionText';
+import useTranslation from '../../../extension-ui/src/hooks/useTranslation';
 import TextAreaWithLabel from './TextAreaWithLabel';
 
 interface Props {
@@ -41,27 +41,28 @@ function MnemonicSeed ({ className, onCopy, seed }: Props): React.ReactElement<P
   );
 }
 
-export default styled(MnemonicSeed)(({ theme }: ThemeProps) => `
-  margin-bottom: 21px;
+export default (MnemonicSeed);
+// export default styled(MnemonicSeed)(({ theme }: ThemeProps) => `
+//   margin-bottom: 21px;
 
-  .buttonsRow {
-    display: flex;
-    flex-direction: row;
+//   .buttonsRow {
+//     display: flex;
+//     flex-direction: row;
 
-    .copyBtn {
-      margin-right: 32px;
-    }
-  }
+//     .copyBtn {
+//       margin-right: 32px;
+//     }
+//   }
 
-  .mnemonicDisplay {
-    textarea {
-      color: ${theme.primaryColor};
-      font-size: ${theme.fontSize};
-      height: unset;
-      letter-spacing: -0.01em;
-      line-height: ${theme.lineHeight};
-      margin-bottom: 10px;
-      padding: 14px;
-    }
-  }
-`);
+//   .mnemonicDisplay {
+//     textarea {
+//       color: ${theme.primaryColor};
+//       font-size: ${theme.fontSize};
+//       height: unset;
+//       letter-spacing: -0.01em;
+//       line-height: ${theme.lineHeight};
+//       margin-bottom: 10px;
+//       padding: 14px;
+//     }
+//   }
+// `);

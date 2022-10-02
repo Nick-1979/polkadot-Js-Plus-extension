@@ -6,8 +6,8 @@ import type { ThemeProps } from '../types';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 
+import Label from '../../../extension-polkagate/src/components/Label';
 import arrow from '../assets/arrow-down.svg';
-import Label from './Label';
 
 interface DropdownOption {
   text: string;

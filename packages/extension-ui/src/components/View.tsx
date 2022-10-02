@@ -35,6 +35,7 @@ function View({ children, className }: Props): React.ReactElement<Props> {
 
   const theme = React.useMemo(
     () => createTheme(mode === 'light' ? light : dark),
+    // () => createTheme(dark),
     [mode]
   );
 
