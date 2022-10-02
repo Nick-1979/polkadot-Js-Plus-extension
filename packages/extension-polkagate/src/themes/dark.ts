@@ -14,7 +14,7 @@ export const darkTheme: ThemeOptions = {
   palette: {
     mode: 'dark',
     primary: { main: '#99004F' },
-    secondary: { main: '#E30B7B' },
+    secondary: { main: '#BA2882', light: '#BA2882' },
     background: { default: '#180710', paper: '#000000' },
     text: { primary: '#FFFFFF', secondary: '#fff' },
     action: { disabled: '#fff', disabledBackground: '#4B4B4B' }

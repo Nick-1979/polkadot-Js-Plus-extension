@@ -12,7 +12,7 @@ import useTranslation from '../../hooks/useTranslation';
 import { createAccountSuri, createSeed, validateSeed } from '../../messaging';
 import { HeaderWithSteps } from '../../partials';
 import { DEFAULT_TYPE } from '../../util/defaultType';
-import Mnemonic from '../../../../extension-polkagate/src/popup/CreateAccount/Mnemonic';
+import Mnemonic from '../../../../extension-polkagate/src/popup/createAccount/Mnemonic';
 
 interface Props {
   className?: string;

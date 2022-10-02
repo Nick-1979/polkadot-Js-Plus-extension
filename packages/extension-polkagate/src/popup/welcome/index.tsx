@@ -1,16 +1,16 @@
 // Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { ThemeProps } from '../../../extension-ui/src/types';
+import type { ThemeProps } from '../../../../extension-ui/src/types';
 
 import { FiberManualRecord as FiberManualRecordIcon } from '@mui/icons-material';
 import { Box, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import React, { useCallback, useContext } from 'react';
 
-import { ActionContext } from '../../../extension-ui/src/components';
-import useTranslation from '../../../extension-ui/src/hooks/useTranslation';
-import PButton from '../components/PButton';
-import PHeaderBrand from '../patials/PHeaderBrand';
+import { ActionContext } from '../../../../extension-ui/src/components';
+import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
+import PButton from '../../components/PButton';
+import PHeaderBrand from '../../patials/PHeaderBrand';
 
 interface Props extends ThemeProps {
   className?: string;
@@ -86,4 +86,4 @@ const Welcome = function ({ className }: Props): React.ReactElement<Props> {
   );
 };
 
-export default (Welcome);
+export default React.memo(Welcome);

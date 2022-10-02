@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React, { useCallback, useState } from 'react';
+import { useTheme } from '@mui/material';
 
 import { Checkbox, MnemonicSeed, Warning } from '../../../../extension-ui/src/components';
 import useToast from '../../../../extension-ui/src/hooks/useToast';
@@ -26,6 +27,7 @@ const onCopy = (): void => {
 
 function Mnemonic({ onNextStep, seed }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
+  const theme = useTheme();
   const [isMnemonicSaved, setIsMnemonicSaved] = useState(false);
   const { show } = useToast();
 
@@ -47,6 +49,7 @@ function Mnemonic({ onNextStep, seed }: Props): React.ReactElement<Props> {
         checked={isMnemonicSaved}
         label={t<string>('I have saved my mnemonic seed safely.')}
         onChange={setIsMnemonicSaved}
+        theme={theme}
       />
       <PButton
         _mt='0'

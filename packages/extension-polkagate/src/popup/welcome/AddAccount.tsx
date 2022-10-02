@@ -45,7 +45,9 @@ function AddAccount({ className }: Props): React.ReactElement<Props> {
         <Typography
           component={'p'}
           sx={{ fontSize: '14px', fontWeight: 300, px: '24px' }}
-        >{t<string>('You currently don’t have any account. Create your first account or import an existing one to get started.')}</Typography>
+        >
+          {t<string>('You currently don’t have any account. Create your first account or import an existing one to get started.')}
+        </Typography>
       </div>
       <PButton
         _mt='38px'

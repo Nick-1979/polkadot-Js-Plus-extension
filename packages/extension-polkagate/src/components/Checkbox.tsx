@@ -1,8 +1,7 @@
 // Copyright 2019-2022 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { ThemeProps } from '../../../extension-ui/src/types';
-
+import { Theme } from '@mui/material/styles';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 
@@ -14,9 +13,10 @@ interface Props {
   label: string;
   onChange?: (checked: boolean) => void;
   onClick?: () => void;
+  theme?: Theme;
 }
 
-function Checkbox ({ checked, className, label, onChange, onClick }: Props): React.ReactElement<Props> {
+function Checkbox({ checked, className, label, onChange, onClick }: Props): React.ReactElement<Props> {
   const _onChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => onChange && onChange(event.target.checked),
     [onChange]
@@ -43,7 +43,7 @@ function Checkbox ({ checked, className, label, onChange, onClick }: Props): Rea
   );
 }
 
-export default styled(Checkbox)(({ theme }: ThemeProps) => `
+export default styled(Checkbox)(({ theme }: Props) => `
   margin: 41px auto 10px;
 
   label {
@@ -63,7 +63,7 @@ export default styled(Checkbox)(({ theme }: ThemeProps) => `
       cursor: pointer;
       height: 20px;
       width: 20px;
-      border-color: #BA2882;
+      border-color: ${theme.palette.secondary.light};
     }
 
     & span {
@@ -74,18 +74,18 @@ export default styled(Checkbox)(({ theme }: ThemeProps) => `
       width: 20px;
       border-radius: 5px;
       background-color: transparent;
-      border: 0.5px solid #BA2882;
+      border: 0.5px solid ${theme.palette.secondary.light};
       &:after {
         content: '';
         display: none;
-        width: 17px;
-        height: 15px;
+        width: 14px;
+        height: 14px;
         position: absolute;
         left: 0;
         top: 0;
         mask: url(${Checkmark});
         mask-size: cover;
-        background: #BA2882;
+        background: ${theme.palette.secondary.light};
       }
     }
   }
