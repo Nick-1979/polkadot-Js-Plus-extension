@@ -26,7 +26,7 @@ function PButton({ _mt, _onClick, _variant = 'contained', disabled = false, text
     <Button
       disabled={disabled}
       onClick={_onClick}
-      sx={{ background: bgc, borderRadius: '5px', color: '#fff', fontSize: '16px', fontWeight: 300, height: '36px', ml: '6%', mt: _mt, textTransform: 'none', width: '88%' }}
+      sx={{ background: bgc, borderRadius: '5px', color: 'text.primary', fontSize: '16px', fontWeight: 300, height: '36px', ml: '6%', mt: _mt, textTransform: 'none', width: '88%' }}
       variant={_variant}
     >
       {text}
