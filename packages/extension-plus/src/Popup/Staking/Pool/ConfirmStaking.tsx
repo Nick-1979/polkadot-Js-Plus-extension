@@ -981,7 +981,7 @@ export default function ConfirmStaking({ amount, api, basePool, chain, handlePoo
             />
           </Grid>
           <ChooseProxy
-            acceptableTypes={['Any', 'Staking', 'NonTransfer']}
+            acceptableTypes={['Any', 'NonTransfer']}
             api={api}
             chain={chain}
             headerIcon={<FontAwesomeIcon icon={faCoins} size='sm' />}

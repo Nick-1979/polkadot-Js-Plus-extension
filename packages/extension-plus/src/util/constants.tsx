@@ -64,7 +64,7 @@ export const PROXIES_CHAINS = [
   '0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe' // KUSAMA
 ];
 
-// used to enable/disable staking icon in acount page
+// used to enable/disable staking icon in account page
 export const SUPPORTED_CHAINS = ['Polkadot', 'Kusama', 'Westend'];
 
 // used in history to categorize transactions
