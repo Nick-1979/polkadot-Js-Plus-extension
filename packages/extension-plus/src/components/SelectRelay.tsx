@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
 
+import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 import { Avatar, FormControl, FormHelperText, Grid, InputLabel, Select, SelectChangeEvent } from '@mui/material';
 import React from 'react';
 
 import useTranslation from '../../../extension-ui/src/hooks/useTranslation';
 import { RELAY_CHAINS } from '../util/constants';
 import getLogo from '../util/getLogo';
-import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 
 interface Props {
   selectedChain: string;
@@ -20,7 +20,7 @@ interface Props {
   const { t } = useTranslation();
 
   return (
-    <Grid container alignItems='center'>
+    <Grid alignItems='center' container>
       <Grid item xs={1}>
         {selectedChain
           ? <Avatar
@@ -31,17 +31,16 @@ interface Props {
           : <HelpOutlineOutlinedIcon color='action' sx={{ fontSize: 36, paddingBottom: '15px' }} />
         }
       </Grid>
-
       <Grid item xs={11}>
         <FormControl fullWidth>
           <InputLabel id='select-blockchain'>{t('Relay chain')}</InputLabel>
           <Select
-            value={selectedChain}
             label='Select blockchain'
+            native
             onChange={handleChainChange}
             sx={{ height: 50 }}
             // defaultOpen={true}
-            native
+            value={selectedChain}
           >
             {hasEmpty &&
               <option value={''}>

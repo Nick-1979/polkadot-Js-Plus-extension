@@ -1,15 +1,18 @@
 // Copyright 2019-2022 @polkadot/extension-plus authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 /* eslint-disable header/header */
+/* eslint-disable react/jsx-max-props-per-line */
 
 /**
  * @description
  *  this component renders contribute page where users can easily contribute to an active crowdloan
  * */
 
+import { faCoins } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { AllOut as AllOutIcon } from '@mui/icons-material';
 import { Grid, InputAdornment, Skeleton, TextField } from '@mui/material';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { LinkOption } from '@polkadot/apps-config/endpoints/types';
 import { updateMeta } from '@polkadot/extension-ui/messaging';
@@ -20,9 +23,10 @@ import { AccountContext, ActionContext } from '../../../../extension-ui/src/comp
 import useMetadata from '../../../../extension-ui/src/hooks/useMetadata';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { ConfirmButton, Participator, Password, PlusHeader, Popup } from '../../components';
+import { ChooseProxy } from '../../partials';
 import broadcast from '../../util/api/broadcast';
 import { PASS_MAP } from '../../util/constants';
-import { Auction, ChainInfo, Crowdloan, nameAddress, TransactionDetail } from '../../util/plusTypes';
+import { Auction, ChainInfo, Crowdloan, nameAddress, Proxy, TransactionDetail } from '../../util/plusTypes';
 import { amountToMachine, fixFloatingPoint, saveHistory } from '../../util/plusUtils';
 import Fund from './Fund';
 
@@ -41,6 +45,7 @@ export default function Contribute({ address, auction, chainInfo, contributeModa
   const { t } = useTranslation();
   const onAction = useContext(ActionContext);
   const { hierarchy } = useContext(AccountContext);
+  const { accounts } = useContext(AccountContext);
 
   const chain = useMetadata(chainInfo.genesisHash, true);
 
@@ -53,6 +58,10 @@ export default function Contribute({ address, auction, chainInfo, contributeModa
   const [password, setPassword] = useState<string>('');
   const [passwordStatus, setPasswordStatus] = useState<number>(PASS_MAP.EMPTY);
   const [confirmButtonDisabled, setConfirmButtonDisabled] = useState<boolean | undefined>();
+  const [proxy, setProxy] = useState<Proxy | undefined>();
+  const [selectProxyModalOpen, setSelectProxyModalOpen] = useState<boolean>(false);
+
+  const isProxied = useMemo(() => accounts?.find((acc) => acc.address === address)?.isExternal, [accounts, address]);
 
   const { api, coin, decimals } = chainInfo;
   const tx = api.tx.crowdloan.contribute;
@@ -84,21 +93,21 @@ export default function Contribute({ address, auction, chainInfo, contributeModa
       }
 
       setConfirmingState('confirming');
-      const signer = keyring.getPair(encodedAddressInfo?.address);
+      const signer = keyring.getPair(proxy?.delegate ?? encodedAddressInfo?.address);
 
       signer.unlock(password);
       setPasswordStatus(PASS_MAP.CORRECT);
 
       const params = [crowdloan.fund.paraId, contributionAmount, null];
 
-      const { block, failureText, fee, status, txHash } = await broadcast(api, tx, params, signer, encodedAddressInfo.address);
+      const { block, failureText, fee, status, txHash } = await broadcast(api, tx, params, signer, encodedAddressInfo.address, proxy);
 
       const history: TransactionDetail = {
         action: 'contribute',
         amount: contributionAmountInHuman,
         block,
         date: Date.now(),
-        fee: fee || '',
+        fee: fee || String(estimatedFee) || '',
         from: encodedAddressInfo.address,
         hash: txHash || '',
         status: failureText || status,
@@ -113,7 +122,7 @@ export default function Contribute({ address, auction, chainInfo, contributeModa
       setPasswordStatus(PASS_MAP.INCORRECT);
       setConfirmingState('');
     }
-  }, [api, chain, contributionAmount, contributionAmountInHuman, crowdloan.fund.paraId, encodedAddressInfo, hierarchy, password, tx]);
+  }, [api, chain, contributionAmount, estimatedFee, contributionAmountInHuman, crowdloan.fund.paraId, encodedAddressInfo, hierarchy, password, proxy, tx]);
 
   const handleReject = useCallback((): void => {
     setConfirmingState('');
@@ -135,22 +144,15 @@ export default function Contribute({ address, auction, chainInfo, contributeModa
     setContributionAmount(api.createType('Balance', contributingAmountInMachine));
   }, [api, decimals]);
 
+
+  const handleChooseProxy = useCallback((): void => {
+    setSelectProxyModalOpen(true);
+  }, []);
+
   return (
-    <Popup
-      handleClose={handleConfirmModaClose}
-      showModal={contributeModal}
-    >
-      <PlusHeader
-        action={handleReject}
-        chain={chain}
-        closeText={'Reject'}
-        icon={<AllOutIcon fontSize='small' />}
-        title={'Contribute'}
-      />
-      <Grid
-        container
-        sx={{ padding: '20px 30px 40px' }}
-      >
+    <Popup handleClose={handleConfirmModaClose} showModal={contributeModal}>
+      <PlusHeader action={handleReject} chain={chain} closeText={'Reject'} icon={<AllOutIcon fontSize='small' />} title={'Contribute'} />
+      <Grid container sx={{ padding: '20px 30px 40px' }}>
         {chain &&
           <Fund
             coin={coin}
@@ -170,12 +172,7 @@ export default function Contribute({ address, auction, chainInfo, contributeModa
         setAvailableBalance={setAvailableBalance}
         setEncodedAddressInfo={setEncodedAddressInfo}
       />
-      <Grid
-        container
-        item
-        sx={{ p: '25px 40px 10px' }}
-        xs={12}
-      >
+      <Grid container item sx={{ p: '25px 40px 10px' }} xs={12}>
         <TextField
           InputLabelProps={{ shrink: true }}
           InputProps={{ endAdornment: (<InputAdornment position='end'>{coin}</InputAdornment>) }}
@@ -212,20 +209,31 @@ export default function Contribute({ address, auction, chainInfo, contributeModa
           variant='outlined'
         />
       </Grid>
-      <Grid
-        container
-        item
-        sx={{ p: '20px' }}
-        xs={12}
-      >
-        <Password
-          handleIt={handleConfirm}
-          isDisabled={!!confirmingState || confirmButtonDisabled}
-          password={password}
-          passwordStatus={passwordStatus}
-          setPassword={setPassword}
-          setPasswordStatus={setPasswordStatus}
-        />
+      <Grid container item sx={{ p: '20px' }} xs={12}>
+        <Grid container item spacing={0.5} xs={12}>
+          <Grid item xs>
+            <Password
+              handleIt={handleConfirm}
+              isDisabled={!!confirmingState || confirmButtonDisabled || (isProxied && !proxy)}
+              password={password}
+              passwordStatus={passwordStatus}
+              setPassword={setPassword}
+              setPasswordStatus={setPasswordStatus}
+            />
+          </Grid>
+          <ChooseProxy
+            acceptableTypes={['Any', 'Auction', 'NonTransfer']}
+            api={api}
+            chain={chain}
+            headerIcon={<FontAwesomeIcon icon={faCoins} size='sm' />}
+            onClick={handleChooseProxy}
+            proxy={proxy}
+            realAddress={encodedAddressInfo?.address}
+            selectProxyModalOpen={selectProxyModalOpen}
+            setProxy={setProxy}
+            setSelectProxyModalOpen={setSelectProxyModalOpen}
+          />
+        </Grid>
         <ConfirmButton
           handleBack={handleBack}
           handleConfirm={handleConfirm}

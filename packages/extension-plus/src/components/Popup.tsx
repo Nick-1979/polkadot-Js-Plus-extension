@@ -42,6 +42,7 @@ function Popup({ children, handleClose, id, showModal }: Props): React.ReactElem
           disableGutters
           id={id}
           maxWidth='md'
+          sx={{ maxHeight: '600px', position: 'relative' }}
         >
           <Typography>
             {children}

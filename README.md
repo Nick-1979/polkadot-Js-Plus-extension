@@ -1,5 +1,7 @@
 
 # ![polkadot{.js} plus extension](https://raw.githubusercontent.com/Nick-1979/PolkadotJsPlusPictures/main/Title.png)
+![license](https://img.shields.io/badge/License-Apache%202.0-blue?logo=apache&style=flat-square)
+![supported by](https://img.shields.io/badge/Supported%20by-Kusama%20Treasury-%20black?logo=polkadot&style=flat-square)
 
 A user-friendly wallet to interact with the Polkadot/Substrate based blockchains through a browser. It allows users to access their Polkadot/Kusama ecosystem account(s), which can also be used to interact with decentralized apps. It is based on polkadot js extension, which injects a [@polkadot/api](https://github.com/polkadot-js/api) signer into a page, along with any associated accounts.
 
@@ -13,11 +15,13 @@ Currently, the following features are available:
   - View transaction history
   - View an address as QR code
   - Easy staking (Solo and Pool Staking)
-  - Crowdloans (View Auctions and contribute to Crowdloans)
+  - Crowdloans (View Auctions and contribute to crowdloans)
   - Governance (vote referendums, second proposals, vote/unvote councils, propose treasury proposals and tips, etc.)
-  
+  - Social recovery
+  - Supporting proxy accounts (for transferring, staking, and contribution to crowdloans)  
 
-# ![polkadot{.js} plus extension intro](packages/extension-plus/docs/intro.png)
+
+# ![polkadot{.js} plus extension intro](https://raw.githubusercontent.com/Nick-1979/PolkadotJsPlusPictures/main/intro.png)
 
 ### More photos [wiki](https://github.com/Nick-1979/polkadot-Js-Plus-extension/wiki/How-To's)
 
@@ -26,15 +30,24 @@ Currently, the following features are available:
 
 ### Add-on
 
-The extension for firefox can be downloaded from [here](https://addons.mozilla.org/en-US/firefox/addon/polkadot-js-plus-extension/)
+FireFox: The extension for firefox can be downloaded from Firefox add-ons page [here](https://addons.mozilla.org/en-US/firefox/addon/polkadot-js-plus-extension/)
 
-
+Chrome: 
+   1. download the [zip file](https://github.com/Nick-1979/plus/archive/refs/heads/main.zip)
+   2. go to [`chrome://extensions/`](chrome://extensions/)
+   3. switch on the "Developer mode" on top right
+   4. click on "Load unpacked" button and point to the unzipped downloaded folder
+   
+   
 ### Development version
 
 Steps to build the extension and view your changes in a browser:
 
-1. Build via `yarn build` or `yarn watch`
-2. Install the extension
+1. download the files via `git clone https://github.com/Nick-1979/polkadot-Js-Plus-extension.git`
+2. got to downloaded folder via `cd polkadot-Js-Plus-extension`
+3. install dependencies via `yarn`
+4. Build via `yarn build` or `yarn watch`
+5. Install the extension
   - Chrome:
     - go to `chrome://extensions/`
     - ensure you have the Development flag set
@@ -77,11 +90,11 @@ Once added, you can create an account (via a generated seed) or import via an ex
 
 ## More information 
 
-for more information about the extension and how it worsk, please go to the project [wiki](https://github.com/Nick-1979/polkadot-Js-Plus-extension/wiki) 
+for more information about the extension and how it works, please go to the project [wiki](https://github.com/Nick-1979/polkadot-Js-Plus-extension/wiki) 
 
 <!-- ## To support 
 
 
-<img src="./packages/extension-plus/docs/logos/dot.svg" width="20" />  17VdcY2F3WvhSLFHBGZreubzQNQ3NZzLbQsugGzHmzzprSG
+<img src="https://raw.githubusercontent.com/Nick-1979/PolkadotJsPlusPictures/976f95bc5027f2ce304408fe2c4e24c82b89f306/Logo/dot.svg" width="20" />  17VdcY2F3WvhSLFHBGZreubzQNQ3NZzLbQsugGzHmzzprSG
 
-<img src="./packages/extension-plus/docs/logos/ksm.svg" width="20" />  Cgp9bcq1dGP1Z9B6F2ccTSTHNez9jq2iUX993ZbDVByPSU2 -->
+<img src="https://raw.githubusercontent.com/Nick-1979/PolkadotJsPlusPictures/976f95bc5027f2ce304408fe2c4e24c82b89f306/Logo/ksm.svg" width="20" />  Cgp9bcq1dGP1Z9B6F2ccTSTHNez9jq2iUX993ZbDVByPSU2  -->

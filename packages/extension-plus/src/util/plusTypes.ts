@@ -7,8 +7,10 @@ import type { DeriveAccountInfo, DeriveCollectiveProposal, DeriveElectionsInfo, 
 import type { StakingLedger } from '@polkadot/types/interfaces';
 import type { PalletNominationPoolsBondedPoolInner, PalletNominationPoolsPoolMember, PalletNominationPoolsRewardPool, PalletRecoveryActiveRecovery } from '@polkadot/types/lookup';
 import type { BN } from '@polkadot/util';
+import type { KeypairType } from '@polkadot/util-crypto/types';
 
 import { ApiPromise } from '@polkadot/api';
+import { AccountJson } from '@polkadot/extension-base/background/types';
 import { Balance } from '@polkadot/types/interfaces';
 
 export interface TransactionStatus {
@@ -35,6 +37,7 @@ export interface AccountsBalanceType {
   balanceInfo?: BalanceType;
   name: string | null;
   txHistory?: string;
+  isProxied?: boolean;
 }
 
 export interface StakingConsts {
@@ -283,6 +286,11 @@ export interface AddressState {
   address: string;
 }
 
+export interface NameAddress {
+  name?: string;
+  address: string;
+}
+
 export interface nameAddress {
   name?: string;
   address: string;
@@ -332,7 +340,7 @@ export interface PoolStakingConsts {
 }
 
 export interface PoolInfo {
-  poolId: BN;
+  poolId: number;
   bondedPool: PalletNominationPoolsBondedPoolInner | null;
   metadata: string | null;
   rewardPool: PalletNominationPoolsRewardPool | null
@@ -355,7 +363,13 @@ export interface PoolAccounts {
   stashId: string;
 }
 
+export interface MemberPoints {
+  accountId: string;
+  points: BN;
+}
+
 export interface MembersMapEntry {
+  map(arg0: (m: any) => MemberPoint): MemberPoint[];
   accountId: string;
   member: PalletNominationPoolsPoolMember;
 }
@@ -433,4 +447,25 @@ export interface RewardInfo {
 export interface AlertType {
   text: string;
   severity: 'error' | 'warning' | 'info' | 'success'
+}
+
+export type ProxyTypes = 'Any' | 'Auction' | 'CancelProxy' | 'IdentityJudgement' | 'Governance' | 'NonTransfer' | 'Staking' | 'SudoBalances' | 'SudoBalances' |'Society';
+
+export interface Proxy {
+  delay: number;
+  delegate: string;
+  proxyType: ProxyTypes;
+}
+
+export interface ProxyItem {
+  proxy: Proxy;
+  status: 'current' | 'new' | 'remove';
+}
+
+export interface Recoded {
+  account: AccountJson | null;
+  formatted: string | null;
+  genesisHash?: string | null;
+  prefix?: number;
+  type: KeypairType;
 }

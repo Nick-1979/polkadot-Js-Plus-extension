@@ -24,11 +24,13 @@ export interface Props {
   api: ApiPromise | undefined;
   title?: string;
   direction?: ResponsiveStyleValue<GridDirection> | undefined;
+  justifyContent?: string;
+  alignItems?: string;
 }
 
-function ShowBalance2({ api, balance, direction = 'column', title }: Props): React.ReactElement<Props> {
+function ShowBalance2({ alignItems = 'center', api, balance, direction = 'column', justifyContent = 'space-between', title }: Props): React.ReactElement<Props> {
   return (
-    <Grid alignItems='center' container data-testid='ShowBalance2' direction={direction} justifyContent='space-between'>
+    <Grid alignItems={alignItems} container data-testid='ShowBalance2' direction={direction} justifyContent={justifyContent}>
       {title && <>
         <Grid item sx={{ fontSize: 12, fontWeight: 500, letterSpacing: '0.8px', lineHeight: '16px' }}>
           {title}

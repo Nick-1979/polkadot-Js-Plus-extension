@@ -92,14 +92,14 @@ export default function Second({ address, chain, chainInfo, handleVoteProposalMo
         amount: '0',
         block,
         date: Date.now(),
-        fee: fee || '',
+        fee: fee || String(estimatedFee) || '',
         from: encodedAddressInfo.address,
         hash: txHash || '',
         status: failureText || status,
         to: String(selectedProposal.index)
       };
 
-      updateMeta(...saveHistory(chain, hierarchy, encodedAddressInfo.address, currentTransactionDetail)).catch(console.error);
+      updateMeta(...saveHistory(chain, hierarchy, estimatedFee, encodedAddressInfo.address, currentTransactionDetail)).catch(console.error);
 
       setState(status);
     } catch (e) {

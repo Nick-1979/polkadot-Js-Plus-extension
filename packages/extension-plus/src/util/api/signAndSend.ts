@@ -52,8 +52,10 @@ export async function signAndSend(
         signedBlock.block.extrinsics.forEach(async (ex) => {
           if (ex.isSigned) {
             if (String(ex.signer) == senderAddress) {
-              const queryInfo = await api.rpc.payment.queryInfo(ex.toHex(), signedBlock.block.hash);
-              const fee = queryInfo.partialFee.toString();
+              /** since the api is replaced hence needs more effort to calculate the */
+              // const queryInfo = await api.call.transactionPaymentApi.queryInfo(ex.toHex(), signedBlock.block.hash);
+
+              const fee = undefined; //queryInfo.partialFee.toString();
 
               resolve({ block: Number(blockNumber), failureText, fee, status: txFailed ? 'failed' : 'success', txHash });
             }

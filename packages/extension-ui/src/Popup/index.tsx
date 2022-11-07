@@ -15,6 +15,8 @@ import CrowdLoans from '../../../extension-plus/src/Popup/CrowdLoans';// added f
 import Governance from '../../../extension-plus/src/Popup/Governance';// added for plus
 import EnDecrypt from '../../../extension-plus/src/Popup/Encryption';// added for plus
 import SocialRecovery from '../../../extension-plus/src/Popup/SocialRecovery';// added for plus
+import AddProxy from '../../../extension-plus/src/Popup/AddProxied';// added for plus
+import ManageProxies from '../../../extension-plus/src/Popup/ManageProxies';// added for plus
 
 import { ErrorBoundary, Loading } from '../components';
 import { AccountContext, ActionContext, AuthorizeReqContext, MediaContext, MetadataReqContext, SettingsContext, SigningReqContext } from '../components/contexts';
@@ -147,7 +149,9 @@ export default function Popup(): React.ReactElement {
                         <Route path='/crowdloans/:genesisHash/:address'>{wrapWithErrorBoundary(<CrowdLoans />, 'crowdloans')}</Route>
                         <Route path='/governance/:genesisHash/:address'>{wrapWithErrorBoundary(<Governance />, 'governance')}</Route>
                         <Route path='/endecrypt/:address'>{wrapWithErrorBoundary(<EnDecrypt />, 'encrypt-decrypt')}</Route>
-                        <Route path='/socialRecovery/:genesisHash/:address'>{wrapWithErrorBoundary(<SocialRecovery />, 'socialRecovery')}</Route>
+                        <Route path='/social-recovery/:genesisHash/:address'>{wrapWithErrorBoundary(<SocialRecovery />, 'social-recovery')}</Route>
+                        <Route path='/account/proxy'>{wrapWithErrorBoundary(<AddProxy />, 'add-proxy')}</Route>
+                        <Route path='/manage-proxies/:genesisHash/:address'>{wrapWithErrorBoundary(<ManageProxies />, 'manage-proxies')}</Route>
 
                         <Route path='/auth-list'>{wrapWithErrorBoundary(<AuthList />, 'auth-list')}</Route>
                         <Route path='/account/create'>{wrapWithErrorBoundary(<CreateAccount />, 'account-creation')}</Route>

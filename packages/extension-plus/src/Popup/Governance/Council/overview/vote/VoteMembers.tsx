@@ -55,7 +55,7 @@ export default function VoteMembers({ chain, chainInfo, membersType, personsInfo
     <>
       <Grid
         item
-        sx={{ color: grey[600], fontFamily: 'fantasy', fontSize: 14, fontWeigth: 'bold', textAlign: 'center', p: '10px 1px 5px' }}
+        sx={{ color: grey[600], fontSize: 14, fontWeigth: 'bold', textAlign: 'center', p: '10px 1px 5px' }}
         xs={12}>
         {membersType}
       </Grid>

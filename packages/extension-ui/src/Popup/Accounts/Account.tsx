@@ -3,6 +3,7 @@
 
 import type { AccountJson } from '@polkadot/extension-base/background/types';
 
+import { faPeopleRoof, faSitemap, faTent, faUserShield } from '@fortawesome/free-solid-svg-icons';// added for plus,
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';// added for plus, useContext
 import styled from 'styled-components';
 
@@ -10,7 +11,7 @@ import { canDerive } from '@polkadot/extension-base/utils';
 import { ThemeProps } from '@polkadot/extension-ui/types';
 
 import useEndpoints from '../../../../extension-plus/src/hooks/useEndpoints';// added for plus
-import { CROWDLOANS_CHAINS, GOVERNANCE_CHAINS, SOCIAL_RECOVERY_CHAINS } from '../../../../extension-plus/src/util/constants';// added for plus
+import { CROWDLOANS_CHAINS, GOVERNANCE_CHAINS, SOCIAL_RECOVERY_CHAINS, PROXIES_CHAINS } from '../../../../extension-plus/src/util/constants';// added for plus
 import { SavedMetaData } from '../../../../extension-plus/src/util/plusTypes';// added for plus
 import { prepareMetaData } from '../../../../extension-plus/src/util/plusUtils';// added for plus
 import { AccountContext, ActionContext, ActionText, Address, Dropdown, Link, MenuDivider, MenuItem, Svg } from '../../components';// added for plus, AccountContext, ActionContext, Svg
@@ -18,7 +19,6 @@ import useGenesisHashOptions from '../../hooks/useGenesisHashOptions';
 import useTranslation from '../../hooks/useTranslation';
 import { editAccount, tieAccount, updateMeta } from '../../messaging';// added for plus, updateMeta
 import { Name } from '../../partials';
-import { faUserShield, faTent, faPeopleRoof } from '@fortawesome/free-solid-svg-icons';// added for plus,
 
 interface Props extends AccountJson {
   className?: string;
@@ -90,15 +90,13 @@ function Account({ address, className, genesisHash, isExternal, isHardware, isHi
   // added for plus
   const _goToLink = useCallback(
     (link: string) => {
-      if (link === 'crowdloans' && !CROWDLOANS_CHAINS.includes(genesisHash)) {
-        return;
-      }
-
-      if (link === 'governance' && !GOVERNANCE_CHAINS.includes(genesisHash)) {
-        return;
-      }
-
-      if (link === 'socialRecovery' && !SOCIAL_RECOVERY_CHAINS.includes(genesisHash)) {
+      if (
+        !genesisHash ||
+        (link === 'crowdloans' && !CROWDLOANS_CHAINS.includes(genesisHash)) ||
+        (link === 'governance' && !GOVERNANCE_CHAINS.includes(genesisHash)) ||
+        (link === 'social-recovery' && !SOCIAL_RECOVERY_CHAINS.includes(genesisHash)) ||
+        (link === 'manage-proxies' && !PROXIES_CHAINS.includes(genesisHash))
+      ) {
         return;
       }
 
@@ -129,8 +127,16 @@ function Account({ address, className, genesisHash, isExternal, isHardware, isHi
         <ActionText
           className={SOCIAL_RECOVERY_CHAINS.includes(genesisHash) ? 'newMenu' : 'disabledMenu'}
           icon={faUserShield}
-          onClick={() => _goToLink('socialRecovery')}
+          onClick={() => _goToLink('social-recovery')}
           text={t<string>('Social Recovery')}
+        />
+      </MenuItem>
+      <MenuItem className='newMenu'>
+        <ActionText
+          className={PROXIES_CHAINS.includes(genesisHash) ? 'newMenu' : 'disabledMenu'}
+          icon={faSitemap}
+          onClick={() => _goToLink('manage-proxies')}
+          text={t<string>('Manage Proxies')}
         />
       </MenuItem>
       <MenuDivider />

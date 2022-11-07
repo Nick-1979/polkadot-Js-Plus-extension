@@ -5,7 +5,7 @@ import type { ApiPromise } from '@polkadot/api';
 import type { SubmittableExtrinsic } from '@polkadot/api/types';
 import type { Chain } from '@polkadot/extension-chains/types';
 import type { ISubmittableResult } from '@polkadot/types/types';
-import type { MyPoolInfo, TxInfo, ValidatorsFromSubscan } from '../plusTypes';
+import type { MyPoolInfo, TxInfo, ValidatorsFromSubscan, Proxy } from '../plusTypes';
 
 import { KeyringPair } from '@polkadot/keyring/types';
 import { BN } from '@polkadot/util';
@@ -14,7 +14,7 @@ import getChainInfo from '../getChainInfo';
 import { postData } from '../postData';
 import { signAndSend } from './signAndSend';
 
-export async function getAllValidatorsFromSubscan (_chain: Chain): Promise<{ current: ValidatorsFromSubscan[] | null, waiting: ValidatorsFromSubscan[] | null } | null> {
+export async function getAllValidatorsFromSubscan(_chain: Chain): Promise<{ current: ValidatorsFromSubscan[] | null, waiting: ValidatorsFromSubscan[] | null } | null> {
   if (!_chain) {
     return null;
   }
@@ -28,7 +28,7 @@ export async function getAllValidatorsFromSubscan (_chain: Chain): Promise<{ cur
 }
 
 // TODO: get from blockchain too
-export async function getCurrentValidatorsFromSubscan (_chain: Chain): Promise<ValidatorsFromSubscan[] | null> {
+export async function getCurrentValidatorsFromSubscan(_chain: Chain): Promise<ValidatorsFromSubscan[] | null> {
   return new Promise((resolve) => {
     try {
       const network = _chain.name.replace(' Relay Chain', '');
@@ -54,7 +54,7 @@ export async function getCurrentValidatorsFromSubscan (_chain: Chain): Promise<V
   });
 }
 
-export async function getWaitingValidatorsFromSubscan (_chain: Chain): Promise<ValidatorsFromSubscan[] | null> {
+export async function getWaitingValidatorsFromSubscan(_chain: Chain): Promise<ValidatorsFromSubscan[] | null> {
   return new Promise((resolve) => {
     try {
       const network = _chain ? _chain.name.replace(' Relay Chain', '') : 'westend';
@@ -80,7 +80,7 @@ export async function getWaitingValidatorsFromSubscan (_chain: Chain): Promise<V
   });
 }
 
-export async function getBonded (_chain: Chain, _address: string): Promise<ValidatorsFromSubscan[] | null> {
+export async function getBonded(_chain: Chain, _address: string): Promise<ValidatorsFromSubscan[] | null> {
   return new Promise((resolve) => {
     try {
       const network = _chain ? _chain.name.replace(' Relay Chain', '') : 'westend';
@@ -115,7 +115,7 @@ export async function getBonded (_chain: Chain, _address: string): Promise<Valid
   });
 }
 
-export async function getStakingReward (_chain: Chain | null | undefined, _stakerAddress: string | null): Promise<string | null> {
+export async function getStakingReward(_chain: Chain | null | undefined, _stakerAddress: string | null): Promise<string | null> {
   if (!_stakerAddress) {
     console.log('_stakerAddress is null in getting getStakingReward ');
 
@@ -152,7 +152,7 @@ export async function getStakingReward (_chain: Chain | null | undefined, _stake
   });
 }
 
-export async function getCurrentEraIndex (_chain: Chain | null | undefined): Promise<number | null> {
+export async function getCurrentEraIndex(_chain: Chain | null | undefined): Promise<number | null> {
   try {
     console.log('getCurrentEraIndex is called!');
 
@@ -177,23 +177,25 @@ export async function getCurrentEraIndex (_chain: Chain | null | undefined): Pro
   }
 }
 
-export async function bondOrBondExtra (
-  _chain: Chain | null | undefined,
-  _stashAccountId: string | null,
-  _signer: KeyringPair,
-  _value: bigint,
-  _alreadyBondedAmount: bigint,
-  payee = 'Staked')
-  : Promise<TxInfo> {
+export async function bondOrBondExtra(
+  api: ApiPromise,
+  stashAccountId: string | null,
+  signer: KeyringPair,
+  value: bigint,
+  alreadyBondedAmount: bigint,
+  proxy: Proxy | undefined,
+  payee = 'Staked'
+): Promise<TxInfo> {
   try {
     console.log('bondOrBondExtra is called!');
 
-    if (!_stashAccountId) {
+    if (!stashAccountId) {
       console.log('bondOrBondExtra:  controller is empty!');
 
       return { status: 'failed' };
     }
 
+    /** Since this is Easy staking we are using payee = Staked, will be changed in the advanced version **/
     /** payee:
      * Staked - Pay into the stash account, increasing the amount at stake accordingly.
      * Stash - Pay into the stash account, not increasing the amount at stake.
@@ -201,16 +203,10 @@ export async function bondOrBondExtra (
      * Controller - Pay into the controller account.
      */
 
-    const { api } = await getChainInfo(_chain);
-    let bonded: SubmittableExtrinsic<'promise', ISubmittableResult>;
+    const bonded = Number(alreadyBondedAmount) > 0 ? api.tx.staking.bondExtra(value) : api.tx.staking.bond(stashAccountId, value, payee);
+    const tx = proxy ? api.tx.proxy.proxy(stashAccountId, proxy.proxyType, bonded) : bonded;
 
-    if (Number(_alreadyBondedAmount) > 0) {
-      bonded = api.tx.staking.bondExtra(_value);
-    } else {
-      bonded = api.tx.staking.bond(_stashAccountId, _value, payee);
-    }
-
-    return signAndSend(api, bonded, _signer, _stashAccountId);
+    return signAndSend(api, tx, signer, proxy?.delegate ?? stashAccountId);
   } catch (error) {
     console.log('Something went wrong while bond/nominate', error);
 
@@ -220,7 +216,7 @@ export async function bondOrBondExtra (
 
 //* *******************************POOL STAKING********************************************/
 
-export async function poolJoinOrBondExtra (
+export async function poolJoinOrBondExtra(
   _api: ApiPromise,
   _stashAccountId: string | null,
   _signer: KeyringPair,
@@ -252,30 +248,33 @@ export async function poolJoinOrBondExtra (
   }
 }
 
-export async function createPool (
-  _api: ApiPromise,
-  _depositor: string | null,
-  _signer: KeyringPair,
-  _value: BN,
-  _poolId: BN,
-  _roles: any,
-  _poolName: string
+export async function createPool(
+  api: ApiPromise,
+  depositor: string | null,
+  signer: KeyringPair,
+  value: BN,
+  poolId: number,
+  roles: any,
+  poolName: string,
+  proxy?: Proxy
 ): Promise<TxInfo> {
   try {
     console.log('createPool is called!');
 
-    if (!_depositor) {
+    if (!depositor) {
       console.log('createPool:  _depositor is empty!');
 
       return { status: 'failed' };
     }
 
-    const created = _api.tx.utility.batch([
-      _api.tx.nominationPools.create(_value, _roles.root, _roles.nominator, _roles.stateToggler),
-      _api.tx.nominationPools.setMetadata(_poolId, _poolName)
+    const created = api.tx.utility.batch([
+      api.tx.nominationPools.create(value, roles.root, roles.nominator, roles.stateToggler),
+      api.tx.nominationPools.setMetadata(poolId, poolName)
     ]);
 
-    return signAndSend(_api, created, _signer, _depositor);
+    const tx = proxy ? api.tx.proxy.proxy(depositor, proxy.proxyType, created) : created;
+
+    return signAndSend(api, tx, signer, depositor);
   } catch (error) {
     console.log('Something went wrong while createPool', error);
 
@@ -283,43 +282,46 @@ export async function createPool (
   }
 }
 
-export async function editPool (
-  _api: ApiPromise,
-  _depositor: string | null,
-  _signer: KeyringPair,
-  _pool: MyPoolInfo,
-  _basePool: MyPoolInfo
+export async function editPool(
+  api: ApiPromise,
+  depositor: string | null,
+  signer: KeyringPair,
+  pool: MyPoolInfo,
+  basePool: MyPoolInfo,
+  proxy?: Proxy
 ): Promise<TxInfo> {
   try {
     console.log('editPool is called!');
 
-    if (!_depositor) {
+    if (!depositor) {
       console.log('editPool:  _depositor is empty!');
 
       return { status: 'failed' };
     }
 
     const getRole = (role: string) => {
-      if (!_pool.bondedPool.roles[role]) {return 'Remove';
+      if (!pool.bondedPool.roles[role]) {
+        return 'Remove';
       }
 
-      if (_pool.bondedPool.roles[role] === _basePool.bondedPool.roles[role]) {
+      if (pool.bondedPool.roles[role] === basePool.bondedPool.roles[role]) {
         return 'Noop';
       }
 
-      return { set: _pool.bondedPool.roles[role] };
+      return { set: pool.bondedPool.roles[role] };
     };
 
     const calls = [];
 
-    _basePool.metadata !== _pool.metadata &&
-      calls.push(_api.tx.nominationPools.setMetadata(_pool.member.poolId, _pool.metadata));
-    JSON.stringify(_basePool.bondedPool.roles) !== JSON.stringify(_pool.bondedPool.roles) &&
-      calls.push(_api.tx.nominationPools.updateRoles(_pool.member.poolId, getRole('root'), getRole('nominator'), getRole('stateToggler')))
+    basePool.metadata !== pool.metadata &&
+      calls.push(api.tx.nominationPools.setMetadata(pool.member.poolId, pool.metadata));
+    JSON.stringify(basePool.bondedPool.roles) !== JSON.stringify(pool.bondedPool.roles) &&
+      calls.push(api.tx.nominationPools.updateRoles(pool.member.poolId, getRole('root'), getRole('nominator'), getRole('stateToggler')))
 
-    const created = _api.tx.utility.batch(calls);
+    const updated = api.tx.utility.batch(calls);
+    const tx = proxy ? api.tx.proxy.proxy(depositor, proxy.proxyType, updated) : updated;
 
-    return signAndSend(_api, created, _signer, _depositor);
+    return signAndSend(api, tx, signer, depositor);
   } catch (error) {
     console.log('Something went wrong while editPool', error);
 

@@ -8,22 +8,23 @@ import type { AccountId } from '@polkadot/types/interfaces';
 import { ApiPromise } from '@polkadot/api';
 import { KeyringPair } from '@polkadot/keyring/types';
 
-import { TxInfo } from '../plusTypes';
+import { Proxy, TxInfo } from '../plusTypes';
 import { signAndSend } from './signAndSend';
 
-export default async function broadcast(
+export default async function broadcast (
   api: ApiPromise,
-  tx: ((...args: any[]) => SubmittableExtrinsic<'promise'>),
+  extrinsic: ((...args: any[]) => SubmittableExtrinsic<'promise'>),
   params: unknown[] | (() => unknown[]),
   signer: KeyringPair,
-  senderAddress: string | AccountId
+  senderAddress: string | AccountId,
+  proxy?: Proxy
 ): Promise<Promise<TxInfo>> {
   try {
-    console.log('Broadcasting a tx ....');
+    console.log(`Broadcasting a ${proxy ? 'proxy ' : ''}tx ....`);
 
-    const b = tx(...params);
+    const tx = proxy ? api.tx.proxy.proxy(senderAddress, proxy.proxyType, extrinsic(...params)) : extrinsic(...params);
 
-    return signAndSend(api, b, signer, senderAddress);
+    return signAndSend(api, tx, signer, proxy?.delegate ?? senderAddress);
   } catch (e) {
     console.log('something went wrong while broadcasting', e);
 

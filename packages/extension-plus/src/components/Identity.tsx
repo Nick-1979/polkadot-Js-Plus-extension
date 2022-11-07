@@ -31,8 +31,8 @@ interface Props {
 
 function Identity({ accountInfo, address, api, chain, iconSize = 24, name, showAddress = false, showSocial = true, title = '', totalStaked = '' }: Props): React.ReactElement<Props> {
   const [info, setInfo] = useState<DeriveAccountInfo | undefined>();
-  const [hasSocial, setHasSocial] = useState<boolean | undefined>();
-  const [judgement, setJudgement] = useState<string | undefined>();
+  const [judgement, setJudgement] = useState<string | undefined | null>();
+  const hasSocial = !!(info?.identity?.twitter || info?.identity?.web || info?.identity?.email);
 
   useEffect(() => {
     if (accountInfo) {
@@ -49,8 +49,6 @@ function Identity({ accountInfo, address, api, chain, iconSize = 24, name, showA
   }, [address, accountInfo, api, name]);
 
   useEffect(() => {
-    setHasSocial(!!(info?.identity?.twitter || info?.identity?.web || info?.identity?.email));
-
     // to check if the account has a judgement to set a verified green check
     setJudgement(info?.identity?.judgements && JSON.stringify(info?.identity?.judgements).match(/reasonable|knownGood/gi));
   }, [info]);
@@ -76,7 +74,7 @@ function Identity({ accountInfo, address, api, chain, iconSize = 24, name, showA
             </Grid>
             <Grid alignItems='center' container item sx={{ paddingLeft: '5px' }} xs={11}>
               <Grid alignItems='center' container id='namesAndSocials' item justifyContent='flex-start' spacing={0.3} xs={12}>
-                <Grid container id='names' item sx={{ flexWrap: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} xs={hasSocial && showSocial ? 9 : 12}>
+                <Grid alignItems='center' container id='names' item sx={{ flexWrap: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} xs={hasSocial && showSocial ? 9 : 12}>
                   <Grid item sx={{ pr: '5px' }}>
                     {judgement
                       ? <Tooltip id='judgement' title={judgement}><CheckCircleRoundedIcon color='success' sx={{ fontSize: 15 }} /></Tooltip>

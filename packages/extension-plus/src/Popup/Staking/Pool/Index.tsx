@@ -6,8 +6,8 @@
 
 /**
  * @description
- *  this component provides access to allstaking stuff,including stake,
- *  unstake, redeem, change validators, staking generak info,etc.
+ *  this component provides access to all staking stuff,including stake,
+ *  unstake, redeem, change validators, staking general info,etc.
  * */
 
 import type { Option, StorageKey } from '@polkadot/types';
@@ -53,7 +53,6 @@ interface Props {
   endpoint: string | undefined;
   validatorsIdentities: DeriveAccountInfo[] | undefined;
   validatorsInfo: Validators | undefined;
-  // localStrorageIsUpdate: boolean;
   currentEraIndex: number | undefined;
   gettingNominatedValidatorsInfoFromChain: boolean;
   validatorsInfoIsUpdated: boolean;
@@ -98,14 +97,14 @@ export default function Index({ account, api, chain, currentEraIndex, endpoint, 
   const [showSelectValidatorsModal, setSelectValidatorsModalOpen] = useState<boolean>(false);
   const [amount, setAmount] = useState<BN>(BN_ZERO);
   const [currentlyStaked, setCurrentlyStaked] = useState<BN | undefined | null>();
-  const [selectedValidators, setSelectedValidatorsAcounts] = useState<DeriveStakingQuery[] | null>(null);
+  const [selectedValidators, setSelectedValidatorsAccounts] = useState<DeriveStakingQuery[] | null>(null);
   const [nominatedValidatorsId, setNominatedValidatorsId] = useState<string[] | undefined>();
   const [noNominatedValidators, setNoNominatedValidators] = useState<boolean | undefined>();// if TRUE, shows that nominators are fetched but is empty
   const [nominatedValidators, setNominatedValidatorsInfo] = useState<DeriveStakingQuery[] | null>(null);
   const [state, setState] = useState<string>('');
   const [tabValue, setTabValue] = useState(4);
-  const [oversubscribedsCount, setOversubscribedsCount] = useState<number | undefined>();
-  const [activeValidator, setActiveValidator] = useState<DeriveStakingQuery>();
+  const [oversubscribedCount, setOversubscribedCount] = useState<number | undefined>();
+  const [activeValidators, setActiveValidators] = useState<DeriveStakingQuery[]>();
 
   const chainName = chain?.name.replace(' Relay Chain', '');
 
@@ -142,7 +141,6 @@ export default function Index({ account, api, chain, currentEraIndex, endpoint, 
 
       console.log('*** My pool info returned from worker is:', parsedInfo);
 
-      // id ? setSelectedPool(parsedInfo) :
       setMyPool(parsedInfo);
       !id && setNominatedValidatorsId(parsedInfo?.stashIdAccount?.nominators);
       getPoolWorker.terminate();
@@ -168,8 +166,8 @@ export default function Index({ account, api, chain, currentEraIndex, endpoint, 
         return setPoolsInfo(null);// noo pools found, probably never happens
       }
 
-      const parsedPoolsInfo = JSON.parse(poolsInfo);
-      const info = parsedPoolsInfo.info as PoolInfo[];
+      const parsedPoolsInfo = JSON.parse(poolsInfo) as { info: PoolInfo[], nextPoolId: string };
+      const info = parsedPoolsInfo.info;
 
       setNextPoolId(new BN(parsedPoolsInfo.nextPoolId));
 
@@ -178,7 +176,7 @@ export default function Index({ account, api, chain, currentEraIndex, endpoint, 
           p.bondedPool.points = new BN(String(p.bondedPool.points));
         }
 
-        p.poolId = new BN(p.poolId);
+        // p.poolId = new BN(p.poolId);
       });
 
       setPoolsInfo(info);
@@ -220,12 +218,12 @@ export default function Index({ account, api, chain, currentEraIndex, endpoint, 
       return;
     }
 
-    // *** retrive nominated validators from local sorage
+    // *** retrieve nominated validators from local storage
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const nominatedValidatorsInfoFromLocalStrorage: SavedMetaData = account?.poolNominatedValidators ? JSON.parse(account.poolNominatedValidators) : null;
+    const nominatedValidatorsInfoFromLocalStorage: SavedMetaData = account?.poolNominatedValidators ? JSON.parse(account.poolNominatedValidators) : null;
 
-    if (nominatedValidatorsInfoFromLocalStrorage && nominatedValidatorsInfoFromLocalStrorage?.chainName === chainName) {
-      setNominatedValidatorsInfo(nominatedValidatorsInfoFromLocalStrorage.metaData as DeriveStakingQuery[]);
+    if (nominatedValidatorsInfoFromLocalStorage && nominatedValidatorsInfoFromLocalStorage?.chainName === chainName) {
+      setNominatedValidatorsInfo(nominatedValidatorsInfoFromLocalStorage.metaData as DeriveStakingQuery[]);
     }
   }, [account, chainName]);
 
@@ -257,21 +255,21 @@ export default function Index({ account, api, chain, currentEraIndex, endpoint, 
     if (validatorsInfo && stakingConsts) {
       const selectedVAcc = selectBestValidators(validatorsInfo, stakingConsts);
 
-      setSelectedValidatorsAcounts(selectedVAcc);
+      setSelectedValidatorsAccounts(selectedVAcc);
     }
   }, [stakingConsts, validatorsInfo]);
 
   useEffect(() => {
-    const oversubscribeds = nominatedValidators?.filter((v) => stakingConsts?.maxNominatorRewardedPerValidator && v.exposure.others.length > stakingConsts?.maxNominatorRewardedPerValidator);
+    const oversubscribed = nominatedValidators?.filter((v) => stakingConsts?.maxNominatorRewardedPerValidator && v.exposure.others.length > stakingConsts?.maxNominatorRewardedPerValidator);
 
-    setOversubscribedsCount(oversubscribeds?.length);
+    setOversubscribedCount(oversubscribed?.length);
   }, [nominatedValidators, stakingConsts]);
 
   function selectBestValidators(validatorsInfo: Validators, stakingConsts: StakingConsts): DeriveStakingQuery[] {
     const allValidators = validatorsInfo.current.concat(validatorsInfo.waiting);
     const nonBlockedValidatorsAccountId = allValidators.filter((v) =>
       !v.validatorPrefs.blocked && // filter blocked validators
-      (Number(v.validatorPrefs.commission) / (10 ** 7)) < MAX_ACCEPTED_COMMISSION && // filter high commision validators
+      (Number(v.validatorPrefs.commission) / (10 ** 7)) < MAX_ACCEPTED_COMMISSION && // filter high commission validators
       v.exposure.others.length < stakingConsts?.maxNominatorRewardedPerValidator // filter oversubscribed
       // && v.exposure.others.length > stakingConsts?.maxNominatorRewardedPerValidator / 4 // filter validators with very low nominators
     );
@@ -333,9 +331,9 @@ export default function Index({ account, api, chain, currentEraIndex, endpoint, 
       return;
     }
 
-    const active = nominatedValidators?.find((n) => n.exposure.others.find(({ who }) => who.toString() === myPool.accounts.stashId));
+    const actives = nominatedValidators?.filter((n) => n.exposure.others.find(({ who }) => who.toString() === myPool.accounts.stashId));
 
-    setActiveValidator(active);
+    setActiveValidators(actives);
   }, [myPool?.accounts, nominatedValidators]);
 
   const PoolsIcon = useMemo((): React.ReactElement<any> => (
@@ -349,18 +347,18 @@ export default function Index({ account, api, chain, currentEraIndex, endpoint, 
         ? <Tooltip placement='top' title={t('No validators nominated')}>
           <NotificationsActiveIcon color='error' fontSize='small' sx={{ pr: 1 }} />
         </Tooltip>
-        : !activeValidator && nominatedValidators?.length
+        : !activeValidators && nominatedValidators?.length
           ? <Tooltip placement='top' title={t('No active validator in this era')}>
             <ReportOutlinedIcon color='warning' fontSize='small' sx={{ pr: 1 }} />
           </Tooltip>
-          : oversubscribedsCount
+          : oversubscribedCount
             ? <Tooltip placement='top' title={t('oversubscribed nominees')}>
-              <Badge anchorOrigin={{ horizontal: 'left', vertical: 'top' }} badgeContent={oversubscribedsCount} color='warning'>
+              <Badge anchorOrigin={{ horizontal: 'left', vertical: 'top' }} badgeContent={oversubscribedCount} color='warning'>
                 <NotificationImportantOutlinedIcon color='action' fontSize='small' sx={{ pr: 1 }} />
               </Badge>
             </Tooltip>
             : <PanToolOutlinedIcon sx={{ fontSize: '17px' }} />
-  ), [gettingNominatedValidatorsInfoFromChain, currentlyStaked, nominatedValidators?.length, t, activeValidator, oversubscribedsCount]);
+  ), [gettingNominatedValidatorsInfoFromChain, currentlyStaked, nominatedValidators?.length, t, activeValidators, oversubscribedCount]);
 
   return (
     <Popup handleClose={handlePoolStakingModalClose} showModal={showStakingModal}>
@@ -430,7 +428,7 @@ export default function Index({ account, api, chain, currentEraIndex, endpoint, 
           </TabPanel>
           <TabPanel index={3} padding={1} value={tabValue}>
             <Nominations
-              activeValidator={activeValidator}
+              activeValidators={activeValidators}
               api={api}
               chain={chain}
               endpoint={endpoint}
@@ -452,6 +450,7 @@ export default function Index({ account, api, chain, currentEraIndex, endpoint, 
           <TabPanel index={4} value={tabValue}>
             <InfoTab
               api={api}
+              currentlyExistingPoolsCount={poolsInfo?.length}
               info={poolStakingConsts}
             />
           </TabPanel>

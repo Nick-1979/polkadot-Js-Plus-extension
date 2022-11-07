@@ -10,7 +10,7 @@ import type { ThemeProps } from '../types';
 
 import { faUsb } from '@fortawesome/free-brands-svg-icons';
 import { faCopy, faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
-import { faCodeBranch, faQrcode } from '@fortawesome/free-solid-svg-icons';
+import { faCodeBranch, faSitemap } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
@@ -188,9 +188,12 @@ function Address({ actions, address, children, className, genesisHash, isExterna
               />
             )
             : (
-              <FontAwesomeIcon
+              <FontAwesomeIcon // added for plus
                 className='externalIcon'
-                icon={faQrcode}
+                icon={faSitemap}
+                rotation={270}
+                size={'xs'}
+                style={{width: 20}}
                 title={t('external account')}
               />
             )

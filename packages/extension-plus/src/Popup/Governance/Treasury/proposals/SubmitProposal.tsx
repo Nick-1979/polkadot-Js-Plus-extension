@@ -118,7 +118,7 @@ export default function SubmitProposal({ address, chain, chainInfo, handleSubmit
         amount: amountToHuman(value, decimals),
         block,
         date: Date.now(),
-        fee: fee || '',
+        fee: fee || String(estimatedFee) || '',
         from: encodedAddressInfo.address,
         hash: txHash || '',
         status: failureText || status,
@@ -133,7 +133,7 @@ export default function SubmitProposal({ address, chain, chainInfo, handleSubmit
       setPasswordStatus(PASS_MAP.INCORRECT);
       setState('');
     }
-  }, [encodedAddressInfo?.address, password, api, tx, params, value, decimals, beneficiaryAddress, chain, hierarchy]);
+  }, [encodedAddressInfo?.address, password, api, estimatedFee, tx, params, value, decimals, beneficiaryAddress, chain, hierarchy]);
 
   const handleReject = useCallback((): void => {
     setState('');

@@ -239,7 +239,7 @@ export default function Confirm({ account, api, chain, friends, lostAccount, oth
             : '0',
           block,
           date: Date.now(),
-          fee: fee || '',
+          fee: fee || String(estimatedFee) || '',
           from: String(account.accountId),
           hash: txHash || '',
           status: failureText || status,
@@ -257,7 +257,7 @@ export default function Confirm({ account, api, chain, friends, lostAccount, oth
           amount: '0',
           block,
           date: Date.now(),
-          fee: fee || '',
+          fee: fee || String(estimatedFee) || '',
           from: String(account.accountId),
           hash: txHash || '',
           status: failureText || status,
@@ -277,7 +277,7 @@ export default function Confirm({ account, api, chain, friends, lostAccount, oth
           amount: recoveryConsts ? amountToHuman(recoveryConsts.recoveryDeposit.toString(), decimals) : '0',
           block,
           date: Date.now(),
-          fee: fee || '',
+          fee: fee || String(estimatedFee) || '',
           from: String(account.accountId),
           hash: txHash || '',
           status: failureText || status,
@@ -296,7 +296,7 @@ export default function Confirm({ account, api, chain, friends, lostAccount, oth
           amount: amountToHuman(String(rescuer.option.deposit), decimals),
           block,
           date: Date.now(),
-          fee: fee || '',
+          fee: fee || String(estimatedFee) || '',
           from: String(rescuer.accountId),
           hash: txHash || '',
           status: failureText || status,
@@ -315,7 +315,7 @@ export default function Confirm({ account, api, chain, friends, lostAccount, oth
           amount: amountToHuman(String(withdrawAmounts.available.add(withdrawAmounts.redeemable).add(withdrawAmounts.staked)), decimals),
           block,
           date: Date.now(),
-          fee: fee || '',
+          fee: fee || String(estimatedFee) || '',
           from: String(lostAccount.accountId),
           hash: txHash || '',
           status: failureText || status,
@@ -336,7 +336,7 @@ export default function Confirm({ account, api, chain, friends, lostAccount, oth
           amount: amountToHuman(String(withdrawAmounts.available.add(withdrawAmounts.redeemable).add(withdrawAmounts.staked)), decimals),
           block,
           date: Date.now(),
-          fee: fee || '',
+          fee: fee || String(estimatedFee) || '',
           from: String(lostAccount.accountId),
           hash: txHash || '',
           status: failureText || status,
@@ -355,7 +355,7 @@ export default function Confirm({ account, api, chain, friends, lostAccount, oth
           amount: '0',
           block,
           date: Date.now(),
-          fee: fee || '',
+          fee: fee || String(estimatedFee) || '',
           from: String(account.accountId),
           hash: txHash || '',
           status: failureText || status,
@@ -373,7 +373,7 @@ export default function Confirm({ account, api, chain, friends, lostAccount, oth
       setState(localState);
       setConfirmingState('');
     }
-  }, [account.accountId, asRecovered, api, batchAll, recoveryConsts, batchWithdraw, chain, withdrawAmounts, vouchRecovery, closeRecovery, claimRecovery, createRecovery, decimals, friendIds, hierarchy, initiateRecovery, lostAccount?.accountId, password, recoveryDelay, recoveryThreshold, removeRecovery, rescuer, setState, state]);
+  }, [account.accountId, asRecovered, api, batchAll, estimatedFee, recoveryConsts, batchWithdraw, chain, withdrawAmounts, vouchRecovery, closeRecovery, claimRecovery, createRecovery, decimals, friendIds, hierarchy, initiateRecovery, lostAccount?.accountId, password, recoveryDelay, recoveryThreshold, removeRecovery, rescuer, setState, state]);
 
   const handleCloseModal = useCallback((): void => {
     setConfirmModalOpen(false);
@@ -486,7 +486,7 @@ export default function Confirm({ account, api, chain, friends, lostAccount, oth
           </Grid>
         </Grid>
         <Grid container item sx={{ bgcolor: 'white', fontSize: 12, height: '210px', overflowY: 'auto' }} xs={12}>
-          {state === 'makeRecoverable' && <Grid item sx={{ color: grey[600], fontFamily: 'fantasy', fontSize: 16, p: '30px 50px 5px', textAlign: 'center' }} xs={12}>
+          {state === 'makeRecoverable' && <Grid item sx={{ color: grey[600], fontSize: 16, p: '30px 50px 5px', textAlign: 'center' }} xs={12}>
             {t('List of friends')}
           </Grid>
           }
@@ -497,7 +497,7 @@ export default function Confirm({ account, api, chain, friends, lostAccount, oth
           }
           {['makeRecoverable', 'initiateRecovery'].includes(state) &&
             friends?.map((f, index) => (
-              <Grid alignItems='flex-start' key={index} sx={{ fontFamily: 'sans-serif', px: 6 }} xs={12}>
+              <Grid item alignItems='flex-start' key={index} sx={{ fontFamily: 'sans-serif', px: 6 }} xs={12}>
                 <Identity accountInfo={f} chain={chain} showAddress />
               </Grid>
             ))
@@ -505,14 +505,14 @@ export default function Confirm({ account, api, chain, friends, lostAccount, oth
           {['closeRecovery', 'vouchRecovery'].includes(state) &&
             <Grid container item sx={{ fontFamily: 'sans-serif', fontWeight: 'bold', pl: 11 }} xs={12}>
               {/* {state === 'vouchRecovery' &&
-                <Identity accountInfo={lostAccount} chain={chain} showAddress title={'Lost account'} />
-              } */}
+                 <Identity accountInfo={lostAccount} chain={chain} showAddress title={'Lost account'} />
+               } */}
               <Identity accountInfo={rescuer} chain={chain} showAddress title={'Rescuer account'} />
             </Grid>
           }
         </Grid>
       </Grid>
-      <Grid container item sx={{ p: '30px 25px' }} xs={12}>
+      <Grid container item sx={{ p: '35px 25px' }} xs={12}>
         <Password
           autofocus={!['confirming', 'failed', 'success'].includes(confirmingState)}
           handleIt={handleConfirm}
@@ -522,18 +522,14 @@ export default function Confirm({ account, api, chain, friends, lostAccount, oth
           setPassword={setPassword}
           setPasswordStatus={setPasswordStatus}
         />
-        <Grid alignItems='center' container item xs={12}>
-          <Grid container item xs={12}>
-            <ConfirmButton
-              handleBack={handleBack}
-              handleConfirm={handleConfirm}
-              handleReject={handleReject}
-              isDisabled={notEnoughBalance}
-              state={confirmingState}
-              text={notEnoughBalance ? t('Not enough balance') : t('Confirm')}
-            />
-          </Grid>
-        </Grid>
+        <ConfirmButton
+          handleBack={handleBack}
+          handleConfirm={handleConfirm}
+          handleReject={handleReject}
+          isDisabled={notEnoughBalance}
+          state={confirmingState}
+          text={notEnoughBalance ? t('Not enough balance') : t('Confirm')}
+        />
       </Grid>
     </Popup>
   );

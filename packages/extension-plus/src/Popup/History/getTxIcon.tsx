@@ -6,38 +6,9 @@
  * this component provides icons related to each action, which is depicted in transaction history
  * */
 
-import {
-  AcUnit as AcUnitIcon,
-  Add as AddIcon,
-  AddCircleOutline as AddCircleOutlineIcon,
-  AllOut as AllOutIcon,
-  CallMade as CallMadeIcon,
-  CallReceived as CallReceivedIcon,
-  Check as CheckIcon,
-  GroupRemove as GroupRemoveIcon,
-  HowToReg as HowToRegIcon,
-  Link as LinkIcon,
-  MoveUpRounded as MoveUpRoundedIcon,
-  NotificationsNone as NotificationsNoneIcon,
-  Pool as PoolIcon,
-  PublishedWithChanges as PublishedWithChangesIcon,
-  RecommendOutlined as RecommendOutlinedIcon,
-  Redeem as RedeemIcon,
-  Remove as RemoveIcon,
-  SettingsAccessibility as SettingsAccessibilityIcon,
-  SettingsApplicationsOutlined as SettingsApplicationsOutlinedIcon,
-  GppMaybeOutlined as GppMaybeOutlinedIcon,
-  AddModeratorOutlined as AddModeratorOutlinedIcon,
-  AdminPanelSettingsOutlined as AdminPanelSettingsOutlinedIcon,
-  SportsScore  as SportsScoreIcon ,
-  StopCircle as StopCircleIcon,
-  SummarizeOutlined as SummarizeOutlinedIcon,
-  SystemUpdateAltOutlined as SystemUpdateAltOutlinedIcon,
-  ThumbsUpDownRounded as ThumbsUpDownRoundedIcon,
-  VolunteerActivismSharp as VolunteerActivismSharpIcon,
-  VerifiedUserOutlined as VerifiedUserOutlinedIcon,
-  SettingsBackupRestore  as SettingsBackupRestoreIcon 
-} from '@mui/icons-material';
+import { faSitemap } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { AcUnit as AcUnitIcon, Add as AddIcon, AddCircleOutline as AddCircleOutlineIcon, AddModeratorOutlined as AddModeratorOutlinedIcon, AdminPanelSettingsOutlined as AdminPanelSettingsOutlinedIcon, AllOut as AllOutIcon, CallMade as CallMadeIcon, CallReceived as CallReceivedIcon, Check as CheckIcon, GppMaybeOutlined as GppMaybeOutlinedIcon, GroupRemove as GroupRemoveIcon, HowToReg as HowToRegIcon, Link as LinkIcon, MoveUpRounded as MoveUpRoundedIcon, NotificationsNone as NotificationsNoneIcon, Pool as PoolIcon, PublishedWithChanges as PublishedWithChangesIcon, RecommendOutlined as RecommendOutlinedIcon, Redeem as RedeemIcon, Remove as RemoveIcon, SettingsAccessibility as SettingsAccessibilityIcon, SettingsApplicationsOutlined as SettingsApplicationsOutlinedIcon, SettingsBackupRestore as SettingsBackupRestoreIcon, SportsScore as SportsScoreIcon, StopCircle as StopCircleIcon, SummarizeOutlined as SummarizeOutlinedIcon, SystemUpdateAltOutlined as SystemUpdateAltOutlinedIcon, ThumbsUpDownRounded as ThumbsUpDownRoundedIcon, VerifiedUserOutlined as VerifiedUserOutlinedIcon, VolunteerActivismSharp as VolunteerActivismSharpIcon } from '@mui/icons-material'
 import React from 'react';
 
 export function getTxIcon(action: string): React.ReactNode {
@@ -169,7 +140,7 @@ export function getTxIcon(action: string): React.ReactNode {
         sx={{ color: 'red' }}
       />;
     case ('initiate_recovery'):
-      return <SportsScoreIcon 
+      return <SportsScoreIcon
         fontSize='small'
         sx={{ color: 'OrangeRed' }}
       />;
@@ -194,9 +165,16 @@ export function getTxIcon(action: string): React.ReactNode {
         sx={{ color: 'DarkSlateGray' }}
       />;
     case ('withdraw'):
-      return <SettingsBackupRestoreIcon 
+      return <SettingsBackupRestoreIcon
         fontSize='small'
         sx={{ color: 'LimeGreen' }}
+      />;
+    case ('manage_proxies'):
+      return <FontAwesomeIcon
+        icon={faSitemap}
+        rotation={270}
+        size='xs'
+        style={{ width: 20 }}
       />;
     default:
       return <NotificationsNoneIcon

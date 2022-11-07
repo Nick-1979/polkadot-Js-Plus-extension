@@ -5,7 +5,7 @@
 /**
  * @description
  * get all information regarding a pool
- * 
+ *
  * rewardPool.balance: The pool balance at the time of the last payout
  * rewardPpool.totalEarnings: The total earnings ever at the time of the last payout
  */
@@ -14,19 +14,34 @@ import { BN, BN_ZERO, bnMax } from '@polkadot/util';
 import getApi from '../getApi.ts';
 import getPoolAccounts from '../getPoolAccounts';
 
-const DEFAULT_MEMBER_INFO = {
-  points: BN_ZERO,
-  poolId: BN_ZERO,
-  rewardPoolTotalEarnings: BN_ZERO,
-  unbondingEras: []
-};
+async function getMyPendingRewards(api, member, poolPoints, rewardPool, rewardAccount) {
+  const existentialDeposit = api.consts.balances.existentialDeposit;
+  const balance = (await api.query.system.account(rewardAccount)).data.free.sub(
+    existentialDeposit
+  );
+
+  const payoutSinceLastRecord = balance
+    .add(new BN(rewardPool.totalRewardsClaimed))
+    .sub(new BN(rewardPool.lastRecordedTotalPayouts));
+  const rewardCounterBase = new BN(10).pow(new BN(18));
+  const currentRewardCounter = (
+    poolPoints.isZero()
+      ? BN_ZERO
+      : payoutSinceLastRecord.mul(rewardCounterBase).div(poolPoints)
+  ).add(rewardPool.lastRecordedRewardCounter);
+
+  return currentRewardCounter
+    .sub(member.lastRecordedRewardCounter)
+    .mul(member.points)
+    .div(rewardCounterBase);
+}
 
 async function getPool(endpoint, stakerAddress, id = undefined) {
   console.log(`getPool is called for ${stakerAddress} id:${id}`);
   const api = await getApi(endpoint);
 
-  const membersUnwrapped = !id && await api.query.nominationPools.poolMembers(stakerAddress);
-  const member = membersUnwrapped?.isSome ? membersUnwrapped.unwrap() : undefined;
+  const members = !id && await api.query.nominationPools.poolMembers(stakerAddress);
+  const member = members?.isSome ? members.unwrap() : undefined;
 
   if (!member && !id) {
     console.log(`can not find member for ${stakerAddress} or id is :${id}`);
@@ -34,7 +49,7 @@ async function getPool(endpoint, stakerAddress, id = undefined) {
     return null; // user does not joined a pool yet. or pool id does not exist
   }
 
-  const poolId = member?.poolId ?? id;
+  const poolId = member?.poolId?.toNumber() ?? id;
   const accounts = getPoolAccounts(api, poolId);
 
   if (!accounts) {
@@ -51,25 +66,12 @@ async function getPool(endpoint, stakerAddress, id = undefined) {
     api.derive.staking.account(accounts.stashId)
   ]);
 
+  console.log('stashIdAccount:',stashIdAccount);
+
   const unwrappedRewardPools = rewardPools.isSome ? rewardPools.unwrap() : null;
   const unwrappedBondedPool = bondedPools.isSome ? bondedPools.unwrap() : null;
-  console.log('rewardPools:', JSON.parse(JSON.stringify(unwrappedRewardPools)))
-
   const poolRewardClaimable = bnMax(BN_ZERO, rewardIdBalance.data.free.sub(api.consts.balances.existentialDeposit));
-  const lastTotalEarnings = unwrappedRewardPools?.totalEarnings ?? BN_ZERO;
-  const currTotalEarnings = bnMax(BN_ZERO, poolRewardClaimable.sub(unwrappedRewardPools?.balance ?? BN_ZERO)).add(unwrappedRewardPools?.totalEarnings ?? BN_ZERO);
-  const newEarnings = bnMax(BN_ZERO, currTotalEarnings.sub(lastTotalEarnings));
-  const newPoints = unwrappedBondedPool.points.mul(newEarnings);
-  const currentPoints = (unwrappedRewardPools?.points ?? BN_ZERO).add(newPoints);
-  console.log('currTotalEarnings', currTotalEarnings)
-  console.log('member.member', member)
-  console.log('member.rewardPoolTotalEarnings', member.rewardPoolTotalEarnings)
-  const newEarningsSinceLastClaim = member ? bnMax(BN_ZERO, currTotalEarnings.sub(member?.rewardPoolTotalEarnings ?? BN_ZERO)) : BN_ZERO;
-  const delegatorVirtualPoints = member ? member.points.mul(newEarningsSinceLastClaim) : BN_ZERO;
-  const myClaimable = delegatorVirtualPoints.isZero() || currentPoints.isZero() || poolRewardClaimable.isZero()
-    ? BN_ZERO
-    : delegatorVirtualPoints.mul(poolRewardClaimable).div(currentPoints);
-
+  const myClaimable = await getMyPendingRewards(api, member, unwrappedBondedPool.points, unwrappedRewardPools, accounts.rewardId);
   const rewardPool = {};
 
   if (unwrappedRewardPools) {
@@ -90,11 +92,11 @@ async function getPool(endpoint, stakerAddress, id = undefined) {
       : null,
     myClaimable: Number(myClaimable),
     // nominators: nominators.unwrapOr({ targets: [] }).targets.map((n) => n.toString()),
-    poolId: id,
+    poolId,
     redeemable: Number(stashIdAccount?.redeemable),
     rewardClaimable: Number(poolRewardClaimable),
     rewardIdBalance: rewardIdBalance.data,
-    rewardPool,
+    rewardPool: unwrappedRewardPools,
     stashIdAccount
   };
 
@@ -102,7 +104,7 @@ async function getPool(endpoint, stakerAddress, id = undefined) {
 }
 
 onmessage = (e) => {
-  const { endpoint, stakerAddress, id } = e.data;
+  const { endpoint, id, stakerAddress } = e.data;
 
   // eslint-disable-next-line no-void
   void getPool(endpoint, stakerAddress, id).then((poolInfo) => {

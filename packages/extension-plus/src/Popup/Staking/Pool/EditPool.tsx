@@ -115,7 +115,7 @@ function EditPool({ api, chain, handleConfirmStakingModalOpen, newPool, pool, se
               />
             </Grid>
           </Grid>
-          <Grid item sx={{ color: grey[600], fontFamily: 'fantasy', fontSize: 16, p: '40px 40px 1px', textAlign: 'center' }} xs={12}>
+          <Grid item sx={{ color: grey[600], fontSize: 16, p: '40px 40px 1px', textAlign: 'center' }} xs={12}>
             <Divider textAlign='left'> {t('Roles')}</Divider>
           </Grid>
           <Grid container item spacing={'10px'} sx={{ fontSize: 12, p: '20px 40px 5px' }}>

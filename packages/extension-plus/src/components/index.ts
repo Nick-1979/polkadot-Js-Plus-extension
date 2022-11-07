@@ -7,6 +7,7 @@ export { default as Balance } from './Balance';
 export { default as ConfirmButton } from './ConfirmButton';
 export { default as Hint } from './Hint';
 export { default as Identity } from './Identity';
+export { default as Identity2 } from './Identity2';
 export { default as NothingToShow } from './NothingToShow';
 export { default as Plus } from './Plus';
 export { default as PlusHeader } from './PlusHeader';

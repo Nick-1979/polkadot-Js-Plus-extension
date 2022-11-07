@@ -17,7 +17,7 @@ import type { AccountsBalanceType, MembersMapEntry, PoolInfo, PoolStakingConsts 
 import { SettingsAccessibility as SettingsAccessibilityIcon } from '@mui/icons-material';
 import { Button, Grid, InputAdornment, Paper, TextField } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { BN, BN_ONE, BN_ZERO } from '@polkadot/util';
@@ -58,6 +58,8 @@ function JoinPool({ api, chain, poolsInfo, poolsMembers, className, setStakeAmou
   const [estimatedMaxFee, setEstimatedMaxFee] = useState<Balance | undefined>();
   const [nextToStakeButtonDisabled, setNextToStakeButtonDisabled] = useState(true);
   const [selectedPool, setSelectedPool] = useState<PoolInfo | undefined>(defaultPool);
+  const ref = useRef();
+  const openPools = useMemo(() => poolsInfo?.filter((p) => String(p?.bondedPool?.state) === 'Open' && p?.poolId !== selectedPool?.poolId), [poolsInfo, selectedPool?.poolId]);
 
   const decimals = api ? api.registry.chainDecimals[0] : 1;
   const token = api ? api.registry.chainTokens[0] : '';
@@ -95,11 +97,11 @@ function JoinPool({ api, chain, poolsInfo, poolsMembers, className, setStakeAmou
   useEffect(() => {
     if (!realStakingAmount) { return; }
 
-    api && api.tx.nominationPools.join(String(realStakingAmount), selectedPool?.poolId ?? BN_ONE).paymentInfo(staker.address).then((i) => {
+    api && api.tx.nominationPools.join(String(realStakingAmount), selectedPool?.poolId ?? 1).paymentInfo(staker.address).then((i) => {
       setEstimatedFee(api.createType('Balance', i?.partialFee));
     });
 
-    api && api.tx.nominationPools.join(String(staker?.balanceInfo?.available ?? realStakingAmount), selectedPool?.poolId ?? BN_ONE).paymentInfo(staker.address).then((i) => {
+    api && api.tx.nominationPools.join(String(staker?.balanceInfo?.available ?? realStakingAmount), selectedPool?.poolId ?? 1).paymentInfo(staker.address).then((i) => {
       setEstimatedMaxFee(api.createType('Balance', i?.partialFee));
     });
   }, [api, staker.address, realStakingAmount, selectedPool, staker?.balanceInfo?.available]);
@@ -147,7 +149,7 @@ function JoinPool({ api, chain, poolsInfo, poolsMembers, className, setStakeAmou
     }
 
     if (Number(value) > maxStakeable && Number(value) < Number(availableBalanceInHuman)) {
-      setAlert(t('Your account might be reaped!'));
+      setAlert(t('Your account may be reaped!'));
     }
 
     setStakeAmountInHuman(fixFloatingPoint(value));
@@ -171,12 +173,17 @@ function JoinPool({ api, chain, poolsInfo, poolsMembers, className, setStakeAmou
     handleStakeAmountInput(value);
   }, [handleStakeAmountInput]);
 
+  const handleSelectPool = useCallback((pool: PoolInfo) => {
+    setSelectedPool(pool);
+    ref.current.scrollTop = 0;
+  }, []);
+
   return (
     <>
       <Popup handleClose={handlePoolStakingModalClose} showModal={showJoinPoolModal}>
         <PlusHeader action={handlePoolStakingModalClose} chain={chain} closeText={'Close'} icon={<SettingsAccessibilityIcon fontSize='small' />} title={'Join Pool'} />
         <Grid container sx={{ pt: 2 }}>
-          <Grid container item justifyContent='space-between' sx={{ fontSize: 12, p: '5px 40px 1px' }}>
+          <Grid container item justifyContent='space-between' sx={{ fontSize: 12, p: '5px 35px 1px' }}>
             <Grid item sx={{ pr: '5px' }} xs={9}>
               <TextField
                 InputLabelProps={{ shrink: true }}
@@ -221,8 +228,8 @@ function JoinPool({ api, chain, poolsInfo, poolsMembers, className, setStakeAmou
               </Grid>
             </Grid>
           }
-          <Grid item sx={{ p: '20px 35px 10px 20px' }} xs={12}>
-            <Grid item sx={{ color: grey[600], fontFamily: 'fantasy', fontSize: 16, p: '0px 50px 5px', textAlign: 'center' }} xs={12}>
+          <Grid item sx={{ p: '20px 20px 0px' }} xs={12}>
+            <Grid item sx={{ color: grey[600], fontSize: 16, p: '0px 50px 5px', textAlign: 'center' }} xs={12}>
               {t('Choose a pool to join')}
             </Grid>
             <Paper elevation={2} sx={{ backgroundColor: grey[600], borderRadius: '5px', color: 'white', py: '5px', width: '100%' }}>
@@ -248,16 +255,16 @@ function JoinPool({ api, chain, poolsInfo, poolsMembers, className, setStakeAmou
               </Grid>
             </Paper>
           </Grid>
-          <Grid container item spacing={'10px'} sx={{ height: '270px', overflowY: 'auto', p: '5px 20px 5px', scrollbarWidth: 'none', width: '100%' }}>
+          <Grid container item ref={ref} sx={{ scrollBehavior: 'smooth', height: '270px', overflowY: 'auto', p: '5px 20px 5px', scrollbarWidth: 'none', width: '100%' }}>
             {selectedPool &&
               <Grid container item sx={{ fontSize: 11, pt: '5px' }}>
-                <Pool api={api} chain={chain} pool={selectedPool} poolsMembers={poolsMembers} selectedPool={selectedPool} setSelectedPool={setSelectedPool} showCheck={true} showHeader={false} />
+                <Pool api={api} chain={chain} pool={selectedPool} poolsMembers={poolsMembers} selectedPool={selectedPool} handleSelectPool={handleSelectPool} showCheck={true} showHeader={false} />
               </Grid>
             }
-            {poolsInfo?.length
-              ? poolsInfo.map((p, i) => String(p?.bondedPool?.state) === 'Open' && p?.poolId !== selectedPool?.poolId &&
+            {openPools?.length
+              ? openPools.map((p, i) =>
                 <Grid container item key={i} sx={{ fontSize: 11, pt: '5px' }}>
-                  <Pool api={api} chain={chain} pool={p} poolsMembers={poolsMembers} selectedPool={selectedPool} setSelectedPool={setSelectedPool} showCheck={true} showHeader={false} />
+                  <Pool api={api} chain={chain} index={i} pool={p} poolsMembers={poolsMembers} selectedPool={selectedPool} handleSelectPool={handleSelectPool} showCheck={true} showHeader={false} />
                 </Grid>)
               : <Progress title={t('Loading ...')} />
             }

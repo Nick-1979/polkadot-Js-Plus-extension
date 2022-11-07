@@ -27,7 +27,7 @@ export default function Members({ chain, chainInfo, membersType, personsInfo }: 
 
   return (
     <>
-      <Grid item sx={{ color: grey[600], fontFamily: 'fantasy', fontSize: 14, fontWeigth: 'bold', p: '10px 1px 10px', textAlign: 'center' }} xs={12}>
+      <Grid item sx={{ color: grey[600], fontSize: 14, fontWeigth: 'bold', p: '10px 1px 10px', textAlign: 'center' }} xs={12}>
         {membersType}
       </Grid>
 

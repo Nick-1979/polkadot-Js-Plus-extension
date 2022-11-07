@@ -29,8 +29,7 @@ import { AccountContext, SettingsContext } from '../../../../extension-ui/src/co
 import useMetadata from '../../../../extension-ui/src/hooks/useMetadata';
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { Header } from '../../../../extension-ui/src/partials';
-import useApi from '../../hooks/useApi';
-import useEndpoint from '../../hooks/useEndPoint';
+import {useApi, useEndpoint} from '../../hooks';
 import { SOCIAL_RECOVERY_CHAINS } from '../../util/constants';
 import { AddressState, nameAddress, RecoveryConsts, Rescuer } from '../../util/plusTypes';
 import Configure from './Configure';
@@ -46,7 +45,6 @@ function SocialRecovery({ className }: Props): React.ReactElement<Props> {
   const { accounts } = useContext(AccountContext);
   const { address, genesisHash } = useParams<AddressState>();
   const [acceptedGenesisHashes, setAcceptedGenesisHashes] = useState<string>();
-
   const [accountsInfo, setAcountsInfo] = useState<DeriveAccountInfo[]>();
   const [account, setAccount] = useState<DeriveAccountInfo | undefined>();
   const [addresesOnThisChain, setAddresesOnThisChain] = useState<nameAddress[]>([]);

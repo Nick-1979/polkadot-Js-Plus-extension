@@ -5,14 +5,14 @@
 
 /**
  * @description
- * this component opens confiure page, to make an account recoverable or remove recovery, even close it 
+ * this component opens confiure page, to make an account recoverable or remove recovery, even close it
  * */
 
 import type { DeriveAccountInfo } from '@polkadot/api-derive/types';
 import type { PalletRecoveryRecoveryConfig } from '@polkadot/types/lookup';
 import type { ThemeProps } from '../../../../extension-ui/src/types';
 
-import { AddModeratorOutlined as AddModeratorOutlinedIcon, GppMaybeOutlined as GppMaybeOutlinedIcon, InfoOutlined as InfoOutlinedIcon, PolicyOutlined as PolicyOutlinedIcon, Security as SecurityIcon,VerifiedUserOutlined as VerifiedUserOutlinedIcon } from '@mui/icons-material';
+import { AddModeratorOutlined as AddModeratorOutlinedIcon, GppMaybeOutlined as GppMaybeOutlinedIcon, InfoOutlined as InfoOutlinedIcon, PolicyOutlined as PolicyOutlinedIcon, Security as SecurityIcon, VerifiedUserOutlined as VerifiedUserOutlinedIcon } from '@mui/icons-material';
 import { Grid, Tab, Tabs } from '@mui/material';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
@@ -48,6 +48,9 @@ function Configure({ account, accountsInfo, addresesOnThisChain, api, chain, cla
 
   const [tabValue, setTabValue] = useState('configuration');
   const [status, setStatus] = useState<string | undefined>(recoveryStatus);
+  const [recoveryThreshold, setRecoveryThreshold] = useState<number>(0);
+  const [recoveryDelay, setRecoveryDelay] = useState<number>(0);
+  const [friends, setFriends] = useState<DeriveAccountInfo[]>([]);
 
   const handleTabChange = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
@@ -77,36 +80,42 @@ function Configure({ account, accountsInfo, addresesOnThisChain, api, chain, cla
           </Tabs>
         </Grid>
         {tabValue === 'configuration' && ((status === 'closeRecovery' && !rescuer) || !status) &&
-          <RecoveryChecking
-            recoveryInfo={recoveryInfo}
-            rescuer={rescuer}
-            setStatus={setStatus}
-          />
+           <RecoveryChecking
+             recoveryInfo={recoveryInfo}
+             rescuer={rescuer}
+             setStatus={setStatus}
+           />
         }
         {api && tabValue === 'configuration' && recoveryInfo !== undefined && status && ['makeRecoverable', 'removeRecovery'].includes(status) && account &&
-          <RecoverableTab
-            account={account}
-            accountsInfo={accountsInfo}
-            addresesOnThisChain={addresesOnThisChain}
-            api={api}
-            chain={chain}
-            recoveryConsts={recoveryConsts}
-            recoveryInfo={recoveryInfo}
-          />
+           <RecoverableTab
+             account={account}
+             accountsInfo={accountsInfo}
+             addresesOnThisChain={addresesOnThisChain}
+             api={api}
+             chain={chain}
+             friends={friends}
+             recoveryConsts={recoveryConsts}
+             recoveryDelay={recoveryDelay}
+             recoveryInfo={recoveryInfo}
+             recoveryThreshold={recoveryThreshold}
+             setFriends={setFriends}
+             setRecoveryDelay={setRecoveryDelay}
+             setRecoveryThreshold={setRecoveryThreshold}
+           />
         }
         {tabValue === 'configuration' && status && status === 'closeRecovery' && rescuer && account &&
-          <CloseRecoveryTab
-            account={account}
-            api={api}
-            chain={chain}
-            rescuer={rescuer}
-          />
+           <CloseRecoveryTab
+             account={account}
+             api={api}
+             chain={chain}
+             rescuer={rescuer}
+           />
         }
         {tabValue === 'info' &&
-          <InfoTab
-            api={api}
-            recoveryConsts={recoveryConsts}
-          />
+           <InfoTab
+             api={api}
+             recoveryConsts={recoveryConsts}
+           />
         }
       </Grid>
     </Popup>
@@ -114,14 +123,14 @@ function Configure({ account, accountsInfo, addresesOnThisChain, api, chain, cla
 }
 
 export default styled(Configure)`
-      height: calc(100vh - 2px);
-      overflow: auto;
-      scrollbar - width: none;
-
-      &:: -webkit - scrollbar {
-        display: none;
-      width:0,
-        }
-      .empty-list {
-        text - align: center;
-   }`;
+       height: calc(100vh - 2px);
+       overflow: auto;
+       scrollbar - width: none;
+ 
+       &:: -webkit - scrollbar {
+         display: none;
+       width:0,
+         }
+       .empty-list {
+         text - align: center;
+    }`;

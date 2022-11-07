@@ -119,7 +119,7 @@ export default function Vote({ address, allCouncilInfo, chain, chainInfo, setSho
         amount: voteValueInHuman,
         block,
         date: Date.now(),
-        fee: fee || '',
+        fee: fee || String(estimatedFee) || '',
         from: encodedAddressInfo.address,
         hash: txHash || '',
         status: failureText || status,
@@ -134,7 +134,7 @@ export default function Vote({ address, allCouncilInfo, chain, chainInfo, setSho
       setPasswordStatus(PASS_MAP.INCORRECT);
       setState('');
     }
-  }, [api, chain, encodedAddressInfo?.address, hierarchy, params, password, tx, voteValueInHuman]);
+  }, [api, chain, encodedAddressInfo?.address, estimatedFee, hierarchy, params, password, tx, voteValueInHuman]);
 
   const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const value = event.target.value;

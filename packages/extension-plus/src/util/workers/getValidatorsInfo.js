@@ -9,15 +9,15 @@ async function getAllValidators (endpoint) {
 
   try {
     const api = await getApi(endpoint);
-
     const at = await api.rpc.chain.getFinalizedHead();
     const apiAt = await api.at(at);
-    const [elected, waiting, currentEra] = await Promise.all([
 
+    const [elected, waiting, currentEra] = await Promise.all([
       api.derive.staking.electedInfo({ withController: true, withDestination: true, withExposure: true, withPrefs: true, withNominations: true, withLedger: true }),
       api.derive.staking.waitingInfo({ withController: true, withDestination: true, withExposure: true, withPrefs: true, withNominations: true, withLedger: true }),
       apiAt.query.staking.currentEra()
     ]);
+
     const nextElectedInfo = elected.info.filter((e) =>
       elected.nextElected.find((n) =>
         String(n) === String(e.accountId)

@@ -48,14 +48,14 @@ export default function Proposals({ chain, chainInfo, handleSubmitProposal, prop
   return (
     <>
       <Grid container justifyContent='flex-start'>
-        <Grid item sx={{ color: grey[600], fontFamily: 'fantasy', fontSize: 15, fontWeigth: 'bold', p: '10px 30px 10px', textAlign: 'left' }} xs={4}>
+        <Grid item sx={{ color: grey[600], fontSize: 15, fontWeigth: 'bold', p: '10px 30px 10px', textAlign: 'left' }} xs={4}>
           {showSubmit &&
             <Button onClick={handleSubmitProposal} size='small' startIcon={<AddCircleRoundedIcon />} color='warning' variant='outlined'>
               {t('Submit')}
             </Button>
           }
         </Grid>
-        <Grid item sx={{ color: grey[600], fontFamily: 'fantasy', fontSize: 15, fontWeigth: 'bold', p: '10px 30px 10px', textAlign: 'center' }} xs={4}>
+        <Grid item sx={{ color: grey[600], fontSize: 15, fontWeigth: 'bold', p: '10px 30px 10px', textAlign: 'center' }} xs={4}>
           {title}
         </Grid>
       </Grid>

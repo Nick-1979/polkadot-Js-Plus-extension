@@ -9,6 +9,8 @@
 
 import type { StakingLedger } from '@polkadot/types/interfaces';
 
+import { faCoins } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { BuildCircleRounded as BuildCircleRoundedIcon, ConfirmationNumberOutlined as ConfirmationNumberOutlinedIcon } from '@mui/icons-material';
 import { Avatar, Grid, IconButton, Link, Skeleton, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
@@ -25,13 +27,14 @@ import keyring from '@polkadot/ui-keyring';
 import { AccountContext } from '../../../../../extension-ui/src/components';
 import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
 import { ConfirmButton, Hint, Password, PlusHeader, Popup, ShortAddress } from '../../../components';
+import { ChooseProxy } from '../../../partials';
 import broadcast from '../../../util/api/broadcast';
 import { bondOrBondExtra } from '../../../util/api/staking';
 import { PASS_MAP, STATES_NEEDS_MESSAGE } from '../../../util/constants';
 import getLogo from '../../../util/getLogo';
-import { AccountsBalanceType, PutInFrontInfo, RebagInfo, StakingConsts, TransactionDetail } from '../../../util/plusTypes';
+import { AccountsBalanceType, Proxy, PutInFrontInfo, RebagInfo, StakingConsts, TransactionDetail } from '../../../util/plusTypes';
 import { amountToHuman, getSubstrateAddress, getTransactionHistoryFromLocalStorage, isEqual, prepareMetaData } from '../../../util/plusUtils';
-import ValidatorsList from './ValidatorsList';
+import ValidatorsList from '../common/ValidatorsList';
 
 interface Props {
   chain: Chain;
@@ -55,6 +58,7 @@ interface Props {
 
 export default function ConfirmStaking({ amount, api, chain, handleSoloStakingModalClose, ledger, nominatedValidators, putInFrontInfo, rebagInfo, selectedValidators, setConfirmStakingModalOpen, setSelectValidatorsModalOpen, setState, showConfirmStakingModal, staker, stakingConsts, state, validatorsIdentities }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
+
   const { hierarchy } = useContext(AccountContext);
   const [confirmingState, setConfirmingState] = useState<string | undefined>();
   const [password, setPassword] = useState<string>('');
@@ -68,6 +72,8 @@ export default function ConfirmStaking({ amount, api, chain, handleSoloStakingMo
   const [surAmount, setSurAmount] = useState<bigint>(amount); /** SUR: Staking Unstaking Redeem amount */
   const [note, setNote] = useState<string>('');
   const [availableBalance, setAvailableBalance] = useState<bigint>(0n);
+  const [proxy, setProxy] = useState<Proxy | undefined>();
+  const [selectProxyModalOpen, setSelectProxyModalOpen] = useState<boolean>(false);
 
   const chainName = chain?.name.replace(' Relay Chain', '');
   const decimals = api.registry.chainDecimals[0];
@@ -318,22 +324,21 @@ export default function ConfirmStaking({ amount, api, chain, handleSoloStakingMo
 
     try {
       setConfirmingState('confirming');
-
-      const signer = keyring.getPair(staker.address);
+      const signer = keyring.getPair(proxy?.delegate ?? staker.address);
 
       signer.unlock(password);
       setPasswordStatus(PASS_MAP.CORRECT);
       const alreadyBondedAmount = BigInt(String(ledger?.total)); // TODO: double check it, it might be ledger?.active but works if unstacked in this era
 
       if (['stakeAuto', 'stakeManual', 'stakeKeepNominated'].includes(localState) && surAmount !== 0n) {
-        const { block, failureText, fee, status, txHash } = await bondOrBondExtra(chain, staker.address, signer, surAmount, alreadyBondedAmount);
+        const { block, failureText, fee, status, txHash } = await bondOrBondExtra(api, staker.address, signer, surAmount, alreadyBondedAmount, proxy);
 
         history.push({
           action: alreadyBondedAmount ? 'bond_extra' : 'bond',
           amount: amountToHuman(String(surAmount), decimals),
           block,
           date: Date.now(),
-          fee: fee || '',
+          fee: fee || String(estimatedFee) || '',
           from: staker.address,
           hash: txHash || '',
           status: failureText || status,
@@ -373,14 +378,14 @@ export default function ConfirmStaking({ amount, api, chain, handleSoloStakingMo
           }
         }
 
-        const { block, failureText, fee, status, txHash } = await broadcast(api, nominated, [selectedValidatorsAccountId], signer, staker.address);
+        const { block, failureText, fee, status, txHash } = await broadcast(api, nominated, [selectedValidatorsAccountId], signer, staker.address, proxy);
 
         history.push({
           action: 'nominate',
           amount: '',
           block,
           date: Date.now(),
-          fee: fee || '',
+          fee: fee || String(estimatedFee) || '',
           from: staker.address,
           hash: txHash || '',
           status: failureText || status,
@@ -393,13 +398,13 @@ export default function ConfirmStaking({ amount, api, chain, handleSoloStakingMo
       if (localState === 'unstake' && surAmount > 0n) {
         if (surAmount === currentlyStaked) {
           /**  if unstaking all, should chill first */
-          const { failureText, fee, status, txHash } = await broadcast(api, chilled, [], signer, staker.address);
+          const { failureText, fee, status, txHash } = await broadcast(api, chilled, [], signer, staker.address, proxy);
 
           history.push({
             action: 'chill',
             amount: '',
             date: Date.now(),
-            fee: fee || '',
+            fee: fee || String(estimatedFee) || '',
             from: staker.address,
             hash: txHash || '',
             status: failureText || status,
@@ -417,14 +422,14 @@ export default function ConfirmStaking({ amount, api, chain, handleSoloStakingMo
           }
         }
 
-        const { block, failureText, fee, status, txHash } = await broadcast(api, unbonded, [surAmount], signer, staker.address);
+        const { block, failureText, fee, status, txHash } = await broadcast(api, unbonded, [surAmount], signer, staker.address, proxy);
 
         history.push({
           action: 'unbond',
           amount: amountToHuman(String(surAmount), decimals),
           block,
           date: Date.now(),
-          fee: fee || '',
+          fee: fee || String(estimatedFee) || '',
           from: staker.address,
           hash: txHash || '',
           status: failureText || status,
@@ -440,14 +445,14 @@ export default function ConfirmStaking({ amount, api, chain, handleSoloStakingMo
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const spanCount = optSpans.isNone ? 0 : optSpans.unwrap().prior.length + 1;
 
-        const { block, failureText, fee, status, txHash } = await broadcast(api, redeem, [spanCount || 0], signer, staker.address);
+        const { block, failureText, fee, status, txHash } = await broadcast(api, redeem, [spanCount || 0], signer, staker.address, proxy);
 
         history.push({
           action: 'redeem',
           amount: amountToHuman(String(surAmount), decimals),
           block,
           date: Date.now(),
-          fee: fee || '',
+          fee: fee || String(estimatedFee) || '',
           from: staker.address,
           hash: txHash || '',
           status: failureText || status,
@@ -459,13 +464,13 @@ export default function ConfirmStaking({ amount, api, chain, handleSoloStakingMo
       }
 
       if (localState === 'stopNominating') {
-        const { block, failureText, fee, status, txHash } = await broadcast(api, chilled, [], signer, staker.address);
+        const { block, failureText, fee, status, txHash } = await broadcast(api, chilled, [], signer, staker.address, proxy);
 
         history.push({
           action: 'stop_nominating',
           block,
           date: Date.now(),
-          fee: fee || '',
+          fee: fee || String(estimatedFee) || '',
           from: staker.address,
           hash: txHash || '',
           status: failureText || status,
@@ -478,13 +483,13 @@ export default function ConfirmStaking({ amount, api, chain, handleSoloStakingMo
       if (localState === 'tuneUp') {
         const tx = rebagInfo?.shouldRebag ? rebaged : putInFrontOf;
         const params = rebagInfo?.shouldRebag ? staker.address : putInFrontInfo?.lighter;
-        const { block, failureText, fee, status, txHash } = await broadcast(api, tx, [params], signer, staker.address);
+        const { block, failureText, fee, status, txHash } = await broadcast(api, tx, [params], signer, staker.address, proxy);
 
         history.push({
           action: 'tuneUp',
           block,
           date: Date.now(),
-          fee: fee || '',
+          fee: fee || String(estimatedFee) || '',
           from: staker.address,
           hash: txHash || '',
           status: failureText || status,
@@ -502,7 +507,7 @@ export default function ConfirmStaking({ amount, api, chain, handleSoloStakingMo
       setState(localState);
       setConfirmingState(undefined);
     }
-  }, [api, chain, chilled, currentlyStaked, decimals, hierarchy, ledger?.total, nominated, nominatedValidatorsId, password, putInFrontInfo?.lighter, putInFrontOf, rebagInfo?.shouldRebag, rebaged, redeem, selectedValidators, selectedValidatorsAccountId, setState, staker.address, state, surAmount, unbonded]);
+  }, [api, chain, chilled, currentlyStaked, decimals, estimatedFee, hierarchy, ledger?.total, nominated, nominatedValidatorsId, password, proxy, putInFrontInfo?.lighter, putInFrontOf, rebagInfo?.shouldRebag, rebaged, redeem, selectedValidators, selectedValidatorsAccountId, setState, staker.address, state, surAmount, unbonded]);
 
   const handleReject = useCallback((): void => {
     setState('');
@@ -513,10 +518,15 @@ export default function ConfirmStaking({ amount, api, chain, handleSoloStakingMo
     }
 
     handleCloseModal();
+
     if (handleSoloStakingModalClose) {
       handleSoloStakingModalClose();
     }
   }, [handleCloseModal, handleSoloStakingModalClose, setSelectValidatorsModalOpen, setState]);
+
+  const handleChooseProxy = useCallback((): void => {
+    setSelectProxyModalOpen(true);
+  }, []);
 
   const writeAppropiateMessage = useCallback((state: string, note: string): React.ReactNode => {
     switch (state) {
@@ -608,7 +618,7 @@ export default function ConfirmStaking({ amount, api, chain, handleSoloStakingMo
     <Popup handleClose={handleCloseModal} showModal={showConfirmStakingModal}>
       <PlusHeader action={handleReject} chain={chain} closeText={'Reject'} icon={<ConfirmationNumberOutlinedIcon fontSize='small' />} title={'Confirm'} />
       <Grid alignItems='center' container>
-        <Grid container item sx={{ backgroundColor: '#f7f7f7', p: '25px 40px 10px' }} xs={12}>
+        <Grid container item sx={{ backgroundColor: '#f7f7f7', p: '20px 40px 10px' }} xs={12}>
           <Grid item sx={{ border: '2px double grey', borderRadius: '5px', fontSize: 15, fontVariant: 'small-caps', justifyContent: 'flex-start', p: '5px 10px', textAlign: 'center' }}>
             {stateInHuman(confirmingState || state)}
           </Grid>
@@ -659,7 +669,7 @@ export default function ConfirmStaking({ amount, api, chain, handleSoloStakingMo
         </Grid>
         {stakingConsts && !(STATES_NEEDS_MESSAGE.includes(state) || note)
           ? <>
-            <Grid item sx={{ color: grey[600], fontFamily: 'fantasy', fontSize: 16, p: '5px 50px 5px', textAlign: 'center' }} xs={12}>
+            <Grid item sx={{ color: grey[600], fontSize: 16, p: '5px 50px 5px', textAlign: 'center' }} xs={12}>
               {t('VALIDATORS')}{` (${validatorsToList?.length ?? ''})`}
             </Grid>
             <Grid item sx={{ fontSize: 14, height: '185px', p: '0px 20px 0px' }} xs={12}>
@@ -678,23 +688,39 @@ export default function ConfirmStaking({ amount, api, chain, handleSoloStakingMo
           </Grid>
         }
       </Grid>
-      <Grid container item sx={{ p: '25px 25px' }} xs={12}>
-        <Password
-          autofocus={!confirmingState}
-          handleIt={handleConfirm}
-          isDisabled={confirmButtonDisabled || !!confirmingState}
-          password={password}
-          passwordStatus={passwordStatus}
-          setPassword={setPassword}
-          setPasswordStatus={setPasswordStatus}
-        />
+      <Grid container item sx={{ p: '30px 25px' }} xs={12}>
+        <Grid container item spacing={0.5} xs={12}>
+          <Grid item xs>
+            <Password
+              autofocus={!confirmingState}
+              handleIt={handleConfirm}
+              isDisabled={confirmButtonDisabled || !!confirmingState || (staker.isProxied && !proxy)}
+              password={password}
+              passwordStatus={passwordStatus}
+              setPassword={setPassword}
+              setPasswordStatus={setPasswordStatus}
+            />
+          </Grid>
+          <ChooseProxy
+            acceptableTypes={['Any', 'Staking', 'NonTransfer']}
+            api={api}
+            chain={chain}
+            headerIcon={<FontAwesomeIcon icon={faCoins} size='sm' />}
+            onClick={handleChooseProxy}
+            proxy={proxy}
+            realAddress={staker.address}
+            selectProxyModalOpen={selectProxyModalOpen}
+            setProxy={setProxy}
+            setSelectProxyModalOpen={setSelectProxyModalOpen}
+          />
+        </Grid>
         <Grid alignItems='center' container item xs={12}>
           <Grid container item xs={amountNeedsAdjust ? 11 : 12}>
             <ConfirmButton
               handleBack={handleBack}
               handleConfirm={handleConfirm}
               handleReject={handleReject}
-              isDisabled={confirmButtonDisabled}
+              isDisabled={confirmButtonDisabled || (staker.isProxied && !proxy)}
               state={confirmingState ?? ''}
               text={confirmButtonText}
             />

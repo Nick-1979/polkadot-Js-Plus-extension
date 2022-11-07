@@ -153,7 +153,9 @@ function Rescue({ account, accountsInfo, addresesOnThisChain, api, chain, recove
   return (
     <Popup handleClose={handleCloseModal} showModal={showRescueModal}>
       <PlusHeader action={handleCloseModal} chain={chain} closeText={'Close'} icon={<SupportIcon fontSize='small' />} title={t<string>('Rescue another account')} />
-      {!showAsRescuerModal && !showAsFriendModal && <RescuerSelection />}
+      {!showAsRescuerModal && !showAsFriendModal &&
+        <RescuerSelection />
+      }
       {showAsRescuerModal &&
         <AsResuer
           account={account}

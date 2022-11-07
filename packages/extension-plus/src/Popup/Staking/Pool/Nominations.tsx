@@ -25,10 +25,10 @@ import { BN, BN_ZERO } from '@polkadot/util';
 import { NextStepButton } from '../../../../../extension-ui/src/components';
 import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
 import { Progress } from '../../../components';
-import ValidatorsList from '../Solo/ValidatorsList';
+import ValidatorsList from '../common/ValidatorsList';
 
 interface Props {
-  activeValidator: DeriveStakingQuery | undefined;
+  activeValidators: DeriveStakingQuery[] | undefined;
   nominatedValidators: DeriveStakingQuery[] | null;
   poolStakingConsts: PoolStakingConsts | undefined;
   stakingConsts: StakingConsts | undefined;
@@ -47,7 +47,7 @@ interface Props {
   setNoNominatedValidators: React.Dispatch<React.SetStateAction<boolean | undefined>>
 }
 
-function Nominations({ activeValidator, api, chain, endpoint, getPoolInfo, handleSelectValidatorsModalOpen, handleStopNominating, myPool, noNominatedValidators, nominatedValidators, poolStakingConsts, setNoNominatedValidators, staker, stakingConsts, state, validatorsIdentities, validatorsInfo }: Props): React.ReactElement<Props> {
+function Nominations({ activeValidators, api, chain, endpoint, getPoolInfo, handleSelectValidatorsModalOpen, handleStopNominating, myPool, noNominatedValidators, nominatedValidators, poolStakingConsts, setNoNominatedValidators, staker, stakingConsts, state, validatorsIdentities, validatorsInfo }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
@@ -73,10 +73,11 @@ function Nominations({ activeValidator, api, chain, endpoint, getPoolInfo, handl
         ? <Grid container px='5px'>
           <Grid item sx={{ height: '245px' }} xs={12}>
             <ValidatorsList
-              activeValidator={activeValidator}
+              activeValidators={activeValidators}
               api={api}
               chain={chain}
               height={220}
+              ledger={myPool?.ledger}
               staker={myPool?.accounts?.stashId}
               stakingConsts={stakingConsts}
               validatorsIdentities={validatorsIdentities}

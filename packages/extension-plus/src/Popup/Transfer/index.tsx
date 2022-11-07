@@ -19,7 +19,7 @@ import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Alert, Avatar, Box, Button, Divider, Grid, IconButton, InputAdornment, List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader, Skeleton, TextField, Tooltip } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { ApiPromise } from '@polkadot/api';
 import Identicon from '@polkadot/react-identicon';
@@ -31,8 +31,9 @@ import { AccountContext, SettingsContext } from '../../../../extension-ui/src/co
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { DEFAULT_TYPE } from '../../../../extension-ui/src/util/defaultType';
 import { PlusHeader, Popup } from '../../components';
+import SelectProxy from '../../partials/SelectProxy';
 import getLogo from '../../util/getLogo';
-import { AccountsBalanceType } from '../../util/plusTypes';
+import { AccountsBalanceType, Recoded } from '../../util/plusTypes';
 import { amountToHuman, amountToMachine, balanceToHuman, fixFloatingPoint } from '../../util/plusUtils';
 import isValidAddress from '../../util/validateAddress';
 import ConfirmTransfer from './ConfirmTransfer';
@@ -48,13 +49,6 @@ interface Props {
   givenType?: KeypairType;
 }
 
-interface Recoded {
-  account: AccountJson | null;
-  formatted: string | null;
-  genesisHash?: string | null;
-  prefix?: number;
-  type: KeypairType;
-}
 
 export default function TransferFunds({ api, chain, givenType, sender, setTransferModalOpen, transferModalOpen }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
@@ -71,7 +65,6 @@ export default function TransferFunds({ api, chain, givenType, sender, setTransf
   const [nextButtonCaption, setNextButtonCaption] = useState<string>(t('Next'));
   const [recepientAddressIsValid, setRecepientAddressIsValid] = useState(false);
   const [recepient, setRecepient] = useState<AccountsBalanceType | null>();
-  const [allAddresesOnThisChain, setAllAddresesOnThisChain] = useState<AccountsBalanceType[] | null>();
   const [transferBetweenMyAccountsButtonText, setTransferBetweenMyAccountsButtonText] = useState<string>(t('Transfer between my accounts'));
   const [ED, setED] = useState<bigint>(0n);
   const [allAmountLoading, setAllAmountLoading] = useState(false);
@@ -146,7 +139,7 @@ export default function TransferFunds({ api, chain, givenType, sender, setTransf
 
   const handleClearRecepientAddress = useCallback(() => {
     setNextButtonDisabled(true);
-    setAllAddresesOnThisChain(null);
+    // setAllAddresesOnThisChain(null);
     setRecepient(null);
     setRecepientAddressIsValid(false);
     setTransferBetweenMyAccountsButtonText(t('Transfer between my accounts'));
@@ -271,14 +264,34 @@ export default function TransferFunds({ api, chain, givenType, sender, setTransf
     setMaxAmountLoading(false);
   }, [ED, decimals, estimatedFee, recepient, sender, transfer]);
 
+  const allAddresesOnSameChain = useMemo(() => {
+    const all = accounts.map((acc): { account: AccountJson, formattedAddress: string } => {
+      const accountByAddress = findAccountByAddress(accounts, acc.address);
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const recoded = (chain?.definition.chainType === 'ethereum' ||
+        accountByAddress?.type === 'ethereum' ||
+        (!accountByAddress && givenType === 'ethereum'))
+        ? { account: accountByAddress, formatted: acc.addres, type: 'ethereum' } as Recoded
+        : recodeAddress(acc.address, accounts, settings, chain);
+
+      return {
+        account: acc,
+        formattedAddress: String(recoded.formatted)
+      };
+    });
+
+    return all.filter((a) => a.formattedAddress !== (sender.address));
+  }, [accounts, chain, givenType, recodeAddress, sender.address, settings]);
+
   const acountList = (
     transferBetweenMyAccountsButtonText === t('Back to all')
       ? <Box sx={{ bgcolor: 'background.paper', height: '270px', overflowY: 'auto', scrollbarWidth: 'none', width: '100%' }}>
         <nav aria-label='acount list'>
           <List subheader={<ListSubheader component='div' sx={{ textAlign: 'left' }}> {t('My Accounts')} </ListSubheader>}>
-            {!allAddresesOnThisChain
+            {!allAddresesOnSameChain
               ? ''
-              : allAddresesOnThisChain.map((addr) => (
+              : allAddresesOnSameChain.map((a) => (
                 // eslint-disable-next-line react/jsx-key
                 <ListItem disablePadding>
                   <ListItemButton onClick={handleAccountListClick}>
@@ -289,7 +302,7 @@ export default function TransferFunds({ api, chain, givenType, sender, setTransf
                       />
                     </ListItemIcon>
                     <ListItemText
-                      primary={`${String(addr.name)}  ${String(addr.address)}`}
+                      primary={`${String(a.account.name)}  ${a.formattedAddress}`}
                       primaryTypographyProps={{
                         fontSize: 14,
                         fontWeight: 'medium',
@@ -306,35 +319,11 @@ export default function TransferFunds({ api, chain, givenType, sender, setTransf
   );
 
   const showAlladdressesOnThisChain = useCallback((): void => {
-    /** toggle button's text */
-    const condition = transferBetweenMyAccountsButtonText === t('Transfer between my accounts');
-
-    setTransferBetweenMyAccountsButtonText(condition ? t('Back to all') : t('Transfer between my accounts'));
-
-    if (condition) {
-      let allAddresesOnSameChain = accounts.map((acc): AccountsBalanceType => {
-        const accountByAddress = findAccountByAddress(accounts, acc.address);
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const recoded = (chain?.definition.chainType === 'ethereum' ||
-          accountByAddress?.type === 'ethereum' ||
-          (!accountByAddress && givenType === 'ethereum'))
-          ? { account: accountByAddress, formatted: acc.addres, type: 'ethereum' } as Recoded
-          : recodeAddress(acc.address, accounts, settings, chain);
-
-        return {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          address: String(recoded.formatted),
-          // balanceInfo: null,
-          chain: null,
-          name: String(acc.name)
-        };
-      });
-
-      allAddresesOnSameChain = allAddresesOnSameChain.filter((acc) => acc.address !== (sender.address));
-      setAllAddresesOnThisChain(allAddresesOnSameChain);
-    }
-  }, [accounts, chain, givenType, recodeAddress, sender.address, settings, t, transferBetweenMyAccountsButtonText]);
+    setTransferBetweenMyAccountsButtonText(
+      transferBetweenMyAccountsButtonText !== t('Back to all')
+        ? t('Back to all')
+        : t('Transfer between my accounts'));
+  }, [t, transferBetweenMyAccountsButtonText]);
 
   const handleNext = useCallback((): void => {
     handleConfirmModaOpen();
@@ -343,10 +332,12 @@ export default function TransferFunds({ api, chain, givenType, sender, setTransf
   function handleConfirmModaOpen(): void {
     setConfirmModalOpen(true);
   }
+  
+  const SendHeaderIcon = <SendOutlinedIcon fontSize='small' sx={{ transform: 'rotate(-45deg)' }} />;
 
   return (
     <Popup handleClose={handleTransferModalClose} showModal={transferModalOpen}>
-      <PlusHeader action={handleTransferModalClose} chain={chain} closeText={'Close'} icon={<SendOutlinedIcon fontSize='small' sx={{ transform: 'rotate(-45deg)' }} />} title={'Transfer Funds'} />
+      <PlusHeader action={handleTransferModalClose} chain={chain} closeText={'Close'} icon={SendHeaderIcon} title={'Transfer Funds'} />
       <Grid alignItems='center' container justifyContent='center' sx={{ padding: '5px 20px' }}>
         <Grid alignItems='center' container id='senderAddress' item justifyContent='flex-start' spacing={1} sx={{ opacity: senderAddressOpacity, padding: '20px 10px 50px' }} xs={12}>
           <Grid item sx={{ color: grey[800], fontSize: 13, textAlign: 'left' }} xs={1}>
@@ -505,7 +496,7 @@ export default function TransferFunds({ api, chain, givenType, sender, setTransf
                     : (feeAlert ? t('Fee must be considered, use MAX button instead.') : (zeroBalanceAlert ? t('No available fund to transfer') : ''))}
                   label={t('Transfer Amount')}
                   margin='dense'
-                  name='transfeAmount'
+                  name='transferAmount'
                   onChange={handleTransferAmountChange}
                   size='medium'
                   type='number'

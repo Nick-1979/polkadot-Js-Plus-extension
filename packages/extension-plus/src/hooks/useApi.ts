@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 import { ApiPromise, WsProvider } from '@polkadot/api';
 
-export default function (endpoint: string | undefined): ApiPromise | undefined {
+export default function useApi (endpoint: string | undefined): ApiPromise | undefined {
   const [api, setApi] = useState<ApiPromise | undefined>();
 
   useEffect(() => {

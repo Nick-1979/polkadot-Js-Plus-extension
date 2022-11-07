@@ -9,9 +9,9 @@ async function getPools(endpoint) {
 
   const lastPoolId = await api.query.nominationPools.lastPoolId();
 
-  console.log('gepools for lastPoolId.toNumber()', lastPoolId.toNumber());
+  console.log(`get pools for poolId:${lastPoolId.toNumber()}`);
 
-  if (!lastPoolId) { 
+  if (!lastPoolId) {
     return null;
   }
 
@@ -29,18 +29,20 @@ async function getPools(endpoint) {
 
   const poolsInfo = info.map((i, index) => {
     if (i[1].isSome) {
+      const bondedPool = i[1].unwrap();
+
       return {
-        bondedPool: i[1].isSome ? i[1].unwrap() : null,
+        bondedPool: { memberCounter: String(bondedPool.memberCounter), points: String(bondedPool.points), roles: bondedPool.roles, state: bondedPool.state },
         metadata: i[0]?.length
           ? i[0]?.isUtf8
             ? i[0]?.toUtf8()
             : i[0]?.toString()
           : null,
-        poolId: index + 1,
+        poolId: index + 1, // works because pools id is not reuseable for now
         rewardPool: i[2]?.isSome ? i[2].unwrap() : null
       };
     } else {
-      return undefined; 
+      return undefined;
     }
   })?.filter((f) => f !== undefined);
 

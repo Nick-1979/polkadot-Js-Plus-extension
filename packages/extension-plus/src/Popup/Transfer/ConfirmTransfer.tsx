@@ -8,13 +8,14 @@
  *  here users can double check their transfer information before submitting it to the blockchain 
  * */
 
-import { ArrowForwardRounded, InfoTwoTone as InfoTwoToneIcon, RefreshRounded } from '@mui/icons-material';
+import { ArrowForwardRounded, InfoTwoTone as InfoTwoToneIcon, RefreshRounded, SendOutlined as SendOutlinedIcon } from '@mui/icons-material';
 import ConfirmationNumberOutlinedIcon from '@mui/icons-material/ConfirmationNumberOutlined';
-import { Alert, Avatar, Box, CircularProgress, Divider, Grid, IconButton, Tooltip } from '@mui/material';
+import { Alert, Avatar, Box, Button as MuiButton, CircularProgress, Divider, Grid, IconButton, Tooltip } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 import { ApiPromise } from '@polkadot/api';
+import { AccountJson } from '@polkadot/extension-base/background/types';
 import Identicon from '@polkadot/react-identicon';
 import { Balance } from '@polkadot/types/interfaces';
 import keyring from '@polkadot/ui-keyring';
@@ -24,9 +25,11 @@ import { AccountContext } from '../../../../extension-ui/src/components/contexts
 import useTranslation from '../../../../extension-ui/src/hooks/useTranslation';
 import { updateMeta } from '../../../../extension-ui/src/messaging';
 import { ConfirmButton, Password, PlusHeader, Popup, ShortAddress } from '../../components';
-import broadcast from '../../util/api/broadcast';
+import { ChooseProxy } from '../../partials';
+import SelectProxy from '../../partials/SelectProxy';
+import { broadcast } from '../../util/api';
 import { PASS_MAP } from '../../util/constants';
-import { AccountsBalanceType, TransactionDetail } from '../../util/plusTypes';
+import { AccountsBalanceType, Proxy, TransactionDetail } from '../../util/plusTypes';
 import { amountToHuman, fixFloatingPoint, saveHistory } from '../../util/plusUtils';
 
 interface Props {
@@ -45,7 +48,6 @@ interface Props {
 
 export default function ConfirmTx({ api, chain, confirmModalOpen, handleTransferModalClose, lastFee, recepient, sender, setConfirmModalOpen, transferAllType, transferAmount }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-
   const [newFee, setNewFee] = useState<Balance | null>();
   const [total, setTotal] = useState<string | null>(null);
   const [confirmDisabled, setConfirmDisabled] = useState<boolean>(true);
@@ -55,6 +57,8 @@ export default function ConfirmTx({ api, chain, confirmModalOpen, handleTransfer
   const [transferAmountInHuman, setTransferAmountInHuman] = useState('');
   const { hierarchy } = useContext(AccountContext);
   const [state, setState] = useState<string>('');
+  const [proxy, setProxy] = useState<Proxy | undefined>();
+  const [selectProxyModalOpen, setSelectProxyModalOpen] = useState<boolean>(false);
 
   const decimals = api.registry.chainDecimals[0];
   const token = api.registry.chainTokens[0];
@@ -92,6 +96,10 @@ export default function ConfirmTx({ api, chain, confirmModalOpen, handleTransfer
     handleTransferModalClose();
   }, [handleTransferModalClose, setConfirmModalOpen]);
 
+  const handleChooseProxy = useCallback((): void => {
+    setSelectProxyModalOpen(true);
+  }, []);
+
   const refreshNetworkFee = useCallback(async (): Promise<void> => {
     setNewFee(null);
     const localConfirmDisabled = confirmDisabled;
@@ -116,21 +124,21 @@ export default function ConfirmTx({ api, chain, confirmModalOpen, handleTransfer
     setState('confirming');
 
     try {
-      const signer = keyring.getPair(sender.address);
+      const signer = keyring.getPair(proxy?.delegate ?? sender.address);
 
       signer.unlock(password);
       setPasswordStatus(PASS_MAP.CORRECT);
       // const KeepAlive = transferAllType === 'Max';
       const params = transferAllType === 'All' ? [recepient.address, false] : [recepient.address, transferAmount];
 
-      const { block, failureText, fee, status, txHash } = await broadcast(api, transfer, params, signer, sender.address);
+      const { block, failureText, fee, status, txHash } = await broadcast(api, transfer, params, signer, sender.address, proxy);
 
       const currentTransactionDetail: TransactionDetail = {
         action: 'send',
         amount: amountToHuman(String(transferAmount), decimals),
         block,
         date: Date.now(),
-        fee: fee || '',
+        fee: fee || String(lastFee) || '',
         from: sender.address,
         hash: txHash || '',
         status: failureText || status,
@@ -147,7 +155,7 @@ export default function ConfirmTx({ api, chain, confirmModalOpen, handleTransfer
       setState('');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chain, api, decimals, hierarchy, password, recepient.address, sender.address, transfer, transferAllType, transferAmount]);
+  }, [lastFee, chain, api, decimals, hierarchy, password, recepient.address, proxy, sender.address, transfer, transferAllType, transferAmount]);
 
   // function disable(flag: boolean) {
   //   return {
@@ -257,19 +265,37 @@ export default function ConfirmTx({ api, chain, confirmModalOpen, handleTransfer
         </Grid>
       </Grid>
       <Grid container item sx={{ p: '35px 20px' }} xs={12}>
-        <Password
-          autofocus={true}
-          handleIt={handleConfirm}
-          isDisabled={['confirming', 'success', 'failed'].includes(state)}
-          password={password}
-          passwordStatus={passwordStatus}
-          setPassword={setPassword}
-          setPasswordStatus={setPasswordStatus}
-        />
+        <Grid container item spacing={0.5} xs={12}>
+          <Grid item xs>
+            <Password
+              autofocus={true}
+              handleIt={handleConfirm}
+              helper={proxy ? t('Please enter the proxy account password') : undefined}
+              isDisabled={['confirming', 'success', 'failed'].includes(state) || (sender.isProxied && !proxy)}
+              password={password}
+              passwordStatus={passwordStatus}
+              setPassword={setPassword}
+              setPasswordStatus={setPasswordStatus}
+            />
+          </Grid>
+          <ChooseProxy
+            acceptableTypes={['Any']}
+            api={api}
+            chain={chain}
+            headerIcon={<SendOutlinedIcon fontSize='small' sx={{ transform: 'rotate(-45deg)' }} />}
+            onClick={handleChooseProxy}
+            proxy={proxy}
+            realAddress={sender.address}
+            selectProxyModalOpen={selectProxyModalOpen}
+            setProxy={setProxy}
+            setSelectProxyModalOpen={setSelectProxyModalOpen}
+          />
+        </Grid>
         <ConfirmButton
           handleBack={handleConfirmModaClose}
           handleConfirm={handleConfirm}
           handleReject={handleReject}
+          isDisabled={sender.isProxied && !proxy}
           state={state}
         />
       </Grid>

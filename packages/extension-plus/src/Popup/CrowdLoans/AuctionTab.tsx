@@ -61,7 +61,7 @@ function AuctionTab({ auction, chainInfo, className, endpoints, myContributions 
 
     return (
       <Grid container>
-        <Grid item sx={{ color: grey[600], fontFamily: 'fantasy', fontSize: 15 }} xs={12}>
+        <Grid item sx={{ color: grey[600], fontSize: 15 }} xs={12}>
           <Paper elevation={1} sx={{ paddingLeft: '10px' }}>
             {t('Bids')}
           </Paper>

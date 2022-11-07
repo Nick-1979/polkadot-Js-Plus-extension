@@ -16,16 +16,17 @@ interface Props {
   onCopy?: () => void;
   prefix?: number;
   value?: string | null;
+  size?: number;
 }
 
-function Identicon ({ className, iconTheme, onCopy, prefix, value }: Props): React.ReactElement<Props> {
+function Identicon({ className, iconTheme, onCopy, prefix, size = 64, value }: Props): React.ReactElement<Props> {
   return (
     <div className={className}>
       <Icon
         className='icon'
         onCopy={onCopy}
         prefix={prefix}
-        size={64}
+        size={size}
         theme={iconTheme}
         value={value}
       />

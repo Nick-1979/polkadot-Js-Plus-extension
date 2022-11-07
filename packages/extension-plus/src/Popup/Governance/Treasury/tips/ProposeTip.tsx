@@ -99,7 +99,7 @@ export default function ProposeTip({ address, chain, chainInfo, handleProposeTip
         amount: '',
         block,
         date: Date.now(),
-        fee: fee || '',
+        fee: fee || String(estimatedFee) || '',
         from: encodedAddressInfo.address,
         hash: txHash || '',
         status: failureText || status,
@@ -114,7 +114,7 @@ export default function ProposeTip({ address, chain, chainInfo, handleProposeTip
       setPasswordStatus(PASS_MAP.INCORRECT);
       setState('');
     }
-  }, [encodedAddressInfo?.address, password, api, tx, params, beneficiaryAddress, chain, hierarchy]);
+  }, [encodedAddressInfo?.address, estimatedFee, password, api, tx, params, beneficiaryAddress, chain, hierarchy]);
 
   const handleReject = useCallback((): void => {
     setState('');

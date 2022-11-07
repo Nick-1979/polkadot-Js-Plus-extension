@@ -83,7 +83,7 @@ export default function SoloStaking({ account, api, chain, currentEraIndex, endp
   const [unstakeAmount, setUnstakeAmount] = useState<bigint>(0n);
   const [unlockingAmount, setUnlockingAmount] = useState<bigint>(0n);
   const [oversubscribedsCount, setOversubscribedsCount] = useState<number | undefined>();
-  const [activeValidator, setActiveValidator] = useState<DeriveStakingQuery>();
+  const [activeValidators, setActiveValidators] = useState<DeriveStakingQuery[]>();
   const [rewardsInfo, setRewardsInfo] = useState<RewardInfo[]>([]);
   const [rebagInfo, setRebagInfo] = useState<RebagInfo | undefined>();
   const [putInFrontInfo, setPutInFrontOfInfo] = useState<PutInFrontInfo | undefined>();
@@ -445,9 +445,9 @@ export default function SoloStaking({ account, api, chain, currentEraIndex, endp
   }, [state, unstakeAmount, stakeAmount, redeemable]);
 
   useEffect(() => {
-    const active = nominatedValidators?.find((n) => n.exposure.others.find(({ who }) => who.toString() === staker.address));
+    const actives = nominatedValidators?.filter((n) => n.exposure.others.find(({ who }) => who.toString() === staker.address));
 
-    setActiveValidator(active);
+    setActiveValidators(actives);
   }, [nominatedValidators, staker.address]);
 
   const NominationsIcon = useMemo((): React.ReactElement<any> => (
@@ -457,7 +457,7 @@ export default function SoloStaking({ account, api, chain, currentEraIndex, endp
         ? <Tooltip placement='top' title={t('No validators nominated')}>
           <NotificationsActiveIcon color='error' fontSize='small' sx={{ pr: 1 }} />
         </Tooltip>
-        : !activeValidator && nominatedValidators?.length
+        : !activeValidators && nominatedValidators?.length
           ? <Tooltip placement='top' title={t('No active validator in this era')}>
             <ReportOutlinedIcon color='warning' fontSize='small' sx={{ pr: 1 }} />
           </Tooltip>
@@ -468,7 +468,7 @@ export default function SoloStaking({ account, api, chain, currentEraIndex, endp
               </Badge>
             </Tooltip>
             : <CheckOutlined fontSize='small' />
-  ), [gettingNominatedValidatorsInfoFromChain, rebagInfo, putInFrontInfo, currentlyStakedInHuman, nominatedValidators?.length, t, activeValidator, oversubscribedsCount]);
+  ), [gettingNominatedValidatorsInfoFromChain, rebagInfo, putInFrontInfo, currentlyStakedInHuman, nominatedValidators?.length, t, activeValidators, oversubscribedsCount]);
 
   return (
     <Popup handleClose={handleSoloStakingModalClose} showModal={showStakingModal}>
@@ -528,7 +528,7 @@ export default function SoloStaking({ account, api, chain, currentEraIndex, endp
           </TabPanel>
           <TabPanel index={2} padding={1} value={tabValue}>
             <Nominations
-              activeValidator={activeValidator}
+              activeValidators={activeValidators}
               api={api}
               chain={chain}
               handleRebag={handleRebag}

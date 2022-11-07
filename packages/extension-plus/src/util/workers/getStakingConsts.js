@@ -13,7 +13,7 @@ async function getStackingConsts(endpoint) {
     const maxNominations = apiAt.consts.staking.maxNominations?.toNumber() || MAX_NOMINATIONS;
     const maxNominatorRewardedPerValidator = apiAt.consts.staking.maxNominatorRewardedPerValidator.toNumber();
     const existentialDeposit = apiAt.consts.balances.existentialDeposit.toString();
-    const bondingDuration = apiAt.consts.staking.bondingDuration.toNumber();
+    const bondingDuration = apiAt.consts.staking.bondingDuration.toNumber(); // in eras
     const sessionsPerEra = apiAt.consts.staking.sessionsPerEra.toNumber();
     const epochDuration = apiAt.consts.babe.epochDuration.toNumber();
     const expectedBlockTime = api.consts.babe.expectedBlockTime.toNumber();

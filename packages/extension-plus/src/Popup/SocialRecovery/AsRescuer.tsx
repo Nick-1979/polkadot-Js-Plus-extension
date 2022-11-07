@@ -94,7 +94,6 @@ function AsRescuer({ account, accountsInfo, addresesOnThisChain, api, chain, han
   }, [lostAccountBalance, redeemable, lostAccountRecoveryInfo, otherPossibleRescuersDeposit]);
 
   const resetPage = useCallback(() => {
-    console.log('reseting page ...');
     setState(undefined);
     setRemainingBlocksToClaim(undefined);
     setActiveStep(STEP_MAP.INIT);

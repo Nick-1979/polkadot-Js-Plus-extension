@@ -27,6 +27,7 @@ function Accounts({ className }: Props): React.ReactElement {
   const { t } = useTranslation();
   const [filter, setFilter] = useState('');
   const [filteredAccount, setFilteredAccount] = useState<AccountWithChildren[]>([]);
+  const [sortedAccount, setSortedAccount] = useState<AccountWithChildren[]>([]);
   const { hierarchy } = useContext(AccountContext);
   const networkMap = useMemo(() => getNetworkMap(), []);
 
@@ -49,6 +50,23 @@ function Accounts({ className }: Props): React.ReactElement {
     );
   }, [filter, hierarchy, networkMap]);
 
+  useEffect(() => {
+    setSortedAccount(filteredAccount.sort((a, b) => {
+      const x = a.name.toLowerCase();
+      const y = b.name.toLowerCase();
+
+      if (x < y) {
+        return -1;
+      }
+
+      if (x > y) {
+        return 1;
+      }
+
+      return 0;
+    }));
+  }, [filteredAccount]);
+
   const _onFilter = useCallback((filter: string) => {
     setFilter(filter.toLowerCase());
   }, []);
@@ -67,7 +85,7 @@ function Accounts({ className }: Props): React.ReactElement {
               text={t<string>('Accounts')}
             />
             <div className={className}>
-              {filteredAccount.map((json, index): React.ReactNode => (
+              {sortedAccount.map((json, index): React.ReactNode => (
                 <AccountsTree
                   {...json}
                   key={`${index}:${json.address}`}

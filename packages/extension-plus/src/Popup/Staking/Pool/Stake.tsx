@@ -8,13 +8,13 @@
  * render stake tab in pool staking
  * */
 
+import type { Balance } from '@polkadot/types/interfaces';
 import type { AccountsBalanceType, MembersMapEntry, MyPoolInfo, PoolInfo, PoolStakingConsts } from '../../../util/plusTypes';
 
 import { Alert, Avatar, Badge, Button as MuiButton, Grid, InputAdornment, TextField } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { styled } from '@mui/material/styles';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import type { Balance } from '@polkadot/types/interfaces';
 
 import { ApiPromise } from '@polkadot/api';
 import { Chain } from '@polkadot/extension-chains/types';
@@ -22,7 +22,7 @@ import { BN, BN_ZERO } from '@polkadot/util';
 
 import { NextStepButton } from '../../../../../extension-ui/src/components';
 import useTranslation from '../../../../../extension-ui/src/hooks/useTranslation';
-import { FormatBalance, Progress, ShowBalance2 } from '../../../components';
+import { Progress, ShowBalance2 } from '../../../components';
 import { amountToHuman, amountToMachine, fixFloatingPoint } from '../../../util/plusUtils';
 import CreatePool from './CreatePool';
 import JoinPool from './JoinPool';
@@ -44,6 +44,35 @@ interface Props {
   poolsMembers: MembersMapEntry[] | undefined
 }
 
+const StyledBadge = styled(Badge)(({ theme }) => ({
+  '& .MuiBadge-badge': {
+    backgroundColor: '#44b700',
+    color: '#44b700',
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    '&::after': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      borderRadius: '50%',
+      animation: 'ripple 1.2s infinite ease-in-out',
+      border: '1px solid currentColor',
+      content: '""'
+    }
+  },
+  '@keyframes ripple': {
+    '0%': {
+      transform: 'scale(.8)',
+      opacity: 1
+    },
+    '100%': {
+      transform: 'scale(2.4)',
+      opacity: 0
+    }
+  }
+}));
+
 export default function Stake({ api, chain, currentlyStaked, handleConfirmStakingModalOpen, myPool, nextPoolId, poolStakingConsts, poolsInfo, poolsMembers, setNewPool, setStakeAmount, setState, staker, state }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const [alert, setAlert] = useState<string>('');
@@ -51,7 +80,7 @@ export default function Stake({ api, chain, currentlyStaked, handleConfirmStakin
   const [zeroBalanceAlert, setZeroBalanceAlert] = useState(false);
   const [nextButtonCaption, setNextButtonCaption] = useState<string>(t('Next'));
   const [nextToStakeButtonDisabled, setNextToStakeButtonDisabled] = useState(true);
-  const [maxStakeable, setMaxStakeable] = useState<BN|undefined>();
+  const [maxStakeable, setMaxStakeable] = useState<BN | undefined>();
   const [maxStakeableAsNumber, setMaxStakeableAsNumber] = useState<number>(0);
   const [showCreatePoolModal, setCreatePoolModalOpen] = useState<boolean>(false);
   const [showJoinPoolModal, setJoinPoolModalOpen] = useState<boolean>(false);
@@ -73,13 +102,15 @@ export default function Stake({ api, chain, currentlyStaked, handleConfirmStakin
   }, [decimals, setStakeAmount, stakeAmountInHuman]);
 
   const handleStakeAmountInput = useCallback((value: string): void => {
-    if (!api || !decimals || !staker?.balanceInfo?.total) { return; }
+    if (!api || !decimals || !staker?.balanceInfo?.total) {
+      return;
+    }
 
     setAlert('');
     const valueAsBN = new BN(String(amountToMachine(value, decimals)));
 
     if (new BN(staker.balanceInfo.total.toString()).sub(valueAsBN).sub(estimatedMaxFee ?? BN_ZERO).lt(existentialDeposit)) {
-      setAlert(t('Your account might be reaped!'));
+      setAlert(t('Your account may be reaped!'));
     }
 
     setStakeAmountInHuman(fixFloatingPoint(value));
@@ -96,33 +127,43 @@ export default function Stake({ api, chain, currentlyStaked, handleConfirmStakin
   }, [handleStakeAmountInput]);
 
   const handleCreatePool = useCallback((): void => {
-    if (staker?.balanceInfo?.available) {
+    if (staker?.balanceInfo?.available && poolStakingConsts?.maxPools > poolsInfo?.length) {
       setCreatePoolModalOpen(true);
 
-      if (!state) { setState('createPool'); }
+      if (!state) {
+        setState('createPool');
+      }
     }
-  }, [staker?.balanceInfo?.available, state, setState]);
+  }, [staker?.balanceInfo?.available, poolStakingConsts?.maxPools, poolsInfo?.length, state, setState]);
 
   const handleJoinPool = useCallback((): void => {
     if (staker?.balanceInfo?.available) {
       setJoinPoolModalOpen(true);
 
-      if (!state) { setState('joinPool'); }
+      if (!state) {
+        setState('joinPool');
+      }
     }
   }, [staker?.balanceInfo?.available, state, setState]);
 
   const handleNextToStake = useCallback((): void => {
-    if (!decimals) { return; }
+    if (!decimals) {
+      return;
+    }
 
     if (Number(stakeAmountInHuman)) {
       handleConfirmStakingModalOpen();
 
-      if (!state) { setState('bondExtra'); }
+      if (!state) {
+        setState('bondExtra');
+      }
     }
   }, [stakeAmountInHuman, decimals, handleConfirmStakingModalOpen, state, setState]);
 
   useEffect(() => {
-    if (!poolStakingConsts || existentialDeposit === undefined || !staker?.balanceInfo?.available || !estimatedMaxFee) { return; }
+    if (!poolStakingConsts || existentialDeposit === undefined || !staker?.balanceInfo?.available || !estimatedMaxFee) {
+      return;
+    }
 
     let max = new BN(String(staker.balanceInfo.available)).sub(existentialDeposit.muln(2)).sub(estimatedMaxFee);
 
@@ -134,7 +175,9 @@ export default function Stake({ api, chain, currentlyStaked, handleConfirmStakin
   }, [poolStakingConsts, existentialDeposit, staker, myPool, estimatedMaxFee]);
 
   useEffect(() => {
-    if (!decimals || !maxStakeable) { return; }
+    if (!decimals || !maxStakeable) {
+      return;
+    }
 
     const maxStakeableAsNumber = Number(amountToHuman(maxStakeable.toString(), decimals));
 
@@ -148,7 +191,9 @@ export default function Stake({ api, chain, currentlyStaked, handleConfirmStakin
   }, [maxStakeableAsNumber, stakeAmountInHuman]);
 
   useEffect(() => {
-    if (!decimals) { return; }
+    if (!decimals) {
+      return;
+    }
 
     if (!staker?.balanceInfo?.available) {
       return setZeroBalanceAlert(true);
@@ -170,39 +215,12 @@ export default function Stake({ api, chain, currentlyStaked, handleConfirmStakin
   }, [stakeAmountInHuman, t, staker?.balanceInfo?.available, decimals]);
 
   const handleMaxStakeClicked = useCallback(() => {
-    if (myPool?.bondedPool?.state?.toLowerCase() === 'destroying') { return; }
+    if (myPool?.bondedPool?.state?.toLowerCase() === 'destroying') {
+      return;
+    }
 
     handleStakeAmountInput(String(maxStakeableAsNumber));
   }, [handleStakeAmountInput, maxStakeableAsNumber, myPool?.bondedPool?.state]);
-
-  const StyledBadge = styled(Badge)(({ theme }) => ({
-    '& .MuiBadge-badge': {
-      backgroundColor: '#44b700',
-      color: '#44b700',
-      boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-      '&::after': {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        borderRadius: '50%',
-        animation: 'ripple 1.2s infinite ease-in-out',
-        border: '1px solid currentColor',
-        content: '""',
-      },
-    },
-    '@keyframes ripple': {
-      '0%': {
-        transform: 'scale(.8)',
-        opacity: 1,
-      },
-      '100%': {
-        transform: 'scale(2.4)',
-        opacity: 0,
-      },
-    },
-  }));
 
   const StakeInitialChoice = () => (
     <Grid container justifyContent='center' sx={{ pt: 5 }}>
@@ -235,6 +253,11 @@ export default function Stake({ api, chain, currentlyStaked, handleConfirmStakin
         <Grid item>
           <ShowBalance2 api={api} balance={poolStakingConsts?.minCreationBond} />
         </Grid>
+        {poolStakingConsts?.maxPools <= poolsInfo?.length &&
+          <Grid item xs={12} textAlign='center' color='red'>
+            {t('Pools are full')}
+          </Grid>
+        }
       </Grid>
     </Grid>
   );
@@ -294,7 +317,7 @@ export default function Stake({ api, chain, currentlyStaked, handleConfirmStakin
                 </Grid>
                 : <Grid item sx={{ color: grey[500], fontSize: 12, textAlign: 'center' }} xs={12}>
                   {t('"{{poolName}}" pool is in {{state}} state, hence can not stake anymore.',
-                    { replace: { poolId: myPool.member.poolId, poolName: myPool.metadata ?? 'no name', state: myPool?.bondedPool?.state } })}
+                    { replace: { poolId: myPool?.member?.poolId, poolName: myPool?.metadata ?? 'no name', state: myPool?.bondedPool?.state } })}
                 </Grid>
               }
             </Grid>

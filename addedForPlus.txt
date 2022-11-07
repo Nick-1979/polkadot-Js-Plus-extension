@@ -6,3 +6,6 @@ yarn add @polkadot/apps-config memoize-one react-window umi-request react-chartj
 
 yarn add @mui/material @emotion/react @emotion/styled  @mui/icons-material @mui/lab
 yarn add -D @testing-library/react jsdom-worker-fix intersection-observer
+
+
+Scripts path: I:\MY_PROGRAMMINGS\polkagate\polkadot-Js-Plus-extension\node_modules\@polkadot\extension\node_modules\@polkadot\dev\script

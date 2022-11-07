@@ -69,7 +69,7 @@ export default function Stake({ api, handleConfirmStakingModalOpen, handleSelect
     }
 
     if (Number(value) > maxStake && Number(value) < Number(availableBalanceInHuman)) {
-      setAlert(t('Your account might be reaped!'));
+      setAlert(t('Your account may be reaped!'));
     }
 
     setStakeAmountInHuman(fixFloatingPoint(value));
@@ -231,7 +231,6 @@ export default function Stake({ api, handleConfirmStakingModalOpen, handleSelect
           variant='outlined'
         />
       </Grid>
-
       <Grid container sx={{ height: '128px' }}>
         <Grid container item xs={12}>
           {!zeroBalanceAlert && token &&
@@ -259,14 +258,11 @@ export default function Stake({ api, handleConfirmStakingModalOpen, handleSelect
               </Grid>
             }
           </Grid>
-
         </Grid>
       </Grid>
-
       <Grid item justifyContent='center' sx={{ textAlign: 'center' }} xs={12}>
         <ValidatorSelectionRadionButtons />
       </Grid>
-
       <Grid item sx={{ px: '10px' }} xs={12}>
         <Grid item xs={12}>
           <NextStepButton

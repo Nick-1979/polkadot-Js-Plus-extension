@@ -10,7 +10,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 export interface Props {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   tip: string;
   place?: TooltipProps['placement'];
   id?: string;

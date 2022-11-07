@@ -118,7 +118,7 @@ export default function VoteReferendum({ address, chain, chainInfo, convictions,
         amount: voteValueInHuman,
         block,
         date: Date.now(),
-        fee: fee || '',
+        fee: fee || String(estimatedFee) || '',
         from: encodedAddressInfo.address,
         hash: txHash || '',
         status: failureText || status,
@@ -133,7 +133,7 @@ export default function VoteReferendum({ address, chain, chainInfo, convictions,
       setPasswordStatus(PASS_MAP.INCORRECT);
       setState('');
     }
-  }, [encodedAddressInfo?.address, password, api, tx, params, voteValueInHuman, voteInfo.refId, chain, hierarchy]);
+  }, [encodedAddressInfo?.address, password, estimatedFee, api, tx, params, voteValueInHuman, voteInfo.refId, chain, hierarchy]);
 
   const handleReject = useCallback((): void => {
     setState('');

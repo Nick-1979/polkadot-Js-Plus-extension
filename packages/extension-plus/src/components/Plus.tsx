@@ -28,8 +28,7 @@ import { BN } from '@polkadot/util';
 
 import { AccountContext, ActionContext } from '../../../extension-ui/src/components/contexts';
 import { updateMeta } from '../../../extension-ui/src/messaging';
-import useApi from '../hooks/useApi';
-import useEndPoint from '../hooks/useEndPoint';
+import { useApi, useEndpoint } from '../hooks';
 import AddressQRcode from '../Popup/AddressQRcode/AddressQRcode';
 import TransactionHistory from '../Popup/History';
 import Configure from '../Popup/SocialRecovery/Configure';
@@ -60,7 +59,7 @@ const defaultSubscribtion = { chainName: '', endpoint: '' };
 
 function Plus({ address, chain, formattedAddress, givenType, name, t }: Props): React.ReactElement<Props> {
   const { accounts } = useContext(AccountContext);
-  const endpoint = useEndPoint(accounts, address, chain);
+  const endpoint = useEndpoint(accounts, address, chain);
   const api = useApi(endpoint);
   const onAction = useContext(ActionContext);
   const supported = (chain: Chain) => SUPPORTED_CHAINS.includes(chain?.name.replace(' Relay Chain', ''));
@@ -271,9 +270,10 @@ function Plus({ address, chain, formattedAddress, givenType, name, t }: Props): 
       address: String(formattedAddress),
       balanceInfo: balance ? balance.balanceInfo : undefined,
       chain: chain?.name || null,
+      isProxied: !!account?.isExternal,
       name: String(name)
     });
-  }, [balance, chain, formattedAddress, name]);
+  }, [account?.isExternal, balance, chain, formattedAddress, name]);
 
   useEffect((): void => {
     if (!accounts || !chain || !endpoint) {
@@ -340,7 +340,7 @@ function Plus({ address, chain, formattedAddress, givenType, name, t }: Props): 
   const handleOpenRecovery = useCallback((): void => {
     if (!chain || !onAction) { return; }
 
-    onAction(`/socialRecovery/${chain.genesisHash}/${address}`);
+    onAction(`/social-recovery/${chain.genesisHash}/${address}`);
   }, [address, chain, onAction]);
 
   const handleCloseRecovery = useCallback((): void => {
